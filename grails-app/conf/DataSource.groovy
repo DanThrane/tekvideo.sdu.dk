@@ -4,6 +4,7 @@ dataSource {
     driverClassName = "org.h2.Driver"
     username = "sa"
     password = ""
+    dialect = "dk.thrane.bb.ImprovedH2Dialect"
 }
 hibernate {
     cache.use_second_level_cache = true
@@ -30,7 +31,7 @@ environments {
     }
     production {
         dataSource {
-            dbdir = "${System.properties['catalina.base']}/db/sample"
+            dbdir = "/home/dan/db/sample"
             dbCreate = "update"
             //url = "jdbc:h2:prodDb;MVCC=TRUE;LOCK_TIMEOUT=10000;DB_CLOSE_ON_EXIT=FALSE"
             url = "jdbc:h2:file:${dbdir};MVCC=TRUE;LOCK_TIMEOUT=10000"

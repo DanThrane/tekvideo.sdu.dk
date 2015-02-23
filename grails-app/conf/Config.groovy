@@ -115,3 +115,21 @@ log4j.main = {
            'org.hibernate',
            'net.sf.ehcache.hibernate'
 }
+
+
+// Added by the Spring Security Core plugin:
+grails.plugin.springsecurity.userLookup.userDomainClassName = 'dk.sdu.ivids.User'
+grails.plugin.springsecurity.userLookup.authorityJoinClassName = 'dk.sdu.ivids.UserRole'
+grails.plugin.springsecurity.rejectIfNoRule = false
+grails.plugin.springsecurity.fii.rejectPublicInvocations = false
+grails.plugin.springsecurity.authority.className = 'dk.sdu.ivids.Role'
+grails.plugin.springsecurity.controllerAnnotations.staticRules = [
+	'/':                              ['permitAll'],
+	'/index':                         ['permitAll'],
+	'/index.gsp':                     ['permitAll'],
+	'/**/js/**':                      ['permitAll'],
+	'/**/css/**':                     ['permitAll'],
+	'/**/images/**':                  ['permitAll'],
+	'/**/favicon.ico':                ['permitAll']
+]
+
