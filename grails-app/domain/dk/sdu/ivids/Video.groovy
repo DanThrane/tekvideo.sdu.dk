@@ -9,7 +9,7 @@ class Video {
      */
     Integer weight
 
-    static belongsTo = Subject
+    static belongsTo = [subject: Subject]
     static constraints = {
         name nullable: false, blank: false
         youtubeId nullable: false, blank: false
@@ -18,7 +18,7 @@ class Video {
     }
 
     Video getNextVideo() {
-        def videos = findAllByWeightGreaterThan(weight, [sort: "weight", max: 1, order: "asc"])
+        def videos = Video.findAllByWeightGreaterThanAndSubject(weight, subject, [sort: "weight", max: 1, order: "asc"])
         videos ? videos.first() : null
     }
 }

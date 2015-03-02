@@ -4,7 +4,7 @@ dataSource {
     driverClassName = "org.h2.Driver"
     username = "sa"
     password = ""
-    dialect = "dk.thrane.bb.ImprovedH2Dialect"
+    dialect = "dk.sdu.ivids.ImprovedH2Dialect"
 }
 hibernate {
     cache.use_second_level_cache = true
