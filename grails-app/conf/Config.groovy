@@ -91,7 +91,7 @@ environments {
     }
     production {
         grails.logging.jul.usebridge = false
-        grails.serverURL = "http://danthrane.me:8181/ivids"
+        grails.serverURL = "http://danthrane.me/ivids"
     }
 }
 
