@@ -3,7 +3,7 @@ package dk.sdu.ivids
 class Video {
     String name
     String youtubeId
-    Timeline timeline
+    String timelineJson
     /**
      * Indicates the placement of this video in the subject's series
      */
@@ -11,10 +11,21 @@ class Video {
 
     static belongsTo = [subject: Subject]
     static constraints = {
-        name nullable: false, blank: false
-        youtubeId nullable: false, blank: false
-        timeline nullable: false
-        // weight should be unique for the subject. This might require a custom validator
+        name            nullable: false, blank: false
+        youtubeId       nullable: false, blank: false
+        weight          validator: { obj, val, errors ->
+            def video = Video.where { subject == val.subject && weight == val.weight && id != val.id }.find()
+            if (video != null) {
+                errors.reject("Weight must be unique for the subject!")
+                return false
+            }
+            return true
+        }
+        timelineJson    blank: false
+    }
+
+    static mapping = {
+        timelineJson type: "text"
     }
 
     Video getNextVideo() {

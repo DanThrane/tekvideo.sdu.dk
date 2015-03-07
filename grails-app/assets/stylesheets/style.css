@@ -1,0 +1,31 @@
+#wrapper {
+    position: relative;
+}
+
+#frameOverlay {
+    z-index: 0;
+    position: absolute;
+    width: 800px;
+    height: 500px;
+}
+
+#player {
+    z-index: 1;
+}
+
+.question.error {
+    background-color: #f77;
+}
+
+.question.correct {
+    background-color: #7f7;
+}
+
+.question {
+    min-width: 90px; /* old 50 */
+    /*height: 25px;*/
+    padding-top: 10px; /* TODO Still some issues with math growing out of box */
+    background-color: white;
+    font-size: 150%;
+}
+
