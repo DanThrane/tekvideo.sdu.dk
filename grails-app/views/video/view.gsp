@@ -34,10 +34,10 @@
     <b>Mouse position:</b> <span id="cursorPosition"></span>
 </div>
 
-%{-- TODO When the JS API is updated this should actually start working --}%
 <script type="text/javascript">
-    var youtubeId = "${raw(video.youtubeId)}";
-    var timeline = ${raw(video.timelineJson)};
+    $(document).ready(function() {
+        ivids.bootstrap("#player", "${raw(video.youtubeId)}", ${raw(video.timelineJson)});
+    });
 </script>
 </body>
 </html>

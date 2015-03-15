@@ -1,5 +1,6 @@
 /*
 *= require bootstrap
-*= require mathquill
 *= require style
+*= require vendor/bootstrap
+*= require vendor/mathquill
 */

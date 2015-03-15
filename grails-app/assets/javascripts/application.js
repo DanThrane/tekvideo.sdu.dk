@@ -1,7 +1,8 @@
 //= require jquery
 //= require bootstrap
-//= require popcorn.js
-//= require underscore.js
-//= require mathquill
-//= require kas
-//= require tex-wrangler
+//= require lib/popcorn
+//= require lib/underscore
+//= require lib/mathquill.min
+//= require lib/kas
+//= require lib/tex-wrangler
+//= require interactivevideos

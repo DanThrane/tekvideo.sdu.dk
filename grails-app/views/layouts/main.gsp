@@ -2,8 +2,9 @@
 <html>
 <head>
     <title>MySite | <g:layoutTitle default="Title"/></title>
-    <asset:stylesheet src="application.css"/>
     <g:layoutHead/>
+    <asset:stylesheet src="application.css"/>
+    <asset:javascript src="application.js"/>
 </head>
 <body>
 
@@ -51,6 +52,6 @@
     </g:if>
     <g:layoutBody/>
 </div>
-<asset:javascript src="application.js"/>
+
 </body>
 </html>

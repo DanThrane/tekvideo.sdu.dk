@@ -133,5 +133,5 @@ class BootStrap {
         }
     }
 
-    def destroy = { /* Not used */}
+    def destroy = { /* Not used */ }
 }
