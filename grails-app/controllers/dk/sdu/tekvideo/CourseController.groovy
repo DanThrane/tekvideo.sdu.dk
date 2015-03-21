@@ -1,4 +1,6 @@
-package dk.sdu.ivids
+package dk.sdu.tekvideo
+
+import dk.sdu.tekvideo.Course
 
 class CourseController {
     static defaultAction = "list"

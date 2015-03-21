@@ -1,9 +1,9 @@
-import dk.sdu.ivids.Course
-import dk.sdu.ivids.Role
-import dk.sdu.ivids.Subject
-import dk.sdu.ivids.User
-import dk.sdu.ivids.UserRole
-import dk.sdu.ivids.Video
+import dk.sdu.tekvideo.Course
+import dk.sdu.tekvideo.Role
+import dk.sdu.tekvideo.Subject
+import dk.sdu.tekvideo.User
+import dk.sdu.tekvideo.UserRole
+import dk.sdu.tekvideo.Video
 
 class BootStrap {
 
@@ -22,10 +22,10 @@ class BootStrap {
                 UserRole.create taUser, taRole, true
                 UserRole.create studentUser, studentRole, true
 
-                def course = new Course(name: "Course 1", description: "Test description")
-                def course2 = new Course(name: "Course 2", description: "Test description")
-                def subject1 = new Subject(name: "Subject 1")
-                def subject2 = new Subject(name: "Subject 2")
+                def course = new Course(name: "Fag 1", description: "Test beskrivelse")
+                def course2 = new Course(name: "Fag 2", description: "Test beskrivelse")
+                def subject1 = new Subject(name: "Emne 1")
+                def subject2 = new Subject(name: "Emne 2")
                 course.addToSubjects(subject1).addToSubjects(subject2)
                 def video = new Video(name: "Test video", youtubeId: "eiSfEP7gTRw", weight: 0, timelineJson: """[
       {

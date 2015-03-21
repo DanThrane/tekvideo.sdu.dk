@@ -1,4 +1,4 @@
-package dk.sdu.ivids
+package dk.sdu.tekvideo
 
 class Role {
 

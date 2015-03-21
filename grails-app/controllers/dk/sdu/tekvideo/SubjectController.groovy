@@ -1,4 +1,6 @@
-package dk.sdu.ivids
+package dk.sdu.tekvideo
+
+import dk.sdu.tekvideo.Subject
 
 class SubjectController {
 

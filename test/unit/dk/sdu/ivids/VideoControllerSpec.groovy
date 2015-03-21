@@ -1,5 +1,6 @@
 package dk.sdu.ivids
 
+import dk.sdu.tekvideo.VideoController
 import grails.test.mixin.TestFor
 import spock.lang.Specification
 

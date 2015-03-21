@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta name="layout" content="main">
-    <title>Courses</title>
+    <title>${course.name}</title>
 </head>
 
 <body>

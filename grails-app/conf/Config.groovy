@@ -118,11 +118,11 @@ log4j.main = {
 
 
 // Added by the Spring Security Core plugin:
-grails.plugin.springsecurity.userLookup.userDomainClassName = 'dk.sdu.ivids.User'
-grails.plugin.springsecurity.userLookup.authorityJoinClassName = 'dk.sdu.ivids.UserRole'
+grails.plugin.springsecurity.userLookup.userDomainClassName = 'dk.sdu.tekvideo.User'
+grails.plugin.springsecurity.userLookup.authorityJoinClassName = 'dk.sdu.tekvideo.UserRole'
 grails.plugin.springsecurity.rejectIfNoRule = false
 grails.plugin.springsecurity.fii.rejectPublicInvocations = false
-grails.plugin.springsecurity.authority.className = 'dk.sdu.ivids.Role'
+grails.plugin.springsecurity.authority.className = 'dk.sdu.tekvideo.Role'
 grails.plugin.springsecurity.controllerAnnotations.staticRules = [
 	'/':                              ['permitAll'],
 	'/index':                         ['permitAll'],

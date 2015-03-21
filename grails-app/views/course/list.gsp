@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta name="layout" content="main">
-    <title>Courses</title>
+    <title>Fag</title>
 </head>
 
 <body>
