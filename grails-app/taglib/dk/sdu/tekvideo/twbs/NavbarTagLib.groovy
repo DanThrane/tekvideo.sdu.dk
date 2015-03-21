@@ -56,4 +56,33 @@ class NavbarTagLib {
         out << ">${body()}</li>"
     }
 
+    def navdropdown = { attrs, body ->
+        String title = getRequiredAttribute(attrs, "title", "navdropdown")
+        out << """
+            <li class=\"dropdown\">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+                $title
+                </a>
+                <ul class="dropdown-menu" role="menu">
+                    ${body()}
+                </ul>
+            </li>
+            """
+    }
+
+    def dropitem = { attrs, body ->
+        out << "<li>${body()}</li>"
+    }
+
+    def dropdivider = { attrs, body ->
+        out << "<li class='divider'></li>"
+    }
+
+    protected getRequiredAttribute(attrs, String name, String tagName) {
+        if (!attrs.containsKey(name)) {
+            throwTagError("Tag [$tagName] is missing required attribute [$name]")
+        }
+        attrs.remove name
+    }
+
 }
