@@ -14,7 +14,7 @@
     <div class="col-lg-9">
         <h1>Video</h1>
         <div id="wrapper">
-            <div id="frameOverlay" style="width: 800px; height: 600px;"></div>
+            %{--<div id="frameOverlay" style="width: 800px; height: 600px;"></div>--}%
             <div id="player" style="width: 800px; height: 600px;"></div>
         </div>
     </div>

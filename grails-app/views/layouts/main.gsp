@@ -45,5 +45,27 @@
     </g:if>
     <g:layoutBody/>
 </twbs:container>
+<script>
+    $(function() {
+        var start = Date.now();
+        events.configure("${createLink(controller: "event", action: "register")}");
+        events.start();
+
+        events.emit({
+            "kind": "VISIT_SITE",
+            "url": document.location.href,
+            "ua": navigator.userAgent
+        }, true);
+
+        window.onbeforeunload = function() {
+            events.emit({
+                "kind": "EXIT_SITE",
+                "url": document.location.href,
+                "time": Date.now() - start
+            });
+            events.flush(false);
+        };
+    });
+</script>
 </body>
 </html>

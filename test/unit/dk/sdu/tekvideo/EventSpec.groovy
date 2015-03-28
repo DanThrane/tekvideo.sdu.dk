@@ -1,5 +1,6 @@
 package dk.sdu.tekvideo
 
+import dk.sdu.tekvideo.events.Event
 import grails.test.mixin.TestFor
 import spock.lang.Specification
 

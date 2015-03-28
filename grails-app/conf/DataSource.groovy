@@ -13,6 +13,11 @@ hibernate {
     cache.region.factory_class = 'org.hibernate.cache.ehcache.EhCacheRegionFactory' // Hibernate 4
     singleSession = true // configure OSIV singleSession mode
     flush.mode = 'manual' // OSIV session flush mode outside of transactional context
+    /*
+     * A bug with table inheritance is causing errors. To get rid of these reload has to be set to false
+     * See https://jira.grails.org/browse/GRAILS-8805
+     */
+    reload = false
 }
 
 // environment specific settings

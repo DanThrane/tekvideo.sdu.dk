@@ -60,17 +60,21 @@ var ivids = {};
     
     function handleNavigationClick(item) {
         return function(e) {
+            var skippedAt = player.currentTime()
             e.preventDefault();
             player.currentTime(item.timecode); 
             player.play();
+            events.emit({
+                kind: "SKIP_TO_CONTENT",
+                video: document.location.href,
+                label: item.title,
+                videoTimeCode: player.currentTime(),
+                skippedAt: skippedAt
+            }, true);
         };
     }
     
     function bootstrap(playerSelector, videoId, tline) {
-        events.emit({
-            data: "Hello world!",
-            kind: "TEST_EVENT"
-        }, true);
         timeline = tline;
         youtubeVideoId = videoId;
 
@@ -81,6 +85,13 @@ var ivids = {};
         player.on("timeupdate", handleTimeUpdate);
         player.on("seeked", handleSeeked);
         player.on("play", function() { removeAllQuestions(); }); // Remove all questions when we continue playing
+        player.on("pause", function() {
+            events.emit({
+                kind: "PAUSE_VIDEO",
+                video: document.location.href,
+                timecode: player.currentTime()
+            }, true);
+        });
         //player.play();
     
         $("#checkAnswers").click(function(e) {
@@ -91,13 +102,22 @@ var ivids = {};
                 var input = $("#" + field.name);
                 var val = parseTex(input.mathquill("latex")); 
                 input.removeClass("correct error");
-    
-                if (validateAnswer(field, val)) {
+                var correct = validateAnswer(field, val);
+                if (correct) {
                     input.addClass("correct");
                 } else {
                     input.addClass("error");
                 }
+
+                if (val.length > 0) {
+                    events.emit({
+                        kind: "ANSWER_QUESTION",
+                        answer: val,
+                        correct: correct
+                    });
+                }
             };
+            events.flush();
         });
     
         $("#frameOverlay").mousemove(function(event) {

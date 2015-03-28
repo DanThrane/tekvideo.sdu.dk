@@ -1,19 +1,27 @@
 package dk.sdu.tekvideo
 
+import dk.sdu.tekvideo.events.*
 import grails.transaction.Transactional
 
 @Transactional
 class EventService {
+    def springSecurityService
+
     final static Map<String, Class<? extends Event>> KIND_TO_CLASS = [
-            "TEST_EVENT": TestEvent
+            ANSWER_QUESTION: AnswerQuestionEvent,
+            EXIT_SITE: ExitSiteEvent,
+            PAUSE_VIDEO: PauseVideoEvent,
+            SKIP_TO_CONTENT: SkipToContentEvent,
+            VISIT_SITE: VisitSiteEvent
     ]
 
     void saveJSONEvents(events) {
         events.each {
             Event event = parseEvent(it)
-            // Add user
-            event.save(flush: true)
-            println event
+            def user = springSecurityService.currentUser
+            event.user = user as User
+            event.save()
+            log.info event
         }
     }
 
