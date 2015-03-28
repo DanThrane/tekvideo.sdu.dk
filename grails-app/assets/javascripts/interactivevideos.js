@@ -67,6 +67,10 @@ var ivids = {};
     }
     
     function bootstrap(playerSelector, videoId, tline) {
+        events.emit({
+            data: "Hello world!",
+            kind: "TEST_EVENT"
+        }, true);
         timeline = tline;
         youtubeVideoId = videoId;
 

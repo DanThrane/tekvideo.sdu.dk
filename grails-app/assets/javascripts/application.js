@@ -5,4 +5,5 @@
 //= require lib/mathquill.min
 //= require lib/kas
 //= require lib/tex-wrangler
+//= require events
 //= require interactivevideos
