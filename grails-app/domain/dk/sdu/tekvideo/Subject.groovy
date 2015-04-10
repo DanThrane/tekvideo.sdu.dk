@@ -3,6 +3,7 @@ package dk.sdu.tekvideo
 class Subject {
     String name
 
+    List videos // The subject will order its own videos
     static hasMany = [videos: Video]
 
     static constraints = {

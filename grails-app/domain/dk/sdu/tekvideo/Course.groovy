@@ -4,6 +4,8 @@ class Course {
     String name
     String description
 
+    List subjects // ordered
+    static belongsTo = [teacher: Teacher]
     static hasMany = [subjects: Subject]
 
     static constraints = {

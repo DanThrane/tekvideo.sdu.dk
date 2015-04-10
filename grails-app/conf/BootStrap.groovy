@@ -1,6 +1,7 @@
 import dk.sdu.tekvideo.Course
 import dk.sdu.tekvideo.Role
 import dk.sdu.tekvideo.Subject
+import dk.sdu.tekvideo.Teacher
 import dk.sdu.tekvideo.User
 import dk.sdu.tekvideo.UserRole
 import dk.sdu.tekvideo.Video
@@ -10,24 +11,30 @@ class BootStrap {
     def init = { servletContext ->
         environments {
             development {
+                def teacherRole = new Role(authority: "ROLE_TEACHER").save(flush: true)
                 def instructorRole = new Role(authority: "ROLE_INSTRUCTOR").save(flush: true)
                 def taRole = new Role(authority: "ROLE_TA").save(flush: true)
                 def studentRole = new Role(authority: "ROLE_STUDENT").save(flush: true)
 
+                def teacherUser = new User(username: "Teacher", password: "password").save(flush: true)
                 def instructorUser = new User(username: "Instructor", password: "password").save(flush: true)
                 def taUser = new User(username: "TA", password: "password").save(flush: true)
                 def studentUser = new User(username: "Student", password: "password").save(flush: true)
 
+                def teacher = new Teacher(user: teacherUser).save(flush: true)
+
+                UserRole.create teacherUser, teacherRole, true
                 UserRole.create instructorUser, instructorRole, true
                 UserRole.create taUser, taRole, true
                 UserRole.create studentUser, studentRole, true
 
                 def course = new Course(name: "Fag 1", description: "Test beskrivelse")
                 def course2 = new Course(name: "Fag 2", description: "Test beskrivelse")
+                teacher.addToCourses(course).addToCourses(course2)
                 def subject1 = new Subject(name: "Emne 1")
                 def subject2 = new Subject(name: "Emne 2")
                 course.addToSubjects(subject1).addToSubjects(subject2)
-                def video = new Video(name: "Test video", youtubeId: "eiSfEP7gTRw", weight: 0, timelineJson: """[
+                def video = new Video(name: "Test video", youtubeId: "eiSfEP7gTRw", timelineJson: """[
       {
         title: "Introduktion",
         timecode: 0,
