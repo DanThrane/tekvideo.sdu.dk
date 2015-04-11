@@ -1,10 +1,15 @@
 class UrlMappings {
 
 	static mappings = {
-        "$teacher/$course?/$subject?/$vidid?"(controller: "teaching")
-        "/a/$controller/$action?/$id?(.$format)?"{
+        "/$controller/$action?/$id?(.$format)?"{
             constraints {
                 // apply constraints here
+            }
+        }
+        "/t/$teacher/$course?/$subject?/$vidid?" {
+            controller = "teaching"
+            constraints {
+                vidid minSize: 0
             }
         }
         "/"(view:"/index")

@@ -11,4 +11,14 @@ class CourseController {
     def view(Course course) {
         [course: course]
     }
+
+    def viewByTeacher(String teacherName, String courseName) {
+        Teacher teacher = Teacher.findByUser(User.findByUsername(teacherName))
+        Course course = Course.findByNameAndTeacher(courseName, teacher)
+        if (course) {
+            render(view: "view", model: [course: course])
+        } else {
+            render status: "404", text: "Course not found!"
+        }
+    }
 }

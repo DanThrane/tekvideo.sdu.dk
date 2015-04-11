@@ -11,7 +11,7 @@
     <h1>Videoer for ${subject.name}</h1>
 </div>
 
-<g:each in="${videos}" var="video">
+<g:each in="${subject.videos}" var="video">
     <div class="row">
         <div class="col-md-3">
             <img src="http://img.youtube.com/vi/${video.youtubeId}/hqdefault.jpg" class="img-responsive" alt="Video thumbnail">

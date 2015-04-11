@@ -2,6 +2,7 @@ package dk.sdu.tekvideo
 
 class Course {
     String name
+    String fullName
     String description
 
     List subjects // ordered
@@ -10,6 +11,7 @@ class Course {
 
     static constraints = {
         name nullable: false, blank: false
+        fullName nullable: false, blank: false
     }
 
     static mapping = {

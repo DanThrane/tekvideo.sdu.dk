@@ -1,16 +1,18 @@
 package dk.sdu.tekvideo
 
 class TeachingController {
-    def index(String teacher, String course, String subject, String vidid) {
+    def index(String teacher, String course, String subject, Integer vidid) {
         // Do some logic, and forward the user to the correct controller etc
         if (course == null) {
-            render "$teacher"
+            forward controller: "teacher", action: "list", params: [teacherName: teacher]
         } else if (subject == null) {
-            render "$teacher, $course"
+            forward controller: "course", action: "viewByTeacher", params: [teacherName: teacher, courseName: course]
         } else if (vidid == null) {
-            render "$teacher, $course, $subject"
+            forward controller: "subject", action: "viewByTeacherAndCourse", params: [teacherName: teacher,
+                courseName: course, subjectName: subject]
         } else {
-            render "$teacher, $course, $subject, $vidid"
+            forward controller: "video", action: "viewByTeaching", params: [teacherName: teacher,
+                courseName: course, subjectName: subject, videoId: vidid]
         }
     }
 }
