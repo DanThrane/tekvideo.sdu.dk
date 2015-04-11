@@ -24,7 +24,7 @@ class NavbarTagLib {
                         <span class=\"icon-bar\"></span>
                         <span class=\"icon-bar\"></span>
                     </button>
-                    <a class=\"navbar-brand\" href=\"/Gruppe1\">$image $title</a>
+                    ${g.link([uri: "/", class: "navbar-brand"], { "$image $title" })}
                 </div>
                 <div id=\"navbar\" class=\"navbar-collapse collapse\">
                     ${body()}

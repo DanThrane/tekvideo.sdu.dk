@@ -16,16 +16,19 @@
 
     <twbs:navcontainer location="right">
         <sec:ifNotLoggedIn>
-            <twbs:navitem active="true">
+            <twbs:navitem>
                 <g:link method="POST" controller='login' action=''>Log ind</g:link>
             </twbs:navitem>
         </sec:ifNotLoggedIn>
         <sec:ifLoggedIn>
-            <twbs:navdropdown title="${tek.username()}">
-                <twbs:dropitem>
-                    <g:link method="POST" controller='logout' action=''>Log ud</g:link>
-                </twbs:dropitem>
-            </twbs:navdropdown>
+            <sec:ifAllGranted roles="ROLE_TEACHER">
+                <twbs:navitem>
+                    <g:link controller="admin">Admin Panel</g:link>
+                </twbs:navitem>
+            </sec:ifAllGranted>
+            <twbs:navitem>
+                <g:link method="POST" controller='logout' action=''>Log ud</g:link>
+            </twbs:navitem>
         </sec:ifLoggedIn>
     </twbs:navcontainer>
 </twbs:navbar>

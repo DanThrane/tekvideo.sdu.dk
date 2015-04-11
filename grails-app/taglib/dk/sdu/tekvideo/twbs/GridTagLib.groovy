@@ -11,6 +11,14 @@ class GridTagLib {
         out << '</div>'
     }
 
+    def fluidContainer = { attrs, body ->
+        String clazz = attrs.class ? attrs.class : ""
+        String id = attrs.id ? "id='$attrs.id'" : ""
+        out << "<div class=\"container-fluid $clazz\" $id>"
+        out << body()
+        out << '</div>'
+    }
+
     def row = { attrs, body ->
         out << '<div class="row">'
         out << body()
