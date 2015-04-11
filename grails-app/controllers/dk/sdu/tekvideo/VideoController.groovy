@@ -2,10 +2,6 @@ package dk.sdu.tekvideo
 
 class VideoController {
 
-    def view(Video video) {
-        [video: video]
-    }
-
     def viewByTeaching(String teacherName, String courseName, String subjectName, Integer videoId) {
         Teacher teacher = Teacher.findByUser(User.findByUsername(teacherName))
         Course course = Course.findByNameAndTeacher(courseName, teacher)

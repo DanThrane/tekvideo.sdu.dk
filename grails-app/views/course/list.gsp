@@ -8,7 +8,7 @@
 <body>
 
 <g:each in="${courses}" var="course">
-    <g:link action="view" id="${course.id}">
+    <g:link mapping="teaching" params="${[teacher: params.teacher, course: course.name]}">
         <div class="row">
             <b>${course.name}</b>
             <p>${course.description}</p>

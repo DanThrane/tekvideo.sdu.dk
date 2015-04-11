@@ -11,13 +11,14 @@
     <h1>Videoer for ${subject.name}</h1>
 </div>
 
-<g:each in="${subject.videos}" var="video">
+<g:each status="i" in="${subject.videos}" var="video">
     <div class="row">
         <div class="col-md-3">
             <img src="http://img.youtube.com/vi/${video.youtubeId}/hqdefault.jpg" class="img-responsive" alt="Video thumbnail">
         </div>
         <div class="col-md-9">
-            <g:link action="view" controller="Video" id="${video.id}">
+            <g:link mapping="teaching" params="${[teacher: params.teacher, subject: params.subject,
+                                                  course: params.course, vidid: i]}">
                 ${video.name}
             </g:link>
             <p>

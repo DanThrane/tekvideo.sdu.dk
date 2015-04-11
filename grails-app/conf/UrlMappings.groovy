@@ -6,7 +6,7 @@ class UrlMappings {
                 // apply constraints here
             }
         }
-        "/t/$teacher/$course?/$subject?/$vidid?" {
+        name teaching: "/t/$teacher/$course?/$subject?/$vidid?" {
             controller = "teaching"
             constraints {
                 vidid minSize: 0

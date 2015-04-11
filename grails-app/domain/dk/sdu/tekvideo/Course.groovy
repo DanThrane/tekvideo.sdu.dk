@@ -5,7 +5,7 @@ class Course {
     String fullName
     String description
 
-    List subjects // ordered
+    List<Subject> subjects // ordered
     static belongsTo = [teacher: Teacher]
     static hasMany = [subjects: Subject]
 

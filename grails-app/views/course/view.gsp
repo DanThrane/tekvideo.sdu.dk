@@ -17,7 +17,8 @@
                 <img src="http://placehold.it/160x90" alt="Thumbnail">
             </div>
             <div class="col-md-9">
-                <g:link action="view" controller="Subject" id="${subject.id}">
+                <g:link mapping="teaching" params="${[teacher: course.teacher.user.username, course: course.name,
+                                                      subject: subject.name]}">
                     ${subject.name} (${subject.videos.size()} videoer)
                 </g:link>
                 <p>

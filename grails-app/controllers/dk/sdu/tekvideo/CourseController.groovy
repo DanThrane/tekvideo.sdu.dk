@@ -8,10 +8,6 @@ class CourseController {
         [courses: courses]
     }
 
-    def view(Course course) {
-        [course: course]
-    }
-
     def viewByTeacher(String teacherName, String courseName) {
         Teacher teacher = Teacher.findByUser(User.findByUsername(teacherName))
         Course course = Course.findByNameAndTeacher(courseName, teacher)
