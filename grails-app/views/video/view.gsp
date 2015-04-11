@@ -6,33 +6,34 @@
 </head>
 
 <body>
-<div class="row">
-    <h1>${video.name}</h1>
-</div>
 
-<div class="row">
-    <div class="col-lg-9">
-        <h1>Video</h1>
+<twbs:row>
+    <h2>${video.name}</h2>
+</twbs:row>
+
+<twbs:row>
+    <twbs:column cols="9">
         <div id="wrapper">
             %{--<div id="frameOverlay" style="width: 800px; height: 600px;"></div>--}%
             <div id="player" style="width: 800px; height: 600px;"></div>
         </div>
-    </div>
-    <div class="col-lg-3">
+    </twbs:column>
+    <twbs:column cols="3">
         <h3>Indhold</h3>
 
         <ul id="videoNavigation">
         </ul>
-    </div>
-</div>
-<br />
-<div class="row">
-    <a class="btn btn-default" id="checkAnswers">Tjek svar</a>
-</div>
-<div class="row">
+    </twbs:column>
+</twbs:row>
+<br>
+
+<twbs:row>
+    <twbs:linkButton id="checkAnswers">Tjek svar</twbs:linkButton>
+</twbs:row>
+<twbs:row>
     <h3>Debug info:</h3>
     <b>Mouse position:</b> <span id="cursorPosition"></span>
-</div>
+</twbs:row>
 
 <script type="text/javascript">
     $(document).ready(function() {

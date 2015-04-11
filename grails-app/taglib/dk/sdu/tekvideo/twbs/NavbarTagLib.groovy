@@ -9,20 +9,24 @@ class NavbarTagLib {
     static namespace = "twbs"
 
     def navbar = { attrs, body ->
+        String title = attrs.title ? attrs.title : ""
+        String image = attrs.image ? "<img src='$attrs.image' alt='Logo'/>" : ""
         // TODO Add more features here
         out << """
-        <nav class="navbar navbar-default">
-            <div class="container-fluid">
-                <div class="navbar-header">
-                    <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
-                        <span class="sr-only">Toggle navigation</span>
-                        <span class="icon-bar"></span>
-                        <span class="icon-bar"></span>
-                        <span class="icon-bar"></span>
+        <nav class=\"navbar navbar-default\">
+            <div class=\"container-fluid\">
+                <div class=\"navbar-header\">
+                    <button type=\"button\" class=\"navbar-toggle collapsed\" 
+                        data-toggle=\"collapse\" data-target=\"#navbar\" aria-expanded=\"false\" 
+                        aria-controls=\"navbar\">
+                        <span class=\"sr-only\">Toggle navigation</span>
+                        <span class=\"icon-bar\"></span>
+                        <span class=\"icon-bar\"></span>
+                        <span class=\"icon-bar\"></span>
                     </button>
-                    <a class="navbar-brand" href="/">${attrs.title}</a>
+                    <a class=\"navbar-brand\" href=\"/Gruppe1\">$image $title</a>
                 </div>
-                <div id="navbar" class="navbar-collapse collapse">
+                <div id=\"navbar\" class=\"navbar-collapse collapse\">
                     ${body()}
                 </div>
             </div>
@@ -33,7 +37,7 @@ class NavbarTagLib {
     def navcontainer = { attrs, body ->
         def location = attrs.location ? "navbar-$attrs.location" : ""
         out << """
-        <ul class="nav navbar-nav $location">
+        <ul class=\"nav navbar-nav $location\">
             ${body()}
         </ul>
         """
@@ -42,47 +46,25 @@ class NavbarTagLib {
     def navform = { attrs, body ->
         def location = attrs.location ? "navbar-$attrs.location" : ""
         out << """
-        <form class="navbar-form $location">
+        <form class=\"navbar-form $location\">
             ${body()}
         </form>
         """
     }
 
+    def subNavBar = { attrs, body ->
+        out << """<ul class=\"nav nav-tabs\">
+                    ${body()}
+                </ul>"""
+    }
+
     def navitem = { attrs, body ->
+        def role = attrs.role ? attrs.role : ""
         out << "<li"
         if (attrs.active) {
             out << " class=\"active\""
         }
-        out << ">${body()}</li>"
-    }
-
-    def navdropdown = { attrs, body ->
-        String title = getRequiredAttribute(attrs, "title", "navdropdown")
-        out << """
-            <li class=\"dropdown\">
-                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
-                $title
-                </a>
-                <ul class="dropdown-menu" role="menu">
-                    ${body()}
-                </ul>
-            </li>
-            """
-    }
-
-    def dropitem = { attrs, body ->
-        out << "<li>${body()}</li>"
-    }
-
-    def dropdivider = { attrs, body ->
-        out << "<li class='divider'></li>"
-    }
-
-    protected getRequiredAttribute(attrs, String name, String tagName) {
-        if (!attrs.containsKey(name)) {
-            throwTagError("Tag [$tagName] is missing required attribute [$name]")
-        }
-        attrs.remove name
+        out << " role = \"${role}\">${body()}</li>"
     }
 
 }

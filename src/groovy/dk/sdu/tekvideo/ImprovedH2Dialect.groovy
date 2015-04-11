@@ -1,4 +1,4 @@
-package dk.sdu.tekvideo.twbs
+package dk.sdu.tekvideo
 
 import org.hibernate.dialect.H2Dialect;
 

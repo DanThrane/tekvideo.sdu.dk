@@ -11,10 +11,10 @@
 
 <g:each in="${courses}" var="course">
     <g:link mapping="teaching" params="${[teacher: params.teacher, course: course.name]}">
-        <div class="row">
+        <twbs:row>
             <b>${course.name}</b>
             <p>${course.description}</p>
-        </div>
+        </twbs:row>
     </g:link>
 </g:each>
 
