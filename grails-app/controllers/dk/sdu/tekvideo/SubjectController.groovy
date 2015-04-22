@@ -2,10 +2,10 @@ package dk.sdu.tekvideo
 
 class SubjectController {
 
+    TeachingService teachingService
+
     def viewByTeacherAndCourse(String teacherName, String courseName, String subjectName) {
-        Teacher teacher = Teacher.findByUser(User.findByUsername(teacherName))
-        Course course = Course.findByNameAndTeacher(courseName, teacher)
-        Subject subject = Subject.findByNameAndCourse(subjectName, course)
+        Subject subject = teachingService.getSubject(teacherName, courseName, subjectName)
         if (subject) {
             render view: "view", model: [subject: subject]
         } else {

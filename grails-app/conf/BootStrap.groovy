@@ -1,27 +1,34 @@
 import dk.sdu.tekvideo.Course
 import dk.sdu.tekvideo.Role
+import dk.sdu.tekvideo.Student
 import dk.sdu.tekvideo.Subject
 import dk.sdu.tekvideo.Teacher
 import dk.sdu.tekvideo.User
 import dk.sdu.tekvideo.UserRole
 import dk.sdu.tekvideo.Video
+import dk.sdu.tekvideo.events.VisitVideoEvent
 
 class BootStrap {
+
+    def eventService
 
     def init = { servletContext ->
         environments {
             development {
-                def teacherRole = new Role(authority: "ROLE_TEACHER").save(flush: true)
-                def instructorRole = new Role(authority: "ROLE_INSTRUCTOR").save(flush: true)
-                def taRole = new Role(authority: "ROLE_TA").save(flush: true)
-                def studentRole = new Role(authority: "ROLE_STUDENT").save(flush: true)
+                def teacherRole = new Role(authority: "ROLE_TEACHER").save(flush: true, failOnError: true)
+                def instructorRole = new Role(authority: "ROLE_INSTRUCTOR").save(flush: true, failOnError: true)
+                def taRole = new Role(authority: "ROLE_TA").save(flush: true, failOnError: true)
+                def studentRole = new Role(authority: "ROLE_STUDENT").save(flush: true, failOnError: true)
 
-                def teacherUser = new User(username: "Teacher", password: "password").save(flush: true)
-                def instructorUser = new User(username: "Instructor", password: "password").save(flush: true)
-                def taUser = new User(username: "TA", password: "password").save(flush: true)
-                def studentUser = new User(username: "Student", password: "password").save(flush: true)
+                def teacherUser = new User(username: "Teacher", password: "password").save(flush: true, failOnError: true)
+                def instructorUser = new User(username: "Instructor", password: "password").save(flush: true, failOnError: true)
+                def taUser = new User(username: "TA", password: "password").save(flush: true, failOnError: true)
+                def studentUser = new User(username: "Student", password: "password").save(flush: true, failOnError: true)
 
-                def teacher = new Teacher(user: teacherUser).save(flush: true)
+                def teacher = new Teacher(user: teacherUser).save(flush: true, failOnError: true)
+                def student = new Student(user: studentUser).save(flush: true, failOnError: true)
+
+                assert teacher != null
 
                 UserRole.create teacherUser, teacherRole, true
                 UserRole.create instructorUser, instructorRole, true
@@ -31,7 +38,10 @@ class BootStrap {
                 def course = new Course(name: "XX123", fullName: "Fag 1", description: "Test beskrivelse")
                 def course2 = new Course(name: "XX124", fullName: "Fag 2", description: "Test beskrivelse")
                 def course3 = new Course(name: "XX125", fullName: "Fag 2", description: "Test beskrivelse")
-                teacher.addToCourses(course).addToCourses(course2)
+                teacher.addToCourses(course)
+                teacher.addToCourses(course2)
+                course.addToStudents(student)
+                course2.addToStudents(student)
                 def subject1 = new Subject(name: "Emne 1")
                 def subject2 = new Subject(name: "Emne 2")
                 course.addToSubjects(subject1).addToSubjects(subject2)
@@ -137,6 +147,19 @@ class BootStrap {
                 course.save(failOnError: true, flush: true)
                 course2.save(failOnError: true, flush: true)
                 subject1.addToVideos(video).save(failOnError: true, flush: true)
+
+                new VisitVideoEvent(timestamp: System.currentTimeMillis(), user: studentUser, teacher: teacher,
+                        course: course, subject: subject1, video: video).save(flush: true, failOnError: true)
+                new VisitVideoEvent(timestamp: System.currentTimeMillis(), user: studentUser, teacher: teacher,
+                        course: course, subject: subject1, video: video).save(flush: true, failOnError: true)
+                new VisitVideoEvent(timestamp: System.currentTimeMillis(), user: studentUser, teacher: teacher,
+                        course: course, subject: subject1, video: video).save(flush: true, failOnError: true)
+                new VisitVideoEvent(timestamp: System.currentTimeMillis(), user: null, teacher: teacher,
+                        course: course, subject: subject1, video: video).save(flush: true, failOnError: true)
+                new VisitVideoEvent(timestamp: System.currentTimeMillis(), user: null, teacher: teacher,
+                        course: course, subject: subject1, video: video).save(flush: true, failOnError: true)
+                new VisitVideoEvent(timestamp: System.currentTimeMillis(), user: null, teacher: teacher,
+                        course: course, subject: subject1, video: video).save(flush: true, failOnError: true)
             }
         }
     }

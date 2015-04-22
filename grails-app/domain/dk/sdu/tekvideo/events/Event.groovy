@@ -9,5 +9,6 @@ class Event {
     User user
 
     static constraints = {
+        user nullable: true
     }
 }

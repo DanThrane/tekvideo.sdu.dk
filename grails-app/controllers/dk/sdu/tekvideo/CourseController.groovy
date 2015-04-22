@@ -3,14 +3,15 @@ package dk.sdu.tekvideo
 class CourseController {
     static defaultAction = "list"
 
+    TeachingService teachingService
+
     def list() {
         List<Course> courses = Course.list()
         [courses: courses]
     }
 
     def viewByTeacher(String teacherName, String courseName) {
-        Teacher teacher = Teacher.findByUser(User.findByUsername(teacherName))
-        Course course = Course.findByNameAndTeacher(courseName, teacher)
+        Course course = teachingService.getCourse(teacherName, courseName)
         if (course) {
             render(view: "view", model: [course: course])
         } else {

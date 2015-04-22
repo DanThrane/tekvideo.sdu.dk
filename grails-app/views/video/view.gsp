@@ -38,6 +38,13 @@
 <script type="text/javascript">
     $(document).ready(function() {
         ivids.bootstrap("#player", "${raw(video.youtubeId)}", ${raw(video.timelineJson)});
+        events.emit({
+            "kind": "VISIT_VIDEO",
+            "teacher": "${params.teacher}",
+            "course": "${params.course}",
+            "subject": "${params.subject}",
+            "video": ${params.videoId}
+        }, true);
     });
 </script>
 </body>
