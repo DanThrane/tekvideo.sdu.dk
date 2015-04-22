@@ -1,4 +1,4 @@
-<%@ page import="dk.sdu.tekvideo.twbs.Icon; java.time.LocalDateTime" contentType="text/html;charset=UTF-8" %>
+<%@ page import="grails.converters.JSON; dk.sdu.tekvideo.twbs.Icon; java.time.LocalDateTime" contentType="text/html;charset=UTF-8" %>
 <html>
 <head>
     <meta name="layout" content="admin">

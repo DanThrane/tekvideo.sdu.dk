@@ -47,15 +47,15 @@ class AdminService {
         return result
     }
 
-    private Number calculatePercentage(count, total) {
-        (count / total as BigDecimal) * 100
+    private BigDecimal calculatePercentage(count, total) {
+        (total == 0) ? 0 : (((count) / (total as BigDecimal)) * 100)
     }
 
     Map<Video, Map> summarizeVisits(List<Video> videos, List<VisitVideoEvent> events) {
         Map<Video, List<VisitVideoEvent>> groupedEvents = groupByAttribute(events, "video")
         Map<Video, Map> result = [:]
         videos.each {
-            result[it] = [totalViews: 0, viewsByUsers: 0, viewsByStudents: 0, viewsByUsersPercentage : 0,
+            result[it] = [totalViews: 0, viewsByUsers: 0, viewsByStudents: 0, viewsByUsersPercentage : 0 as BigDecimal,
                           viewsByStudentsPercentage: 0]
         }
 
@@ -64,11 +64,12 @@ class AdminService {
             v.each {
                 slot.totalViews++
                 if (it.user != null) {
-                    slot.viewsByUsers++
 
                     def student = Student.findByUser(it.user)
                     if (student in it.course.students) {
                         slot.viewsByStudents++
+                    } else {
+                        slot.viewsByUsers++
                     }
                 }
             }
@@ -112,12 +113,12 @@ class AdminService {
                 }
 
                 slot.answersGiven++
-                if (isUser) slot.answersByUsers++
+                if (isUser && !inCourse) slot.answersByUsers++
                 if (inCourse) slot.answersByStudents++
 
                 if (it.correct) {
                     slot.correctAnswers++
-                    if (isUser) slot.correctByUsers++
+                    if (isUser && !inCourse) slot.correctByUsers++
                     if (inCourse) slot.correctByStudents++
                 } else {
                     incorrectAnswers.putIfAbsent(it.answer, 0)
@@ -135,6 +136,7 @@ class AdminService {
             slot.wrongAnswersByUsers = slot.answersByUsers - slot.correctByUsers
             slot.wrongAnswersByStudents = slot.answersByStudents - slot.correctByStudents
             slot.wrongAnswers = slot.answersGiven - slot.correctAnswers
+            println slot.correctPercentage
             result[k] = slot
         }
         return result
