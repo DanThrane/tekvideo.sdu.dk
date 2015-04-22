@@ -1,6 +1,5 @@
 package dk.sdu.tekvideo
 
-import dk.sdu.tekvideo.events.VisitVideoEvent
 import grails.plugin.springsecurity.annotation.Secured
 import grails.validation.Validateable
 
@@ -19,6 +18,10 @@ class AdminController {
         } else {
             [events: adminService.retrieveVideoEvents(cmd)]
         }
+    }
+
+    def videoSummary(VideoSummaryQueryCommand command) {
+        [summary: adminService.findSummaryData(command)]
     }
 }
 
@@ -46,4 +49,9 @@ class VideoStatisticsCommand {
                 ", showOnlyStudents=" + showOnlyStudents +
                 '}';
     }
+}
+
+@Validateable
+class VideoSummaryQueryCommand {
+
 }

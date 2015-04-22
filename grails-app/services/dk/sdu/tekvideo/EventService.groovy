@@ -25,6 +25,15 @@ class EventService {
                             video: data.video)
                 }
                 return null
+            },
+            ANSWER_QUESTION: {
+                def data = teachingService.getCompleteData(it.teacher, it.course, it.subject, it.video)
+                if (data) {
+                    // TODO @Refactor
+                    return new AnswerQuestionEvent(teacher: data.teacher, course: data.course, subject: data.subject,
+                            video: data.video, answer: it.answer, correct: it.correct)
+                }
+                return null
             }
     ]
 

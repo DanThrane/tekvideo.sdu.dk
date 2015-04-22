@@ -27,10 +27,6 @@ class TeachingService {
     }
 
     Map getCompleteData(String teacherName, String courseName, String subjectName, Integer videoId) {
-        println teacherName
-        println courseName
-        println subjectName
-        println videoId
         def teacher = Teacher.findByUser(User.findByUsername(teacherName))
         def course = Course.findByNameAndTeacher(courseName, teacher)
         def subject = Subject.findByNameAndCourse(subjectName, course)

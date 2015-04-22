@@ -6,6 +6,7 @@ import dk.sdu.tekvideo.Teacher
 import dk.sdu.tekvideo.User
 import dk.sdu.tekvideo.UserRole
 import dk.sdu.tekvideo.Video
+import dk.sdu.tekvideo.events.AnswerQuestionEvent
 import dk.sdu.tekvideo.events.VisitVideoEvent
 
 class BootStrap {
@@ -160,6 +161,25 @@ class BootStrap {
                         course: course, subject: subject1, video: video).save(flush: true, failOnError: true)
                 new VisitVideoEvent(timestamp: System.currentTimeMillis(), user: null, teacher: teacher,
                         course: course, subject: subject1, video: video).save(flush: true, failOnError: true)
+
+                new AnswerQuestionEvent(timestamp: System.currentTimeMillis(), user: studentUser, teacher: teacher,
+                        course: course, subject: subject1, video: video, answer: "42", correct: true)
+                        .save(flush: true, failOnError: true)
+                new AnswerQuestionEvent(timestamp: System.currentTimeMillis(), user: null, teacher: teacher,
+                        course: course, subject: subject1, video: video, answer: "42", correct: true)
+                        .save(flush: true, failOnError: true)
+                new AnswerQuestionEvent(timestamp: System.currentTimeMillis(), user: null, teacher: teacher,
+                        course: course, subject: subject1, video: video, answer: "1", correct: false)
+                        .save(flush: true, failOnError: true)
+                new AnswerQuestionEvent(timestamp: System.currentTimeMillis(), user: studentUser, teacher: teacher,
+                        course: course, subject: subject1, video: video, answer: "1", correct: false)
+                        .save(flush: true, failOnError: true)
+                new AnswerQuestionEvent(timestamp: System.currentTimeMillis(), user: null, teacher: teacher,
+                        course: course, subject: subject1, video: video, answer: "2", correct: false)
+                        .save(flush: true, failOnError: true)
+
+                println "Course students at start:"
+                println course.students
             }
         }
     }
