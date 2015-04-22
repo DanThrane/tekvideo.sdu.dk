@@ -108,3 +108,21 @@ body {
     display: inline-block;
     border-radius: 50%;
 }
+
+.view-table-name {
+    text-align: right;
+    font-weight: bold;
+    padding-right: 5px;
+}
+
+.view-table-name:after {
+    content: ':';
+}
+
+.correct-answer {
+    color: limegreen;
+}
+
+.wrong-answer {
+    color: darkred;
+}

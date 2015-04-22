@@ -3,6 +3,7 @@
 *= require style
 *= require vendor/bootstrap
 *= require vendor/mathquill
+*= require custom
 */
 
 .s2ui_hidden_button {

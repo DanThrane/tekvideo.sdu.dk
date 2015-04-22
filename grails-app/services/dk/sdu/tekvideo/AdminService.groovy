@@ -47,11 +47,16 @@ class AdminService {
         return result
     }
 
+    private Number calculatePercentage(count, total) {
+        (count / total as BigDecimal) * 100
+    }
+
     Map<Video, Map> summarizeVisits(List<Video> videos, List<VisitVideoEvent> events) {
         Map<Video, List<VisitVideoEvent>> groupedEvents = groupByAttribute(events, "video")
         Map<Video, Map> result = [:]
         videos.each {
-            result[it] = [totalViews: 0, viewsByUsers: 0, viewsByStudents: 0]
+            result[it] = [totalViews: 0, viewsByUsers: 0, viewsByStudents: 0, viewsByUsersPercentage : 0,
+                          viewsByStudentsPercentage: 0]
         }
 
         groupedEvents.each { k, v ->
@@ -67,6 +72,8 @@ class AdminService {
                     }
                 }
             }
+            slot.viewsByUsersPercentage = calculatePercentage(slot.viewsByUsers, slot.totalViews)
+            slot.viewsByStudentsPercentage = calculatePercentage(slot.viewsByStudents, slot.totalViews)
             result[k] = slot
         }
         return result
@@ -85,7 +92,9 @@ class AdminService {
         Map<Video, Map> result = [:]
         videos.each {
             result[it] = [answersGiven: 0, correctAnswers: 0, answersByUsers: 0, answersByStudents: 0, correctByUsers: 0,
-                          correctByStudents: 0, mostCommonIncorrect: "?"]
+                          correctByStudents: 0, mostCommonIncorrect: "?", wrongAnswers: 0, wrongAnswersByStudents: 0,
+                          wrongAnswersByUsers: 0, correctPercentage: 0, correctPercentageByUsers: 0,
+                          correctPercentageByStudents: 0]
         }
 
         groupedEvents.each { k, v ->
@@ -119,6 +128,13 @@ class AdminService {
                     .max(Comparator.comparingInt { it.getValue() })
                     .ifPresent { slot.mostCommonIncorrect = it.getKey() }
 
+
+            slot.correctPercentage = calculatePercentage(slot.correctAnswers, slot.answersGiven)
+            slot.correctPercentageByUsers = calculatePercentage(slot.correctByUsers, slot.answersByUsers)
+            slot.correctPercentageByStudents = calculatePercentage(slot.correctByStudents, slot.answersByStudents)
+            slot.wrongAnswersByUsers = slot.answersByUsers - slot.correctByUsers
+            slot.wrongAnswersByStudents = slot.answersByStudents - slot.correctByStudents
+            slot.wrongAnswers = slot.answersGiven - slot.correctAnswers
             result[k] = slot
         }
         return result
