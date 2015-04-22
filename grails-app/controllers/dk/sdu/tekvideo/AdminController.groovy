@@ -1,5 +1,6 @@
 package dk.sdu.tekvideo
 
+import grails.converters.JSON
 import grails.plugin.springsecurity.annotation.Secured
 import grails.validation.Validateable
 
@@ -21,7 +22,21 @@ class AdminController {
     }
 
     def videoSummary(VideoSummaryQueryCommand command) {
-        [summary: adminService.findSummaryData(command)]
+        withFormat {
+            html {
+                Teacher teacher = adminService.findCurrentTeacher()
+                List<Course> courses = Course.findAllByTeacher(teacher)
+                List<Subject> subjects = Subject.findAllByCourseInList(courses)
+                return [summary: adminService.findSummaryData(command, teacher, courses, subjects), courses: courses,
+                 subjects: subjects]
+            }
+            json {
+                def summaryData = adminService.findSummaryData(command)
+
+                render([html: g.render(template: "summaryRows", model: [summary: summaryData]),
+                        ids: summaryData.keySet().id] as JSON)
+            }
+        }
     }
 }
 
@@ -53,5 +68,11 @@ class VideoStatisticsCommand {
 
 @Validateable
 class VideoSummaryQueryCommand {
+    Subject subject
+    Course course
 
+    @Override
+    String toString() {
+        "subject=$subject, course=$course"
+    }
 }

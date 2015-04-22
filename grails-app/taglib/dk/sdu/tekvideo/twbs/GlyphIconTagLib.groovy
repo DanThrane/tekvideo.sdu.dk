@@ -7,7 +7,8 @@ class GlyphIconTagLib {
 
     def icon = { attrs, body ->
         String clazz = attrs.class ? attrs.class : ""
+        String id = attrs.id ? "id='${attrs.id}'" : ""
         Icon icon = getRequiredAttribute(attrs, "icon", "twbs:icon") // Kept as an enum to assist auto-completion
-        out << """<span class="glyphicon glyphicon-$icon.name $clazz"></span>"""
+        out << """<span class="glyphicon glyphicon-$icon.name $clazz" $id></span>"""
     }
 }

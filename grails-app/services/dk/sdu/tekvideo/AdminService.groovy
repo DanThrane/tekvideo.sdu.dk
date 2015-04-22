@@ -140,15 +140,21 @@ class AdminService {
         return result
     }
 
-    Map<Video, Map> findSummaryData(VideoSummaryQueryCommand command) {
+    Map<Video, Map> findSummaryData(VideoSummaryQueryCommand command, Teacher teacher = null,
+                                    List<Course> courses = null, List<Subject> subjects = null) {
         // TODO Could be done in a single query, instead of several
         // TODO Apply constraints from command object
 
         // TODO Most of the summary data could be collected directly from the database, as opposed
         // to this
-        Teacher teacher = findCurrentTeacher()
-        List<Course> courses = Course.findAllByTeacher(teacher)
-        List<Subject> subjects = Subject.findAllByCourseInList(courses)
+        if (!teacher) teacher = findCurrentTeacher()
+        if (command != null) {
+            if (command.course != null && command.subject == null) courses = [command.course]
+            if (command.subject != null) subjects = [command.subject]
+        }
+
+        if (!courses) courses = Course.findAllByTeacher(teacher)
+        if (!subjects) subjects = Subject.findAllByCourseInList(courses)
 
         List<Video> videos = subjects.videos.flatten()
         List<VisitVideoEvent> visitEvents = VisitVideoEvent.findAllByVideoInList(videos)

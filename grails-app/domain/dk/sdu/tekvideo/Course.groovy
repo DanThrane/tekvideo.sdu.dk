@@ -17,4 +17,9 @@ class Course {
     static mapping = {
         description type: "text"
     }
+
+    @Override
+    String toString() {
+        return name
+    }
 }

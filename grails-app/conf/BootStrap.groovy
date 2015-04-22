@@ -45,7 +45,8 @@ class BootStrap {
                 course2.addToStudents(student)
                 def subject1 = new Subject(name: "Emne 1")
                 def subject2 = new Subject(name: "Emne 2")
-                course.addToSubjects(subject1).addToSubjects(subject2)
+                course.addToSubjects(subject1)
+                course2.addToSubjects(subject2)
                 def video = new Video(name: "Test video", youtubeId: "eiSfEP7gTRw", timelineJson: """[
       {
         title: "Introduktion",
@@ -145,9 +146,11 @@ class BootStrap {
         ]
       }
     ]""")
+                def fakeVideo = new Video(name: "Fake video", youtubeId: "eiSfEP7gTRw", timelineJson: "123")
                 course.save(failOnError: true, flush: true)
                 course2.save(failOnError: true, flush: true)
                 subject1.addToVideos(video).save(failOnError: true, flush: true)
+                subject2.addToVideos(fakeVideo).save(failOnError: true, flush: true)
 
                 new VisitVideoEvent(timestamp: System.currentTimeMillis(), user: studentUser, teacher: teacher,
                         course: course, subject: subject1, video: video).save(flush: true, failOnError: true)

@@ -1,5 +1,7 @@
 package dk.sdu.tekvideo.twbs
 
+import static dk.sdu.tekvideo.TagLibUtils.fail
+
 import dk.sdu.tekvideo.TagLibUtils
 import dk.sdu.tekvideo.twbs.Icon
 
@@ -108,7 +110,9 @@ class FormTagLib {
      *              tag will work out of the box for domain models).
      */
     def select = { attrs, body ->
-        List list = TagLibUtils.getRequiredAttribute(attrs, "list", "twbs:select")
+        List list = attrs.list ?: fail("list", "twbs:select")
+        boolean allowEmpty = attrs.allowEmpty ?: false
+        String emptyText = attrs.emptyText ?: "-"
         String property = attrs.property ? attrs.property : "id"
         boolean multiple = attrs.multiple ? Boolean.valueOf(attrs.multiple as String) : false
         String multipleAttr = multiple ? "multiple" : ""
@@ -117,25 +121,37 @@ class FormTagLib {
         String labelText = attrs.labelText ? attrs.labelText : name
         String id = attrs.id ? attrs.id : name
 
+        if (allowEmpty) {
+            List tmp = []
+            tmp.add(null)
+            tmp.addAll(list)
+            list = tmp
+        }
+
+        out << "<div class=\"form-group\">"
         out << "<label for='$id'>$labelText</label>"
         out << "<select class='form-control' name='$name' $multipleAttr id='$id'>"
         list.each {
-            if (it.hasProperty(property)) {
-                def value = it.properties[property]
-                out << "<option value='${value}'"
-                if (selectByValue as String == value as String) {
-                    out << " selected"
-                }
-                out << ">${it}</option>"
+            if (it == null) {
+                out << """<option value="null">$emptyText</option>"""
             } else {
-                out << "<option"
-                if (it as String == selectByValue) {
-                    out << " selected"
+                if (it.hasProperty(property)) {
+                    def value = it.properties[property]
+                    out << "<option value='${value}'"
+                    if (selectByValue as String == value as String) {
+                        out << " selected"
+                    }
+                    out << ">${it}</option>"
+                } else {
+                    out << "<option"
+                    if (it as String == selectByValue) {
+                        out << " selected"
+                    }
+                    out << ">${it}</option>"
                 }
-                out << ">${it}</option>"
             }
         }
-        out << "</select><br>"
+        out << "</select></div>"
     }
 
 }

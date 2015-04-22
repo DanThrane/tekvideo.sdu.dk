@@ -11,4 +11,9 @@ class Subject {
     }
 
     static belongsTo = [course: Course]
+
+    @Override
+    String toString() {
+        return name
+    }
 }

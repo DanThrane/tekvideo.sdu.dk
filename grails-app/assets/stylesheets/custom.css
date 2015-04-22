@@ -1,6 +1,7 @@
 .mousePanel {
     display: none;
     position: fixed;
+    z-index: 100;
 }
 
 .mousePanelTrigger {
@@ -14,4 +15,33 @@
     line-height: 40px; /* adjust line height to align vertically*/
     padding:0;
     border-radius: 50%;
+}
+
+.form-inline > .form-group {
+    padding-right: 30px;
+}
+
+.form-inline > .form-group > label {
+    padding-right: 10px;
+    font-weight: bold;
+}
+
+.glyphicon.spinning {
+    animation: spin 1s infinite linear;
+    -webkit-animation: spin2 1s infinite linear;
+}
+
+@keyframes spin {
+    from { transform: scale(1) rotate(0deg);}
+    to { transform: scale(1) rotate(360deg);}
+}
+
+@-webkit-keyframes spin2 {
+    from { -webkit-transform: rotate(0deg);}
+    to { -webkit-transform: rotate(360deg);}
+}
+
+.loading-indicator {
+    display: none;
+    padding: 10px;
 }
