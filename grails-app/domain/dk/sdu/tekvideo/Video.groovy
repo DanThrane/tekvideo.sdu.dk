@@ -12,6 +12,9 @@ class Video {
         timelineJson    blank: false
     }
 
+    static hasMany = [subjects: Subject]
+    static belongsTo = Subject
+
     static mapping = {
         timelineJson type: "text"
     }

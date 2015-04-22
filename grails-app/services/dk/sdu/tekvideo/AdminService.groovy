@@ -5,9 +5,15 @@ import dk.sdu.tekvideo.events.VisitVideoEvent
 import grails.plugin.springsecurity.SpringSecurityService
 import grails.transaction.Transactional
 
+import java.time.LocalDateTime
+import java.time.ZoneId
+import java.time.format.DateTimeFormatter
+import java.time.temporal.TemporalAmount
+
 @Transactional
 class AdminService {
 
+    public static final DateTimeFormatter TIME_PATTERN = DateTimeFormatter.ofPattern("dd/MM HH:mm")
     TeachingService teachingService
     SpringSecurityService springSecurityService
 
@@ -175,6 +181,27 @@ class AdminService {
         }
 
         return result
+    }
+
+    def findViewingStatistics(Video video, long from, long to, long periodInMs) {
+        List<VisitVideoEvent> events = VisitVideoEvent.findAllByVideo(video)
+        List labels = []
+        List data = []
+        // Generate some labels (X-axis)
+        long counter = from
+        while (counter < to) {
+            labels.add(TIME_PATTERN.format(new Date(counter).toInstant().atZone(ZoneId.systemDefault())))
+            data.add(0)
+            counter += periodInMs
+        }
+        events.each {
+            long time = it.timestamp
+            int index = (time - from) / periodInMs
+            if (index > 0) {
+                data[index]++
+            }
+        }
+        return [labels: labels, data: data]
     }
 
     Teacher findCurrentTeacher() {

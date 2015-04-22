@@ -5,6 +5,7 @@
     <asset:stylesheet src="application.css"/>
     <asset:stylesheet src="admin.css"/>
     <asset:javascript src="application.js"/>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/Chart.js/1.0.2/Chart.min.js"></script>
     <g:layoutHead/>
 </head>
 

@@ -152,11 +152,11 @@ class BootStrap {
                 subject1.addToVideos(video).save(failOnError: true, flush: true)
                 subject2.addToVideos(fakeVideo).save(failOnError: true, flush: true)
 
-                new VisitVideoEvent(timestamp: System.currentTimeMillis(), user: studentUser, teacher: teacher,
+                new VisitVideoEvent(timestamp: System.currentTimeMillis() - (1000 * 60 * 35), user: studentUser, teacher: teacher,
                         course: course, subject: subject1, video: video).save(flush: true, failOnError: true)
-                new VisitVideoEvent(timestamp: System.currentTimeMillis(), user: studentUser, teacher: teacher,
+                new VisitVideoEvent(timestamp: System.currentTimeMillis() - (1000 * 60 * 90), user: studentUser, teacher: teacher,
                         course: course, subject: subject1, video: video).save(flush: true, failOnError: true)
-                new VisitVideoEvent(timestamp: System.currentTimeMillis(), user: studentUser, teacher: teacher,
+                new VisitVideoEvent(timestamp: System.currentTimeMillis() - (1000 * 60 * 300), user: studentUser, teacher: teacher,
                         course: course, subject: subject1, video: video).save(flush: true, failOnError: true)
                 new VisitVideoEvent(timestamp: System.currentTimeMillis(), user: null, teacher: teacher,
                         course: course, subject: subject1, video: video).save(flush: true, failOnError: true)

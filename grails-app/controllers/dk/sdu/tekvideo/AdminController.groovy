@@ -11,14 +11,11 @@ class AdminController {
 
     def index() { }
 
-    def videoStatistics(VideoStatisticsCommand cmd) {
-        println cmd
-        if (cmd.hasErrors()) {
-            log.warn cmd.errors
-            render status: 400, text: "Request had errors"
-        } else {
-            [events: adminService.retrieveVideoEvents(cmd)]
-        }
+    def videoStatistics(Video video) {
+        // TODO Confirm that the teacher owns this video
+        def statistics = adminService.findViewingStatistics(video, System.currentTimeMillis() - (1000 * 60 * 60 * 24),
+                System.currentTimeMillis() + (1000 * 60 * 60), 1000 * 60 * 60)
+        [video: video, statistics: statistics]
     }
 
     def videoSummary(VideoSummaryQueryCommand command) {
@@ -37,32 +34,6 @@ class AdminController {
                         ids: summaryData.keySet().id] as JSON)
             }
         }
-    }
-}
-
-@Validateable
-class VideoStatisticsCommand {
-    String course
-    String subject
-    Integer video
-    Boolean showOnlyStudents = false
-
-    static constraints = {
-        course nullable: true, blank: false
-        subject nullable: true, blank: false
-        video nullable: true, blank: false
-        showOnlyStudents nullable: false
-    }
-
-
-    @Override
-    public String toString() {
-        return "VideoStatisticsCommand{" +
-                "course='" + course + '\'' +
-                ", subject='" + subject + '\'' +
-                ", video=" + video +
-                ", showOnlyStudents=" + showOnlyStudents +
-                '}';
     }
 }
 
