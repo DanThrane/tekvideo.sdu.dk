@@ -5,10 +5,8 @@ import dk.sdu.tekvideo.events.VisitVideoEvent
 import grails.plugin.springsecurity.SpringSecurityService
 import grails.transaction.Transactional
 
-import java.time.LocalDateTime
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
-import java.time.temporal.TemporalAmount
 
 @Transactional
 class AdminService {
@@ -16,28 +14,6 @@ class AdminService {
     public static final DateTimeFormatter TIME_PATTERN = DateTimeFormatter.ofPattern("dd/MM HH:mm")
     TeachingService teachingService
     SpringSecurityService springSecurityService
-
-    List<VisitVideoEvent> retrieveVideoEvents(VideoStatisticsCommand cmd) {
-        def teacher = findCurrentTeacher()
-        def data = teachingService.getCompleteData(teacher.user.username, cmd.course, cmd.subject, cmd.video)
-
-        def criteria = VisitVideoEvent.where {
-            course in teacher.courses
-            if (cmd.showOnlyStudents) {
-                user != null
-            }
-            if (cmd.course != null) {
-                course.name == cmd.course
-            }
-            if (cmd.subject != null) {
-                subject == cmd.subject
-            }
-            if (cmd.video != null && data != null) {
-                video == data.video
-            }
-        }
-        return criteria.findAll()
-    }
 
     private Map groupByAttribute(List items, String attribute) {
         // TODO Quick @Hack. This really should have been prepared DB side
