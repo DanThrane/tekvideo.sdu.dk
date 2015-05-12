@@ -36,7 +36,7 @@ class ButtonTagLib {
         String clazz = attrs.class ?: ""
         String id = attrs.id ?: ""
         String sizeAttr = computeSizeAttribute(attrs.size as ButtonSize)
-        Map attributes = attrs.attributes ?: []
+        Map attributes = attrs.attributes ?: [:]
 
         out << "<a href=\"${computeLink(controller, action, linkId)}\" class=\"btn btn-$style " +
                 "$sizeAttr $clazz\" id=\"$id\""

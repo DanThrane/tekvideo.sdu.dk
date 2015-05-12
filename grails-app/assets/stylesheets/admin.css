@@ -128,10 +128,20 @@ body {
     color: darkred;
 }
 
+.almost-good {
+    color: orange;
+}
+
 .group {
-    border-bottom: 1px solid #eee;
+    border-bottom: 1px solid #ddd;
     padding-top: 23px;
     padding-bottom: 23px;
+}
+
+.subgroup {
+    border-bottom: 1px solid #eee;
+    padding-top: 11px;
+    padding-bottom: 11px;
 }
 
 .fixed {

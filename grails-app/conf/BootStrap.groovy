@@ -25,9 +25,11 @@ class BootStrap {
                 def instructorUser = new User(username: "Instructor", password: "password").save(flush: true, failOnError: true)
                 def taUser = new User(username: "TA", password: "password").save(flush: true, failOnError: true)
                 def studentUser = new User(username: "Student", password: "password").save(flush: true, failOnError: true)
+                def lazyUser = new User(username: "Lazy Student", password: "password").save(flush: true, failOnError: true)
 
                 def teacher = new Teacher(user: teacherUser).save(flush: true, failOnError: true)
                 def student = new Student(user: studentUser).save(flush: true, failOnError: true)
+                def lazyStudent = new Student(user: lazyUser).save(flush: true, failOnError: true)
 
                 assert teacher != null
 
@@ -35,14 +37,15 @@ class BootStrap {
                 UserRole.create instructorUser, instructorRole, true
                 UserRole.create taUser, taRole, true
                 UserRole.create studentUser, studentRole, true
+                UserRole.create lazyUser, studentRole, true
 
                 def course = new Course(name: "XX123", fullName: "Fag 1", description: "Test beskrivelse")
                 def course2 = new Course(name: "XX124", fullName: "Fag 2", description: "Test beskrivelse")
                 def course3 = new Course(name: "XX125", fullName: "Fag 2", description: "Test beskrivelse")
                 teacher.addToCourses(course)
                 teacher.addToCourses(course2)
-                course.addToStudents(student)
-                course2.addToStudents(student)
+                course.addToStudents(student).addToStudents(lazyStudent)
+                course2.addToStudents(student).addToStudents(lazyStudent)
                 def subject1 = new Subject(name: "Emne 1")
                 def subject2 = new Subject(name: "Emne 2")
                 course.addToSubjects(subject1)

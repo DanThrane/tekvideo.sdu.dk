@@ -1,4 +1,4 @@
-<%@ page import="java.util.stream.Collectors; grails.converters.JSON" contentType="text/html;charset=UTF-8" %>
+<%@ page import="java.util.stream.Collectors; grails.converters.JSON; dk.sdu.tekvideo.twbs.Icon" contentType="text/html;charset=UTF-8" %>
 <html>
 <head>
     <meta name="layout" content="admin">
@@ -8,7 +8,7 @@
 <body>
 
 <twbs:row>
-    <twbs:column cols="8">
+    <twbs:column cols="10">
         <h1>Video statistik</h1>
 
         <section id="info" class="group">
@@ -59,9 +59,53 @@
                     365 dage
                 </twbs:linkButton>
             </section>
+            <section id="visninger-blandt-studerende" class="subgroup">
+                <h4>Blandt studerende</h4>
+                <table class="table table-bordered">
+                    <thead>
+                    <tr>
+                        <th>Navn</th>
+                        <th>E-learn</th>
+                        <th>Første besøg</th>
+                        <th>Status</th>
+                        <th>Svar</th>
+                        <th>Korrekt</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <g:each in="${viewsByStudents}" var="entry">
+                    <tr>
+                        <td>${entry.name}</td>
+                        <td>${entry.elearn}</td>
+                        <td>
+                            <g:if test="${entry.firstVisit != null}">
+                                <date:dtformatter time="${entry.firstVisit}"/>
+                            </g:if>
+                            <g:else>
+                                -
+                            </g:else>
+                        </td>
+                        <td>
+                            <g:if test="${entry.status == 0}">
+                                <twbs:icon icon="${Icon.REMOVE}" class="wrong-answer"/>
+                            </g:if>
+                            <g:elseif test="${entry.status == 1}">
+                                <twbs:icon icon="${Icon.MINUS}" class="almost-good"/>
+                            </g:elseif>
+                            <g:else>
+                                <twbs:icon icon="${Icon.OK}" class="correct-answer"/>
+                            </g:else>
+                        </td>
+                        <td>${entry.answered}</td>
+                        <td>${entry.correct}</td>
+                    </tr>
+                    </g:each>
+                    </tbody>
+                </table>
+            </section>
         </section>
     </twbs:column>
-    <twbs:column cols="4">
+    <twbs:column cols="2">
         <nav class="bs-docs-sidebar">
             <ul id="sidebar" class="nav nav-stacked fixed">
                 <li><a href="#info">Video info</a></li>
@@ -69,6 +113,7 @@
                     <a href="#visninger">Visninger</a>
                     <ul class="nav nav-stacked">
                         <li><a href="#visninger-over-tid">Over tid</a></li>
+                        <li><a href="#visninger-blandt-studerende">Blandt studerende</a></li>
                     </ul>
                 </li>
             </ul>

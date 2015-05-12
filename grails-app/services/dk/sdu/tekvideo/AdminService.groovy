@@ -180,6 +180,54 @@ class AdminService {
         return [labels: labels, data: data]
     }
 
+    def findViewingStatisticsByStudent(Video video) {
+        // TODO Some of this can't possibly be good for performance
+        HashSet<Student> students = video.subjects.flatten().course.flatten().students.flatten()
+        List<User> users = students.user as List
+        List<VisitVideoEvent> views = VisitVideoEvent.findAllByVideoAndUserInList(video, users)
+        List<AnswerQuestionEvent> answers = AnswerQuestionEvent.findAllByVideoAndUserInList(video, users)
+
+        Map<User, Map> result = [:]
+        students.each {
+            result[it.user] = [student: it, name: it.user.username, elearn: it.user.elearnId ?: "-", firstVisit: null,
+                               visits: 0, status: 0, answered: 0, correct: 0]
+        }
+        views.each {
+            Map slot = result[it.user]
+            def date = new Date(it.timestamp).toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime()
+            if (!slot.firstVisit || date < slot.firstVisit) {
+                slot.firstVisit = date
+            }
+            slot.visits++
+        }
+        answers.each {
+            // TODO Event doesn't provide enough valid information. Also video needs more information
+            Map slot = result[it.user]
+            slot.answered++
+            if (it.correct) {
+                slot.correct++
+            }
+        }
+        students.each {
+            Map slot = result[it.user]
+            if (slot.firstVisit != null) {
+                slot.status = 1
+
+                if (slot.answered > 0) {
+                    slot.status = 2
+
+                    if (slot.correct > 0) {
+                        def percentage = slot.correct / (double) slot.answered
+                        if (percentage >= 0.50) {
+                            slot.status = 3
+                        }
+                    }
+                }
+            }
+        }
+        return result
+    }
+
     Teacher findCurrentTeacher() {
         Teacher.findByUser(springSecurityService.currentUser as User)
     }

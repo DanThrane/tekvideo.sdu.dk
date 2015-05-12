@@ -17,7 +17,10 @@ class AdminController {
         // TODO Confirm that the teacher owns this video
         def statistics = adminService.findViewingStatistics(video, System.currentTimeMillis() - (1000 * 60 * 60 * 24),
                 System.currentTimeMillis() + (1000 * 60 * 60), 1000 * 60 * 60)
-        [video: video, statistics: statistics, subjects: video.subjects.stream().limit(3).collect(Collectors.toList())]
+        def viewsByStudents = adminService.findViewingStatisticsByStudent(video).values()
+                .sort(true, { a, b -> Integer.compare(b.status, a.status) })
+        [video: video, statistics: statistics, subjects: video.subjects.stream().limit(3).collect(Collectors.toList()),
+         viewsByStudents: viewsByStudents]
     }
 
     def videoViewingChart(Video video, Long period) {
