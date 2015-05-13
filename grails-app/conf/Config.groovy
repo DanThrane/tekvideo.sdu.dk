@@ -91,7 +91,7 @@ environments {
     }
     production {
         grails.logging.jul.usebridge = false
-        grails.serverURL = "http://tekvideo.sdu.dk/"
+        grails.serverURL = "http://danthrane.me/"
     }
 }
 
@@ -133,3 +133,4 @@ grails.plugin.springsecurity.controllerAnnotations.staticRules = [
 	'/**/favicon.ico':                ['permitAll']
 ]
 
+grails.assets.minifyJs = false // Temporary to fix an issue on the server
