@@ -37,7 +37,14 @@
 
 <script type="text/javascript">
     $(document).ready(function() {
-        ivids.bootstrap("#player", "${raw(video.youtubeId)}", ${raw(video.timelineJson)});
+        ivids.bootstrap(
+                "#player",
+                "${raw(video.youtubeId)}"
+                <g:if test="${video.timelineJson}">
+                    , ${raw(video.timelineJson)}
+                </g:if>
+        );
+
         events.emit({
             "kind": "VISIT_VIDEO",
             "teacher": "${params.teacher}",

@@ -9,7 +9,7 @@ class Video {
     static constraints = {
         name            nullable: false, blank: false
         youtubeId       nullable: false, blank: false
-        timelineJson    blank: false
+        timelineJson    nullable: true
     }
 
     static hasMany = [subjects: Subject]
