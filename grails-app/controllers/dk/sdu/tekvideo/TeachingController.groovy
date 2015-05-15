@@ -11,7 +11,7 @@ class TeachingController {
             forward controller: "subject", action: "viewByTeacherAndCourse", params: [teacherName: teacher,
                 courseName: course, subjectName: subject]
         } else {
-            forward controller: "video", action: "viewByTeaching", params: [teacherName: teacher,
+            forward controller: "video", action: "view", params: [teacherName: teacher,
                 courseName: course, subjectName: subject, videoId: vidid]
         }
     }

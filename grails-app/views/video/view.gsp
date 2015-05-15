@@ -14,7 +14,9 @@
 <twbs:row>
     <twbs:column cols="9">
         <div id="wrapper">
-            %{--<div id="frameOverlay" style="width: 800px; height: 600px;"></div>--}%
+            <g:if test="${debugMode}">
+                <div id="frameOverlay" style="width: 800px; height: 600px;"></div>
+            </g:if>
             <div id="player" style="width: 800px; height: 600px;"></div>
         </div>
     </twbs:column>
@@ -30,10 +32,13 @@
 <twbs:row>
     <twbs:linkButton id="checkAnswers">Tjek svar</twbs:linkButton>
 </twbs:row>
-<twbs:row>
-    <h3>Debug info:</h3>
-    <b>Mouse position:</b> <span id="cursorPosition"></span>
-</twbs:row>
+
+<g:if test="${debugMode}">
+    <twbs:row>
+        <h3>Debug info:</h3>
+        <b>Mouse position:</b> <span id="cursorPosition"></span>
+    </twbs:row>
+</g:if>
 
 <script type="text/javascript">
     $(document).ready(function() {

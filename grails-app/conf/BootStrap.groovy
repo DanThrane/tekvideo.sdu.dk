@@ -66,7 +66,7 @@ class BootStrap {
                 {
                     name: "firstq",
                     topoffset: 310,
-                    leftoffset: 275
+                    leftoffset: 275,
                     answer: {
                         "type": "custom",
                         "validator": function(val) {return(val == 6);}

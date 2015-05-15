@@ -4,10 +4,11 @@ class VideoController {
 
     TeachingService teachingService
 
-    def viewByTeaching(String teacherName, String courseName, String subjectName, Integer videoId) {
+    def view(String teacherName, String courseName, String subjectName, Integer videoId) {
         Video video = teachingService.getVideo(teacherName, courseName, subjectName, videoId)
+        boolean debugMode = params.containsKey("debug")
         if (video) {
-            render view: "view", model: [video: video]
+            [video: video, debugMode: debugMode]
         } else {
             render status: 404, text: "Unable to find video!"
         }
