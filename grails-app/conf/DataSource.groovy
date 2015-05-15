@@ -36,9 +36,8 @@ environments {
     }
     production {
         dataSource {
-//            dbdir = "/home/dan/db/sample"
-            dbCreate = "update"
-            url = "jdbc:h2:prodDb;MVCC=TRUE;LOCK_TIMEOUT=10000;DB_CLOSE_ON_EXIT=FALSE"
+            dbCreate = "create-drop"
+            url = "jdbc:h2:mem:devDb;MVCC=TRUE;LOCK_TIMEOUT=10000;DB_CLOSE_ON_EXIT=FALSE"
 //            url = "jdbc:h2:file:${dbdir};MVCC=TRUE;LOCK_TIMEOUT=10000"
             properties {
                // See http://grails.org/doc/latest/guide/conf.html#dataSource for documentation
