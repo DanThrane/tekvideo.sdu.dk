@@ -22,8 +22,19 @@
         <twbs:column>
             <h3>Emner &mdash; ${course.fullName} (${course.name})</h3>
         </twbs:column>
-
     </twbs:row>
+
+    <hr />
+
+    <twbs:row>
+        <twbs:column cols="3">
+            <twbs:linkButton btnstyle="link" controller="course" action="signup" linkId="${course.id}">
+                Vis til/afmeldinger
+            </twbs:linkButton>
+        </twbs:column>
+    </twbs:row>
+
+    <hr />
 
     <g:each in="${course.subjects}" var="subject">
         <twbs:row>

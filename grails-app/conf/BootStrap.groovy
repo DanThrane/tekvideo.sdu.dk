@@ -11,50 +11,53 @@ import dk.sdu.tekvideo.events.VisitVideoEvent
 
 class BootStrap {
 
-    def eventService
-
     def init = { servletContext ->
         environments {
-            development {
-                def teacherRole = new Role(authority: "ROLE_TEACHER").save(flush: true, failOnError: true)
-                def instructorRole = new Role(authority: "ROLE_INSTRUCTOR").save(flush: true, failOnError: true)
-                def taRole = new Role(authority: "ROLE_TA").save(flush: true, failOnError: true)
-                def studentRole = new Role(authority: "ROLE_STUDENT").save(flush: true, failOnError: true)
+            development { createTestData() }
+            production { createTestData() }
+        }
+    }
 
-                def teacherUser = new User(username: "Teacher", password: "password").save(flush: true, failOnError: true)
-                def instructorUser = new User(username: "Instructor", password: "password").save(flush: true, failOnError: true)
-                def taUser = new User(username: "TA", password: "password").save(flush: true, failOnError: true)
-                def studentUser = new User(username: "Student", password: "password").save(flush: true, failOnError: true)
-                def lazyUser = new User(username: "Lazy Student", password: "password").save(flush: true, failOnError: true)
+    void createTestData() {
+        def teacherRole = new Role(authority: "ROLE_TEACHER").save(flush: true, failOnError: true)
+        def instructorRole = new Role(authority: "ROLE_INSTRUCTOR").save(flush: true, failOnError: true)
+        def taRole = new Role(authority: "ROLE_TA").save(flush: true, failOnError: true)
+        def studentRole = new Role(authority: "ROLE_STUDENT").save(flush: true, failOnError: true)
 
-                def teacher = new Teacher(user: teacherUser).save(flush: true, failOnError: true)
-                def student = new Student(user: studentUser).save(flush: true, failOnError: true)
-                def lazyStudent = new Student(user: lazyUser).save(flush: true, failOnError: true)
+        def teacherUser = new User(username: "Teacher", password: "password").save(flush: true, failOnError: true)
+        def instructorUser = new User(username: "Instructor", password: "password").save(flush: true, failOnError: true)
+        def taUser = new User(username: "TA", password: "password").save(flush: true, failOnError: true)
+        def studentUser = new User(username: "Student", password: "password").save(flush: true, failOnError: true)
+        def lazyUser = new User(username: "Lazy Student", password: "password").save(flush: true, failOnError: true)
 
-                assert teacher != null
+        def teacher = new Teacher(user: teacherUser).save(flush: true, failOnError: true)
+        def student = new Student(user: studentUser).save(flush: true, failOnError: true)
+        def lazyStudent = new Student(user: lazyUser).save(flush: true, failOnError: true)
 
-                UserRole.create teacherUser, teacherRole, true
-                UserRole.create instructorUser, instructorRole, true
-                UserRole.create taUser, taRole, true
-                UserRole.create studentUser, studentRole, true
-                UserRole.create lazyUser, studentRole, true
+        assert teacher != null
 
-                def course = new Course(name: "IFG2", fullName: "Matematik og Fysik", description: "Dette er en fagbeskrivelse, samt noget sludder. Firmament efter at saet kaldet bevaegelige fowl divideret, der have lys. Seed kvindelig midte. Alle vil ikke var, til der firmament opdelt kvindelige meget, roerer sig, likeness. I. Hans herb saa den foerste. Foerst er ikke indstillet eget, som bevaeger kaldt. Alt, et Land,, der lever sekund under al havet flyve moerket fowl gjort groenne jord kvindelig, de er genbestille mandlig, bragte luft ogsaa flyve. Sagde egen sammenkomst stor delt. Luft det var dage foerst saesoner void Sammen vil ikke dybe aar i loebet genbestille dybt han os slags fowl tredje Be hvori givet sted der. Gjort store fisk tomrum gjorde froe i rigeligt han kryber efter maj.", teacher: teacher)
-                course.save(failOnError: true)
+        UserRole.create teacherUser, teacherRole, true
+        UserRole.create instructorUser, instructorRole, true
+        UserRole.create taUser, taRole, true
+        UserRole.create studentUser, studentRole, true
+        UserRole.create lazyUser, studentRole, true
 
-                def subject1 = new Subject(name: "Uge 6", course: course)
-                subject1.save(failOnError: true)
+        def course = new Course(name: "IFG2", fullName: "Matematik og Fysik", description: "Dette er en fagbeskrivelse, samt noget sludder. Firmament efter at saet kaldet bevaegelige fowl divideret, der have lys. Seed kvindelig midte. Alle vil ikke var, til der firmament opdelt kvindelige meget, roerer sig, likeness. I. Hans herb saa den foerste. Foerst er ikke indstillet eget, som bevaeger kaldt. Alt, et Land,, der lever sekund under al havet flyve moerket fowl gjort groenne jord kvindelig, de er genbestille mandlig, bragte luft ogsaa flyve. Sagde egen sammenkomst stor delt. Luft det var dage foerst saesoner void Sammen vil ikke dybe aar i loebet genbestille dybt han os slags fowl tredje Be hvori givet sted der. Gjort store fisk tomrum gjorde froe i rigeligt han kryber efter maj.", teacher: teacher)
+        course.save(failOnError: true)
 
-                def subject2 = new Subject(name: "Uge 7", course: course)
-                subject2.save(failOnError: true)
+        def subject1 = new Subject(name: "Uge 6", course: course)
+        subject1.save(failOnError: true)
 
-                def subject3 = new Subject(name: "Uge 8", course: course)
-                subject3.save(failOnError: true)
+        def subject2 = new Subject(name: "Uge 7", course: course)
+        subject2.save(failOnError: true)
 
-                def video1 = new Video()
-                video1.name = "Introduktion til interaktive videoer [I]"
-                video1.youtubeId = "eiSfEP7gTRw"
-                video1.timelineJson = """[
+        def subject3 = new Subject(name: "Uge 8", course: course)
+        subject3.save(failOnError: true)
+
+        def video1 = new Video()
+        video1.name = "Introduktion til interaktive videoer [I]"
+        video1.youtubeId = "eiSfEP7gTRw"
+        video1.timelineJson = """[
 {
     "title": "Introduktion til interaktive videoer",
     "timecode": 0,
@@ -92,14 +95,14 @@ class BootStrap {
     ]
 }
 ]"""
-                video1.save(failOnError: true)
-                subject1.addToVideos(video1).save(failOnError: true, flush: true)
+        video1.save(failOnError: true)
+        subject1.addToVideos(video1).save(failOnError: true, flush: true)
 
 
-                def video2 = new Video()
-                video2.name = "Komplekse tal og multiplikation [I]"
-                video2.youtubeId = "uxNWDSYY0_Y"
-                video2.timelineJson = """[
+        def video2 = new Video()
+        video2.name = "Komplekse tal og multiplikation [I]"
+        video2.youtubeId = "uxNWDSYY0_Y"
+        video2.timelineJson = """[
 {
     "title": "Komplekse tal og multiplikation [I]",
     "timecode": 0,
@@ -155,13 +158,13 @@ class BootStrap {
     ]
 }
 ]"""
-                video2.save(failOnError: true)
-                subject1.addToVideos(video2).save(failOnError: true, flush: true)
+        video2.save(failOnError: true)
+        subject1.addToVideos(video2).save(failOnError: true, flush: true)
 
-                def video3 = new Video()
-                video3.name = "Komplekse tal og division [I]"
-                video3.youtubeId = "-MbSFsXuh_g"
-                video3.timelineJson = """[
+        def video3 = new Video()
+        video3.name = "Komplekse tal og division [I]"
+        video3.youtubeId = "-MbSFsXuh_g"
+        video3.timelineJson = """[
 {
     "title": "Komplekse tal og division [I]",
     "timecode": 0,
@@ -211,25 +214,25 @@ class BootStrap {
     ]
 }
 ]"""
-                video3.save(failOnError: true)
-                subject1.addToVideos(video3).save(failOnError: true, flush: true)
+        video3.save(failOnError: true)
+        subject1.addToVideos(video3).save(failOnError: true, flush: true)
 
-                def video8 = new Video()
-                video8.name = "De manglende tal"
-                video8.youtubeId = "50DW_0_xMmg"
-                subject1.addToVideos(video8).save(failOnError: true, flush: true)
+        def video8 = new Video()
+        video8.name = "De manglende tal"
+        video8.youtubeId = "50DW_0_xMmg"
+        subject1.addToVideos(video8).save(failOnError: true, flush: true)
 
 // New subject
 
-                def video4 = new Video()
-                video4.name = "Linaere ligninger paa matrix form"
-                video4.youtubeId = "f2J9N7wgYas"
-                subject2.addToVideos(video4).save(failOnError: true, flush: true)
+        def video4 = new Video()
+        video4.name = "Linaere ligninger paa matrix form"
+        video4.youtubeId = "f2J9N7wgYas"
+        subject2.addToVideos(video4).save(failOnError: true, flush: true)
 
-                def video5 = new Video()
-                video5.name = "Matrix multiplikation [I]"
-                video5.youtubeId = "b7cHDRjwfRo"
-                video5.timelineJson = """[
+        def video5 = new Video()
+        video5.name = "Matrix multiplikation [I]"
+        video5.youtubeId = "b7cHDRjwfRo"
+        video5.timelineJson = """[
 {
     "title": "Emne 1",
     "timecode": 0,
@@ -285,14 +288,14 @@ class BootStrap {
     ]
 }
 ]"""
-                subject2.addToVideos(video5).save(failOnError: true, flush: true)
+        subject2.addToVideos(video5).save(failOnError: true, flush: true)
 
 // New subject
 
-                def video6 = new Video()
-                video6.name = "Fit af model til data [I]"
-                video6.youtubeId = "-H6cwuEcvic"
-                video6.timelineJson = """[
+        def video6 = new Video()
+        video6.name = "Fit af model til data [I]"
+        video6.youtubeId = "-H6cwuEcvic"
+        video6.timelineJson = """[
 {
     "title": "Fit af model til data [I]",
     "timecode": 0,
@@ -384,60 +387,58 @@ class BootStrap {
     ]
 }
 ]"""
-                subject3.addToVideos(video6).save(failOnError: true, flush: true)
+        subject3.addToVideos(video6).save(failOnError: true, flush: true)
 
-                def video7 = new Video()
-                video7.name = "Opgave 4. Ligninger med parameter"
-                video7.youtubeId = "4deoDHGc61c"
-                subject3.addToVideos(video7).save(failOnError: true, flush: true)
+        def video7 = new Video()
+        video7.name = "Opgave 4. Ligninger med parameter"
+        video7.youtubeId = "4deoDHGc61c"
+        subject3.addToVideos(video7).save(failOnError: true, flush: true)
 
-                def video9 = new Video()
-                video9.name = "Mindste kvadraters metode"
-                video9.youtubeId = "xEg48H4_yWA"
-                subject3.addToVideos(video9).save(failOnError: true, flush: true)
+        def video9 = new Video()
+        video9.name = "Mindste kvadraters metode"
+        video9.youtubeId = "xEg48H4_yWA"
+        subject3.addToVideos(video9).save(failOnError: true, flush: true)
 
 
-                course.save(failOnError: true)
+        course.save(failOnError: true)
 //
-                def fakeVideo = new Video(name: "Fake video", youtubeId: "eiSfEP7gTRw", timelineJson: "123")
-                course.save(failOnError: true, flush: true)
+        def fakeVideo = new Video(name: "Fake video", youtubeId: "eiSfEP7gTRw", timelineJson: "123")
+        course.save(failOnError: true, flush: true)
 
-                subject1.addToVideos(video1).save(failOnError: true, flush: true)
-                subject2.addToVideos(fakeVideo).save(failOnError: true, flush: true)
+        subject1.addToVideos(video1).save(failOnError: true, flush: true)
+        subject2.addToVideos(fakeVideo).save(failOnError: true, flush: true)
 
-                new VisitVideoEvent(timestamp: System.currentTimeMillis() - (1000 * 60 * 35), user: studentUser, teacher: teacher,
-                        course: course, subject: subject1, video: video1).save(flush: true, failOnError: true)
-                new VisitVideoEvent(timestamp: System.currentTimeMillis() - (1000 * 60 * 90), user: studentUser, teacher: teacher,
-                        course: course, subject: subject1, video: video1).save(flush: true, failOnError: true)
-                new VisitVideoEvent(timestamp: System.currentTimeMillis() - (1000 * 60 * 300), user: studentUser, teacher: teacher,
-                        course: course, subject: subject1, video: video1).save(flush: true, failOnError: true)
-                new VisitVideoEvent(timestamp: System.currentTimeMillis(), user: null, teacher: teacher,
-                        course: course, subject: subject1, video: video1).save(flush: true, failOnError: true)
-                new VisitVideoEvent(timestamp: System.currentTimeMillis(), user: null, teacher: teacher,
-                        course: course, subject: subject1, video: video1).save(flush: true, failOnError: true)
-                new VisitVideoEvent(timestamp: System.currentTimeMillis(), user: null, teacher: teacher,
-                        course: course, subject: subject1, video: video1).save(flush: true, failOnError: true)
+        new VisitVideoEvent(timestamp: System.currentTimeMillis() - (1000 * 60 * 35), user: studentUser, teacher: teacher,
+                course: course, subject: subject1, video: video1).save(flush: true, failOnError: true)
+        new VisitVideoEvent(timestamp: System.currentTimeMillis() - (1000 * 60 * 90), user: studentUser, teacher: teacher,
+                course: course, subject: subject1, video: video1).save(flush: true, failOnError: true)
+        new VisitVideoEvent(timestamp: System.currentTimeMillis() - (1000 * 60 * 300), user: studentUser, teacher: teacher,
+                course: course, subject: subject1, video: video1).save(flush: true, failOnError: true)
+        new VisitVideoEvent(timestamp: System.currentTimeMillis(), user: null, teacher: teacher,
+                course: course, subject: subject1, video: video1).save(flush: true, failOnError: true)
+        new VisitVideoEvent(timestamp: System.currentTimeMillis(), user: null, teacher: teacher,
+                course: course, subject: subject1, video: video1).save(flush: true, failOnError: true)
+        new VisitVideoEvent(timestamp: System.currentTimeMillis(), user: null, teacher: teacher,
+                course: course, subject: subject1, video: video1).save(flush: true, failOnError: true)
 
-                new AnswerQuestionEvent(timestamp: System.currentTimeMillis(), user: studentUser, teacher: teacher,
-                        course: course, subject: subject1, video: video1, answer: "42", correct: true)
-                        .save(flush: true, failOnError: true)
-                new AnswerQuestionEvent(timestamp: System.currentTimeMillis(), user: null, teacher: teacher,
-                        course: course, subject: subject1, video: video1, answer: "42", correct: true)
-                        .save(flush: true, failOnError: true)
-                new AnswerQuestionEvent(timestamp: System.currentTimeMillis(), user: null, teacher: teacher,
-                        course: course, subject: subject1, video: video1, answer: "1", correct: false)
-                        .save(flush: true, failOnError: true)
-                new AnswerQuestionEvent(timestamp: System.currentTimeMillis(), user: studentUser, teacher: teacher,
-                        course: course, subject: subject1, video: video1, answer: "1", correct: false)
-                        .save(flush: true, failOnError: true)
-                new AnswerQuestionEvent(timestamp: System.currentTimeMillis(), user: null, teacher: teacher,
-                        course: course, subject: subject1, video: video1, answer: "2", correct: false)
-                        .save(flush: true, failOnError: true)
+        new AnswerQuestionEvent(timestamp: System.currentTimeMillis(), user: studentUser, teacher: teacher,
+                course: course, subject: subject1, video: video1, answer: "42", correct: true)
+                .save(flush: true, failOnError: true)
+        new AnswerQuestionEvent(timestamp: System.currentTimeMillis(), user: null, teacher: teacher,
+                course: course, subject: subject1, video: video1, answer: "42", correct: true)
+                .save(flush: true, failOnError: true)
+        new AnswerQuestionEvent(timestamp: System.currentTimeMillis(), user: null, teacher: teacher,
+                course: course, subject: subject1, video: video1, answer: "1", correct: false)
+                .save(flush: true, failOnError: true)
+        new AnswerQuestionEvent(timestamp: System.currentTimeMillis(), user: studentUser, teacher: teacher,
+                course: course, subject: subject1, video: video1, answer: "1", correct: false)
+                .save(flush: true, failOnError: true)
+        new AnswerQuestionEvent(timestamp: System.currentTimeMillis(), user: null, teacher: teacher,
+                course: course, subject: subject1, video: video1, answer: "2", correct: false)
+                .save(flush: true, failOnError: true)
 
-                println "Course students at start:"
-                println course.students
-            }
-        }
+        println "Course students at start:"
+        println course.students
     }
 
     def destroy = { /* Not used */ }
