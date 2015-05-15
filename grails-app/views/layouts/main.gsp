@@ -31,10 +31,9 @@
 </head>
 <body>
 
-
 <twbs:navbar title="TekVideo">
     <twbs:navcontainer>
-        <twbs:navitem><g:link action="list" controller="course">Fag</g:link></twbs:navitem>
+        <twbs:navitem><g:link action="list" controller="course">Kurser</g:link></twbs:navitem>
     </twbs:navcontainer>
 
     <twbs:navcontainer location="right">
@@ -70,6 +69,29 @@
         <twbs:alert type="info">${flash.message}</twbs:alert>
     </g:if>
     <g:layoutBody/>
+</twbs:container>
+
+<twbs:container id="footer">
+    <twbs:row>
+        <twbs:column cols="3">
+            <h5>Dette er en footer</h5>
+            <a href="#">Proin sit </a><br />
+            <a href="#">In rutrum ex vitae dictum</a><br />
+            <a href="#">Nunc suscipit orci</a><br />
+            <a href="#">Aenean in turpis feugiat</a><br />
+        </twbs:column>
+        <twbs:column cols="3">
+            <h5>Den kan der være ting i</h5>
+            <a href="#">Sed lobortis nunc venenatis augue</a><br />
+            <a href="#">Vivamus sit amet risus a</a><br />
+            <a href="#">Fusce eget ligula a turpis</a><br />
+        </twbs:column>
+        <twbs:column cols="6">
+            <div class="pull-right">
+                <asset:image src="sdu_logo.png" />
+            </div>
+        </twbs:column>
+    </twbs:row>
 </twbs:container>
 </body>
 </html>

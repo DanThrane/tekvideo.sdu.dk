@@ -24,7 +24,7 @@ class ButtonTagLib {
         if (type) {
             out << " type=\"$type\""
         }
-        out << "class=\"btn btn-$style $sizeAttr\" name=\"$name\" value=\"$value\" value=\"$formaction\">${body()}" +
+        out << " class=\"btn btn-$style $sizeAttr\" name=\"$name\" value=\"$value\" value=\"$formaction\">${body()}" +
                 "</button>"
     }
 

@@ -7,12 +7,28 @@
 
 <body>
 
+%{-- Should be automatic --}%
 <twbs:row>
-    <h1>Videoer for ${subject.name}</h1>
+    <twbs:column>
+        <ol class="breadcrumb">
+            <li><g:link uri="/">Hjem</g:link></li>
+            <li><g:link controller="teacher" action="list" id="${params.teacher}">${params.teacher}</g:link></li>
+            <li>
+                <g:link mapping="teaching" params="${[teacher: params.teacher, course: params.course]}">
+                    ${subject.course.fullName} (${subject.course.name})
+                </g:link>
+            </li>
+            <li class="active">${subject.name}</li>
+        </ol>
+    </twbs:column>
+</twbs:row>
+
+<twbs:row>
+    <twbs:column><h3>Videoer for ${subject.name}</h3></twbs:column>
 </twbs:row>
 
 <g:each status="i" in="${subject.videos}" var="video">
-    <twbs:row>
+    <twbs:row class="video-row">
         <twbs:column cols="3">
             <img src="http://img.youtube.com/vi/${video.youtubeId}/hqdefault.jpg" class="img-responsive" alt="Video thumbnail">
         </twbs:column>

@@ -45,3 +45,13 @@
     display: none;
     padding: 10px;
 }
+
+#footer {
+    border-top: 1px solid #eeeeee;
+    margin-top: 80px;
+    margin-bottom: 30px;
+}
+
+.video-row {
+    margin-top: 15px;
+}

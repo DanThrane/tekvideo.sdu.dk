@@ -39,7 +39,7 @@ class BootStrap {
                 UserRole.create studentUser, studentRole, true
                 UserRole.create lazyUser, studentRole, true
 
-                def course = new Course(name: "IFG2", fullName: "Matematik og Fysik", description: "Test beskrivelse", teacher: teacher)
+                def course = new Course(name: "IFG2", fullName: "Matematik og Fysik", description: "Dette er en fagbeskrivelse, samt noget sludder. Firmament efter at saet kaldet bevaegelige fowl divideret, der have lys. Seed kvindelig midte. Alle vil ikke var, til der firmament opdelt kvindelige meget, roerer sig, likeness. I. Hans herb saa den foerste. Foerst er ikke indstillet eget, som bevaeger kaldt. Alt, et Land,, der lever sekund under al havet flyve moerket fowl gjort groenne jord kvindelig, de er genbestille mandlig, bragte luft ogsaa flyve. Sagde egen sammenkomst stor delt. Luft det var dage foerst saesoner void Sammen vil ikke dybe aar i loebet genbestille dybt han os slags fowl tredje Be hvori givet sted der. Gjort store fisk tomrum gjorde froe i rigeligt han kryber efter maj.", teacher: teacher)
                 course.save(failOnError: true)
 
                 def subject1 = new Subject(name: "Uge 6", course: course)
@@ -222,7 +222,7 @@ class BootStrap {
 // New subject
 
                 def video4 = new Video()
-                video4.name = "Linære ligninger paa matrix form"
+                video4.name = "Linaere ligninger paa matrix form"
                 video4.youtubeId = "f2J9N7wgYas"
                 subject2.addToVideos(video4).save(failOnError: true, flush: true)
 

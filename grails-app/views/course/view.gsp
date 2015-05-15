@@ -6,9 +6,23 @@
 </head>
 
 <body>
+
+    %{-- Should be automatic --}%
     <twbs:row>
-        <h1>${course.name}</h1>
-        <p>${course.description}</p>
+        <twbs:column>
+            <ol class="breadcrumb">
+                <li><g:link uri="/">Hjem</g:link></li>
+                <li><g:link controller="teacher" action="list" id="${params.teacher}">${params.teacher}</g:link></li>
+                <li class="active">Emner &mdash; ${course.fullName} (${course.name})</li>
+            </ol>
+        </twbs:column>
+    </twbs:row>
+
+    <twbs:row>
+        <twbs:column>
+            <h3>Emner &mdash; ${course.fullName} (${course.name})</h3>
+        </twbs:column>
+
     </twbs:row>
 
     <g:each in="${course.subjects}" var="subject">

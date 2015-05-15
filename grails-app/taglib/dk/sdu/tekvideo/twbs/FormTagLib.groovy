@@ -115,6 +115,8 @@ class FormTagLib {
         String emptyText = attrs.emptyText ?: "-"
         String property = attrs.property ? attrs.property : "id"
         boolean multiple = attrs.multiple ? Boolean.valueOf(attrs.multiple as String) : false
+        boolean disabled = attrs.disabled ? Boolean.valueOf(attrs.disabled as String) : false
+        String disabledAttr = disabled ? "disabled" : ""
         String multipleAttr = multiple ? "multiple" : ""
         String name = attrs.name ? attrs.name : ""
         String selectByValue = attrs.selectByValue ? attrs.selectByValue : ""
@@ -130,7 +132,7 @@ class FormTagLib {
 
         out << "<div class=\"form-group\">"
         out << "<label for='$id'>$labelText</label>"
-        out << "<select class='form-control' name='$name' $multipleAttr id='$id'>"
+        out << "<select class='form-control' name='$name' $multipleAttr id='$id' $disabledAttr>"
         list.each {
             if (it == null) {
                 out << """<option value="null">$emptyText</option>"""

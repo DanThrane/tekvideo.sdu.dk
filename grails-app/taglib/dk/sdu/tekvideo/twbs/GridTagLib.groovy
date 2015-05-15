@@ -1,5 +1,7 @@
 package dk.sdu.tekvideo.twbs
 
+import org.codehaus.groovy.grails.plugins.web.taglib.ApplicationTagLib
+
 class GridTagLib {
     static namespace = "twbs"
 
@@ -20,7 +22,10 @@ class GridTagLib {
     }
 
     def row = { attrs, body ->
-        out << '<div class="row">'
+        String clazz = attrs.remove("class") ?: ""
+        out << """<div class=\"row $clazz\""""
+        out << ApplicationTagLib.attrsToString(attrs)
+        out << '>'
         out << body()
         out << '</div>'
     }
