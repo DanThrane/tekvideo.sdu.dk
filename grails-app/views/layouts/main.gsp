@@ -5,6 +5,7 @@
     <g:layoutHead/>
     <asset:stylesheet src="application.css"/>
     <asset:javascript src="application.js"/>
+    <fa:require />
     <link rel="shortcut icon" href="${asset.assetPath(src: "favicon.ico")}" />
 
     <script>

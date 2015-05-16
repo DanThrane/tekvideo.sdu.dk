@@ -1,4 +1,5 @@
-<%@ page import="dk.sdu.tekvideo.twbs.Icon" contentType="text/html;charset=UTF-8" %>
+<%@ page import="dk.sdu.tekvideo.FaIcon; dk.danthrane.twbs.Icon" %>
+<%@ page import="dk.danthrane.twbs.ButtonTagLib.ButtonStyle; dk.danthrane.twbs.ButtonTagLib.ButtonSize" %>
 <html>
 <head>
     <meta name="layout" content="main">
@@ -39,11 +40,12 @@
 </div>
 <twbs:row>
     <twbs:column>
-        <twbs:linkButton btnstyle="link" id="show-advanced-search">
+        <twbs:linkButton btnstyle="${ButtonStyle.LINK}" domId="show-advanced-search">
+            <fa:icon icon="${FaIcon.SORT}" />
             Avanceret søgning
         </twbs:linkButton>
         <div class="pull-right">
-            <twbs:linkButton btnstyle="primary" class="disabled">
+            <twbs:linkButton btnstyle="${ButtonStyle.PRIMARY}" class="disabled">
                 <twbs:icon icon="${Icon.SEARCH}" />
                 Søg!
             </twbs:linkButton>

@@ -1,4 +1,4 @@
-<%@ page import="dk.sdu.tekvideo.twbs.ButtonTagLib" %>
+<%@ page import="dk.danthrane.twbs.ButtonTagLib.ButtonStyle; dk.danthrane.twbs.ButtonTagLib.ButtonSize" %>
 <!DOCTYPE html>
 <html>
 <head>
@@ -19,10 +19,10 @@
             <li><strong>Password:</strong> password</li>
         </ul>
         <p>
-            <twbs:linkButton controller="register" action="index" btnstyle="primary" size="${ButtonTagLib.ButtonSize.LARGE}">
+            <twbs:linkButton controller="register" action="index" btnstyle="${ButtonStyle.PRIMARY}" size="${ButtonSize.LARGE}">
                 Ny bruger &raquo;
             </twbs:linkButton>
-            <twbs:linkButton controller="login" action="index" btnstyle="primary" size="${ButtonTagLib.ButtonSize.LARGE}">
+            <twbs:linkButton controller="login" action="index" btnstyle="${ButtonStyle.PRIMARY}" size="${ButtonSize.LARGE}">
                 Log ind &raquo;
             </twbs:linkButton>
         </p>

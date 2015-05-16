@@ -30,7 +30,7 @@
 <br>
 
 <twbs:row>
-    <twbs:linkButton id="checkAnswers">Tjek svar</twbs:linkButton>
+    <twbs:linkButton domId="checkAnswers">Tjek svar</twbs:linkButton>
 </twbs:row>
 
 <g:if test="${debugMode}">

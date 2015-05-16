@@ -1,4 +1,5 @@
-<%@ page import="dk.sdu.tekvideo.twbs.Icon" contentType="text/html;charset=UTF-8" %>
+<%@ page import="dk.danthrane.twbs.Icon" %>
+<%@ page import="dk.danthrane.twbs.ButtonTagLib.ButtonStyle; dk.danthrane.twbs.ButtonTagLib.ButtonSize" %>
 <html>
 <head>
     <meta name="layout" content="main">
@@ -50,17 +51,17 @@
     <twbs:column>
         <div class="pull-right">
             <g:if test="${!inCourse}">
-                <twbs:linkButton btnstyle="danger" controller="course" action="list">
+                <twbs:linkButton btnstyle="${ButtonStyle.DANGER}" controller="course" action="list">
                     <twbs:icon icon="${Icon.REMOVE}" />
                     Afvis
                 </twbs:linkButton>
-                <twbs:linkButton btnstyle="success" controller="course" action="completeSignup" linkId="${course.id}">
+                <twbs:linkButton btnstyle="${ButtonStyle.SUCCESS}" controller="course" action="completeSignup" id="${course.id}">
                     <twbs:icon icon="${Icon.OK}" />
                     Godkend tilmelding
                 </twbs:linkButton>
             </g:if>
             <g:else>
-                <twbs:linkButton btnstyle="danger"  controller="course" action="completeSignoff" linkId="${course.id}">
+                <twbs:linkButton btnstyle="${ButtonStyle.DANGER}"  controller="course" action="completeSignoff" id="${course.id}">
                     <twbs:icon icon="${Icon.TRASH}" />
                     Afmeld kurset
                 </twbs:linkButton>

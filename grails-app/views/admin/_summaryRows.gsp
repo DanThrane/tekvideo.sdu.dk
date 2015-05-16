@@ -1,11 +1,11 @@
-<%@ page import="dk.sdu.tekvideo.twbs.Icon" %>
+<%@ page import="dk.danthrane.twbs.Icon" %>
 <g:each in="${summary}" var="entry">
 <tr>
     <td>${entry.key.name}</td>
     <td><date:oldDtFormatter date="${entry.key.dateCreated}"/></td>
     <td>
         ${entry.value.totalViews}
-        <twbs:linkButton id="viewTrigger${entry.key.id}" class="mousePanelTrigger">
+        <twbs:linkButton domId="viewTrigger${entry.key.id}" class="mousePanelTrigger">
             <twbs:icon icon="${Icon.INFO_SIGN}"/>
         </twbs:linkButton>
         <sdu:mousePanel id="viewPanel${entry.key.id}" title="${g.message(code: "admin.video.summary.thead.views")}">
@@ -29,7 +29,7 @@
     </td>
     <td>
         ${entry.value.answersGiven} (${entry.value.correctPercentage}%)
-        <twbs:linkButton id="answerTrigger${entry.key.id}" class="mousePanelTrigger">
+        <twbs:linkButton domId="answerTrigger${entry.key.id}" class="mousePanelTrigger">
             <twbs:icon icon="${Icon.INFO_SIGN}"/>
         </twbs:linkButton>
         <sdu:mousePanel id="answerPanel${entry.key.id}" title="${g.message(code: "admin.video.summary.thead.answers")}">
@@ -68,7 +68,7 @@
     </td>
     <td>${entry.value.mostCommonIncorrect}</td>
     <td>
-        <twbs:linkButton btnstyle="action" controller="admin" action="videoStatistics" linkId="${entry.key.id}">
+        <twbs:linkButton controller="admin" action="videoStatistics" id="${entry.key.id}">
             <twbs:icon icon="${Icon.SEARCH}"/>
         </twbs:linkButton>
     </td>

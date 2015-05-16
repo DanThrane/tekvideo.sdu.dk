@@ -1,4 +1,5 @@
-<%@ page import="grails.converters.JSON; dk.sdu.tekvideo.twbs.Icon; java.time.LocalDateTime" contentType="text/html;charset=UTF-8" %>
+<%@ page import="dk.danthrane.twbs.Icon; grails.converters.JSON; java.time.LocalDateTime" contentType="text/html;charset=UTF-8" %>
+<%@ page import="dk.danthrane.twbs.ButtonTagLib.ButtonStyle; dk.danthrane.twbs.ButtonTagLib.ButtonSize" %>
 <html>
 <head>
     <meta name="layout" content="admin">
@@ -15,7 +16,7 @@
         <form class="form-inline" id="filter-form">
             <twbs:select list="${courses}" name="course" labelText="Fag" allowEmpty="true"/>
             <twbs:select list="${subjects}" name="subject" labelText="Emner" allowEmpty="true"/>
-            <twbs:button btnstyle="primary" type="submit">Filter</twbs:button>
+            <twbs:button btnstyle="${ButtonStyle.PRIMARY}" type="submit">Filter</twbs:button>
             <twbs:icon icon="${Icon.REFRESH}" class="loading-indicator spinning" id="loading"/>
         </form>
         <hr/>

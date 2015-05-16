@@ -1,4 +1,5 @@
-<%@ page import="java.util.stream.Collectors; grails.converters.JSON; dk.sdu.tekvideo.twbs.Icon" contentType="text/html;charset=UTF-8" %>
+<%@ page import="dk.danthrane.twbs.Icon; java.util.stream.Collectors; grails.converters.JSON;" contentType="text/html;charset=UTF-8" %>
+<%@ page import="dk.danthrane.twbs.ButtonTagLib.ButtonStyle; dk.danthrane.twbs.ButtonTagLib.ButtonSize" %>
 <html>
 <head>
     <meta name="layout" content="admin">
@@ -37,25 +38,25 @@
             <section id="visninger-over-tid" class="subgroup">
                 <h4>Over tid</h4>
                 <canvas id="chart" style="width: 100%; height: 500px"></canvas>
-                <twbs:linkButton btnstyle="primary" class="show-x-day" attributes="${["data-days": "1"]}">
+                <twbs:linkButton btnstyle="${ButtonStyle.PRIMARY}" class="show-x-day" attributes="${["data-days": "1"]}">
                     1 dag
                 </twbs:linkButton>
-                <twbs:linkButton btnstyle="primary" class="show-x-day" attributes="${["data-days": "7"]}">
+                <twbs:linkButton btnstyle="${ButtonStyle.PRIMARY}" class="show-x-day" attributes="${["data-days": "7"]}">
                     7 dage
                 </twbs:linkButton>
-                <twbs:linkButton btnstyle="primary" class="show-x-day" attributes="${["data-days": "14"]}">
+                <twbs:linkButton btnstyle="${ButtonStyle.PRIMARY}" class="show-x-day" attributes="${["data-days": "14"]}">
                     14 dage
                 </twbs:linkButton>
-                <twbs:linkButton btnstyle="primary" class="show-x-day" attributes="${["data-days": "30"]}">
+                <twbs:linkButton btnstyle="${ButtonStyle.PRIMARY}" class="show-x-day" attributes="${["data-days": "30"]}">
                     30 dage
                 </twbs:linkButton>
-                <twbs:linkButton btnstyle="primary" class="show-x-day" attributes="${["data-days": "90"]}">
+                <twbs:linkButton btnstyle="${ButtonStyle.PRIMARY}" class="show-x-day" attributes="${["data-days": "90"]}">
                     90 dage
                 </twbs:linkButton>
-                <twbs:linkButton btnstyle="primary" class="show-x-day" attributes="${["data-days": "180"]}">
+                <twbs:linkButton btnstyle="${ButtonStyle.PRIMARY}" class="show-x-day" attributes="${["data-days": "180"]}">
                     180 dage
                 </twbs:linkButton>
-                <twbs:linkButton btnstyle="primary" class="show-x-day" attributes="${["data-days": "365"]}">
+                <twbs:linkButton btnstyle="${ButtonStyle.PRIMARY}" class="show-x-day" attributes="${["data-days": "365"]}">
                     365 dage
                 </twbs:linkButton>
             </section>
