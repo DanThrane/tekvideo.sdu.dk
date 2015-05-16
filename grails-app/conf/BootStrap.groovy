@@ -19,6 +19,13 @@ class BootStrap {
     }
 
     void createTestData() {
+        if (Role.count() != 0) {
+            println "Test data already found, skipping (Bootstrap)"
+            return
+        } else {
+            println "Generating new test data (Bootstrap)"
+        }
+
         def teacherRole = new Role(authority: "ROLE_TEACHER").save(flush: true, failOnError: true)
         def instructorRole = new Role(authority: "ROLE_INSTRUCTOR").save(flush: true, failOnError: true)
         def taRole = new Role(authority: "ROLE_TA").save(flush: true, failOnError: true)
