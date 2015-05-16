@@ -12,7 +12,11 @@
     <twbs:column>
         <ol class="breadcrumb">
             <li><g:link uri="/">Hjem</g:link></li>
-            <li><g:link controller="teacher" action="list" id="${params.teacher}">${params.teacher}</g:link></li>
+            <li>
+                <g:link mapping="teaching" params="${[teacher: params.teacher]}">
+                    ${params.teacher}
+                </g:link>
+            </li>
             <li>
                 <g:link mapping="teaching" params="${[teacher: params.teacher, course: params.course]}">
                     ${subject.course.fullName} (${subject.course.name})
