@@ -8,11 +8,13 @@ class CourseController {
     TeachingService teachingService
     StudentService studentService
 
+    @Secured("permitAll")
     def list() {
         List<Course> courses = Course.list()
         [courses: courses]
     }
 
+    @Secured("permitAll")
     def viewByTeacher(String teacherName, String courseName) {
         Course course = teachingService.getCourse(teacherName, courseName)
         if (course) {

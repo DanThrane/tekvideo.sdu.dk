@@ -1,9 +1,12 @@
 package dk.sdu.tekvideo
 
+import org.springframework.security.access.annotation.Secured
+
 class VideoController {
 
     TeachingService teachingService
 
+    @Secured("permitAll")
     def view(String teacherName, String courseName, String subjectName, Integer videoId) {
         Video video = teachingService.getVideo(teacherName, courseName, subjectName, videoId)
         boolean debugMode = params.containsKey("debug")

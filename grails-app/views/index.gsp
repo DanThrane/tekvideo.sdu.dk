@@ -33,17 +33,17 @@
 <twbs:container class="marketing">
     <twbs:row>
         <twbs:column cols="4" type="lg">
-            <g:img dir="images" file="#" class="img-circle" alt="Generic placeholder image" width="140" height="140"/>
+            <img src="http://lorempixel.com/200/200/people/" class="img-circle" alt="Generic placeholder image" width="140" height="140" />
             <h2>Header</h2>
             <p>Message</p>
         </twbs:column>
         <twbs:column cols="4" type="lg">
-            <g:img dir="images" file="#" class="img-circle" alt="Generic placeholder image" width="140" height="140"/>
+            <img src="http://lorempixel.com/200/200/city/" class="img-circle" alt="Generic placeholder image" width="140" height="140" />
             <h2>Header</h2>
             <p>Message</p>
         </twbs:column>
         <twbs:column cols="4" type="lg">
-            <g:img dir="images" file="#" class="img-circle" alt="Generic placeholder image" width="140" height="140"/>
+            <img src="http://lorempixel.com/200/200/nature/" class="img-circle" alt="Generic placeholder image" width="140" height="140" />
             <h2>Header</h2>
             <p>Message</p>
         </twbs:column>

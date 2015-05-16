@@ -1,6 +1,10 @@
 package dk.sdu.tekvideo
 
+import org.springframework.security.access.annotation.Secured
+
 class TeachingController {
+
+    @Secured("permitAll")
     def index(String teacher, String course, String subject, Integer vidid) {
         // Do some logic, and forward the user to the correct controller etc
         if (course == null) {
@@ -15,4 +19,5 @@ class TeachingController {
                 courseName: course, subjectName: subject, videoId: vidid]
         }
     }
+
 }
