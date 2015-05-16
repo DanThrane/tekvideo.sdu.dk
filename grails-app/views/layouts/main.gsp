@@ -1,3 +1,4 @@
+<%@ page import="dk.sdu.tekvideo.FaIcon" %>
 <!DOCTYPE html>
 <html>
 <head>
@@ -51,9 +52,15 @@
                     <g:link controller="admin">Admin Panel</g:link>
                 </twbs:navitem>
             </sec:ifAllGranted>
-            <twbs:navitem>
-                <g:link method="POST" controller='logout' action=''>Log ud</g:link>
-            </twbs:navitem>
+            %{-- There really has to be a prettier way of doing this @cleanup --}%
+            <twbs:navDropdown value="${"${fa.icon(icon: FaIcon.USER)}  ${sdu.username()}"}">
+                <twbs:dropdownContainer>
+                    <twbs:dropdownDivider />
+                    <twbs:dropdownItem>
+                        <g:link method="POST" controller='logout' action=''>Log ud</g:link>
+                    </twbs:dropdownItem>
+                </twbs:dropdownContainer>
+            </twbs:navDropdown>
         </sec:ifLoggedIn>
     </twbs:navcontainer>
 </twbs:navbar>
