@@ -24,17 +24,6 @@
             </button>
             <a class="navbar-brand" href="#">Admin Panel</a>
         </div>
-        %{--<div id="navbar" class="navbar-collapse collapse">--}%
-            %{--<ul class="nav navbar-nav navbar-right">--}%
-                %{--<li><a href="#">Dashboard</a></li>--}%
-                %{--<li><a href="#">Settings</a></li>--}%
-                %{--<li><a href="#">Profile</a></li>--}%
-                %{--<li><a href="#">Help</a></li>--}%
-            %{--</ul>--}%
-            %{--<form class="navbar-form navbar-right">--}%
-                %{--<input type="text" class="form-control" placeholder="Search...">--}%
-            %{--</form>--}%
-        %{--</div>--}%
     </div>
 </nav>
 
@@ -43,9 +32,17 @@
         <div class="col-sm-3 col-md-2 sidebar">
             <ul class="nav nav-sidebar">
                 <li class="navbar-heading">Videoer</li>
-                <twbs:navitem active="true"><a href="#">Foo</a></twbs:navitem>
-                <twbs:navitem><a href="#">Bar</a></twbs:navitem>
-                <twbs:navitem><a href="#">Baz</a></twbs:navitem>
+                %{-- Not a pretty 'active' solution --}%
+                <twbs:navitem active="${active == "home"}">
+                    <g:link controller="admin" action="index">
+                        Hjem
+                    </g:link>
+                </twbs:navitem>
+                <twbs:navitem active="${active == "summary"}">
+                    <g:link content="admin" action="videoSummary">
+                        Opsummering
+                    </g:link>
+                </twbs:navitem>
             </ul>
         </div>
         <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">

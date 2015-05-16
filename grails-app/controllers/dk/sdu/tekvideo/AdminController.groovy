@@ -11,16 +11,22 @@ class AdminController {
 
     AdminService adminService
 
-    def index() { }
+    def index() {
+        [active: "home"]
+    }
 
     def videoStatistics(Video video) {
         // TODO Confirm that the teacher owns this video
-        def statistics = adminService.findViewingStatistics(video, System.currentTimeMillis() - (1000 * 60 * 60 * 24),
+        def statistics = adminService.findViewingStatistics(video,
+                System.currentTimeMillis() - (1000 * 60 * 60 * 24), // TODO @ugly
                 System.currentTimeMillis() + (1000 * 60 * 60), 1000 * 60 * 60)
-        def viewsByStudents = adminService.findViewingStatisticsByStudent(video).values()
-                .sort(true, { a, b -> Integer.compare(b.status, a.status) })
+
+        def viewsByStudents = adminService.findViewingStatisticsByStudent(video)
+                .values()
+                .sort(true, { a, b -> Integer.compare(b.status, a.status) }) // Sorted from best to worst students
+
         [video: video, statistics: statistics, subjects: video.subjects.stream().limit(3).collect(Collectors.toList()),
-         viewsByStudents: viewsByStudents]
+         viewsByStudents: viewsByStudents, active: "statistics"]
     }
 
     def videoViewingChart(Video video, Long period) {
@@ -43,12 +49,13 @@ class AdminController {
                 List<Course> courses = Course.findAllByTeacher(teacher)
                 List<Subject> subjects = Subject.findAllByCourseInList(courses)
                 return [summary: adminService.findSummaryData(command, teacher, courses, subjects), courses: courses,
-                 subjects: subjects]
+                 subjects: subjects, active: "summary"]
             }
             json {
                 def summaryData = adminService.findSummaryData(command)
 
-                render([html: g.render(template: "summaryRows", model: [summary: summaryData]),
+                render([html: g.render(template: "summaryRows",
+                        model: [summary: summaryData]),
                         ids: summaryData.keySet().id] as JSON)
             }
         }

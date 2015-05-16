@@ -159,7 +159,7 @@ class AdminService {
         return result
     }
 
-    def findViewingStatistics(Video video, long from, long to, long periodInMs) {
+    Map findViewingStatistics(Video video, long from, long to, long periodInMs) {
         List<VisitVideoEvent> events = VisitVideoEvent.findAllByVideo(video)
         List labels = []
         List data = []
@@ -180,7 +180,7 @@ class AdminService {
         return [labels: labels, data: data]
     }
 
-    def findViewingStatisticsByStudent(Video video) {
+    Map findViewingStatisticsByStudent(Video video) {
         // TODO Some of this can't possibly be good for performance
         HashSet<Student> students = video.subjects.flatten().course.flatten().students.flatten()
         List<User> users = students.user as List

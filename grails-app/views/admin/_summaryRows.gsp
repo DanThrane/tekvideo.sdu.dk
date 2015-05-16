@@ -68,7 +68,7 @@
     </td>
     <td>${entry.value.mostCommonIncorrect}</td>
     <td>
-        <twbs:linkButton action="videoDetailed" btnstyle="action">
+        <twbs:linkButton btnstyle="action" controller="admin" action="videoStatistics" linkId="${entry.key.id}">
             <twbs:icon icon="${Icon.SEARCH}"/>
         </twbs:linkButton>
     </td>
