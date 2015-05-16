@@ -50,13 +50,15 @@
                 </g:if>
         );
 
-        events.emit({
-            "kind": "VISIT_VIDEO",
+        // Used by the event framework to determine the origin of the event
+        events.setMetaData({
             "teacher": "${params.teacher}",
             "course": "${params.course}",
             "subject": "${params.subject}",
             "video": ${params.videoId}
-        }, true);
+        });
+
+        events.emit({ "kind": "VISIT_VIDEO" }, true);
     });
 </script>
 </body>

@@ -5,7 +5,7 @@ var ivids = {};
     var timeline;
     var youtubeVideoId;
     var questions = [];
-    
+
     /**
      * @brief               Places a single input field used in questions.
      * @details             

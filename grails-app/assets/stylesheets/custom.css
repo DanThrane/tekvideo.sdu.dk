@@ -55,3 +55,8 @@
 .video-row {
     margin-top: 15px;
 }
+
+.search-result {
+    font-size: 130%;
+    font-weight: bold;
+}

@@ -59,7 +59,7 @@
     <twbs:row>
         <twbs:column>
             <g:link mapping="teaching" params="${[teacher: course.teacher.user.username, course: course.name]}">
-                <b>${course.name} &mdash; ${course.fullName}</b>
+                <span class="search-result">${course.name} &mdash; ${course.fullName}</span>
             </g:link>
             <p>${course.description}</p>
         </twbs:column>

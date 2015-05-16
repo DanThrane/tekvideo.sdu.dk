@@ -4,11 +4,26 @@ var events = {};
     var events = [];
     var disabled = true;
     var endpoint;
+    var meta = {};
+
     if (!Date.now) { Date.now = function() { return new Date().getTime(); } }
-    
+
+    function mergeProperties(obj1, obj2){
+        var name;
+        var result = {};
+        for (name in obj1) {
+            if (obj1.hasOwnProperty(name)) result[name] = obj1[name];
+        }
+        for (name in obj2) {
+            if (obj2.hasOwnProperty(name)) result[name] = obj2[name];
+        }
+        return result;
+    }
+
     module.emit = function(event, flush) {
-        event.timestamp = Date.now();
-        events.push(event);
+        var eventWithMetaData = mergeProperties(event, meta);
+        eventWithMetaData.timestamp = Date.now();
+        events.push(eventWithMetaData);
         if (flush) module.flush();
     };
     
@@ -46,6 +61,10 @@ var events = {};
     
     module.enable = function() {
         disabled = false;
+    };
+
+    module.setMetaData = function(data) {
+        meta = data;
     };
     return module;
 })(events);

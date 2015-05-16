@@ -8,7 +8,7 @@ class EventService {
     def springSecurityService
     def teachingService
 
-    final static Map<String, Class<? extends Event>> KIND_TO_CLASS = [
+    final Map<String, Class<? extends Event>> KIND_TO_CLASS = [
             ANSWER_QUESTION: AnswerQuestionEvent,
             EXIT_SITE: ExitSiteEvent,
             PAUSE_VIDEO: PauseVideoEvent,
@@ -17,7 +17,7 @@ class EventService {
             VISIT_VIDEO: VisitVideoEvent
     ]
 
-    final static Map<String, Closure> CUSTOM_MAPPER = [
+    final Map<String, Closure> CUSTOM_MAPPER = [
             VISIT_VIDEO: {
                 def data = teachingService.getCompleteData(it.teacher, it.course, it.subject, it.video)
                 if (data) {
@@ -27,7 +27,7 @@ class EventService {
                 return null
             },
             ANSWER_QUESTION: {
-                def data = teachingService.getCompleteData(it.teacher, it.course, it.subject, it.video)
+                Map data = teachingService.getCompleteData(it.teacher, it.course, it.subject, it.video)
                 if (data) {
                     // TODO @Refactor
                     return new AnswerQuestionEvent(teacher: data.teacher, course: data.course, subject: data.subject,
@@ -40,8 +40,8 @@ class EventService {
     void saveJSONEvents(events) {
         events.each {
             Event event = parseEvent(it)
-            def user = springSecurityService.currentUser
-            event.user = user as User
+            User user = (User) springSecurityService.currentUser
+            event.user = user
             event.save()
             log.info event
         }
