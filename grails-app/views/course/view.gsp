@@ -39,7 +39,7 @@
     <g:each in="${course.subjects}" var="subject">
         <twbs:row>
             <twbs:column cols="3">
-                <img src="http://placehold.it/160x90" alt="Thumbnail">
+                <img src="http://lorempixel.com/400/200/technics/${subject.name}" class="img-responsive" alt="Thumbnail">
             </twbs:column>
             <twbs:column cols="9">
                 <g:link mapping="teaching" params="${[teacher: course.teacher.user.username, course: course.name,
