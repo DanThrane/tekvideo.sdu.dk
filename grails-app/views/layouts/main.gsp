@@ -23,6 +23,7 @@
                 events.emit({
                     "kind": "EXIT_SITE",
                     "url": document.location.href,
+                    "ua": navigator.userAgent,
                     "time": Date.now() - start
                 });
                 events.flush(false);

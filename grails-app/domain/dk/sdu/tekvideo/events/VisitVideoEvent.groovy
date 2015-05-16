@@ -16,4 +16,17 @@ class VisitVideoEvent extends Event {
     static constraints = {
     }
 
+
+    @Override
+    public String toString() {
+        return "VisitVideoEvent{" +
+                "id=" + id +
+                ", teacher=" + teacher +
+                ", course=" + course +
+                ", subject=" + subject +
+                ", video=" + video +
+                ", version=" + version +
+                ", super=" + super.toString() +
+                '}';
+    }
 }

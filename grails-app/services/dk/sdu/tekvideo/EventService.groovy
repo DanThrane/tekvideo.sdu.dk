@@ -21,8 +21,9 @@ class EventService {
             VISIT_VIDEO: {
                 def data = teachingService.getCompleteData(it.teacher, it.course, it.subject, it.video)
                 if (data) {
-                    return new VisitVideoEvent(teacher: data.teacher, course: data.course, subject: data.subject,
+                    VisitVideoEvent event = new VisitVideoEvent(teacher: data.teacher, course: data.course, subject: data.subject,
                             video: data.video)
+                    return event
                 }
                 return null
             },
@@ -42,8 +43,8 @@ class EventService {
             Event event = parseEvent(it)
             User user = (User) springSecurityService.currentUser
             event.user = user
+            event.timestamp = System.currentTimeMillis()
             event.save()
-            log.info event
         }
     }
 

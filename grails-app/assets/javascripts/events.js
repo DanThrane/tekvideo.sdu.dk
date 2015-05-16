@@ -6,8 +6,6 @@ var events = {};
     var endpoint;
     var meta = {};
 
-    if (!Date.now) { Date.now = function() { return new Date().getTime(); } }
-
     function mergeProperties(obj1, obj2){
         var name;
         var result = {};
@@ -22,7 +20,6 @@ var events = {};
 
     module.emit = function(event, flush) {
         var eventWithMetaData = mergeProperties(event, meta);
-        eventWithMetaData.timestamp = Date.now();
         events.push(eventWithMetaData);
         if (flush) module.flush();
     };
