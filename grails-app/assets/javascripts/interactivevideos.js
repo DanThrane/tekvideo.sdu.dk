@@ -5,6 +5,8 @@ var ivids = {};
     var timeline;
     var youtubeVideoId;
     var questions = [];
+    var onNextUpdate = null;
+    var canRemove = true;
 
     /**
      * @brief               Places a single input field used in questions.
@@ -179,7 +181,16 @@ var ivids = {};
     }
     
     function handleTimeUpdate() {
+        console.log("Time update");
+        if (onNextUpdate !== null) {
+            onNextUpdate();
+            onNextUpdate = null;
+            console.log("Skipping");
+            return;
+        }
+
         var timestamp = player.currentTime();
+        console.log(timestamp);
         for (var i = questions.length - 1; i >= 0; i--) {
             var q = questions[i];
             if (q.timecode !== Math.round(timestamp) && q.visible) {
@@ -187,28 +198,36 @@ var ivids = {};
                 q.visible = false;
             } else if (q.timecode === Math.round(timestamp) && !q.visible && !q.shown) {
                 // Will cause a seek event, which in turn will reset everything
-                player.pause();
-                q.visible = true;
-                q.shown = true;
-                for(var k = 0; k < q.fields.length; k++) {
-                    var field = q.fields[k];
-                    placeInputField(
-                        field.name, 
-                        field.answer, 
-                        field.topoffset, 
-                        field.leftoffset);
-                }
+                var thisQuestion = q;
+                canRemove = false;
+                onNextUpdate = function() {
+                    player.pause();
+                    thisQuestion.visible = true;
+                    thisQuestion.shown = true;
+                    for(var k = 0; k < q.fields.length; k++) {
+                        var field = q.fields[k];
+                        placeInputField(
+                            field.name,
+                            field.answer,
+                            field.topoffset,
+                            field.leftoffset);
+                    }
+                    canRemove = true;
+                };
+                player.currentTime(q.timecode + 1);
             }
         }
     }
     
     function hideAllFields() {
+        if (!canRemove) return;
         for (var i = questions.length - 1; i >= 0; i--) {
             questions[i].visible = false;
         }
     }
     
     function handleSeeked() {
+        console.log("seek");
         for (var i = questions.length - 1; i >= 0; i--) {
             questions[i].visible = false;
             questions[i].shown = false;

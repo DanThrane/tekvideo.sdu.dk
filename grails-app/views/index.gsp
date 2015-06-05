@@ -14,10 +14,20 @@
         <h1>Velkommen til TekVideo</h1>
         <p>Besked</p>
         <p>Flere beskeder</p>
-        <ul>
-            <li><strong>Username:</strong> Admin</li>
-            <li><strong>Password:</strong> password</li>
-        </ul>
+        <twbs:row>
+            <twbs:column cols="3">
+                <ul>
+                    <li><strong>Username:</strong> Student</li>
+                    <li><strong>Password:</strong> password</li>
+                </ul>
+            </twbs:column>
+            <twbs:column cols="3">
+                <ul>
+                    <li><strong>Username:</strong> Teacher</li>
+                    <li><strong>Password:</strong> password</li>
+                </ul>
+            </twbs:column>
+        </twbs:row>
         <p>
             <twbs:linkButton controller="register" action="index" btnstyle="${ButtonStyle.PRIMARY}" size="${ButtonSize.LARGE}">
                 Ny bruger &raquo;

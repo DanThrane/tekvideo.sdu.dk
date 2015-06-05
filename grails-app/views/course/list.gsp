@@ -58,14 +58,10 @@
 <strong>Resultater:</strong>
 
 <g:each in="${courses}" var="course">
-    <twbs:row>
-        <twbs:column>
-            <g:link mapping="teaching" params="${[teacher: course.teacher.user.username, course: course.name]}">
-                <span class="search-result">${course.name} &mdash; ${course.fullName}</span>
-            </g:link>
-            <p>${course.description}</p>
-        </twbs:column>
-    </twbs:row>
+    <sdu:linkCard mapping="teaching" params="${[teacher: course.teacher.user.username, course: course.name]}">
+        <span class="search-result">${course.name} &mdash; ${course.fullName}</span>
+        <p>${course.description}</p>
+    </sdu:linkCard>
 </g:each>
 
 <script type="text/javascript">
