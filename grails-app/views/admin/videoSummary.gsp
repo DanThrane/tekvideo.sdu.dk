@@ -1,5 +1,5 @@
 <%@ page import="dk.danthrane.twbs.Icon; grails.converters.JSON; java.time.LocalDateTime" contentType="text/html;charset=UTF-8" %>
-<%@ page import="dk.danthrane.twbs.ButtonTagLib.ButtonStyle; dk.danthrane.twbs.ButtonTagLib.ButtonSize" %>
+<%@ page import="dk.danthrane.twbs.ButtonStyle; dk.danthrane.twbs.ButtonSize" %>
 <html>
 <head>
     <meta name="layout" content="admin">
@@ -10,18 +10,18 @@
 
 <twbs:row>
     <twbs:column>
-        <h1 class="page-header"><g:message code="admin.video.summary.title"/></h1>
+        <twbs:pageHeader><h1><g:message code="admin.video.summary.title"/></h1></twbs:pageHeader>
 
         <b>TODO: Form bør kun vise emner der tilhører det valgte fag. Faget bliver ignoreret hvis der er et emne valgt</b>
-        <form class="form-inline" id="filter-form">
+        <twbs:form inline="true" id="filter-form">
             <twbs:select list="${courses}" name="course" labelText="Fag" allowEmpty="true"/>
             <twbs:select list="${subjects}" name="subject" labelText="Emner" allowEmpty="true"/>
-            <twbs:button btnstyle="${ButtonStyle.PRIMARY}" type="submit">Filter</twbs:button>
+            <twbs:button style="${ButtonStyle.PRIMARY}" type="submit">Filter</twbs:button>
             <twbs:icon icon="${Icon.REFRESH}" class="loading-indicator spinning" id="loading"/>
-        </form>
+        </twbs:form>
         <hr/>
 
-        <table class="table table-hover">
+        <twbs:table hover="true">
             <thead>
             <tr>
                 <th><g:message code="admin.video.summary.thead.name"/></th>
@@ -35,7 +35,7 @@
             <tbody id="summary-body">
             <g:render template="summaryRows" model="${[summary: summary]}"/>
             </tbody>
-        </table>
+        </twbs:table>
     </twbs:column>
 </twbs:row>
 
@@ -62,8 +62,8 @@
 
     <sdu:requireMousePanel/>
     <g:each in="${summary}" var="entry">
-    <sdu:initMousePanel triggerId="viewTrigger${entry.key.id}" panelId="viewPanel${entry.key.id}"/>
-    <sdu:initMousePanel triggerId="answerTrigger${entry.key.id}" panelId="answerPanel${entry.key.id}"/>
+        <sdu:initMousePanel triggerId="viewTrigger${entry.key.id}" panelId="viewPanel${entry.key.id}"/>
+        <sdu:initMousePanel triggerId="answerTrigger${entry.key.id}" panelId="answerPanel${entry.key.id}"/>
     </g:each>
 </script>
 

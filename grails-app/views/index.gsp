@@ -1,4 +1,5 @@
-<%@ page import="dk.danthrane.twbs.ButtonTagLib.ButtonStyle; dk.danthrane.twbs.ButtonTagLib.ButtonSize" %>
+<%@ page import="dk.danthrane.twbs.GridSize; dk.danthrane.twbs.ButtonStyle; dk.danthrane.twbs.ButtonSize" %>
+
 <!DOCTYPE html>
 <html>
 <head>
@@ -29,10 +30,10 @@
             </twbs:column>
         </twbs:row>
         <p>
-            <twbs:linkButton controller="register" action="index" btnstyle="${ButtonStyle.PRIMARY}" size="${ButtonSize.LARGE}">
+            <twbs:linkButton controller="register" action="index" style="${ButtonStyle.PRIMARY}" size="${ButtonSize.LARGE}">
                 Ny bruger &raquo;
             </twbs:linkButton>
-            <twbs:linkButton controller="login" action="index" btnstyle="${ButtonStyle.PRIMARY}" size="${ButtonSize.LARGE}">
+            <twbs:linkButton controller="login" action="index" style="${ButtonStyle.PRIMARY}" size="${ButtonSize.LARGE}">
                 Log ind &raquo;
             </twbs:linkButton>
         </p>
@@ -42,17 +43,17 @@
 <!-- Additional info here -->
 <twbs:container class="marketing">
     <twbs:row>
-        <twbs:column cols="4" type="lg">
+        <twbs:column cols="4" type="${GridSize.LG}">
             <img src="http://lorempixel.com/200/200/people/" class="img-circle" alt="Generic placeholder image" width="140" height="140" />
             <h2>Header</h2>
             <p>Message</p>
         </twbs:column>
-        <twbs:column cols="4" type="lg">
+        <twbs:column cols="4" type="${GridSize.LG}">
             <img src="http://lorempixel.com/200/200/city/" class="img-circle" alt="Generic placeholder image" width="140" height="140" />
             <h2>Header</h2>
             <p>Message</p>
         </twbs:column>
-        <twbs:column cols="4" type="lg">
+        <twbs:column cols="4" type="${GridSize.LG}">
             <img src="http://lorempixel.com/200/200/nature/" class="img-circle" alt="Generic placeholder image" width="140" height="140" />
             <h2>Header</h2>
             <p>Message</p>

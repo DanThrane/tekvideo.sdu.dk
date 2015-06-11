@@ -5,9 +5,9 @@
     <td><date:oldDtFormatter date="${entry.key.dateCreated}"/></td>
     <td>
         ${entry.value.totalViews}
-        <twbs:linkButton domId="viewTrigger${entry.key.id}" class="mousePanelTrigger">
+        <twbs:button id="viewTrigger${entry.key.id}" class="mousePanelTrigger">
             <twbs:icon icon="${Icon.INFO_SIGN}"/>
-        </twbs:linkButton>
+        </twbs:button>
         <sdu:mousePanel id="viewPanel${entry.key.id}" title="${g.message(code: "admin.video.summary.thead.views")}">
             <table>
                 <tbody>
@@ -29,9 +29,9 @@
     </td>
     <td>
         ${entry.value.answersGiven} (${entry.value.correctPercentage}%)
-        <twbs:linkButton domId="answerTrigger${entry.key.id}" class="mousePanelTrigger">
+        <twbs:button id="answerTrigger${entry.key.id}" class="mousePanelTrigger">
             <twbs:icon icon="${Icon.INFO_SIGN}"/>
-        </twbs:linkButton>
+        </twbs:button>
         <sdu:mousePanel id="answerPanel${entry.key.id}" title="${g.message(code: "admin.video.summary.thead.answers")}">
             <table>
                 <tbody>

@@ -1,5 +1,5 @@
 <%@ page contentType="text/html;charset=UTF-8" %>
-<%@ page import="dk.sdu.tekvideo.FaIcon; dk.danthrane.twbs.ButtonTagLib.ButtonStyle; dk.danthrane.twbs.ButtonTagLib.ButtonSize" %>
+<%@ page import="dk.danthrane.twbs.ButtonStyle; dk.danthrane.twbs.ButtonSize" %>
 <html>
 <head>
     <meta name="layout" content="main">
@@ -33,7 +33,7 @@
 
     <twbs:row>
         <twbs:column cols="3">
-            <twbs:linkButton btnstyle="${ButtonStyle.LINK}" controller="course" action="signup" id="${course.id}">
+            <twbs:linkButton style="${ButtonStyle.LINK}" controller="course" action="signup" id="${course.id}">
                 Vis til/afmeldinger
             </twbs:linkButton>
         </twbs:column>

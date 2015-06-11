@@ -1,4 +1,4 @@
-<%@ page contentType="text/html;charset=UTF-8" %>
+<%@ page import="dk.danthrane.twbs.NavBarPlacement" contentType="text/html;charset=UTF-8" %>
 <html>
 <head>
     <title>Admin | <g:layoutTitle/></title>
@@ -11,44 +11,29 @@
 
 <body>
 
-%{-- TODO Expand navbar tag lib to support this stuff. For now just use Bootstrap directly --}%
+<twbs:navbar placement="${NavBarPlacement.FIXED_TO_TOP}" inverse="true">
+    <g:content key="navbar-brand">
+        Admin Panel
+    </g:content>
+</twbs:navbar>
 
-<nav class="navbar navbar-inverse navbar-fixed-top">
-    <div class="container-fluid">
-        <div class="navbar-header">
-            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
-                <span class="sr-only">Toggle navigation</span>
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-            </button>
-            <a class="navbar-brand" href="#">Admin Panel</a>
-        </div>
-    </div>
-</nav>
 
-<twbs:fluidContainer>
-    <div class="row">
-        <div class="col-sm-3 col-md-2 sidebar">
-            <ul class="nav nav-sidebar">
-                <li class="navbar-heading">Videoer</li>
-                %{-- Not a pretty 'active' solution --}%
-                <twbs:navitem active="${active == "home"}">
-                    <g:link controller="admin" action="index">
-                        Hjem
-                    </g:link>
-                </twbs:navitem>
-                <twbs:navitem active="${active == "summary"}">
-                    <g:link content="admin" action="videoSummary">
-                        Opsummering
-                    </g:link>
-                </twbs:navitem>
-            </ul>
-        </div>
-        <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
+<twbs:container fluid="true">
+    <twbs:row>
+        <twbs:column cols="2" class="sidebar">
+            <twbs:nav class="nav-sidebar">
+                <twbs:navItem active="${active == "home"}" controller="admin" action="index">
+                    Hjem
+                </twbs:navItem>
+                <twbs:navItem active="${active == summary}" controller="admin" action="videoSummary">
+                    Opsummering
+                </twbs:navItem>
+            </twbs:nav>
+        </twbs:column>
+        <twbs:column cols="10" offset="2" class="main">
             <g:layoutBody/>
-        </div>
-    </div>
-</twbs:fluidContainer>
+        </twbs:column>
+    </twbs:row>
+</twbs:container>
 </body>
 </html>

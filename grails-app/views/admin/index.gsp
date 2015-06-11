@@ -8,10 +8,12 @@
 <body>
 
 <twbs:row>
-    <h1 class="page-header">Hej!</h1>
+    <twbs:column>
+        <h1 class="page-header">Hej!</h1>
 
-    <p>Tanken er at der vil kunne blive vist diverse statistikker der kunne være relevante for nyligt udgivet videoer.
-    Intet er sat på plads med denne side endnu, indtil videre så vil det interessante være at finde ude til venstre.</p>
+        <p>Tanken er at der vil kunne blive vist diverse statistikker der kunne være relevante for nyligt udgivet videoer.
+        Intet er sat på plads med denne side endnu, indtil videre så vil det interessante være at finde ude til venstre.</p>
+    </twbs:column>
 </twbs:row>
 
 </body>
