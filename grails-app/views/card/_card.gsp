@@ -1,4 +1,4 @@
-<twbs:row class="clickable">
+<twbs:row class="clickable ${clazz}" id="${id}">
     <twbs:column cols="${cols}">
         <div class="card">
             ${raw(body())}

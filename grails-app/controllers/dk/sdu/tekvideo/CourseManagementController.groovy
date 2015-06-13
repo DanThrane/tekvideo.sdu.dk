@@ -19,4 +19,20 @@ class CourseManagementController {
         }
     }
 
+    def manage(Course course) {
+        if (teacherService.canAccess(course)) {
+            [course: course]
+        } else {
+            render status: 400
+        }
+    }
+
+    def getVideos(Subject subject) {
+        if (teacherService.canAccess(subject.course)) {
+            render template: "videos", model: [videos: subject.videos]
+        } else {
+            render status: 400
+        }
+    }
+
 }

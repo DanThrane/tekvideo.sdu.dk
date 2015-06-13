@@ -9,9 +9,9 @@
 
 <twbs:row>
     <twbs:column>
-        <twbs:pageHeader><h1>Mine kurser</h1></twbs:pageHeader>
+        <twbs:pageHeader><h3>Mine kurser</h3></twbs:pageHeader>
 
-        <h3><fa:icon icon="${FaIcon.WRENCH}" /> Kontrol panel</h3>
+        <h4><fa:icon icon="${FaIcon.WRENCH}" /> Kontrol panel</h4>
         <twbs:row>
             <twbs:column cols="3">
                 <twbs:linkButton action="createCourse" style="${ButtonStyle.LINK}" block="true">
@@ -23,7 +23,7 @@
 
         <twbs:row>
             <twbs:column cols="6">
-                <h3><fa:icon icon="${FaIcon.CALENDAR}" /> Aktive fag</h3>
+                <h4><fa:icon icon="${FaIcon.CALENDAR}" /> Aktive fag</h4>
                 <g:if test="${activeCourses.isEmpty()}">
                     Du har ingen aktive kurser!
                 </g:if>
@@ -36,7 +36,7 @@
                 </g:else>
             </twbs:column>
             <twbs:column cols="6">
-                <h3> <fa:icon icon="${FaIcon.FIRE}" /> Populære videoer</h3>
+                <h4> <fa:icon icon="${FaIcon.FIRE}" /> Populære videoer</h4>
                 <ol>
                     <li><a href="#">Video 1</a></li>
                     <li><a href="#">Video 2</a></li>

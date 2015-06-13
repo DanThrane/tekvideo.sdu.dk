@@ -21,4 +21,8 @@ class TeacherService {
             fail("teacherservice.no_teacher", false)
         }
     }
+
+    boolean canAccess(Course course) {
+        return course.teacher == getAuthenticatedTeacher()
+    }
 }

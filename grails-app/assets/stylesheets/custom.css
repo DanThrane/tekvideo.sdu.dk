@@ -6,6 +6,7 @@
     background-color: #fff;
     box-shadow: 0 6px 5px 0 rgba(0, 0, 0, 0.10);
     border: 1px solid #e8e8e8;
+    width: 100%;
 
     -webkit-transition: all 0.25s linear;
     -o-transition: all 0.25s linear;
@@ -119,4 +120,9 @@
     padding-top: 10px; /* TODO Still some issues with math growing out of box */
     background-color: white;
     font-size: 150%;
+}
+
+.center {
+    text-align: center;
+    width: 100%;
 }
