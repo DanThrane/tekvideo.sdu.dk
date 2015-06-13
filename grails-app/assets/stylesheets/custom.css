@@ -112,3 +112,11 @@
 .navbar-inverse .navbar-brand {
     color: white;
 }
+
+.question {
+    min-width: 90px; /* old 50 */
+    /*height: 25px;*/
+    padding-top: 10px; /* TODO Still some issues with math growing out of box */
+    background-color: white;
+    font-size: 150%;
+}
