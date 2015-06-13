@@ -9,6 +9,10 @@
 <body>
 
 
+<twbs:pageHeader>
+    <h3>Kurser</h3>
+</twbs:pageHeader>
+
 <twbs:row>
     <twbs:column>
         <ol class="breadcrumb">
@@ -17,8 +21,6 @@
         </ol>
     </twbs:column>
 </twbs:row>
-
-<h3>Kurser</h3>
 
 <twbs:row>
     <twbs:column>

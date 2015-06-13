@@ -31,13 +31,5 @@
     </twbs:form>
 </twbs:row>
 
-<script>
-    $(document).ready(function() {
-        $('#username').focus();
-    });
-
-    <s2ui:initCheckboxes/>
-</script>
-
 </body>
 </html>
