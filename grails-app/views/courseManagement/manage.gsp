@@ -13,7 +13,7 @@
         <h4><fa:icon icon="${FaIcon.WRENCH}" /> Kontrol panel</h4>
         <twbs:row>
             <twbs:column cols="3">
-                <twbs:linkButton action="createCourse" style="${ButtonStyle.LINK}" block="true">
+                <twbs:linkButton action="createSubject" id="${course.id}" style="${ButtonStyle.LINK}" block="true">
                     <fa:icon icon="${FaIcon.PLUS_CIRCLE}" />
                     Opret nyt emne
                 </twbs:linkButton>

@@ -22,6 +22,15 @@ class TeacherService {
         }
     }
 
+    ServiceResult<Subject> createSubject(Course course, CreateSubjectCommand command) {
+        if (command.subject.validate()) {
+            course.addToSubjects(command.subject).save(flush: true)
+            ok(command.subject)
+        } else {
+            fail("teacherservice.field_errors", false)
+        }
+    }
+
     boolean canAccess(Course course) {
         return course.teacher == getAuthenticatedTeacher()
     }

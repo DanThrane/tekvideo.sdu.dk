@@ -23,7 +23,7 @@ class CourseManagementController {
         if (teacherService.canAccess(course)) {
             [course: course]
         } else {
-            render status: 400
+            notAllowedCourse()
         }
     }
 
@@ -31,8 +31,36 @@ class CourseManagementController {
         if (teacherService.canAccess(subject.course)) {
             render template: "videos", model: [videos: subject.videos]
         } else {
-            render status: 400
+            notAllowedCourse()
         }
+    }
+
+    def createSubject(Course course) {
+        if (teacherService.canAccess(course)) {
+            [course: course]
+        } else {
+            notAllowedCourse()
+        }
+    }
+
+    def postSubject(Course course, CreateSubjectCommand command) {
+        if (teacherService.canAccess(course)) {
+            command?.subject?.course = course
+            def subject = teacherService.createSubject(course, command)
+            if (subject.success) {
+                flash.success = "Emne '$command.subject.name' oprettet!"
+                redirect action: "manage", id: course.id
+            } else {
+                render view: "createSubject", model: [course: course, command: command]
+            }
+        } else {
+            notAllowedCourse()
+        }
+    }
+
+    private void notAllowedCourse() {
+        flash.error = "Du har ikke tiladelse til at tilgå dette kursus"
+        redirect action: "index"
     }
 
 }
