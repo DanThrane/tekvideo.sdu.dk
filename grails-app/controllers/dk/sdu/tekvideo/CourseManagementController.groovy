@@ -43,6 +43,20 @@ class CourseManagementController {
         }
     }
 
+    def createCourse() {
+
+    }
+
+    def postCourse(CreateCourseCommand command) {
+        def course = teacherService.createCourse(command)
+        if (course.success) {
+            flash.success = "Kurset '$command.course.name' oprettet!"
+            redirect action: "index"
+        } else {
+            render view: "createCourse", model: [command: command]
+        }
+    }
+
     def postSubject(Course course, CreateSubjectCommand command) {
         if (teacherService.canAccess(course)) {
             command?.subject?.course = course

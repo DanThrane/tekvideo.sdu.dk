@@ -1,7 +1,8 @@
-<%@ page import="dk.sdu.tekvideo.FaIcon" %>
+<%@ page import="dk.sdu.tekvideo.FaIcon" contentType="text/html;charset=UTF-8" %>
 <!DOCTYPE html>
 <html>
 <head>
+    <meta charset="UTF-8">
     <title>TekVideo | <g:layoutTitle default="Title"/></title>
     <g:layoutHead/>
     <asset:stylesheet src="application.css"/>

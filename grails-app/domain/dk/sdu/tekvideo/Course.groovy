@@ -4,6 +4,7 @@ class Course {
     String name
     String fullName
     String description
+    Semester semester
 
     List<Subject> subjects // ordered
     static belongsTo = [teacher: Teacher]
