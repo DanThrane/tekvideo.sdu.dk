@@ -126,3 +126,40 @@
     text-align: center;
     width: 100%;
 }
+
+.fields-active {
+    position: absolute;
+    width: 800px;
+    height: 600px;
+    z-index: 9999;
+}
+
+.draggableField {
+    width: 150px;
+    min-height: 30px;
+    background-color: white;
+    border: 1px solid #eee;
+    padding: 10px;
+    box-shadow: 0 6px 5px 0 rgba(0, 0, 0, 0.10);
+    text-align: center;
+    position: absolute;
+}
+
+.field-header {
+    position: absolute;
+    top: -25px;
+    left: 0;
+}
+
+.admin-field-question {
+    width: 100%;
+    font-size: 100% !important;
+}
+
+.admin-timeline-subject h6 {
+    text-indent: 1em;
+}
+
+.admin-subject-margin-fix {
+    margin-top: 11.5px;
+}

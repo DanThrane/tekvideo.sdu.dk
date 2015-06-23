@@ -43,6 +43,10 @@ class CourseManagementController {
         }
     }
 
+    def createVideo(Course course) {
+        [course: course]
+    }
+
     def createCourse() {
 
     }
