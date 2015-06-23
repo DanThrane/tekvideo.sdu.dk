@@ -36,7 +36,28 @@
 <hr>
 <twbs:row>
     <twbs:column cols="9">
-
+        <div id="subject-form-card" class="layout-card hide">
+            <h4><fa:icon icon="${FaIcon.BOOK}" /> Redigér emne</h4>
+            <twbs:buttonGroup justified="true">
+                <twbs:button>
+                    <fa:icon icon="${FaIcon.PLUS}" /> Tilføj spørgsmål
+                </twbs:button>
+                <twbs:button style="${ButtonStyle.DANGER}">
+                    <fa:icon icon="${FaIcon.TRASH}" /> Slet
+                </twbs:button>
+            </twbs:buttonGroup>
+            <hr>
+            <twbs:form id="subject-form">
+                <twbs:input name="subjectName" labelText="Navn" />
+                <twbs:input name="subjectTimecode" labelText="Tidskode">
+                    For eksempel: <code>2:20</code>
+                </twbs:input>
+                <twbs:button type="submit" style="${ButtonStyle.SUCCESS}">
+                    <fa:icon icon="${FaIcon.CHECK}" />
+                    Gem ændringer
+                </twbs:button>
+            </twbs:form>
+        </div>
     </twbs:column>
     <twbs:column cols="3">
         <h4><fa:icon icon="${FaIcon.VIDEO_CAMERA}" /> Tidslinie</h4>
@@ -91,7 +112,8 @@
 <div id="subjectTemplate" class="hide">
     <div class="admin-timeline-subject" data-id="{2}">
         <twbs:row>
-            <twbs:column cols="10" type="${GridSize.SM}">
+            <twbs:column cols="10" type="${GridSize.SM}" class="block-link-container">
+                <a href="#" class="admin-timeline-subject-link"><span class="block-link"></span></a>
                 <h5>{0} <small>{1}</small></h5>
             </twbs:column>
             <twbs:column cols="2" type="${GridSize.SM}">
@@ -124,6 +146,7 @@
     $(document).ready(function () {
         var player = null;
         var currentTimeline = [];
+        var editing = null;
 
         function parseYouTubeID(url) {
             if (url.length == 11) {
@@ -138,6 +161,19 @@
             }
         }
 
+        function parseTimecode(t) {
+            var split = t.split(":");
+            if (split.length == 3) {
+                return parseInt(split[0]) * 60 * 60 + parseInt(split[1]) * 60 + parseInt(split[2]);
+            } else if (split.length == 2) {
+                return parseInt(split[0]) * 60 + parseInt(split[1]);
+            } else if (split.length == 1) {
+                return parseInt(t);
+            } else {
+                return null;
+            }
+        }
+
         function formatTimestamp(t) {
             var timestamp = new Date(t);
             return "{0}:{1}".format(
@@ -146,22 +182,44 @@
             );
         }
 
-        function addSubjectEntry(subject) {
-            var rawTemplate = $("#subjectTemplate").html();
-            var template = $(rawTemplate.format(
-                    subject.title,
-                    formatTimestamp(subject.timecode * 1000),
-                    42)
-            );
-            var questions = template.find(".admin-time-questions");
-            subject.questions.forEach(function (item) {
-                console.log(item);
-                questions.append($("#questionTemplate").html().format(
-                        item.title,
-                        formatTimestamp(item.timecode * 1000))
-                );
+        function renderTimeline() {
+            var timeline = $("#timeline-subjects");
+            timeline.html("");
+            currentTimeline.forEach(function (subject) {
+                var rawTemplate = $("#subjectTemplate").html();
+                var template = $(rawTemplate.format(
+                        subject.title,
+                        formatTimestamp(subject.timecode * 1000),
+                        42));
+                template.find(".admin-timeline-subject-link").click(function (e) {
+                    e.preventDefault();
+                    player.currentTime(subject.timecode);
+                    editSubject(subject);
+                });
+                var questions = template.find(".admin-time-questions");
+                subject.questions.forEach(function (item) {
+                    questions.append($("#questionTemplate").html().format(
+                                    item.title,
+                                    formatTimestamp(item.timecode * 1000))
+                    );
+                });
+                timeline.append(template);
             });
-            $("#timeline-subjects").append(template);
+        }
+
+        function addSubjectEntry(subject) {
+            currentTimeline.push(subject);
+            renderTimeline();
+            return currentTimeline.length - 1;
+        }
+
+        function editSubject(subject) {
+            $(".layout-card").addClass("hide");
+            var form = $("#subject-form-card");
+            form.removeClass("hide");
+            form.find("#subjectName").val(subject.title);
+            form.find("#subjectTimecode").val(formatTimestamp(subject.timecode * 1000));
+            editing = subject;
         }
 
         function displayVideo(youtubeId) {
@@ -201,10 +259,8 @@
                         {
                             name: "secondq",
                             answer: {
-                                type: "custom",
-                                validator: function (val) {
-                                    return (val == 5);
-                                }
+                                type: "expression",
+                                value: "5"
                             },
                             topoffset: 170,
                             leftoffset: 290
@@ -217,6 +273,23 @@
 
         $("#addField").click(function () {
             $("#fields").append("<div class='draggableField'></div>");
+        });
+
+        $("#addSubject").click(function () {
+            var subject = {
+                title: "Unavngivet",
+                timecode: 0,
+                questions: []
+            };
+            addSubjectEntry(subject);
+            editSubject(subject);
+        });
+
+        $("#subject-form").submit(function (e) {
+            e.preventDefault();
+            editing.timecode = parseTimecode($("#subjectTimecode").val());
+            editing.title = $("#subjectName").val();
+            renderTimeline();
         });
 
         // target elements with the "draggable" class

@@ -33,6 +33,10 @@
     transition: all 0.25s linear;
 }
 
+.block-link-container {
+    position: relative;
+}
+
 .block-link {
     position:absolute;
     width: 100%;
