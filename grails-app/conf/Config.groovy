@@ -88,7 +88,7 @@ environments {
     }
     production {
         grails.logging.jul.usebridge = false
-        grails.serverURL = "http://danthrane.me/"
+        grails.serverURL = "http://tekvideo.sdu.dk/"
     }
 }
 
