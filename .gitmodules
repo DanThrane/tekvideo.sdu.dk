@@ -3,4 +3,4 @@
 	url = https://github.com/DanThrane/VideosWithQuestions.git
 [submodule "grails-twbs-taglibs"]
 	path = grails-twbs-taglibs
-	url = git@bitbucket.org:Dan_Thrane/grails-twbs-taglibs.git
+	url = https://github.com/DanThrane/grails-twbs-taglibs.git
