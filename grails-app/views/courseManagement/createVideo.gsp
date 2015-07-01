@@ -354,7 +354,7 @@
         });
 
         $("#backToQuestion").click(function () {
-            editQuestion(editingSubject, editingQuestion);
+            Questions.editQuestion(editingSubject, editingQuestion);
             Fields.clearEditingField();
             $(".draggableField.active").removeClass("active");
         });
@@ -510,7 +510,11 @@
                 switch (fieldTypeId) {
                     case FIELD_TYPE_IDS.expression:
                         var expressionField = $(FIELD_EXPRESSION);
-                        expressionField.text(editingField.answer.value);
+                        if (editingField.answer && editingField.answer.value) {
+                            expressionField.text(editingField.answer.value);
+                        } else {
+                            expressionField.text("");
+                        }
                         expressionField.mathquill("editable");
                         break;
                 }
@@ -558,7 +562,7 @@
                 console.log(editingField);
 
                 clearEditingField();
-                editQuestion(editingSubject, editingQuestion);
+                Questions.editQuestion(editingSubject, editingQuestion);
                 displayAllFields(editingQuestion);
             }
 
@@ -589,6 +593,8 @@
                     e.preventDefault();
                     saveField();
                 });
+
+                $(FIELD_EXPRESSION).mathquill("editable");
 
                 initDragging();
             }
