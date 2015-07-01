@@ -7,6 +7,7 @@
 //= require lib/tex-wrangler
 //= require events
 //= require interactivevideos
+//= require cardstack
 
 String.prototype.format = function() {
     var args = arguments;

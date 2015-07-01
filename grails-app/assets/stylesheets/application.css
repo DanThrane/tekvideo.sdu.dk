@@ -3,6 +3,7 @@
 *= require style
 *= require vendor/mathquill
 *= require custom
+*= require cardstack
 */
 
 .s2ui_hidden_button {

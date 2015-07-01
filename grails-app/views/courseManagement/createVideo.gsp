@@ -33,80 +33,106 @@
 <hr>
 
 <twbs:row>
-    %{-- Attributes --}%
+%{-- Attributes --}%
     <twbs:column cols="9">
-        %{-- Edit subject --}%
-        <div id="subject-form-card" class="layout-card hide">
-            <h4><fa:icon icon="${FaIcon.BOOK}" /> Redigér emne</h4>
-            <twbs:buttonGroup justified="true">
-                <twbs:button id="addQuestion">
-                    <fa:icon icon="${FaIcon.PLUS}" /> Tilføj spørgsmål
-                </twbs:button>
-                <twbs:button style="${ButtonStyle.DANGER}" id="deleteSubject">
-                    <fa:icon icon="${FaIcon.TRASH}" /> Slet
-                </twbs:button>
-            </twbs:buttonGroup>
-            <hr>
-            <twbs:form id="subject-form">
-                <twbs:input name="subjectName" labelText="Navn" />
-                <twbs:input name="subjectTimecode" labelText="Tidskode">
-                    For eksempel: <code>2:20</code>
-                </twbs:input>
-                <twbs:button type="submit" style="${ButtonStyle.SUCCESS}">
-                    <fa:icon icon="${FaIcon.CHECK}" />
-                    Gem ændringer
-                </twbs:button>
-            </twbs:form>
-        </div>
-        %{-- Edit question --}%
-        <div id="question-form-card" class="layout-card hide">
-            <h4><fa:icon icon="${FaIcon.QUESTION}" /> Redigér spørgsmål</h4>
-            <twbs:buttonGroup justified="true">
-                <twbs:button class="addField">
-                    <fa:icon icon="${FaIcon.PLUS}" /> Tilføj felt
-                </twbs:button>
-                <twbs:button style="${ButtonStyle.DANGER}" id="deleteQuestion">
-                    <fa:icon icon="${FaIcon.TRASH}" /> Slet
-                </twbs:button>
-            </twbs:buttonGroup>
-            <hr>
-            <twbs:form id="question-form">
-                <twbs:input name="questionName" labelText="Navn" />
-                <twbs:input name="questionTimecode" labelText="Tidskode">
-                    For eksempel: <code>2:20</code>
-                </twbs:input>
-                <twbs:button type="submit" style="${ButtonStyle.SUCCESS}">
-                    <fa:icon icon="${FaIcon.CHECK}" />
-                    Gem ændringer
-                </twbs:button>
-            </twbs:form>
-        </div>
-        %{-- Edit field --}%
-        <div id="field-form-card" class="layout-card hide">
-            <h4><fa:icon icon="${FaIcon.FILE}" />  Redigér felt</h4>
-            <twbs:buttonGroup justified="true">
-                <twbs:button id="backToQuestion">
-                    <fa:icon icon="${FaIcon.BACKWARD}" /> Tilbage til spørgsmål
-                </twbs:button>
-                <twbs:button class="addField" style="${ButtonStyle.SUCCESS}">
-                    <fa:icon icon="${FaIcon.PLUS}" /> Tilføj nyt felt
-                </twbs:button>
-                <twbs:button style="${ButtonStyle.DANGER}" id="deleteQuestion">
-                    <fa:icon icon="${FaIcon.TRASH}" /> Slet
-                </twbs:button>
-            </twbs:buttonGroup>
-            <hr>
-            <twbs:form id="field-form">
-                <twbs:input name="fieldName" labelText="Felt ID">
-                    Hvis du bruger et JavaScript felt, så vil du kunne henvise til feltet ved hjælp af dette ID
-                </twbs:input>
-                <twbs:select name="fieldType" labelText="Spørgsmåls type"
-                             list="${["Ingen", "Mellem", "Tekst" , "Brugerdefineret (JavaScript)",
-                                      "Matematisk udtryk"]}" />
-            </twbs:form>
+        <div class="card-stack" id="attributes-stack">
+            %{-- Edit subject --}%
+            <div id="subject-form-card" class="card-item">
+                <h4><fa:icon icon="${FaIcon.BOOK}" /> Redigér emne</h4>
+                <twbs:buttonGroup justified="true">
+                    <twbs:button id="addQuestion">
+                        <fa:icon icon="${FaIcon.PLUS}" /> Tilføj spørgsmål
+                    </twbs:button>
+                    <twbs:button style="${ButtonStyle.DANGER}" id="deleteSubject">
+                        <fa:icon icon="${FaIcon.TRASH}" /> Slet
+                    </twbs:button>
+                </twbs:buttonGroup>
+                <hr>
+                <twbs:form id="subject-form">
+                    <twbs:input name="subjectName" labelText="Navn" />
+                    <twbs:input name="subjectTimecode" labelText="Tidskode">
+                        For eksempel: <code>2:20</code>
+                    </twbs:input>
+                    <twbs:button type="submit" style="${ButtonStyle.SUCCESS}">
+                        <fa:icon icon="${FaIcon.CHECK}" />
+                        Gem ændringer
+                    </twbs:button>
+                </twbs:form>
+            </div>
+            %{-- Edit question --}%
+            <div id="question-form-card" class="card-item">
+                <h4><fa:icon icon="${FaIcon.QUESTION}" /> Redigér spørgsmål</h4>
+                <twbs:buttonGroup justified="true">
+                    <twbs:button class="addField">
+                        <fa:icon icon="${FaIcon.PLUS}" /> Tilføj felt
+                    </twbs:button>
+                    <twbs:button style="${ButtonStyle.DANGER}" id="deleteQuestion">
+                        <fa:icon icon="${FaIcon.TRASH}" /> Slet
+                    </twbs:button>
+                </twbs:buttonGroup>
+                <hr>
+                <twbs:form id="question-form">
+                    <twbs:input name="questionName" labelText="Navn" />
+                    <twbs:input name="questionTimecode" labelText="Tidskode">
+                        For eksempel: <code>2:20</code>
+                    </twbs:input>
+                    <twbs:button type="submit" style="${ButtonStyle.SUCCESS}">
+                        <fa:icon icon="${FaIcon.CHECK}" />
+                        Gem ændringer
+                    </twbs:button>
+                </twbs:form>
+            </div>
+            %{-- Edit field --}%
+            <div id="field-form-card" class="card-item">
+                <h4><fa:icon icon="${FaIcon.FILE}" />  Redigér felt</h4>
+                <twbs:buttonGroup justified="true">
+                    <twbs:button id="backToQuestion">
+                        <fa:icon icon="${FaIcon.BACKWARD}" /> Tilbage til spørgsmål
+                    </twbs:button>
+                    <twbs:button class="addField" style="${ButtonStyle.SUCCESS}">
+                        <fa:icon icon="${FaIcon.PLUS}" /> Tilføj nyt felt
+                    </twbs:button>
+                    <twbs:button style="${ButtonStyle.DANGER}" id="deleteQuestion">
+                        <fa:icon icon="${FaIcon.TRASH}" /> Slet
+                    </twbs:button>
+                </twbs:buttonGroup>
+                <hr>
+                <twbs:form id="field-form">
+                    <twbs:input name="fieldName" labelText="Felt ID">
+                        Hvis du bruger et JavaScript felt, så vil du kunne henvise til feltet ved hjælp af dette ID
+                    </twbs:input>
+                    <twbs:select name="fieldType" labelText="Spørgsmåls type"
+                                 list="${["Ingen", "Mellem", "Tekst" , "Brugerdefineret (JavaScript)",
+                                          "Matematisk udtryk"]}" />
+
+                    <div class="card-stack" id="field-type-stack">
+                        <div class="card-item active" id="no-field-type-card">
+                            1
+                        </div>
+                        <div class="card-item" id="between-field-type-card">
+                            2
+                        </div>
+                        <div class="card-item" id="text-field-type-card">
+                            3
+                        </div>
+                        <div class="card-item" id="userdefined-field-type-card">
+                            4
+                        </div>
+                        <div class="card-item" id="expression-field-type-card">
+                            <label>Udtryk</label> <br />
+                            <span id="expression-field"></span>
+                            <br />
+                        </div>
+                    </div>
+                    <twbs:button type="submit" block="true" style="${ButtonStyle.SUCCESS}" id="field-save">
+                        <fa:icon icon="${FaIcon.CHECK}" />
+                        Gem ændringer
+                    </twbs:button>
+                </twbs:form>
+            </div>
         </div>
     </twbs:column>
-    %{-- Timeline --}%
+%{-- Timeline --}%
     <twbs:column cols="3">
         <h4><fa:icon icon="${FaIcon.VIDEO_CAMERA}" /> Tidslinie</h4>
         <div id="timeline-subjects"></div>
@@ -192,7 +218,9 @@
         var editing = null;
         var editingQuestion = null;
         var editingField = null;
-        var id = 0;
+        var editingFieldIndex = -1;
+
+        var attributesStack = new CardStack("#attributes-stack");
 
         function parseYouTubeID(url) {
             if (url.length == 11) {
@@ -249,7 +277,7 @@
         }
 
         function editSubject(subject) {
-            var form = displayCard("#subject-form-card");
+            var form = attributesStack.select("#subject-form-card");
             form.find("#subjectName").val(subject.title);
             form.find("#subjectTimecode").val(formatTimestamp(subject.timecode * 1000));
             editing = subject;
@@ -276,21 +304,13 @@
             editingQuestion = question;
             $("#questionName").val(question.title);
             $("#questionTimecode").val(formatTimestamp(question.timecode * 1000));
-            displayCard("#question-form-card");
+            Fields.displayAllFields(question);
+            attributesStack.select("#question-form-card");
         }
 
         function addSubjectEntry(subject) {
             currentTimeline.push(subject);
             renderTimeline();
-        }
-
-        function displayCard(selector) {
-            hideAllCards();
-            return $(selector).removeClass("hide");
-        }
-
-        function hideAllCards() {
-            $(".layout-card").addClass("hide");
         }
 
         function displayVideo(youtubeId) {
@@ -341,7 +361,7 @@
             currentTimeline.splice(currentTimeline.indexOf(editing), 1);
             editing = null;
             renderTimeline();
-            hideAllCards();
+            attributesStack.hideAll();
         });
 
         $("#subject-form").submit(function (e) {
@@ -351,19 +371,6 @@
             renderTimeline();
         });
 
-        $(".addField").click(function () {
-            var fieldObject = {
-                name: "field-" + id,
-                topoffset: 0,
-                leftoffset: 0
-            };
-            editingQuestion.fields.push(fieldObject);
-            var rawTemplate = $("#fieldTemplate").html().format(id, fieldObject.name);
-            var field = $(rawTemplate);
-            $("#fields").append(field);
-            startEditing();
-            id++;
-        });
 
         $("#deleteQuestion").click(function () {
             var number = editing.questions.indexOf(editingQuestion);
@@ -380,50 +387,14 @@
 
         $("#backToQuestion").click(function () {
             editQuestion(editing, editingQuestion);
-            editingField = null;
+            Fields.clearEditingField();
             $(".draggableField.active").removeClass("active");
         });
 
         $("#stopEdit").click(function () {
-            $(".draggableField").remove();
+            Fields.removeAllFields();
             stopEditing();
         });
-
-        // target elements with the "draggable" class
-        interact('.draggableField')
-                .draggable({
-                    // enable inertial throwing
-                    inertia: true,
-                    // keep the element within the area of it's parent
-                    restrict: {
-                        restriction: "parent",
-                        endOnly: true,
-                        elementRect: { top: 0, left: 0, bottom: 1, right: 1 }
-                    },
-
-                    // call this function on every dragmove event
-                    onmove: dragMoveListener
-                });
-
-        function dragMoveListener (event) {
-            var target = $(event.target);
-            var x = (parseFloat(target.attr('data-x')) || 0) + event.dx;
-            var y = (parseFloat(target.attr('data-y')) || 0) + event.dy;
-
-            // translate the element
-            target.css("transform", "translate(" + x + "px, " + y + "px)");
-
-            // update the posiion attributes
-            target.attr('data-x', x);
-            target.attr('data-y', y);
-
-            $(".draggableField").removeClass("active");
-            $(target).addClass("active");
-
-            if (editingField === null) {
-                displayCard("#field-form-card");
-            }
-        }
 
         <g:if test="${params.test}">
         $("#youtubeId").val("eiSfEP7gTRw");
@@ -457,6 +428,214 @@
         });
         </g:if>
 
+        function init() {
+            Fields.init();
+        }
+
+        var Fields = {};
+        (function (exports) {
+            var CARDS_FIELD_TYPE_ATTRIBUTES = ["#no-field-type-card", "#between-field-type-card", "#text-field-type-card",
+                "#userdefined-field-type-card", "#expression-field-type-card"];
+            var FIELD_TYPES = ["none", "between", "equal", "custom", "expression"];
+            var FIELD_TYPE_IDS = {
+                "none": 0,
+                "between": 1,
+                "equal": 2,
+                "custom": 3,
+                "expression": 4
+            };
+
+            var ATTRIBUTE_PANEL_MAIN = "#field-form-card";
+            var FIELD_NAME = "#fieldName";
+            var FIELD_TYPE = "#fieldType";
+
+            // Expression attributes
+            var FIELD_EXPRESSION = "#expression-field";
+
+            var questionStack = new CardStack("#field-type-stack");
+
+            /**
+             * Displays the card item which holds attribute for the currently selected field type
+             */
+            function showSelectedFieldTypeAttributes() {
+                questionStack.select(CARDS_FIELD_TYPE_ATTRIBUTES[getSelectedFieldTypeId()]);
+            }
+
+            function getSelectedFieldTypeId() {
+                return $(FIELD_TYPE)[0].selectedIndex;
+            }
+
+            /**
+             * Displays all the fields belonging to a specific question
+             */
+            function displayAllFields(question) {
+                removeAllFields();
+                console.log(question);
+                if (question !== null) {
+                    for (var i = 0; i < question.fields.length; i++) {
+                        var field = question.fields[i];
+                        var domField = createField(i, field);
+                        placeFieldAt(domField, field.leftoffset, field.topoffset);
+                    }
+                }
+            }
+
+            function editField(fieldIndex) {
+                attributesStack.select(ATTRIBUTE_PANEL_MAIN);
+                editingField = editingQuestion.fields[fieldIndex];
+                editingFieldIndex = fieldIndex;
+
+                $(FIELD_NAME).val(editingField.name);
+                var fieldTypeId = getIdForFieldAnswer(editingField.answer);
+                $(FIELD_TYPE + " option")[fieldTypeId].selected = true;
+                showSelectedFieldTypeAttributes();
+
+                // TODO Don't hardcode
+                switch (fieldTypeId) {
+                    case FIELD_TYPE_IDS.expression:
+                        var expressionField = $(FIELD_EXPRESSION);
+                        expressionField.text(editingField.answer.value);
+                        expressionField.mathquill("editable");
+                        break;
+                }
+            }
+
+            function getIdForFieldAnswer(answer) {
+                if (answer === undefined || answer == null) return 0;
+                for (var i = 0; i < FIELD_TYPES.length; i++) {
+                    if (FIELD_TYPES[i] === answer.type) {
+                        return i;
+                    }
+                }
+                return 0;
+            }
+
+            function createField(id, fieldObject) {
+                console.log("Creating field!");
+                var rawTemplate = $("#fieldTemplate").html().format(id, fieldObject.name);
+                var field = $(rawTemplate);
+                $("#fields").append(field);
+                startEditing();
+                console.log(field);
+                return field;
+            }
+
+            function saveField() {
+                if (!editingField) return;
+
+                // Movement is saved whenever we move the field around
+                editingField.name = $(FIELD_NAME).val();
+
+                switch (getSelectedFieldTypeId()) {
+                    case FIELD_TYPE_IDS.none:
+                        editingField.answer = {
+                            type: "none"
+                        };
+                        break;
+                    case FIELD_TYPE_IDS.expression:
+                        editingField.answer = {
+                            type: "expression",
+                            value: parseTex($(FIELD_EXPRESSION).mathquill("latex"))
+                        };
+                        break;
+                }
+                console.log(editingField);
+
+                clearEditingField();
+                editQuestion(editing, editingQuestion);
+                displayAllFields(editingQuestion);
+            }
+
+            function clearEditingField() {
+                editingField = null;
+                editingFieldIndex = -1;
+            }
+
+            function init() {
+                showSelectedFieldTypeAttributes();
+
+                $("#fieldType").change(function () {
+                    showSelectedFieldTypeAttributes();
+                });
+
+                $(".addField").click(function () {
+                    var id = editingQuestion.fields.length;
+                    var fieldObject = {
+                        name: "field-" + id,
+                        topoffset: 0,
+                        leftoffset: 0
+                    };
+                    editingQuestion.fields.push(fieldObject);
+                    createField(id, fieldObject);
+                });
+
+                $("#field-form").submit(function (e) {
+                    e.preventDefault();
+                    saveField();
+                });
+
+                initDragging();
+            }
+
+            function placeFieldAt(target, x, y) {
+                // translate the element
+                target.css("transform", "translate(" + x + "px, " + y + "px)");
+
+                // update the position attributes
+                target.attr('data-x', x);
+                target.attr('data-y', y);
+            }
+
+            function initDragging() {
+                // target elements with the "draggable" class
+                interact('.draggableField')
+                        .draggable({
+                            // enable inertial throwing
+                            inertia: true,
+                            // keep the element within the area of it's parent
+                            restrict: {
+                                restriction: "parent",
+                                endOnly: true,
+                                elementRect: { top: 0, left: 0, bottom: 1, right: 1 }
+                            },
+
+                            // call this function on every dragmove event
+                            onmove: dragMoveListener
+                        });
+
+                function dragMoveListener (event) {
+                    var target = $(event.target);
+                    var x = parseInt((parseInt(target.attr('data-x')) || 0) + event.dx);
+                    var y = parseInt((parseInt(target.attr('data-y')) || 0) + event.dy);
+                    var targetIndex = parseInt(target.attr("data-id"));
+
+                    placeFieldAt(target, x, y);
+                    $(".draggableField").removeClass("active");
+                    $(target).addClass("active");
+
+                    if (editingField === null || editingFieldIndex !== targetIndex) {
+                        editField(targetIndex);
+                    }
+
+                    if (editingField !== null) {
+                        editingField.leftoffset = x;
+                        editingField.topoffset = y;
+                    }
+                }
+            }
+
+            function removeAllFields() {
+                $("#fields").find(".draggableField").remove();
+            }
+
+            exports.init = init;
+            exports.displayAllFields = displayAllFields;
+            exports.removeAllFields = removeAllFields;
+            exports.clearEditingField = clearEditingField;
+        })(Fields);
+
+        // Initialize the application
+        init();
     });
 </script>
 </body>
