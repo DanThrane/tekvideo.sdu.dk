@@ -410,6 +410,7 @@
                 var number = editingSubject.questions.indexOf(question);
                 if (number !== -1) {
                     editingSubject.questions.splice(number, 1);
+                    renderTimeline();
                 }
             }
 
@@ -440,8 +441,10 @@
                 });
 
                 $("#deleteQuestion").click(function () {
+                    console.log(":D");
                     deleteQuestion(editingQuestion);
                 });
+                console.log("21");
             }
 
             exports.init = init;
