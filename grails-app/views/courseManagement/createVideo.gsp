@@ -4,6 +4,7 @@
     <title>Ny video til ${course.fullName} (${course.name})</title>
     <meta name="layout" content="main" />
     <asset:javascript src="interact.js" />
+    <asset:stylesheet src="create_video.css" />
 </head>
 
 <body>
@@ -92,7 +93,7 @@
                     <twbs:button class="addField" style="${ButtonStyle.SUCCESS}">
                         <fa:icon icon="${FaIcon.PLUS}" /> Tilføj nyt felt
                     </twbs:button>
-                    <twbs:button style="${ButtonStyle.DANGER}" id="deleteQuestion">
+                    <twbs:button style="${ButtonStyle.DANGER}" id="deleteField">
                         <fa:icon icon="${FaIcon.TRASH}" /> Slet
                     </twbs:button>
                 </twbs:buttonGroup>
@@ -153,25 +154,9 @@
 
 <div id="questionTemplate" class="hide">
     <twbs:row>
-        <twbs:column cols="10" type="${GridSize.SM}" class="block-link-container">
+        <twbs:column type="${GridSize.SM}" class="block-link-container question">
             <a href="#" class="admin-timeline-question-link"><span class="block-link"></span></a>
             <h6>{0} <small>{1}</small></h6>
-        </twbs:column>
-        <twbs:column cols="2" type="${GridSize.SM}">
-            <div class="pull-right admin-subject-margin-fix">
-                <twbs:dropdownToggle size="${ButtonSize.XTRA_SMALL}">
-                    <twbs:dropdownMenu>
-                        <twbs:dropdownItem url="#">
-                            <fa:icon icon="${FaIcon.FONT}" />
-                            Omdøb
-                        </twbs:dropdownItem>
-                        <twbs:dropdownItem url="#">
-                            <fa:icon icon="${FaIcon.TRASH}" />
-                            Slet
-                        </twbs:dropdownItem>
-                    </twbs:dropdownMenu>
-                </twbs:dropdownToggle>
-            </div>
         </twbs:column>
     </twbs:row>
 </div>
@@ -179,30 +164,9 @@
 <div id="subjectTemplate" class="hide">
     <div class="admin-timeline-subject" data-id="{2}">
         <twbs:row>
-            <twbs:column cols="10" type="${GridSize.SM}" class="block-link-container">
+            <twbs:column type="${GridSize.SM}" class="block-link-container subject">
                 <a href="#" class="admin-timeline-subject-link"><span class="block-link"></span></a>
                 <h5>{0} <small>{1}</small></h5>
-            </twbs:column>
-            <twbs:column cols="2" type="${GridSize.SM}">
-                <div class="pull-right admin-subject-margin-fix">
-                    <twbs:dropdownToggle size="${ButtonSize.XTRA_SMALL}">
-                        <twbs:dropdownMenu>
-                            <twbs:dropdownItem url="#">
-                                <fa:icon icon="${FaIcon.PLUS}" />
-                                Tilføj spørgsmål
-                            </twbs:dropdownItem>
-                            <twbs:dropdownItem url="#">
-                                <fa:icon icon="${FaIcon.FONT}" />
-                                Omdøb
-                            </twbs:dropdownItem>
-                            <twbs:dropdownDivider />
-                            <twbs:dropdownItem url="#">
-                                <fa:icon icon="${FaIcon.TRASH}" />
-                                Slet
-                            </twbs:dropdownItem>
-                        </twbs:dropdownMenu>
-                    </twbs:dropdownToggle>
-                </div>
             </twbs:column>
         </twbs:row>
         <div class="admin-time-questions"></div>
@@ -267,6 +231,9 @@
                         42));
                 template.find(".admin-timeline-subject-link").click(function (e) {
                     e.preventDefault();
+                    $(".question.active,.subject.active").removeClass("active");
+                    $(this).parent().addClass("active");
+                    console.log($(this));
                     player.currentTime(subject.timecode);
                     editSubject(subject);
                 });
@@ -281,6 +248,7 @@
             form.find("#subjectName").val(subject.title);
             form.find("#subjectTimecode").val(formatTimestamp(subject.timecode * 1000));
             editingSubject = subject;
+            Fields.stopEditingFields();
         }
 
         function insertQuestions(template, subject) {
@@ -292,6 +260,8 @@
 
                 question.find(".admin-timeline-question-link").click(function (e) {
                     e.preventDefault();
+                    $(".question.active,.subject.active").removeClass("active");
+                    $(this).parent().addClass("active");
                     player.currentTime(item.timecode);
                     Questions.editQuestion(subject, item);
                 });
@@ -415,6 +385,7 @@
             }
 
             function editQuestion(subject, question) {
+                Fields.stopEditingFields();
                 editingSubject = subject;
                 editingQuestion = question;
                 $("#questionName").val(question.title);
@@ -441,10 +412,8 @@
                 });
 
                 $("#deleteQuestion").click(function () {
-                    console.log(":D");
                     deleteQuestion(editingQuestion);
                 });
-                console.log("21");
             }
 
             exports.init = init;
@@ -489,7 +458,6 @@
              */
             function displayAllFields(question) {
                 removeAllFields();
-                console.log(question);
                 if (question !== null) {
                     for (var i = 0; i < question.fields.length; i++) {
                         var field = question.fields[i];
@@ -534,12 +502,10 @@
             }
 
             function createField(id, fieldObject) {
-                console.log("Creating field!");
                 var rawTemplate = $("#fieldTemplate").html().format(id, fieldObject.name);
                 var field = $(rawTemplate);
                 $("#fields").append(field);
                 startEditing();
-                console.log(field);
                 return field;
             }
 
@@ -562,7 +528,6 @@
                         };
                         break;
                 }
-                console.log(editingField);
 
                 clearEditingField();
                 Questions.editQuestion(editingSubject, editingQuestion);
@@ -572,6 +537,16 @@
             function clearEditingField() {
                 editingField = null;
                 editingFieldIndex = -1;
+            }
+
+            function deleteField(field) {
+                var number = editingQuestion.fields.indexOf(field);
+                if (number !== -1) {
+                    editingQuestion.fields.splice(number, 1);
+                    attributesStack.select(ATTRIBUTE_PANEL_MAIN);
+                    displayAllFields(editingQuestion);
+                    clearEditingField();
+                }
             }
 
             function init() {
@@ -590,6 +565,10 @@
                     };
                     editingQuestion.fields.push(fieldObject);
                     createField(id, fieldObject);
+                });
+
+                $("#deleteField").click(function () {
+                    deleteField(editingField);
                 });
 
                 $("#field-form").submit(function (e) {
@@ -649,6 +628,12 @@
                 }
             }
 
+            function stopEditingFields() {
+                stopEditing();
+                removeAllFields();
+                clearEditingField();
+            }
+
             function removeAllFields() {
                 $("#fields").find(".draggableField").remove();
             }
@@ -657,6 +642,7 @@
             exports.displayAllFields = displayAllFields;
             exports.removeAllFields = removeAllFields;
             exports.clearEditingField = clearEditingField;
+            exports.stopEditingFields = stopEditingFields;
         })(Fields);
 
         // Initialize the application
