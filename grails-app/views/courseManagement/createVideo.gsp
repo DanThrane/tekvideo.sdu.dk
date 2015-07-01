@@ -5,6 +5,7 @@
     <meta name="layout" content="main" />
     <asset:javascript src="interact.js" />
     <asset:stylesheet src="create_video.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.1.9/ace.js"></script>
 </head>
 
 <body>
@@ -117,7 +118,15 @@
                             3
                         </div>
                         <div class="card-item" id="userdefined-field-type-card">
-                            4
+                            <div id="editor">function validator(value) {
+    // Please only define new functions inside of this function
+    function utilCheck() {
+        // It is possible to reference other fields using their ID
+        var valueOfOtherField = $("#field-2").val();
+        return valueOfOtherField === "hello";
+    }
+    return val === "6" || utilCheck();
+}</div>
                         </div>
                         <div class="card-item" id="expression-field-type-card">
                             <label>Udtryk</label> <br />
@@ -441,6 +450,7 @@
             var FIELD_EXPRESSION = "#expression-field";
 
             var questionStack = new CardStack("#field-type-stack");
+            var editor = null;
 
             /**
              * Displays the card item which holds attribute for the currently selected field type
@@ -488,6 +498,11 @@
                         }
                         expressionField.mathquill("editable");
                         break;
+                    case FIELD_TYPE_IDS.custom:
+                        if (editingField.answer && editingField.answer.rawValidator) {
+                            editor.setValue(editingField.answer.rawValidator);
+                        }
+                        break;
                 }
             }
 
@@ -525,6 +540,12 @@
                         editingField.answer = {
                             type: "expression",
                             value: parseTex($(FIELD_EXPRESSION).mathquill("latex"))
+                        };
+                        break;
+                    case FIELD_TYPE_IDS.custom:
+                        editingField.answer = {
+                            type: "custom",
+                            rawValidator: editor.getValue()
                         };
                         break;
                 }
@@ -577,6 +598,10 @@
                 });
 
                 $(FIELD_EXPRESSION).mathquill("editable");
+
+                editor = ace.edit("editor");
+                editor.setTheme("ace/theme/ambiance");
+                editor.getSession().setMode("ace/mode/javascript");
 
                 initDragging();
             }
