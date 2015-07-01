@@ -215,7 +215,7 @@
     $(document).ready(function () {
         var player = null;
         var currentTimeline = [];
-        var editing = null;
+        var editingSubject = null;
         var editingQuestion = null;
         var editingField = null;
         var editingFieldIndex = -1;
@@ -280,7 +280,7 @@
             var form = attributesStack.select("#subject-form-card");
             form.find("#subjectName").val(subject.title);
             form.find("#subjectTimecode").val(formatTimestamp(subject.timecode * 1000));
-            editing = subject;
+            editingSubject = subject;
         }
 
         function insertQuestions(template, subject) {
@@ -293,19 +293,10 @@
                 question.find(".admin-timeline-question-link").click(function (e) {
                     e.preventDefault();
                     player.currentTime(item.timecode);
-                    editQuestion(subject, item);
+                    Questions.editQuestion(subject, item);
                 });
                 questions.append(question);
             });
-        }
-
-        function editQuestion(subject, question) {
-            editing = subject;
-            editingQuestion = question;
-            $("#questionName").val(question.title);
-            $("#questionTimecode").val(formatTimestamp(question.timecode * 1000));
-            Fields.displayAllFields(question);
-            attributesStack.select("#question-form-card");
         }
 
         function addSubjectEntry(subject) {
@@ -348,45 +339,22 @@
             editSubject(subject);
         });
 
-        $("#addQuestion").click(function () {
-            editing.questions.push({
-                title: "Unavngivet spørgsmål",
-                timecode: editing.timecode,
-                fields: []
-            });
-            renderTimeline();
-        });
-
         $("#deleteSubject").click(function () {
-            currentTimeline.splice(currentTimeline.indexOf(editing), 1);
-            editing = null;
+            currentTimeline.splice(currentTimeline.indexOf(editingSubject), 1);
+            editingSubject = null;
             renderTimeline();
             attributesStack.hideAll();
         });
 
         $("#subject-form").submit(function (e) {
             e.preventDefault();
-            editing.timecode = parseTimecode($("#subjectTimecode").val());
-            editing.title = $("#subjectName").val();
-            renderTimeline();
-        });
-
-
-        $("#deleteQuestion").click(function () {
-            var number = editing.questions.indexOf(editingQuestion);
-            if (number !== -1) {
-                editing.questions.splice(number, 1);
-            }
-        });
-
-        $("#question-form").submit(function (e) {
-            e.preventDefault();
-            // TODO
+            editingSubject.timecode = parseTimecode($("#subjectTimecode").val());
+            editingSubject.title = $("#subjectName").val();
             renderTimeline();
         });
 
         $("#backToQuestion").click(function () {
-            editQuestion(editing, editingQuestion);
+            editQuestion(editingSubject, editingQuestion);
             Fields.clearEditingField();
             $(".draggableField.active").removeClass("active");
         });
@@ -430,7 +398,55 @@
 
         function init() {
             Fields.init();
+            Questions.init();
         }
+
+        var Questions = {};
+        (function (exports) {
+            var FIELD_NAME = "#questionName";
+            var FIELD_TIMECODE = "#questionTimecode";
+
+            function deleteQuestion(question) {
+                var number = editingSubject.questions.indexOf(question);
+                if (number !== -1) {
+                    editingSubject.questions.splice(number, 1);
+                }
+            }
+
+            function editQuestion(subject, question) {
+                editingSubject = subject;
+                editingQuestion = question;
+                $("#questionName").val(question.title);
+                $("#questionTimecode").val(formatTimestamp(question.timecode * 1000));
+                Fields.displayAllFields(question);
+                attributesStack.select("#question-form-card");
+            }
+
+            function init() {
+                $("#question-form").submit(function (e) {
+                    e.preventDefault();
+                    editingQuestion.title = $(FIELD_NAME).val();
+                    editingQuestion.timecode = parseTimecode($(FIELD_TIMECODE).val());
+                    renderTimeline();
+                });
+
+                $("#addQuestion").click(function () {
+                    editingSubject.questions.push({
+                        title: "Unavngivet spørgsmål",
+                        timecode: editingSubject.timecode,
+                        fields: []
+                    });
+                    renderTimeline();
+                });
+
+                $("#deleteQuestion").click(function () {
+                    deleteQuestion(editingQuestion);
+                });
+            }
+
+            exports.init = init;
+            exports.editQuestion = editQuestion;
+        })(Questions);
 
         var Fields = {};
         (function (exports) {
@@ -542,7 +558,7 @@
                 console.log(editingField);
 
                 clearEditingField();
-                editQuestion(editing, editingQuestion);
+                editQuestion(editingSubject, editingQuestion);
                 displayAllFields(editingQuestion);
             }
 
