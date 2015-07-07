@@ -7,8 +7,13 @@ var Editor = {};
     var editingField = null;
     var editingFieldIndex = -1;
     var videoId = null;
+    var publishEndpoint = null;
 
     var attributesStack = new CardStack("#attributes-stack");
+
+    function setPublishEndpoint(endpoint) {
+        publishEndpoint = endpoint;
+    }
 
     function parseYouTubeID(url) {
         if (url.length == 11) {
@@ -37,10 +42,37 @@ var Editor = {};
 
     function startEditing() {
         $("#fields").addClass("fields-active");
+        $("#stopEdit").removeClass("disabled").removeAttr("disabled")
     }
 
     function stopEditing() {
         $("#fields").removeClass("fields-active");
+        $("#stopEdit").addClass("disabled").attr("disabled", "disabled")
+    }
+
+    function publishVideo() {
+        MainPanel.showPublishing();
+        var name = $("#videoName").val();
+        var youtubeId = videoId;
+        var subject = $("#subject").val();
+        var timelineJson = JSON.stringify(currentTimeline);
+        var data = {
+            name: name,
+            youtubeId: youtubeId,
+            subject: subject,
+            timelineJson: timelineJson
+        };
+        Util.postJson(publishEndpoint, data, {
+            // TODO UI
+            success: function (data) {
+                console.log("success!");
+                console.log(data);
+            },
+            error: function (data) {
+                console.log("error!");
+                console.log(data);
+            }
+        });
     }
 
     function init() {
@@ -59,6 +91,10 @@ var Editor = {};
         $("#stopEdit").click(function () {
             Fields.removeAllFields();
             stopEditing();
+        });
+
+        $("#publish-video").click(function () {
+            publishVideo();
         });
     }
 
@@ -379,8 +415,13 @@ var Editor = {};
             mainStack.select("#preview-card");
         }
 
+        function showPublishing() {
+            mainStack.select("#publish-card");
+        }
+
         exports.showEditor = showEditor;
         exports.showPreview = showPreview;
+        exports.showPublishing = showPublishing;
     })(MainPanel);
 
     var Timeline = {};
@@ -510,4 +551,5 @@ var Editor = {};
     exports.Preview = Preview;
     exports.Timeline = Timeline;
     exports.displayVideo = displayVideo;
+    exports.setPublishEndpoint = setPublishEndpoint;
 })(Editor);

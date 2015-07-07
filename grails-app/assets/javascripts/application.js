@@ -9,6 +9,21 @@
 //= require interactivevideos
 //= require cardstack
 
+var Util = {};
+Util.postJson = function(url, data, callbacks) {
+    $.ajax({
+        type: "POST",
+        url: url,
+        async: true,
+        data: JSON.stringify(data),
+        success: callbacks.success,
+        error: callbacks.error,
+        complete: callbacks.complete,
+        contentType: "application/json",
+        dataType: 'json'
+    });
+};
+
 String.prototype.format = function() {
     var args = arguments;
     return this.replace(/{(\d+)}/g, function(match, number) {

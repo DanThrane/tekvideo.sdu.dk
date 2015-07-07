@@ -10,6 +10,16 @@
 
 <body>
 <div class="card-stack" id="main-panel-stack">
+    <div class="card-item" id="publish-card">
+        <twbs:pageHeader><h3>Udgiv video</h3></twbs:pageHeader>
+        <twbs:row>
+            <twbs:column>
+                <div class="center">
+                    <fa:icon icon="${FaIcon.SPINNER}" spin="true" size="4" />
+                </div>
+            </twbs:column>
+        </twbs:row>
+    </div>
     <div class="card-item" id="preview-card">
         <twbs:pageHeader><h3>Forhåndsvisning</h3></twbs:pageHeader>
         <twbs:row>
@@ -46,15 +56,24 @@
             </twbs:column>
             <twbs:column cols="3">
                 <h4>Kontrol panel</h4>
+                <twbs:input name="videoName" labelText="Navn" />
                 <twbs:input name="youtubeId" labelText="YouTube Link">
                     For eksempel: <code>https://www.youtube.com/watch?v=DXUAyRRkI6k</code> eller <code>DXUAyRRkI6k</code>
                 </twbs:input>
-                <twbs:button block="true" style="${ButtonStyle.INFO}" id="stopEdit">
-                    <fa:icon icon="${FaIcon.EDIT}" /> Stop redigering
+                <twbs:select name="subject" labelText="Emne" list="${subjects}" />
+                <twbs:button block="true" style="${ButtonStyle.INFO}" id="stopEdit" disabled="true">
+                    <fa:icon icon="${FaIcon.UNLOCK}" /> Lås video op
                 </twbs:button>
+                <hr>
                 <twbs:button block="true" style="${ButtonStyle.PRIMARY}" id="start-preview">
                     <fa:icon icon="${FaIcon.STREET_VIEW}" /> Start forhåndsvisning
                 </twbs:button>
+                <twbs:button block="true" style="${ButtonStyle.SUCCESS}" id="publish-video">
+                    <fa:icon icon="${FaIcon.CHECK}" /> Udgiv video
+                </twbs:button>
+                <p class="help-block">
+                    Dette vil gemme videoen og gøre den synlig for alle brugere
+                </p>
             </twbs:column>
         </twbs:row>
 
@@ -81,7 +100,7 @@
                             <twbs:input name="subjectTimecode" labelText="Tidskode">
                                 For eksempel: <code>2:20</code>
                             </twbs:input>
-                            <twbs:button type="submit" style="${ButtonStyle.SUCCESS}">
+                            <twbs:button type="submit" style="${ButtonStyle.SUCCESS}" block="true">
                                 <fa:icon icon="${FaIcon.CHECK}" />
                                 Gem ændringer
                             </twbs:button>
@@ -104,7 +123,7 @@
                             <twbs:input name="questionTimecode" labelText="Tidskode">
                                 For eksempel: <code>2:20</code>
                             </twbs:input>
-                            <twbs:button type="submit" style="${ButtonStyle.SUCCESS}">
+                            <twbs:button type="submit" style="${ButtonStyle.SUCCESS}" block="true">
                                 <fa:icon icon="${FaIcon.CHECK}" />
                                 Gem ændringer
                             </twbs:button>
@@ -217,9 +236,11 @@ return validator; // Return the validator function</div>
 <asset:javascript src="video-creator.js" />
 <script>
     $(document).ready(function () {
+        Editor.setPublishEndpoint("<g:createLink action="postVideo" />");
         Editor.init();
 
         <g:if test="${params.test}">
+        $("#videoName").val("Introduktion til interaktive videoer");
         Editor.displayVideo("eiSfEP7gTRw");
 
         Editor.Timeline.setTimeline([{

@@ -39,7 +39,7 @@ class ServiceResult<E> {
         return result
     }
 
-    static def <E> ServiceResult<E> fail(String message, boolean internal, Map<String, ?> information = [:],
+    static def <E> ServiceResult<E> fail(String message, boolean internal = false, Map<String, ?> information = [:],
                                          int suggestedHttpStatus = -1, Exception exception = null) {
         int actualHttpStatus = suggestedHttpStatus
         if (suggestedHttpStatus == -1) {

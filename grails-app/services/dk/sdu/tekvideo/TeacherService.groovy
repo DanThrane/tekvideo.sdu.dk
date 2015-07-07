@@ -16,18 +16,18 @@ class TeacherService {
     ServiceResult<List<Course>> getActiveCourses() {
         def teacher = getAuthenticatedTeacher()
         if (teacher) {
-            ok(Course.findAllByTeacher(teacher))
+            ok Course.findAllByTeacher(teacher)
         } else {
-            fail("teacherservice.no_teacher", false)
+            fail "teacherservice.no_teacher"
         }
     }
 
     ServiceResult<Subject> createSubject(Course course, CreateSubjectCommand command) {
         if (command.subject.validate()) {
             course.addToSubjects(command.subject).save(flush: true)
-            ok(command.subject)
+            ok command.subject
         } else {
-            fail("teacherservice.field_errors", false)
+            fail "teacherservice.field_errors"
         }
     }
 
@@ -40,11 +40,27 @@ class TeacherService {
             if (courseValid && semesterValid) {
                 command.course.semester.save()
                 teacher.addToCourses(command.course).save(flush: true)
-                return ok(command.course)
+                ok command.course
+            } else {
+                fail "teacherservice.field_errors"
             }
-            return fail("teacherservice.field_errors", false)
         } else {
-            return fail("teacherservice.no_teacher")
+            fail "teacherservice.no_teacher"
+        }
+    }
+
+    ServiceResult<Video> createVideo(CreateVideoCommand command) {
+        def teacher = getAuthenticatedTeacher()
+        if (teacher && canAccess(command.subject.course)) {
+            def video = new Video(name: command.name, youtubeId: command.youtubeId, timelineJson: command.timelineJson)
+            if (video.validate()) {
+                command.subject.addToVideos(video).save(flush: true)
+                ok video
+            } else {
+                fail "teacherservice.field_errors"
+            }
+        } else {
+            fail "teacherservice.not_allowed"
         }
     }
 

@@ -1,5 +1,6 @@
 package dk.sdu.tekvideo
 
+import grails.converters.JSON
 import org.springframework.security.access.annotation.Secured
 
 /**
@@ -7,7 +8,6 @@ import org.springframework.security.access.annotation.Secured
  */
 @Secured("ROLE_TEACHER")
 class CourseManagementController {
-
     TeacherService teacherService
 
     def index() {
@@ -44,11 +44,21 @@ class CourseManagementController {
     }
 
     def createVideo(Course course) {
-        [course: course]
+        if (teacherService.canAccess(course)) {
+            [course: course, subjects: course.subjects]
+        } else {
+            notAllowedCourse()
+        }
+    }
+
+    def postVideo(CreateVideoCommand command) {
+        def result = teacherService.createVideo(command)
+        response.status = result.suggestedHttpStatus
+        render result as JSON
     }
 
     def createCourse() {
-
+        // No model needed for view
     }
 
     def postCourse(CreateCourseCommand command) {
