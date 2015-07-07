@@ -180,8 +180,8 @@ var Editor = {};
                     expressionField.mathquill("editable");
                     break;
                 case FIELD_TYPE_IDS.custom:
-                    if (editingField.answer && editingField.answer.rawValidator) {
-                        editor.setValue(editingField.answer.rawValidator);
+                    if (editingField.answer && editingField.answer.jsValidator) {
+                        editor.setValue(editingField.answer.jsValidator);
                     }
                     break;
             }
@@ -226,7 +226,7 @@ var Editor = {};
                 case FIELD_TYPE_IDS.custom:
                     editingField.answer = {
                         type: "custom",
-                        rawValidator: editor.getValue()
+                        jsValidator: editor.getValue()
                     };
                     break;
             }

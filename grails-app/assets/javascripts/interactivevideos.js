@@ -202,6 +202,12 @@ var ivids = {};
                 }
                 return false;
             case "custom":
+                // Custom validators are hopefully just a temporary feature, that is never going to be needed.
+                // So much wrong with the following code snippet.
+                if (answer.validator === undefined) {
+                    var id = "temp_eval_func";
+                    answer.validator = eval("function " + id + "() {" + answer.jsValidator + "\n}" + id + "();");
+                }
                 return answer.validator(value);
         }
     }

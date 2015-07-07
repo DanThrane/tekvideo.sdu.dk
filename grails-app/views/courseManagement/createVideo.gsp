@@ -150,7 +150,7 @@
 // Utility functions can be defined too
 function utilCheck() {
     // It is possible to reference other fields using their ID
-    var valueOfOtherField = $("#field-2").val();
+    var valueOfOtherField = $("#field-2").text();
     return valueOfOtherField === "hello";
 }
 
