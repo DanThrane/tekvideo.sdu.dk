@@ -1,7 +1,7 @@
 var ivids = {};
 
 (function(ivids) {
-    var player;
+    var player = null;
     var timeline;
     var youtubeVideoId;
     var questions = [];
@@ -9,6 +9,12 @@ var ivids = {};
     function bootstrap(playerSelector, videoId, tline) {
         timeline = tline;
         youtubeVideoId = videoId;
+
+        if (player !== null) {
+            Popcorn.destroy(player);
+            $(playerSelector).html("");
+            removeAllQuestions();
+        }
 
         if (tline !== undefined) {
             // The time line may be undefined, in this case the video should simply be displayed
@@ -113,6 +119,7 @@ var ivids = {};
 
     function buildNavigation() {
         var nav = $("#videoNavigation");
+        nav.html("<ul></ul>");
         for (var i = 0; i < timeline.length; i++) {
             var item = timeline[i];
             var nodeId = "navitem" + String(i);
@@ -213,7 +220,7 @@ var ivids = {};
     }
 
     function removeAllQuestions() {
-        $(".question").remove();
+        $("#wrapper").find(".question").remove();
         hideAllFields();
     }
 

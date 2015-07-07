@@ -9,149 +9,180 @@
 </head>
 
 <body>
-<twbs:row>
-    <twbs:column>
+<div class="card-stack" id="main-panel-stack">
+    <div class="card-item" id="preview-card">
+        <twbs:pageHeader><h3>Forhåndsvisning</h3></twbs:pageHeader>
+        <twbs:row>
+            <twbs:column cols="9">
+                <div id="wrapper">
+                    <g:if test="${debugMode}">
+                        <div id="frameOverlay" style="width: 800px; height: 600px;"></div>
+                    </g:if>
+                    <div id="preview-player" style="width: 800px; height: 600px;"></div>
+                </div>
+            </twbs:column>
+            <twbs:column cols="3">
+                <h3>Indhold</h3>
+
+                <ul id="videoNavigation">
+                </ul>
+
+                <twbs:button block="true" style="${ButtonStyle.PRIMARY}" id="stop-preview">
+                    <fa:icon icon="${FaIcon.STREET_VIEW}" /> Stop forhåndsvisning
+                </twbs:button>
+            </twbs:column>
+        </twbs:row>
+        <br>
+
+        <twbs:row>
+            <twbs:linkButton elementId="checkAnswers">Tjek svar</twbs:linkButton>
+        </twbs:row>
+    </div>
+    <div class="card-item active" id="creator-card">
         <twbs:pageHeader><h3>Ny video</h3></twbs:pageHeader>
-    </twbs:column>
-</twbs:row>
-<twbs:row>
-    <twbs:column cols="9">
-        <div id="wrapper">
-            <div id="fields"></div>
-            <div id="player" style="width: 800px; height: 600px;"></div>
-        </div>
-    </twbs:column>
-    <twbs:column cols="3">
-        <h4>Kontrol panel</h4>
-        <twbs:input name="youtubeId" labelText="YouTube Link">
-            For eksempel: <code>https://www.youtube.com/watch?v=DXUAyRRkI6k</code> eller <code>DXUAyRRkI6k</code>
-        </twbs:input>
-        <twbs:button block="true" style="${ButtonStyle.INFO}" id="stopEdit">
-            <fa:icon icon="${FaIcon.EDIT}" /> Stop redigering
-        </twbs:button>
-    </twbs:column>
-</twbs:row>
+        <twbs:row>
+            <twbs:column cols="9">
+                <div id="wrapper">
+                    <div id="fields"></div>
+                    <div id="player" style="width: 800px; height: 600px;"></div>
+                </div>
+            </twbs:column>
+            <twbs:column cols="3">
+                <h4>Kontrol panel</h4>
+                <twbs:input name="youtubeId" labelText="YouTube Link">
+                    For eksempel: <code>https://www.youtube.com/watch?v=DXUAyRRkI6k</code> eller <code>DXUAyRRkI6k</code>
+                </twbs:input>
+                <twbs:button block="true" style="${ButtonStyle.INFO}" id="stopEdit">
+                    <fa:icon icon="${FaIcon.EDIT}" /> Stop redigering
+                </twbs:button>
+                <twbs:button block="true" style="${ButtonStyle.PRIMARY}" id="start-preview">
+                    <fa:icon icon="${FaIcon.STREET_VIEW}" /> Start forhåndsvisning
+                </twbs:button>
+            </twbs:column>
+        </twbs:row>
 
-<hr>
+        <hr>
 
-<twbs:row>
-%{-- Attributes --}%
-    <twbs:column cols="9">
-        <div class="card-stack" id="attributes-stack">
-            %{-- Edit subject --}%
-            <div id="subject-form-card" class="card-item">
-                <h4><fa:icon icon="${FaIcon.BOOK}" /> Redigér emne</h4>
-                <twbs:buttonGroup justified="true">
-                    <twbs:button id="addQuestion">
-                        <fa:icon icon="${FaIcon.PLUS}" /> Tilføj spørgsmål
-                    </twbs:button>
-                    <twbs:button style="${ButtonStyle.DANGER}" id="deleteSubject">
-                        <fa:icon icon="${FaIcon.TRASH}" /> Slet
-                    </twbs:button>
-                </twbs:buttonGroup>
-                <hr>
-                <twbs:form id="subject-form">
-                    <twbs:input name="subjectName" labelText="Navn" />
-                    <twbs:input name="subjectTimecode" labelText="Tidskode">
-                        For eksempel: <code>2:20</code>
-                    </twbs:input>
-                    <twbs:button type="submit" style="${ButtonStyle.SUCCESS}">
-                        <fa:icon icon="${FaIcon.CHECK}" />
-                        Gem ændringer
-                    </twbs:button>
-                </twbs:form>
-            </div>
-            %{-- Edit question --}%
-            <div id="question-form-card" class="card-item">
-                <h4><fa:icon icon="${FaIcon.QUESTION}" /> Redigér spørgsmål</h4>
-                <twbs:buttonGroup justified="true">
-                    <twbs:button class="addField">
-                        <fa:icon icon="${FaIcon.PLUS}" /> Tilføj felt
-                    </twbs:button>
-                    <twbs:button style="${ButtonStyle.DANGER}" id="deleteQuestion">
-                        <fa:icon icon="${FaIcon.TRASH}" /> Slet
-                    </twbs:button>
-                </twbs:buttonGroup>
-                <hr>
-                <twbs:form id="question-form">
-                    <twbs:input name="questionName" labelText="Navn" />
-                    <twbs:input name="questionTimecode" labelText="Tidskode">
-                        For eksempel: <code>2:20</code>
-                    </twbs:input>
-                    <twbs:button type="submit" style="${ButtonStyle.SUCCESS}">
-                        <fa:icon icon="${FaIcon.CHECK}" />
-                        Gem ændringer
-                    </twbs:button>
-                </twbs:form>
-            </div>
-            %{-- Edit field --}%
-            <div id="field-form-card" class="card-item">
-                <h4><fa:icon icon="${FaIcon.FILE}" />  Redigér felt</h4>
-                <twbs:buttonGroup justified="true">
-                    <twbs:button id="backToQuestion">
-                        <fa:icon icon="${FaIcon.BACKWARD}" /> Tilbage til spørgsmål
-                    </twbs:button>
-                    <twbs:button class="addField" style="${ButtonStyle.SUCCESS}">
-                        <fa:icon icon="${FaIcon.PLUS}" /> Tilføj nyt felt
-                    </twbs:button>
-                    <twbs:button style="${ButtonStyle.DANGER}" id="deleteField">
-                        <fa:icon icon="${FaIcon.TRASH}" /> Slet
-                    </twbs:button>
-                </twbs:buttonGroup>
-                <hr>
-                <twbs:form id="field-form">
-                    <twbs:input name="fieldName" labelText="Felt ID">
-                        Hvis du bruger et JavaScript felt, så vil du kunne henvise til feltet ved hjælp af dette ID
-                    </twbs:input>
-                    <twbs:select name="fieldType" labelText="Spørgsmåls type"
-                                 list="${["Ingen", "Mellem", "Tekst" , "Brugerdefineret (JavaScript)",
-                                          "Matematisk udtryk"]}" />
-
-                    <div class="card-stack" id="field-type-stack">
-                        <div class="card-item active" id="no-field-type-card">
-                            1
-                        </div>
-                        <div class="card-item" id="between-field-type-card">
-                            2
-                        </div>
-                        <div class="card-item" id="text-field-type-card">
-                            3
-                        </div>
-                        <div class="card-item" id="userdefined-field-type-card">
-                            <div id="editor">function validator(value) {
-    // Please only define new functions inside of this function
-    function utilCheck() {
-        // It is possible to reference other fields using their ID
-        var valueOfOtherField = $("#field-2").val();
-        return valueOfOtherField === "hello";
-    }
-    return val === "6" || utilCheck();
-}</div>
-                        </div>
-                        <div class="card-item" id="expression-field-type-card">
-                            <label>Udtryk</label> <br />
-                            <span id="expression-field"></span>
-                            <br />
-                        </div>
+        <twbs:row>
+        %{-- Attributes --}%
+            <twbs:column cols="9">
+                <div class="card-stack" id="attributes-stack">
+                    %{-- Edit subject --}%
+                    <div id="subject-form-card" class="card-item">
+                        <h4><fa:icon icon="${FaIcon.BOOK}" /> Redigér emne</h4>
+                        <twbs:buttonGroup justified="true">
+                            <twbs:button id="addQuestion">
+                                <fa:icon icon="${FaIcon.PLUS}" /> Tilføj spørgsmål
+                            </twbs:button>
+                            <twbs:button style="${ButtonStyle.DANGER}" id="deleteSubject">
+                                <fa:icon icon="${FaIcon.TRASH}" /> Slet
+                            </twbs:button>
+                        </twbs:buttonGroup>
+                        <hr>
+                        <twbs:form id="subject-form">
+                            <twbs:input name="subjectName" labelText="Navn" />
+                            <twbs:input name="subjectTimecode" labelText="Tidskode">
+                                For eksempel: <code>2:20</code>
+                            </twbs:input>
+                            <twbs:button type="submit" style="${ButtonStyle.SUCCESS}">
+                                <fa:icon icon="${FaIcon.CHECK}" />
+                                Gem ændringer
+                            </twbs:button>
+                        </twbs:form>
                     </div>
-                    <twbs:button type="submit" block="true" style="${ButtonStyle.SUCCESS}" id="field-save">
-                        <fa:icon icon="${FaIcon.CHECK}" />
-                        Gem ændringer
-                    </twbs:button>
-                </twbs:form>
-            </div>
-        </div>
-    </twbs:column>
-%{-- Timeline --}%
-    <twbs:column cols="3">
-        <h4><fa:icon icon="${FaIcon.VIDEO_CAMERA}" /> Tidslinie</h4>
-        <div id="timeline-subjects"></div>
-        <br />
-        <twbs:button block="true" style="${ButtonStyle.SUCCESS}" id="addSubject">
-            <fa:icon icon="${FaIcon.PLUS}" />
-        </twbs:button>
-    </twbs:column>
-</twbs:row>
+                    %{-- Edit question --}%
+                    <div id="question-form-card" class="card-item">
+                        <h4><fa:icon icon="${FaIcon.QUESTION}" /> Redigér spørgsmål</h4>
+                        <twbs:buttonGroup justified="true">
+                            <twbs:button class="addField">
+                                <fa:icon icon="${FaIcon.PLUS}" /> Tilføj felt
+                            </twbs:button>
+                            <twbs:button style="${ButtonStyle.DANGER}" id="deleteQuestion">
+                                <fa:icon icon="${FaIcon.TRASH}" /> Slet
+                            </twbs:button>
+                        </twbs:buttonGroup>
+                        <hr>
+                        <twbs:form id="question-form">
+                            <twbs:input name="questionName" labelText="Navn" />
+                            <twbs:input name="questionTimecode" labelText="Tidskode">
+                                For eksempel: <code>2:20</code>
+                            </twbs:input>
+                            <twbs:button type="submit" style="${ButtonStyle.SUCCESS}">
+                                <fa:icon icon="${FaIcon.CHECK}" />
+                                Gem ændringer
+                            </twbs:button>
+                        </twbs:form>
+                    </div>
+                    %{-- Edit field --}%
+                    <div id="field-form-card" class="card-item">
+                        <h4><fa:icon icon="${FaIcon.FILE}" />  Redigér felt</h4>
+                        <twbs:buttonGroup justified="true">
+                            <twbs:button id="backToQuestion">
+                                <fa:icon icon="${FaIcon.BACKWARD}" /> Tilbage til spørgsmål
+                            </twbs:button>
+                            <twbs:button class="addField" style="${ButtonStyle.SUCCESS}">
+                                <fa:icon icon="${FaIcon.PLUS}" /> Tilføj nyt felt
+                            </twbs:button>
+                            <twbs:button style="${ButtonStyle.DANGER}" id="deleteField">
+                                <fa:icon icon="${FaIcon.TRASH}" /> Slet
+                            </twbs:button>
+                        </twbs:buttonGroup>
+                        <hr>
+                        <twbs:form id="field-form">
+                            <twbs:input name="fieldName" labelText="Felt ID">
+                                Hvis du bruger et JavaScript felt, så vil du kunne henvise til feltet ved hjælp af dette ID
+                            </twbs:input>
+                            <twbs:select name="fieldType" labelText="Spørgsmåls type"
+                                         list="${["Ingen", "Mellem", "Tekst" , "Brugerdefineret (JavaScript)",
+                                                  "Matematisk udtryk"]}" />
+
+                            <div class="card-stack" id="field-type-stack">
+                                <div class="card-item active" id="no-field-type-card">
+                                    1
+                                </div>
+                                <div class="card-item" id="between-field-type-card">
+                                    2
+                                </div>
+                                <div class="card-item" id="text-field-type-card">
+                                    3
+                                </div>
+                                <div class="card-item" id="userdefined-field-type-card">
+                                    <div id="editor">function validator(value) {
+                                    // Please only define new functions inside of this function
+                                    function utilCheck() {
+                                    // It is possible to reference other fields using their ID
+                                    var valueOfOtherField = $("#field-2").val();
+                                    return valueOfOtherField === "hello";
+                                    }
+                                    return val === "6" || utilCheck();
+                                    }</div>
+                                </div>
+                                <div class="card-item" id="expression-field-type-card">
+                                    <label>Udtryk</label> <br />
+                                    <span id="expression-field"></span>
+                                    <br />
+                                </div>
+                            </div>
+                            <twbs:button type="submit" block="true" style="${ButtonStyle.SUCCESS}" id="field-save">
+                                <fa:icon icon="${FaIcon.CHECK}" />
+                                Gem ændringer
+                            </twbs:button>
+                        </twbs:form>
+                    </div>
+                </div>
+            </twbs:column>
+        %{-- Timeline --}%
+            <twbs:column cols="3">
+                <h4><fa:icon icon="${FaIcon.VIDEO_CAMERA}" /> Tidslinie</h4>
+                <div id="timeline-subjects"></div>
+                <br />
+                <twbs:button block="true" style="${ButtonStyle.SUCCESS}" id="addSubject">
+                    <fa:icon icon="${FaIcon.PLUS}" />
+                </twbs:button>
+            </twbs:column>
+        </twbs:row>
+    </div>
+</div>
 
 %{-- Templates --}%
 
@@ -192,6 +223,7 @@
         var editingQuestion = null;
         var editingField = null;
         var editingFieldIndex = -1;
+        var videoId = null;
 
         var attributesStack = new CardStack("#attributes-stack");
 
@@ -284,6 +316,7 @@
         }
 
         function displayVideo(youtubeId) {
+            videoId = youtubeId;
             if (player !== null) {
                 Popcorn.destroy(player);
                 $("#player").html("");
@@ -378,6 +411,8 @@
         function init() {
             Fields.init();
             Questions.init();
+            Preview.init();
+            Editor.init();
         }
 
         var Questions = {};
@@ -487,7 +522,6 @@
                 $(FIELD_TYPE + " option")[fieldTypeId].selected = true;
                 showSelectedFieldTypeAttributes();
 
-                // TODO Don't hardcode
                 switch (fieldTypeId) {
                     case FIELD_TYPE_IDS.expression:
                         var expressionField = $(FIELD_EXPRESSION);
@@ -669,6 +703,43 @@
             exports.clearEditingField = clearEditingField;
             exports.stopEditingFields = stopEditingFields;
         })(Fields);
+
+        var Preview = {};
+        (function (exports) {
+            function init() {
+                $("#start-preview").click(function () {
+                    events.disable();
+                    ivids.bootstrap("#preview-player", videoId, currentTimeline);
+                    Editor.showPreview();
+                });
+                $("#stop-preview").click(function () {
+                    // TODO destroy old instance
+                    Editor.showEditor();
+                });
+            }
+
+            exports.init = init;
+        })(Preview);
+
+        var Editor = {};
+        (function (exports) {
+            var mainStack = new CardStack("#main-panel-stack");
+
+            function init() {
+
+            }
+
+            function showEditor() {
+                mainStack.select("#creator-card");
+            }
+
+            function showPreview() {
+                mainStack.select("#preview-card");
+            }
+
+            exports.showEditor = showEditor;
+            exports.showPreview = showPreview;
+        })(Editor);
 
         // Initialize the application
         init();
