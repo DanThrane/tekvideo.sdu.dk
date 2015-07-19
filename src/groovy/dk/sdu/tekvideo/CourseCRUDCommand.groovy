@@ -6,6 +6,7 @@ import grails.validation.Validateable
  * @author Dan Thrane
  */
 @Validateable
-class CreateCourseCommand {
+class CourseCRUDCommand {
     Course course
+    Boolean isEditing
 }

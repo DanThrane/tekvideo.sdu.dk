@@ -58,16 +58,24 @@ class CourseManagementController {
     }
 
     def createCourse() {
-        // No model needed for view
+        render view: "createOrEditCourse", model: [isEditing: false]
     }
 
-    def postCourse(CreateCourseCommand command) {
-        def course = teacherService.createCourse(command)
+    def editCourse(Course course) {
+        if (teacherService.canAccess(course)) {
+            render view: "createOrEditCourse", model: [command: new CourseCRUDCommand(course: course), isEditing: true]
+        } else {
+            notAllowedCourse()
+        }
+    }
+
+    def postCourse(CourseCRUDCommand command) {
+        def course = teacherService.createOrEditCourse(command)
         if (course.success) {
-            flash.success = "Kurset '$command.course.name' oprettet!"
+            flash.success = "Ændringer til '$command.course.name' blev succesfuldt registeret!"
             redirect action: "index"
         } else {
-            render view: "createCourse", model: [command: command]
+            render view: "createOrEditCourse", model: [command: command]
         }
     }
 

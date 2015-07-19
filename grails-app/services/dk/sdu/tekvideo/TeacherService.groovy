@@ -31,21 +31,36 @@ class TeacherService {
         }
     }
 
-    ServiceResult<Course> createCourse(CreateCourseCommand command) {
+    ServiceResult<Course> createOrEditCourse(CourseCRUDCommand command) {
         def teacher = getAuthenticatedTeacher()
         if (teacher) {
             command.course.teacher = teacher
             def courseValid = command.course.validate()
             def semesterValid = command.course.semester.validate()
             if (courseValid && semesterValid) {
-                command.course.semester.save()
-                teacher.addToCourses(command.course).save(flush: true)
-                ok command.course
+                // The user input is valid
+
+                if (command.isEditing) {
+                    // Ensure that the editing is allowed and invoke the
+                    // slightly different saving procedure
+                    if (canAccess(command.course)) {
+                        command.course.semester.save()
+                        command.course.save(flush: true)
+                    } else {
+                        return fail("teacherservice.not_allowed")
+                    }
+                } else {
+                    command.course.id = null // TODO This feels needed, read up on details
+                    command.course.semester.save()
+                    teacher.addToCourses(command.course).save(flush: true)
+                }
+                return ok(command.course)
+
             } else {
-                fail "teacherservice.field_errors"
+                return fail("teacherservice.field_errors")
             }
         } else {
-            fail "teacherservice.no_teacher"
+            return fail("teacherservice.no_teacher")
         }
     }
 
