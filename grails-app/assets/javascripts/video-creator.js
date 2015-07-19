@@ -65,14 +65,18 @@ var Editor = {};
             timelineJson: timelineJson
         };
         Util.postJson(publishEndpoint, data, {
-            // TODO UI
             success: function (data) {
+                $("#publish-success").removeClass("hide");
                 console.log("success!");
                 console.log(data);
             },
             error: function (data) {
+                $("#publish-error").removeClass("hide");
                 console.log("error!");
                 console.log(data);
+            },
+            complete: function() {
+                $("#publish-spinner").addClass("hide");
             }
         });
     }
@@ -97,6 +101,12 @@ var Editor = {};
 
         $("#publish-video").click(function () {
             publishVideo();
+        });
+
+        $("#publish-try-again").click(function () {
+            $("#publish-spinner").removeClass("hide");
+            $("#publish-error").addClass("hide");
+            MainPanel.showEditor();
         });
     }
 
@@ -530,7 +540,6 @@ var Editor = {};
                     e.preventDefault();
                     $(".question.active,.subject.active").removeClass("active");
                     $(this).parent().addClass("active");
-                    console.log($(this));
                     player.currentTime(subject.timecode);
                     editSubject(subject);
                 });

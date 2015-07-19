@@ -11,11 +11,46 @@
 <body>
 <div class="card-stack" id="main-panel-stack">
     <div class="card-item" id="publish-card">
-        <twbs:pageHeader><h3>Udgiv video</h3></twbs:pageHeader>
         <twbs:row>
             <twbs:column>
-                <div class="center">
+                <div class="center" id="publish-spinner">
                     <fa:icon icon="${FaIcon.SPINNER}" spin="true" size="4" />
+                </div>
+                <div class="hide" id="publish-success">
+                    <twbs:pageHeader><h3>Succes!</h3></twbs:pageHeader>
+                    <twbs:row>
+                        <twbs:column cols="2">
+                            <span style="color:green">
+                                <fa:icon icon="${FaIcon.CHECK}" size="4"  />
+                            </span>
+                        </twbs:column>
+                        <twbs:column cols="10">
+                            Din video er blevet udgivet succesfuldt, og er nu tilgængelig på
+                             <g:link mapping="teaching" params="${[teacher: course.teacher.user.username, course: course.name]}">
+                                 kursus siden.
+                             </g:link>
+                        </twbs:column>
+                    </twbs:row>
+                </div>
+                <div class="hide" id="publish-error">
+                    <twbs:pageHeader><h3>Fejl!</h3></twbs:pageHeader>
+                    <twbs:column cols="2">
+                        <span style="color:red">
+                            <fa:icon icon="${FaIcon.REMOVE}" size="4"  />
+                        </span>
+                    </twbs:column>
+                    <twbs:column cols="10">
+                        Der skete en fejl under udgivelse af videoen.
+
+                        <blockquote>
+                            Dette skyldes sandsynligvis at et felt mangler at blive udfyldt, fx navnet på videoen.
+                            UI endnu ikke implementeret til at vise hvilke fejl der er.
+                        </blockquote>
+
+                        <twbs:button style="${ButtonStyle.PRIMARY}" id="publish-try-again">
+                            <fa:icon icon="${FaIcon.REFRESH}" /> Prøv igen
+                        </twbs:button>
+                    </twbs:column>
                 </div>
             </twbs:column>
         </twbs:row>
@@ -46,7 +81,7 @@
         </twbs:row>
     </div>
     <div class="card-item active" id="creator-card">
-        <twbs:pageHeader><h3>Ny video</h3></twbs:pageHeader>
+        <twbs:pageHeader><h3>Ny video til ${course.fullName} (${course.name})</h3></twbs:pageHeader>
         <twbs:row>
             <twbs:column cols="9">
                 <div id="wrapper">
