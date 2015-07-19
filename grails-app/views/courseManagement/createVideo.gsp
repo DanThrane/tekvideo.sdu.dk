@@ -156,10 +156,14 @@
                                 <div class="card-item active" id="no-field-type-card">
                                 </div>
                                 <div class="card-item" id="between-field-type-card">
-                                    2
+                                    <twbs:input name="betweenMinValue" labelText="Mindste værdi" />
+                                    <twbs:input name="betweenMaxValue" labelText="Højeste værdi" />
                                 </div>
                                 <div class="card-item" id="text-field-type-card">
-                                    3
+                                    <twbs:input name="textFieldExact" labelText="Tekst">
+                                        Spørgsmålet er svaret korrekt, kun når input er præcis det skrevet i ovenstående
+                                        felt.
+                                    </twbs:input >
                                 </div>
                                 <div class="card-item" id="userdefined-field-type-card">
                                     <div id="editor">function validator(value) {
@@ -177,7 +181,8 @@ return validator; // Return the validator function</div>
                                 </div>
                                 <div class="card-item" id="expression-field-type-card">
                                     <label>Udtryk</label> <br />
-                                    <span id="expression-field"></span>
+                                    <div id="expression-container">
+                                    </div>
                                     <br />
                                 </div>
                             </div>

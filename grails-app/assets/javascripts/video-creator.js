@@ -1,3 +1,5 @@
+//= require bootstrap-helper
+
 var Editor = {};
 (function (exports) {
     var player = null;
@@ -164,11 +166,9 @@ var Editor = {};
         var FIELD_NAME = "#fieldName";
         var FIELD_TYPE = "#fieldType";
 
-        // Expression attributes
-        var FIELD_EXPRESSION = "#expression-field";
-
         var questionStack = new CardStack("#field-type-stack");
         var editor = null;
+        var defaultEditorText = null;
 
         /**
          * Displays the card item which holds attribute for the currently selected field type
@@ -195,32 +195,127 @@ var Editor = {};
             }
         }
 
+        function resetExpressionField(value) {
+            // Do not attempt to re-use a DOM element already initialized by
+            // Mathquill, as this will make the event listeners start crashing
+            // causing a total browser freeze.
+            var expressionContainer = $("#expression-container");
+            expressionContainer.html("<span>" + value + "</span>");
+            expressionContainer.find("span").mathquill("editable");
+        }
+
+        /**
+         * Resets the field options UI to its original state. Each field type
+         * should implement some logic here to reset the UI
+         */
+        function resetFields() {
+            // Expressions
+            resetExpressionField("");
+
+            // Custom (JS)
+            editor.setValue(defaultEditorText);
+
+            // Between
+            bootstrap.removeFormValidation($("#between-field-type-card"));
+            $("#betweenMinValue").val("");
+            $("#betweenMaxValue").val("");
+
+            // Text
+            $("#textFieldExact").val("");
+        }
+
         function editField(fieldIndex) {
+            // Display the attribute section
             attributesStack.select(ATTRIBUTE_PANEL_MAIN);
+
+            // Set the application state
             editingField = editingQuestion.fields[fieldIndex];
             editingFieldIndex = fieldIndex;
 
+            // Sets the fields in the attribute UI to match our current action
             $(FIELD_NAME).val(editingField.name);
             var fieldTypeId = getIdForFieldAnswer(editingField.answer);
             $(FIELD_TYPE + " option")[fieldTypeId].selected = true;
+
+            // Displays the options associated with the selected field type
             showSelectedFieldTypeAttributes();
 
+            // Load values associated with the field
             switch (fieldTypeId) {
                 case FIELD_TYPE_IDS.expression:
-                    var expressionField = $(FIELD_EXPRESSION);
-                    if (editingField.answer && editingField.answer.value) {
-                        expressionField.text(editingField.answer.value);
-                    } else {
-                        expressionField.text("");
-                    }
-                    expressionField.mathquill("editable");
+                    resetExpressionField(editingField.answer.value);
                     break;
                 case FIELD_TYPE_IDS.custom:
-                    if (editingField.answer && editingField.answer.jsValidator) {
-                        editor.setValue(editingField.answer.jsValidator);
-                    }
+                    editor.setValue(editingField.answer.jsValidator);
+                    break;
+                case FIELD_TYPE_IDS.between:
+                    $("#betweenMinValue").val(editingField.answer.min);
+                    $("#betweenMaxValue").val(editingField.answer.max);
+                    break;
+                case FIELD_TYPE_IDS.equal:
+                    $("#textFieldExact").val(editingField.answer.value);
                     break;
             }
+        }
+
+        function saveField() {
+            if (!editingField) return;
+
+            // Movement is saved whenever we move the field around
+            editingField.name = $(FIELD_NAME).val();
+
+            switch (getSelectedFieldTypeId()) {
+                case FIELD_TYPE_IDS.none:
+                    editingField.answer = {
+                        type: "none"
+                    };
+                    break;
+                case FIELD_TYPE_IDS.expression:
+                    editingField.answer = {
+                        type: "expression",
+                        value: parseTex($("#expression-container").find("span").mathquill("latex"))
+                    };
+                    break;
+                case FIELD_TYPE_IDS.custom:
+                    editingField.answer = {
+                        type: "custom",
+                        jsValidator: editor.getValue()
+                    };
+                    break;
+                case FIELD_TYPE_IDS.between:
+                    bootstrap.removeFormValidation($("#between-field-type-card"));
+                    var hasErrors = false;
+                    var minValueElement = $("#betweenMinValue");
+                    var min = parseInt(minValueElement.val());
+                    var maxValueElement = $("#betweenMaxValue");
+                    var max = parseInt(maxValueElement.val());
+
+                    if (isNaN(min)) {
+                        bootstrap.addValidationClass(minValueElement, bootstrap.VALIDATION_ERROR);
+                        hasErrors = true;
+                    }
+                    if (isNaN(max)) {
+                        bootstrap.addValidationClass(maxValueElement, bootstrap.VALIDATION_ERROR);
+                        hasErrors = true;
+                    }
+                    if (hasErrors) return;
+                    editingField.answer = {
+                        type: "between",
+                        min: min,
+                        max: max
+                    };
+                    break;
+                case FIELD_TYPE_IDS.equal:
+                    editingField.answer = {
+                        type: "equal",
+                        value: $("#textFieldExact").val()
+                    };
+                    break;
+            }
+
+            clearEditingField();
+            Questions.editQuestion(editingSubject, editingQuestion);
+            displayAllFields(editingQuestion);
         }
 
         function getIdForFieldAnswer(answer) {
@@ -239,37 +334,6 @@ var Editor = {};
             $("#fields").append(field);
             startEditing();
             return field;
-        }
-
-        function saveField() {
-            if (!editingField) return;
-
-            // Movement is saved whenever we move the field around
-            editingField.name = $(FIELD_NAME).val();
-
-            switch (getSelectedFieldTypeId()) {
-                case FIELD_TYPE_IDS.none:
-                    editingField.answer = {
-                        type: "none"
-                    };
-                    break;
-                case FIELD_TYPE_IDS.expression:
-                    editingField.answer = {
-                        type: "expression",
-                        value: parseTex($(FIELD_EXPRESSION).mathquill("latex"))
-                    };
-                    break;
-                case FIELD_TYPE_IDS.custom:
-                    editingField.answer = {
-                        type: "custom",
-                        jsValidator: editor.getValue()
-                    };
-                    break;
-            }
-
-            clearEditingField();
-            Questions.editQuestion(editingSubject, editingQuestion);
-            displayAllFields(editingQuestion);
         }
 
         function clearEditingField() {
@@ -291,6 +355,8 @@ var Editor = {};
             showSelectedFieldTypeAttributes();
 
             $("#fieldType").change(function () {
+                // Reset the UI to its original state
+                resetFields();
                 showSelectedFieldTypeAttributes();
             });
 
@@ -314,11 +380,10 @@ var Editor = {};
                 saveField();
             });
 
-            $(FIELD_EXPRESSION).mathquill("editable");
-
             editor = ace.edit("editor");
             editor.setTheme("ace/theme/ambiance");
             editor.getSession().setMode("ace/mode/javascript");
+            defaultEditorText = editor.getValue();
 
             initDragging();
         }
