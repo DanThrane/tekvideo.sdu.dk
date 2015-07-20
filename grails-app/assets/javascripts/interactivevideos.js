@@ -239,20 +239,20 @@ var ivids = {};
     function createInputField(id) {
         return '<span class="question" id="' + id + '"></span>';
     }
-    
+
     function createNavItem(item, id) {
         return '<li><a href="#" id="' + id + '">' + formatTime(item.timecode) +  ' - ' +  item.title + '</a></li>';
     }
-    
+
     function formatTimeUnit(unit) {
         if (unit < 10) return "0" + Math.floor(unit);
-        return unit;
+        return Math.floor(unit);
     }
-    
+
     /**
      * @brief       Formats time into a human readable string.
      * @details     The returned string will be in the format [DD:][HH:]MM:SS
-     * 
+     *
      * @param time  number Time in seconds.
      * @return      string Time as a string
      */
@@ -261,12 +261,12 @@ var ivids = {};
         var totalMins = totalSecs / 60;
         var totalHours = totalMins / 60;
         var totalDays = totalHours / 24;
-        
+
         var secs = totalSecs % 60;
         var mins = totalMins % 60;
         var hours = totalHours % 24;
         var result = "";
-        
+
         if (totalDays >= 1) result += formatTimeUnit(totalDays) + ":";
         if (hours >= 1) result += formatTimeUnit(hours) + ":";
         result += formatTimeUnit(mins) + ":";

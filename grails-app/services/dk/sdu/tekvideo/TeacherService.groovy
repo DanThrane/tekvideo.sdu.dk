@@ -55,7 +55,6 @@ class TeacherService {
                     teacher.addToCourses(command.course).save(flush: true)
                 }
                 return ok(command.course)
-
             } else {
                 return fail("teacherservice.field_errors")
             }
