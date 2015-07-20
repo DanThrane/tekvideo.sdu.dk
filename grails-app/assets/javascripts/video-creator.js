@@ -143,7 +143,7 @@ var Editor = {};
 
             $("#addQuestion").click(function () {
                 editingSubject.questions.push({
-                    title: "Unavngivet spørgsmål",
+                    title: "Unavngivet spÃ¸rgsmÃ¥l",
                     timecode: editingSubject.timecode,
                     fields: []
                 });
