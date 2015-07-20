@@ -2,6 +2,7 @@ package dk.sdu.tekvideo
 
 import grails.plugin.springsecurity.SpringSecurityUtils
 import grails.plugin.springsecurity.ui.RegisterCommand
+import org.springframework.security.access.annotation.Secured
 
 /**
  * Imported from Spring Security, it overwrites the actual register method.
@@ -10,6 +11,7 @@ import grails.plugin.springsecurity.ui.RegisterCommand
  * Note: Deleting this would break the ability to create a new user, without a
  * mail server.
  */
+@Secured("permitAll")
 class RegisterController extends grails.plugin.springsecurity.ui.RegisterController {
 
     @Override
