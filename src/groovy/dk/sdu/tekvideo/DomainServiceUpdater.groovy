@@ -6,7 +6,11 @@ import static dk.sdu.tekvideo.ServiceResult.ok
  * @author Dan Thrane
  */
 class DomainServiceUpdater<C extends CRUDCommand, D> {
-    C command
+    final C command
+
+    DomainServiceUpdater(C command) {
+        this.command = command
+    }
 
     /**
      * The initialization phase. This can be used to prepare the command object

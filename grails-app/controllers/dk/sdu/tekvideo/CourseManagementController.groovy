@@ -37,7 +37,7 @@ class CourseManagementController {
 
     def createSubject(Course course) {
         if (teacherService.canAccess(course)) {
-            [course: course]
+            render view: "createOrEditSubject", model: [course: course, isEditing: false]
         } else {
             notAllowedCourse()
         }
@@ -63,7 +63,7 @@ class CourseManagementController {
 
     def editCourse(Course course) {
         if (teacherService.canAccess(course)) {
-            render view: "createOrEditCourse", model: [command: new CourseCRUDCommand(course: course), isEditing: true]
+            render view: "createOrEditCourse", model: [command: new CourseCRUDCommand(domain: course), isEditing: true]
         } else {
             notAllowedCourse()
         }
@@ -72,7 +72,7 @@ class CourseManagementController {
     def postCourse(CourseCRUDCommand command) {
         def course = teacherService.createOrEditCourse(command)
         if (course.success) {
-            flash.success = "Ændringer til '$command.course.name' blev succesfuldt registeret!"
+            flash.success = "Ændringer til '$command.domain.name' blev succesfuldt registeret!"
             redirect action: "index"
         } else {
             render view: "createOrEditCourse", model: [command: command]
@@ -87,7 +87,7 @@ class CourseManagementController {
                 flash.success = "Emne '$command.subject.name' oprettet!"
                 redirect action: "manage", id: course.id
             } else {
-                render view: "createSubject", model: [course: course, command: command]
+                render view: "createOrEditSubject", model: [course: course, command: command]
             }
         } else {
             notAllowedCourse()

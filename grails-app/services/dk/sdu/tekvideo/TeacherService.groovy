@@ -32,35 +32,25 @@ class TeacherService {
     }
 
     ServiceResult<Course> createOrEditCourse(CourseCRUDCommand command) {
-        def teacher = getAuthenticatedTeacher()
-        if (teacher) {
-            command.course.teacher = teacher
-            def courseValid = command.course.validate()
-            def semesterValid = command.course.semester.validate()
-            if (courseValid && semesterValid) {
-                // The user input is valid
-
-                if (command.isEditing) {
-                    // Ensure that the editing is allowed and invoke the
-                    // slightly different saving procedure
-                    if (canAccess(command.course)) {
-                        command.course.semester.save()
-                        command.course.save(flush: true)
-                    } else {
-                        return fail("teacherservice.not_allowed")
-                    }
+        new DomainServiceUpdater<CourseCRUDCommand, Course>(command) {
+            ServiceResult<Void> init() {
+                def teacher = getAuthenticatedTeacher()
+                if (teacher) {
+                    command.domain.teacher = teacher
+                    ok null
                 } else {
-                    command.course.id = null // TODO This feels needed, read up on details
-                    command.course.semester.save()
-                    teacher.addToCourses(command.course).save(flush: true)
+                    fail "teacherservice.not_allowed"
                 }
-                return ok(command.course)
-            } else {
-                return fail("teacherservice.field_errors")
             }
-        } else {
-            return fail("teacherservice.no_teacher")
-        }
+
+            ServiceResult<Void> postValidation() {
+                if (command.isEditing && !canAccess(command.domain)) {
+                    fail "teacherservice.not_allowed"
+                } else {
+                    ok null
+                }
+            }
+        }.dispatch()
     }
 
     ServiceResult<Video> createVideo(CreateVideoCommand command) {

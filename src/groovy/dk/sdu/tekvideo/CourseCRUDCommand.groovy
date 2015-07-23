@@ -6,7 +6,7 @@ import grails.validation.Validateable
  * @author Dan Thrane
  */
 @Validateable
-class CourseCRUDCommand {
-    Course course
+class CourseCRUDCommand extends CRUDCommand<Course> {
+    Course domain
     Boolean isEditing
 }

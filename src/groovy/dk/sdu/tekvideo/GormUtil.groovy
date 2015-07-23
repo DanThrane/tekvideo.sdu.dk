@@ -31,7 +31,6 @@ class GormUtil {
      */
     static ServiceResult<Void> validateDomain(Object domain) {
         if (isValidateable(domain.class)) {
-            println "Validating ${domain.class}"
             def result = domain.validate()
             if (!result) {
                 fail "domainservice.field_errors"
@@ -59,7 +58,6 @@ class GormUtil {
                 def value = domain.properties[it.name]
                 saveDomain(value)
             }
-            println "Attempting to save ${domain.class}"
             domain.save()
         } else {
             throw new IllegalArgumentException("Object of type ${domain.class} is not validatable!")
