@@ -89,12 +89,18 @@ class CourseManagementController {
         }
     }
 
+    def updateVideos(UpdateVideosCommand command) {
+        def result = teacherService.updateVideos(command)
+        response.status = result.suggestedHttpStatus
+        render result as JSON
+    }
+
     def postSubject(Course course, SubjectCRUDCommand command) {
         if (teacherService.canAccess(course)) {
-            command?.subject?.course = course
+            command?.domain?.course = course
             def subject = teacherService.createSubject(course, command)
             if (subject.success) {
-                flash.success = "Emne '$command.subject.name' oprettet!"
+                flash.success = "Emne '$command.domain.name' oprettet!"
                 redirect action: "manage", id: course.id
             } else {
                 render view: "createOrEditSubject", model: [course: course, command: command]

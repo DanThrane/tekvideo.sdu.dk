@@ -3,6 +3,7 @@
 <head>
     <title>Nyt emne</title>
     <meta name="layout" content="main" />
+    <sdu:requireAjaxAssets />
 </head>
 
 <body>
@@ -52,10 +53,10 @@
                                 </twbs:column>
                                 <twbs:column cols="4" class="align-right">
                                     <twbs:buttonToolbar>
-                                        <twbs:button style="${ButtonStyle.LINK}">
+                                        <twbs:button style="${ButtonStyle.LINK}" disabled="true">
                                             <fa:icon icon="${FaIcon.YOUTUBE_PLAY}" />
                                         </twbs:button>
-                                        <twbs:button style="${ButtonStyle.LINK}">
+                                        <twbs:button style="${ButtonStyle.LINK}" disabled="true">
                                             <fa:icon icon="${FaIcon.EDIT}" />
                                         </twbs:button>
                                         <twbs:button style="${ButtonStyle.SUCCESS}" class="video-up">
@@ -70,10 +71,10 @@
                         </sdu:card>
                     </g:each>
                 </div>
-                <twbs:button style="${ButtonStyle.PRIMARY}" id="save-video-order">
+                <sdu:ajaxSubmitButton style="${ButtonStyle.PRIMARY}" id="save-video-order">
                     <fa:icon icon="${FaIcon.EDIT}" />
                     Gem ændringer
-                </twbs:button>
+                </sdu:ajaxSubmitButton>
             </g:if>
             <g:else>
                 Dette emne har ikke nogle videoer.
@@ -84,16 +85,45 @@
 
 <script>
     $(function () {
+        function movementFromDelta(delta) {
+            if (delta <= 0) {
+                return "-=" + Math.abs(delta);
+            } else {
+                return "+=" + Math.abs(delta);
+            }
+        }
+
+        function swapVideos(idxDown, idxUp, callback) {
+            var allVideos = $(".video");
+
+            var upperVid = $(allVideos[idxDown]);
+            var lowerVid = $(allVideos[idxUp]);
+
+            var upperPos = upperVid.position();
+            var lowerPos = lowerVid.position();
+
+            var upperVidMovement = lowerPos.top - upperPos.top;
+            var lowerVidMovement = upperPos.top - lowerPos.top;
+
+            upperVid.animate({ top: movementFromDelta(upperVidMovement) });
+            lowerVid.animate({ top: movementFromDelta(lowerVidMovement )}, function() {
+                callback();
+                // Clear the animated properties post-callback
+                upperVid.css("top", "initial");
+                lowerVid.css("top", "initial");
+            });
+        }
+
         $(".video-up").click(function() {
             var thisVideo = $(this).closest(".video");
             var index = thisVideo.index();
             if (index == 0) return;
 
             var videos = $(".video");
-            thisVideo.slideUp(200, function () {
-                thisVideo.insertBefore($(videos[index - 1])).slideDown(200);
-            });
 
+            swapVideos(index - 1, index, function() {
+                thisVideo.insertBefore($(videos[index - 1]));
+            });
         });
 
         $(".video-down").click(function() {
@@ -102,33 +132,21 @@
             var videos = $(".video");
 
             if (index == videos.length - 1) return;
-            thisVideo.slideUp(200, function () {
-                thisVideo.insertAfter($(videos[index + 1])).slideDown(200);
+
+            swapVideos(index, index + 1, function() {
+                thisVideo.insertAfter($(videos[index + 1]));
             });
         });
 
-        $("#save-video-order").click(function (e) {
-            e.preventDefault();
-            var order = $("[data-video-id]").map(function (e, r) {
-                return parseInt($(r).attr("data-video-id"))
+        AjaxUtil.registerJSONForm("#save-video-order", "${createLink(action: "updateVideos")}", function() {
+            var order = $.map($("[data-video-id]"), function (element) {
+                return parseInt($(element).attr("data-video-id"));
             });
 
-            var data = {
+            return {
                 order: order,
-                course: ${course.id}
+                subject: ${command.domain.id}
             };
-
-            Util.postJson("${createLink(action: "updateVideos")}", data, {
-                success: function (data) {
-                    console.log("success!");
-                },
-                error: function (data) {
-                    console.log("error!");
-                },
-                complete: function() {
-                    console.log("complete!");
-                }
-            });
         });
     });
 </script>

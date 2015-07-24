@@ -68,6 +68,21 @@ class TeacherService {
         }
     }
 
+    ServiceResult<Subject> updateVideos(UpdateVideosCommand command) {
+        if (!command.validate()) {
+            fail("teacherservice.invalid_request", false, [:], 400)
+        } else {
+            if (canAccess(command.subject.course)) {
+                command.subject.videos.clear()
+                command.subject.videos.addAll(command.order)
+                command.subject.save()
+                ok command.subject
+            } else {
+                fail("teacherservice.not_allowed", false, [:], 403)
+            }
+        }
+    }
+
     boolean canAccess(Course course) {
         return course.teacher == getAuthenticatedTeacher()
     }
