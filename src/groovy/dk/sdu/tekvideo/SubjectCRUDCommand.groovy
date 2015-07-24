@@ -6,6 +6,5 @@ import grails.validation.Validateable
  * @author Dan Thrane
  */
 @Validateable
-class CreateSubjectCommand {
-    Subject subject
+class SubjectCRUDCommand extends CRUDCommand<Subject> {
 }

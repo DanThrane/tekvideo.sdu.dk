@@ -43,6 +43,16 @@ class CourseManagementController {
         }
     }
 
+    def editSubject(Subject subject) {
+        if (teacherService.canAccess(subject.course)) {
+            render view: "createOrEditSubject",
+                    model: [course: subject.course, command: new SubjectCRUDCommand(domain: subject),
+                            isEditing: true]
+        } else {
+            notAllowedCourse()
+        }
+    }
+
     def createVideo(Course course) {
         if (teacherService.canAccess(course)) {
             [course: course, subjects: course.subjects]
@@ -79,7 +89,7 @@ class CourseManagementController {
         }
     }
 
-    def postSubject(Course course, CreateSubjectCommand command) {
+    def postSubject(Course course, SubjectCRUDCommand command) {
         if (teacherService.canAccess(course)) {
             command?.subject?.course = course
             def subject = teacherService.createSubject(course, command)

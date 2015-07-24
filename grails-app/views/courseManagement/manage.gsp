@@ -1,4 +1,4 @@
-<%@ page import="dk.danthrane.twbs.ButtonStyle; dk.sdu.tekvideo.FaIcon" contentType="text/html;charset=UTF-8" %>
+<%@ page import="dk.danthrane.twbs.ButtonSize; dk.danthrane.twbs.ButtonStyle; dk.sdu.tekvideo.FaIcon" contentType="text/html;charset=UTF-8" %>
 <html>
 <head>
     <title>Administrering af ${course.fullName} (${course.name})</title>
@@ -40,10 +40,19 @@
                 <g:else>
                     <g:each in="${course.subjects}" var="subject">
                         <sdu:card>
-                            <a href="#" class="subject-link" data-id="${subject.id}">
-                                <span class="block-link"></span>
-                            </a>
-                            <a href="#">${subject.name}</a>
+                            <twbs:column cols="10" class="card-link">
+                                <a href="#" class="subject-link" data-id="${subject.id}">
+                                    <span class="block-link"></span>
+                                </a>
+                                <a href="#">${subject.name}</a>
+                            </twbs:column>
+                            <twbs:column cols="2" class="pull-right">
+                                <twbs:linkButton action="editSubject" id="${subject.id}" block="true"
+                                                 style="${ButtonStyle.LINK}" size="${ButtonSize.SMALL}">
+                                    <fa:icon icon="${FaIcon.EDIT}" />
+                                    Rediger
+                                </twbs:linkButton>
+                            </twbs:column>
                         </sdu:card>
                         <sdu:card id="subject-data-${subject.id}" class="hide subject-data">
                             <span id="subject-loading-${subject.id}">

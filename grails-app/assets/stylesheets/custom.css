@@ -171,3 +171,15 @@
 .admin-subject-margin-fix {
     margin-top: 11.5px;
 }
+
+.card-link {
+    height: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    padding: 20px 30px;
+}
+
+.align-right {
+    text-align: right;
+}

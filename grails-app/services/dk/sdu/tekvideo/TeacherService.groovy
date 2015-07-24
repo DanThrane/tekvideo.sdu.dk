@@ -22,7 +22,7 @@ class TeacherService {
         }
     }
 
-    ServiceResult<Subject> createSubject(Course course, CreateSubjectCommand command) {
+    ServiceResult<Subject> createSubject(Course course, SubjectCRUDCommand command) {
         if (command.subject.validate()) {
             course.addToSubjects(command.subject).save(flush: true)
             ok command.subject
