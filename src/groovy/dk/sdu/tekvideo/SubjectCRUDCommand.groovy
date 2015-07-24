@@ -7,4 +7,6 @@ import grails.validation.Validateable
  */
 @Validateable
 class SubjectCRUDCommand extends CRUDCommand<Subject> {
+    Subject domain
+    Boolean isEditing
 }

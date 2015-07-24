@@ -60,9 +60,6 @@ class DomainServiceUpdater<C extends CRUDCommand, D> {
             if (validation.success) {
                 def postValidation = postValidation()
                 if (postValidation.success) {
-                    if (!command.isEditing) {
-                        command.domain.id = null
-                    }
                     save()
                     return ok(command.domain as D)
                 } else {

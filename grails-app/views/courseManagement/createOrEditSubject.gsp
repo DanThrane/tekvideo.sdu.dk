@@ -83,72 +83,74 @@
     </twbs:column>
 </twbs:row>
 
-<script>
-    $(function () {
-        function movementFromDelta(delta) {
-            if (delta <= 0) {
-                return "-=" + Math.abs(delta);
-            } else {
-                return "+=" + Math.abs(delta);
+<g:if test="${isEditing}">
+    <script>
+        $(function () {
+            function movementFromDelta(delta) {
+                if (delta <= 0) {
+                    return "-=" + Math.abs(delta);
+                } else {
+                    return "+=" + Math.abs(delta);
+                }
             }
-        }
 
-        function swapVideos(idxDown, idxUp, callback) {
-            var allVideos = $(".video");
+            function swapVideos(idxDown, idxUp, callback) {
+                var allVideos = $(".video");
 
-            var upperVid = $(allVideos[idxDown]);
-            var lowerVid = $(allVideos[idxUp]);
+                var upperVid = $(allVideos[idxDown]);
+                var lowerVid = $(allVideos[idxUp]);
 
-            var upperPos = upperVid.position();
-            var lowerPos = lowerVid.position();
+                var upperPos = upperVid.position();
+                var lowerPos = lowerVid.position();
 
-            var upperVidMovement = lowerPos.top - upperPos.top;
-            var lowerVidMovement = upperPos.top - lowerPos.top;
+                var upperVidMovement = lowerPos.top - upperPos.top;
+                var lowerVidMovement = upperPos.top - lowerPos.top;
 
-            upperVid.animate({ top: movementFromDelta(upperVidMovement) });
-            lowerVid.animate({ top: movementFromDelta(lowerVidMovement )}, function() {
-                callback();
-                // Clear the animated properties post-callback
-                upperVid.css("top", "initial");
-                lowerVid.css("top", "initial");
+                upperVid.animate({ top: movementFromDelta(upperVidMovement) });
+                lowerVid.animate({ top: movementFromDelta(lowerVidMovement )}, function() {
+                    callback();
+                    // Clear the animated properties post-callback
+                    upperVid.css("top", "initial");
+                    lowerVid.css("top", "initial");
+                });
+            }
+
+            $(".video-up").click(function() {
+                var thisVideo = $(this).closest(".video");
+                var index = thisVideo.index();
+                if (index == 0) return;
+
+                var videos = $(".video");
+
+                swapVideos(index - 1, index, function() {
+                    thisVideo.insertBefore($(videos[index - 1]));
+                });
             });
-        }
 
-        $(".video-up").click(function() {
-            var thisVideo = $(this).closest(".video");
-            var index = thisVideo.index();
-            if (index == 0) return;
+            $(".video-down").click(function() {
+                var thisVideo = $(this).closest(".video");
+                var index = thisVideo.index();
+                var videos = $(".video");
 
-            var videos = $(".video");
+                if (index == videos.length - 1) return;
 
-            swapVideos(index - 1, index, function() {
-                thisVideo.insertBefore($(videos[index - 1]));
+                swapVideos(index, index + 1, function() {
+                    thisVideo.insertAfter($(videos[index + 1]));
+                });
+            });
+
+            AjaxUtil.registerJSONForm("#save-video-order", "${createLink(action: "updateVideos")}", function() {
+                var order = $.map($("[data-video-id]"), function (element) {
+                    return parseInt($(element).attr("data-video-id"));
+                });
+
+                return {
+                    order: order,
+                    subject: ${command.domain.id}
+                };
             });
         });
-
-        $(".video-down").click(function() {
-            var thisVideo = $(this).closest(".video");
-            var index = thisVideo.index();
-            var videos = $(".video");
-
-            if (index == videos.length - 1) return;
-
-            swapVideos(index, index + 1, function() {
-                thisVideo.insertAfter($(videos[index + 1]));
-            });
-        });
-
-        AjaxUtil.registerJSONForm("#save-video-order", "${createLink(action: "updateVideos")}", function() {
-            var order = $.map($("[data-video-id]"), function (element) {
-                return parseInt($(element).attr("data-video-id"));
-            });
-
-            return {
-                order: order,
-                subject: ${command.domain.id}
-            };
-        });
-    });
-</script>
+    </script>
+</g:if>
 </body>
 </html>

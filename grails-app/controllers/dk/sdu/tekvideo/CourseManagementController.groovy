@@ -53,6 +53,21 @@ class CourseManagementController {
         }
     }
 
+    def postSubject(Course course, SubjectCRUDCommand command) {
+        if (teacherService.canAccess(course)) {
+            def subject = teacherService.createOrEditSubject(course, command)
+            if (subject.success) {
+                flash.success = "Ændringer til '$command.domain.name' blev succesfuldt registeret!"
+                redirect action: "manage", id: course.id
+            } else {
+                flash.error = subject.message
+                render view: "createOrEditSubject", model: [course: course, command: command]
+            }
+        } else {
+            notAllowedCourse()
+        }
+    }
+
     def createVideo(Course course) {
         if (teacherService.canAccess(course)) {
             [course: course, subjects: course.subjects]
@@ -93,21 +108,6 @@ class CourseManagementController {
         def result = teacherService.updateVideos(command)
         response.status = result.suggestedHttpStatus
         render result as JSON
-    }
-
-    def postSubject(Course course, SubjectCRUDCommand command) {
-        if (teacherService.canAccess(course)) {
-            command?.domain?.course = course
-            def subject = teacherService.createSubject(course, command)
-            if (subject.success) {
-                flash.success = "Emne '$command.domain.name' oprettet!"
-                redirect action: "manage", id: course.id
-            } else {
-                render view: "createOrEditSubject", model: [course: course, command: command]
-            }
-        } else {
-            notAllowedCourse()
-        }
     }
 
     private void notAllowedCourse() {

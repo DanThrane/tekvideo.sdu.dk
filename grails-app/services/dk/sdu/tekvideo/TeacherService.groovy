@@ -22,13 +22,18 @@ class TeacherService {
         }
     }
 
-    ServiceResult<Subject> createSubject(Course course, SubjectCRUDCommand command) {
-        if (command.subject.validate()) {
-            course.addToSubjects(command.subject).save(flush: true)
-            ok command.subject
-        } else {
-            fail "teacherservice.field_errors"
-        }
+    ServiceResult<Subject> createOrEditSubject(Course course, SubjectCRUDCommand command) {
+        new DomainServiceUpdater<SubjectCRUDCommand, Subject>(command) {
+            ServiceResult init() {
+                def teacher = getAuthenticatedTeacher()
+                if (teacher && canAccess(course)) {
+                    if (!command.isEditing) course.addToSubjects(command.domain)
+                    ok null
+                } else {
+                    fail "teacherservice.not_allowed"
+                }
+            }
+        }.dispatch()
     }
 
     ServiceResult<Course> createOrEditCourse(CourseCRUDCommand command) {
