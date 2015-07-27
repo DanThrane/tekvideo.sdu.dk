@@ -16,7 +16,7 @@ class DomainServiceUpdaterSpec extends Specification {
         course.semester = semester
 
         and: "A domain service updater"
-        def updater = new DomainServiceUpdater(command: new CRUDCommand(domain: course, isEditing: false))
+        def updater = new DomainServiceUpdater(new CRUDCommand(domain: course, isEditing: false))
 
         when: "Validation is performed"
         def result = updater.domainValidation()
@@ -35,7 +35,7 @@ class DomainServiceUpdaterSpec extends Specification {
         def course = getValidCourse()
 
         and: "A domain service updater"
-        def updater = new DomainServiceUpdater(command: new CRUDCommand(domain: course, isEditing: false))
+        def updater = new DomainServiceUpdater(new CRUDCommand(domain: course, isEditing: false))
 
         when: "Validation is performed"
         def result = updater.domainValidation()

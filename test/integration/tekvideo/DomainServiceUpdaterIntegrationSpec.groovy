@@ -21,7 +21,7 @@ class DomainServiceUpdaterIntegrationSpec extends IntegrationSpec {
         def course = getValidCourse()
 
         and: "a service updater"
-        def updater = new DomainServiceUpdater(command: new CRUDCommand(domain: course))
+        def updater = new DomainServiceUpdater(new CRUDCommand(domain: course))
 
         when: "the updater has not yet been called"
         then:
