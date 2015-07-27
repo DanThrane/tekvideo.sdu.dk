@@ -59,7 +59,7 @@ class CourseManagementController {
         if (teacherService.canAccess(course)) {
             def subject = teacherService.createOrEditSubject(course, command)
             if (subject.success) {
-                flash.success = "Ændringer til '$command.domain.name' blev succesfuldt registeret!"
+                flash.success = "Ã†ndringer til '$command.domain.name' blev succesfuldt registeret!"
                 redirect action: "manage", id: course.id
             } else {
                 flash.error = subject.message
@@ -99,7 +99,7 @@ class CourseManagementController {
     def postCourse(CourseCRUDCommand command) {
         def course = teacherService.createOrEditCourse(command)
         if (course.success) {
-            flash.success = "Ændringer til '$command.domain.name' blev succesfuldt registeret!"
+            flash.success = "Ã†ndringer til '$command.domain.name' blev succesfuldt registeret!"
             redirect action: "index"
         } else {
             render view: "createOrEditCourse", model: [command: command]
@@ -113,7 +113,7 @@ class CourseManagementController {
     }
 
     private void notAllowedCourse() {
-        flash.error = "Du har ikke tiladelse til at tilgå dette kursus"
+        flash.error = "Du har ikke tiladelse til at tilgÃ¥ dette kursus"
         redirect action: "index"
     }
 
