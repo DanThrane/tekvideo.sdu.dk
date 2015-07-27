@@ -72,14 +72,23 @@ class CourseManagementController {
 
     def createVideo(Course course) {
         if (teacherService.canAccess(course)) {
-            [course: course, subjects: course.subjects]
+            [course: course, subjects: course.subjects, isEditing: false]
+        } else {
+            notAllowedCourse()
+        }
+    }
+
+    def editVideo(Video video) {
+        // TODO A bit unclear who should be allowed to edit a video (See issue #14)
+        if (teacherService.authenticatedTeacher) {
+            render view: "createVideo", model: [isEditing: true, video: video]
         } else {
             notAllowedCourse()
         }
     }
 
     def postVideo(CreateVideoCommand command) {
-        def result = teacherService.createVideo(command)
+        def result = teacherService.createOrEditVideo(command)
         response.status = result.suggestedHttpStatus
         render result as JSON
     }

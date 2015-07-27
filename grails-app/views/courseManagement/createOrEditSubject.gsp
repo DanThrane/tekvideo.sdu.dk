@@ -58,9 +58,10 @@
                                                                     subject: command.domain, vidid: idx]}">
                                             <fa:icon icon="${FaIcon.YOUTUBE_PLAY}" />
                                         </twbs:linkButton>
-                                        <twbs:button style="${ButtonStyle.LINK}" disabled="true">
+                                        <twbs:linkButton style="${ButtonStyle.LINK}" action="editVideo"
+                                                         id="${video.id}">
                                             <fa:icon icon="${FaIcon.EDIT}" />
-                                        </twbs:button>
+                                        </twbs:linkButton>
                                         <twbs:button style="${ButtonStyle.SUCCESS}" class="video-up">
                                             <fa:icon icon="${FaIcon.ARROW_UP}" />
                                         </twbs:button>

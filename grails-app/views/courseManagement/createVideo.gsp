@@ -1,7 +1,12 @@
 <%@ page import="dk.danthrane.twbs.GridSize; dk.danthrane.twbs.InputSize; dk.danthrane.twbs.Icon; dk.danthrane.twbs.ButtonSize; dk.sdu.tekvideo.FaIcon; dk.danthrane.twbs.ButtonStyle" contentType="text/html;charset=UTF-8" %>
 <html>
 <head>
-    <title>Ny video til ${course.fullName} (${course.name})</title>
+    <g:if test="${isEditing}">
+        <title>Redigering af ${video.name}</title>
+    </g:if>
+    <g:else>
+        <title>Ny video til ${course.fullName} (${course.name})</title>
+    </g:else>
     <meta name="layout" content="main" />
     <asset:javascript src="interact.js" />
     <asset:stylesheet src="create_video.css" />
@@ -25,10 +30,13 @@
                             </span>
                         </twbs:column>
                         <twbs:column cols="10">
-                            Din video er blevet udgivet succesfuldt, og er nu tilgængelig på
-                             <g:link mapping="teaching" params="${[teacher: course.teacher.user.username, course: course.name]}">
-                                 kursus siden.
-                             </g:link>
+                            Din video er blevet udgivet succesfuldt!
+                            <g:if test="${!isEditing}">
+                                Den er nu tilgængelig på
+                                <g:link mapping="teaching" params="${[teacher: course.teacher.user.username, course: course.name]}">
+                                    kursus siden.
+                                </g:link>
+                            </g:if>
                         </twbs:column>
                     </twbs:row>
                 </div>
@@ -81,7 +89,12 @@
         </twbs:row>
     </div>
     <div class="card-item active" id="creator-card">
-        <twbs:pageHeader><h3>Ny video til ${course.fullName} (${course.name})</h3></twbs:pageHeader>
+        <g:if test="${isEditing}">
+            <twbs:pageHeader><h3>Redigering af ${video.name}</h3></twbs:pageHeader>
+        </g:if>
+        <g:else>
+            <twbs:pageHeader><h3>Ny video til ${course.fullName} (${course.name})</h3></twbs:pageHeader>
+        </g:else>
         <twbs:row>
             <twbs:column cols="9">
                 <div id="wrapper">
@@ -95,7 +108,9 @@
                 <twbs:input name="youtubeId" labelText="YouTube Link">
                     For eksempel: <code>https://www.youtube.com/watch?v=DXUAyRRkI6k</code> eller <code>DXUAyRRkI6k</code>
                 </twbs:input>
-                <twbs:select name="subject" labelText="Emne" list="${subjects}" />
+                <g:if test="${!isEditing}">
+                    <twbs:select name="subject" labelText="Emne" list="${subjects}" />
+                </g:if>
                 <twbs:button block="true" style="${ButtonStyle.INFO}" id="stopEdit" disabled="true">
                     <fa:icon icon="${FaIcon.UNLOCK}" /> Lås video op
                 </twbs:button>
@@ -276,8 +291,18 @@ return validator; // Return the validator function</div>
 <asset:javascript src="video-creator.js" />
 <script>
     $(document).ready(function () {
-        Editor.setPublishEndpoint("<g:createLink action="postVideo" />");
         Editor.init();
+
+        <g:if test="${isEditing}">
+        $("#videoName").val("${video.name}");
+        Editor.displayVideo("${video.youtubeId}");
+        Editor.Timeline.setTimeline(${raw(video.timelineJson)});
+        Editor.setPublishEndpoint("<g:createLink action="postVideo" params="[edit: video.id]" />");
+        Editor.setEditing(${video.id});
+        </g:if>
+        <g:else>
+        Editor.setPublishEndpoint("<g:createLink action="postVideo" />");
+        </g:else>
 
         <g:if test="${params.test}">
         $("#videoName").val("Introduktion til interaktive videoer");

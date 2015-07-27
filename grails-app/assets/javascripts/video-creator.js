@@ -10,6 +10,8 @@ var Editor = {};
     var editingFieldIndex = -1;
     var videoId = null;
     var publishEndpoint = null;
+    var isEditing = false;
+    var editingId = null;
 
     var attributesStack = new CardStack("#attributes-stack");
 
@@ -52,18 +54,29 @@ var Editor = {};
         $("#stopEdit").addClass("disabled").attr("disabled", "disabled")
     }
 
+    function setEditing(videoId) {
+        isEditing = true;
+        editingId = videoId;
+    }
+
     function publishVideo() {
         MainPanel.showPublishing();
         var name = $("#videoName").val();
         var youtubeId = videoId;
-        var subject = $("#subject").val();
         var timelineJson = JSON.stringify(currentTimeline);
         var data = {
             name: name,
             youtubeId: youtubeId,
-            subject: subject,
-            timelineJson: timelineJson
+            timelineJson: timelineJson,
+            isEditing: isEditing
         };
+
+        if (isEditing) {
+            data.editing = editingId;
+        } else {
+            data.subject = $("#subject").val();
+        }
+
         Util.postJson(publishEndpoint, data, {
             success: function (data) {
                 $("#publish-success").removeClass("hide");
@@ -626,4 +639,5 @@ var Editor = {};
     exports.Timeline = Timeline;
     exports.displayVideo = displayVideo;
     exports.setPublishEndpoint = setPublishEndpoint;
+    exports.setEditing = setEditing;
 })(Editor);

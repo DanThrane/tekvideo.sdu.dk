@@ -58,15 +58,26 @@ class TeacherService {
         }.dispatch()
     }
 
-    ServiceResult<Video> createVideo(CreateVideoCommand command) {
+    ServiceResult<Video> createOrEditVideo(CreateVideoCommand command) {
         def teacher = getAuthenticatedTeacher()
-        if (teacher && canAccess(command.subject.course)) {
-            def video = new Video(name: command.name, youtubeId: command.youtubeId, timelineJson: command.timelineJson)
-            if (video.validate()) {
-                command.subject.addToVideos(video).save(flush: true)
-                ok video
+        if (teacher) {
+            if (!command.isEditing && !canAccess(command.subject.course)) {
+                fail "teacherservice.not_allowed"
             } else {
-                fail "teacherservice.field_errors"
+                def video = (command.isEditing) ? command.editing : new Video()
+                video.name = command.name
+                video.youtubeId = command.youtubeId
+                video.timelineJson = command.timelineJson
+                if (video.validate()) {
+                    if (command.isEditing) {
+                        video.save()
+                    } else {
+                        command.subject.addToVideos(video).save(flush: true)
+                    }
+                    ok video
+                } else {
+                    fail "teacherservice.field_errors"
+                }
             }
         } else {
             fail "teacherservice.not_allowed"
