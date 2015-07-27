@@ -9,6 +9,7 @@ class Subject {
 
     static constraints = {
         name nullable: false, blank: false
+        description nullable: true
     }
 
     static mapping = {
@@ -16,6 +17,11 @@ class Subject {
     }
 
     static belongsTo = [course: Course]
+
+    String getDescription() {
+        if (description == null) return "Ingen beskrivelse"
+        return description
+    }
 
     @Override
     String toString() {
