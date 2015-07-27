@@ -1,57 +1,38 @@
 <html>
 
 <head>
-	<meta name='layout' content='register'/>
-	<title><g:message code='spring.security.ui.register.title'/></title>
+	<title>Ny bruger</title>
+	<meta name="layout" content="main"/>
 </head>
 
 <body>
+<div class="form-group">
+	<twbs:container>
+		<twbs:row>
+			<twbs:column cols="8" offset="2">
+				<h1>Ny bruger</h1>
+				<g:form action='register' name='registerForm'>
 
-<p/>
+					<twbs:input name="username" bean="${command}" labelText="Brugernavn" />
+					<twbs:input name="email" bean="${command}" labelText="Email" type="email" />
+					<twbs:input name="password" type="password" labelText="Password" bean="${command}">
+						Kodeordet skal indeholde bogstaver, tal, og special symboler
+					</twbs:input>
+					<twbs:input name="password2" type="password" labelText="Password (igen)" bean="${command}" />
 
-<s2ui:form width='650' height='300' elementId='loginFormContainer'
-           titleCode='spring.security.ui.register.description' center='true'>
-
-<g:form action='register' name='registerForm'>
-
-	<g:if test='${emailSent}'>
-	<br/>
-	<g:message code='spring.security.ui.register.sent'/>
-	</g:if>
-	<g:else>
-
-	<br/>
-
-	<table>
-	<tbody>
-
-		<s2ui:textFieldRow name='username' labelCode='user.username.label' bean="${command}"
-                         size='40' labelCodeDefault='Username' value="${command.username}"/>
-
-		<s2ui:textFieldRow name='email' bean="${command}" value="${command.email}"
-		                   size='40' labelCode='user.email.label' labelCodeDefault='E-mail'/>
-
-		<s2ui:passwordFieldRow name='password' labelCode='user.password.label' bean="${command}"
-                             size='40' labelCodeDefault='Password' value="${command.password}"/>
-
-		<s2ui:passwordFieldRow name='password2' labelCode='user.password2.label' bean="${command}"
-                             size='40' labelCodeDefault='Password (again)' value="${command.password2}"/>
-
-	</tbody>
-	</table>
-
-	<s2ui:submitButton elementId='create' form='registerForm' messageCode='spring.security.ui.register.submit'/>
-
-	</g:else>
-
-</g:form>
-
-</s2ui:form>
+					<div class="form-buttons">
+						<s2ui:submitButton class="btn btn-primary" elementId='create' form='registerForm' messageCode='${g.message(code:"register.submit")}'/>
+					</div>
+				</g:form>
+			</twbs:column>
+		</twbs:row>
+	</twbs:container>
+</div>
 
 <script>
-$(document).ready(function() {
-	$('#username').focus();
-});
+	$(document).ready(function() {
+		$('#username').focus();
+	});
 </script>
 
 </body>
