@@ -44,7 +44,7 @@
 
             <g:if test="${!command.domain.videos?.isEmpty()}">
                 <div id="video-container">
-                    <g:each in="${command.domain.videos}" var="video">
+                    <g:each in="${command.domain.videos}" var="video" status="idx">
                         <sdu:card class="video">
                             <div data-video-id="${video.id}"></div>
                             <twbs:row>
@@ -53,9 +53,11 @@
                                 </twbs:column>
                                 <twbs:column cols="4" class="align-right">
                                     <twbs:buttonToolbar>
-                                        <twbs:button style="${ButtonStyle.LINK}" disabled="true">
+                                        <twbs:linkButton style="${ButtonStyle.LINK}" mapping="teaching"
+                                                         params="${[teacher: teacher, course: course,
+                                                                    subject: command.domain, vidid: idx]}">
                                             <fa:icon icon="${FaIcon.YOUTUBE_PLAY}" />
-                                        </twbs:button>
+                                        </twbs:linkButton>
                                         <twbs:button style="${ButtonStyle.LINK}" disabled="true">
                                             <fa:icon icon="${FaIcon.EDIT}" />
                                         </twbs:button>

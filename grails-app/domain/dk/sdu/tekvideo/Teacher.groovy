@@ -5,4 +5,9 @@ class Teacher {
 
     static hasMany = [courses: Course]
     static constraints = {}
+
+    @Override
+    String toString() {
+        return user.username
+    }
 }

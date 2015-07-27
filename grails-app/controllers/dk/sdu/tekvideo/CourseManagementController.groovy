@@ -36,18 +36,20 @@ class CourseManagementController {
     }
 
     def createSubject(Course course) {
+        def teacher = teacherService.authenticatedTeacher
         if (teacherService.canAccess(course)) {
-            render view: "createOrEditSubject", model: [course: course, isEditing: false]
+            render view: "createOrEditSubject", model: [course: course, teacher: teacher, isEditing: false]
         } else {
             notAllowedCourse()
         }
     }
 
     def editSubject(Subject subject) {
+        def teacher = teacherService.authenticatedTeacher
         if (teacherService.canAccess(subject.course)) {
             render view: "createOrEditSubject",
                     model: [course: subject.course, command: new SubjectCRUDCommand(domain: subject),
-                            isEditing: true]
+                            isEditing: true, teacher: teacher]
         } else {
             notAllowedCourse()
         }
