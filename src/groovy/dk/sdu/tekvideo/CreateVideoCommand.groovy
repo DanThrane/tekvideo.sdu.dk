@@ -14,7 +14,7 @@ class CreateVideoCommand {
     String description
     Boolean isEditing
     Video editing
-
+    Boolean videoType
 
     static constraints = {
         editing nullable: true

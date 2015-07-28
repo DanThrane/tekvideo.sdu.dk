@@ -12,6 +12,7 @@ var Editor = {};
     var publishEndpoint = null;
     var isEditing = false;
     var editingId = null;
+    var isYouTube = false;
 
     var attributesStack = new CardStack("#attributes-stack");
 
@@ -26,21 +27,41 @@ var Editor = {};
         var regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&\?]*).*/;
         var match = url.match(regExp);
         if (match && match[2].length == 11) {
-            return match[2];
+            return {id: match[2], type: true};
         } else {
             return null;
         }
     }
 
-    function displayVideo(youtubeId) {
-        $("#youtubeId").val(youtubeId);
-        videoId = youtubeId;
+    function parseVimeoID(url) {
+        var regExp = /^.*(vimeo\.com\/)(\d+)\??.*/;
+        var match = url.match(regExp);
+        if (match) {
+            return {id: match[2], type: false};
+        } else {
+            return null;
+        }
+    }
+
+    function parseVideoID(url) {
+        if (url.toLowerCase().indexOf("youtube") != -1) return parseYouTubeID(url);
+        else if (url.toLowerCase().indexOf("vimeo") != -1) return parseVimeoID(url);
+        return null;
+    }
+
+    function displayVideo(type, vidId) {
+        $("#videoId").val(vidId);
+        videoId = vidId;
+        isYouTube = type;
         if (player !== null) {
             Popcorn.destroy(player);
             $("#player").html("");
         }
-        var wrapper = Popcorn.HTMLYouTubeVideoElement("#player");
-        wrapper.src = "http://www.youtube.com/watch?v=" + youtubeId + "&controls=0";
+        var constructor = (isYouTube) ? Popcorn.HTMLYouTubeVideoElement : Popcorn.HTMLVimeoVideoElement;
+        var wrapper = constructor("#player");
+        wrapper.src = (isYouTube) ?
+            "http://www.youtube.com/watch?v=" + videoId + "&controls=0" :
+            "http://player.vimeo.com/video/" + videoId;
         player = Popcorn(wrapper);
     }
 
@@ -65,12 +86,14 @@ var Editor = {};
         var description = $("#description").val();
         var youtubeId = videoId;
         var timelineJson = JSON.stringify(currentTimeline);
+        var type = isYouTube;
         var data = {
             name: name,
             youtubeId: youtubeId,
             timelineJson: timelineJson,
             isEditing: isEditing,
-            description: description
+            description: description,
+            videoType: type
         };
 
         if (isEditing) {
@@ -102,10 +125,10 @@ var Editor = {};
         Preview.init();
         Timeline.init();
 
-        $("#youtubeId").on('change textInput input', function () {
-            var id = parseYouTubeID($(this).val());
-            if (id !== null) {
-                displayVideo(id);
+        $("#videoId").on('change textInput input', function () {
+            var parsed = parseVideoID($(this).val());
+            if (parsed !== null) {
+                displayVideo(parsed.type, parsed.id);
             }
         });
 
@@ -278,6 +301,7 @@ var Editor = {};
                     $("#betweenMaxValue").val(editingField.answer.max);
                     break;
                 case FIELD_TYPE_IDS.equal:
+                    $("#textFieldIgnoreCase").prop('checked', editingField.answer.ignoreCase);
                     $("#textFieldExact").val(editingField.answer.value);
                     break;
             }
@@ -333,8 +357,10 @@ var Editor = {};
                 case FIELD_TYPE_IDS.equal:
                     editingField.answer = {
                         type: "equal",
-                        value: $("#textFieldExact").val()
+                        value: $("#textFieldExact").val(),
+                        ignoreCase: $("#textFieldIgnoreCase").prop("checked")
                     };
+                    console.log(editingField);
                     break;
             }
 
@@ -482,7 +508,7 @@ var Editor = {};
         function init() {
             $("#start-preview").click(function () {
                 events.disable();
-                ivids.bootstrap("#preview-player", videoId, currentTimeline);
+                ivids.bootstrap("#preview-player", videoId, isYouTube, currentTimeline);
                 MainPanel.showPreview();
             });
             $("#stop-preview").click(function () {

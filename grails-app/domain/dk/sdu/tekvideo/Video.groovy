@@ -5,6 +5,7 @@ class Video {
     String youtubeId
     String timelineJson
     String description = "Ingen beskrivelse"
+    Boolean videoType = true
     Date dateCreated
 
     static constraints = {
@@ -19,11 +20,13 @@ class Video {
 
     static mapping = {
         timelineJson type: "text"
+        videoType defaultValue: true
     }
 
     String getDescription() {
         if (description == null) return "Ingen beskrivelse"
         return description
     }
+
 
 }

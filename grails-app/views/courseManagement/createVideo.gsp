@@ -105,8 +105,8 @@
             <twbs:column cols="3">
                 <h4>Kontrol panel</h4>
                 <twbs:input name="videoName" labelText="Navn" />
-                <twbs:input name="youtubeId" labelText="YouTube Link">
-                    For eksempel: <code>https://www.youtube.com/watch?v=DXUAyRRkI6k</code> eller <code>DXUAyRRkI6k</code>
+                <twbs:input name="videoId" labelText="YouTube/Vimeo Link">
+                    For eksempel: <code>https://www.youtube.com/watch?v=DXUAyRRkI6k</code>
                 </twbs:input>
                 <g:if test="${!isEditing}">
                     <twbs:select name="subject" labelText="Emne" list="${subjects}" />
@@ -212,6 +212,12 @@
                                 </div>
                                 <div class="card-item" id="text-field-type-card">
                                     <twbs:input name="textFieldExact" labelText="Tekst">
+                                        <g:content key="addon-left">
+                                            <twbs:inputGroupAddon>
+                                                <twbs:checkbox name="textFieldIgnoreCase"
+                                                               labelText="Case insensitive" />
+                                            </twbs:inputGroupAddon>
+                                        </g:content>
                                         Spørgsmålet er svaret korrekt, kun når input er præcis det skrevet i ovenstående
                                         felt.
                                     </twbs:input >
@@ -296,7 +302,7 @@ return validator; // Return the validator function</div>
 
         <g:if test="${isEditing}">
         $("#videoName").val("${video.name}");
-        Editor.displayVideo("${video.youtubeId}");
+        Editor.displayVideo(${video.videoType}, "${video.youtubeId}");
         Editor.Timeline.setTimeline(${raw(video.timelineJson)});
         Editor.setPublishEndpoint("<g:createLink action="postVideo" params="[edit: video.id]" />");
         Editor.setEditing(${video.id});
@@ -304,37 +310,6 @@ return validator; // Return the validator function</div>
         <g:else>
         Editor.setPublishEndpoint("<g:createLink action="postVideo" />");
         </g:else>
-
-        <g:if test="${params.test}">
-        $("#videoName").val("Introduktion til interaktive videoer");
-        Editor.displayVideo("eiSfEP7gTRw");
-
-        Editor.Timeline.setTimeline([{
-            title: "Introduktion",
-            timecode: 0,
-            questions: []
-        }, {
-            title: "Subtraktion",
-            timecode: 140,
-            questions: [
-                {
-                    title: "Subtraktion med tal",
-                    timecode: 155, // 2:35 - 5
-                    fields: [
-                        {
-                            name: "secondq",
-                            answer: {
-                                type: "expression",
-                                value: "5"
-                            },
-                            topoffset: 170,
-                            leftoffset: 290
-                        }
-                    ]
-                }
-            ]
-        }]);
-        </g:if>
     });
 </script>
 </body>

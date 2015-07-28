@@ -3,12 +3,14 @@ var ivids = {};
 (function(ivids) {
     var player = null;
     var timeline;
-    var youtubeVideoId;
+    var videoId;
+    var isYouTube;
     var questions = [];
 
-    function bootstrap(playerSelector, videoId, tline) {
+    function bootstrap(playerSelector, vidId, videoType, tline) {
         timeline = tline;
-        youtubeVideoId = videoId;
+        isYouTube = videoType;
+        videoId = vidId;
 
         if (player !== null) {
             Popcorn.destroy(player);
@@ -22,10 +24,13 @@ var ivids = {};
             buildNavigation();
         }
 
-        var wrapper = Popcorn.HTMLYouTubeVideoElement(playerSelector);
-        wrapper.src = "http://www.youtube.com/watch?v=" + youtubeVideoId + "&controls=0";
-
+        var constructor = (isYouTube) ? Popcorn.HTMLYouTubeVideoElement : Popcorn.HTMLVimeoVideoElement;
+        var wrapper = constructor(playerSelector);
+        wrapper.src = (isYouTube) ?
+            "http://www.youtube.com/watch?v=" + videoId + "&controls=0" :
+            "http://player.vimeo.com/video/" + videoId;
         player = Popcorn(wrapper);
+
         player.on("timeupdate", handleTimeUpdate);
         player.on("seeked", handleSeeked);
         player.on("play", function() {
@@ -54,7 +59,6 @@ var ivids = {};
 
     function handleTimeUpdate() {
         var timestamp = player.currentTime();
-        console.log(timestamp);
         for (var i = questions.length - 1; i >= 0; i--) {
             var q = questions[i];
             if (q.timecode !== Math.round(timestamp) && q.visible) {
@@ -191,6 +195,14 @@ var ivids = {};
                 var floatVal = parseFloat(value);
                 return floatVal >= answer.min && floatVal <= answer.max;
             case "equal":
+                if (answer.ignoreCase) {
+                    value = value.toLowerCase();
+                    answer.value = answer.value.toLowerCase();
+                }
+                console.log(answer);
+                console.log(value);
+                console.log(answer.value);
+                console.log(answer.ignoreCase);
                 return value === answer.value;
             case "in-list":
                 return answer.value.indexOf(value) >= 0;
