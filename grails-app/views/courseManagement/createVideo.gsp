@@ -33,7 +33,7 @@
                             Din video er blevet udgivet succesfuldt!
                             <g:if test="${!isEditing}">
                                 Den er nu tilgængelig på
-                                <g:link mapping="teaching" params="${[teacher: course.teacher.user.username, course: course.name]}">
+                                <g:link mapping="teaching" params="${[teacher: course.teacher, course: course.name]}">
                                     kursus siden.
                                 </g:link>
                             </g:if>

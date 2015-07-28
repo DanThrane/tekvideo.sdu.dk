@@ -38,7 +38,7 @@ class BootStrap {
         def studentUser = new User(username: "Student", password: "password").save(flush: true, failOnError: true)
         def lazyUser = new User(username: "Lazy Student", password: "password").save(flush: true, failOnError: true)
 
-        def teacher = new Teacher(user: teacherUser).save(flush: true, failOnError: true)
+        def teacher = new Teacher(user: teacherUser, alias: "teach").save(flush: true, failOnError: true)
         def student = new Student(user: studentUser).save(flush: true, failOnError: true)
         def lazyStudent = new Student(user: lazyUser).save(flush: true, failOnError: true)
 

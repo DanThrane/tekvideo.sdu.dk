@@ -60,7 +60,7 @@
 <strong>Resultater:</strong>
 
 <g:each in="${courses}" var="course">
-    <sdu:linkCard mapping="teaching" params="${[teacher: course.teacher.user.username, course: course.name]}">
+    <sdu:linkCard mapping="teaching" params="${[teacher: course.teacher, course: course.name]}">
         <span class="search-result">${course.name} &mdash; ${course.fullName}</span>
         <p>${course.description}</p>
     </sdu:linkCard>

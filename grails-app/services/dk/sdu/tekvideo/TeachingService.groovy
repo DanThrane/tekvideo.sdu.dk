@@ -6,7 +6,8 @@ import grails.transaction.Transactional
 class TeachingService {
 
     Teacher getTeacher(String teacherName) {
-        Teacher.findByUser(User.findByUsername(teacherName))
+        def byAlias = Teacher.findByAlias(teacherName)
+        return byAlias ?: Teacher.findByUser(User.findByUsername(teacherName))
     }
 
     Course getCourse(String teacherName, String courseName) {

@@ -24,7 +24,7 @@
     </twbs:column>
     <twbs:column cols="3">
         <h5><twbs:icon icon="${Icon.EDUCATION}" /> Kursus</h5>
-        <g:link mapping="teaching" params="${[teacher: course.teacher.user.username, course: course]}">
+        <g:link mapping="teaching" params="${[teacher: course.teacher, course: course]}">
             ${course.fullName} (${course.name})
         </g:link>
     </twbs:column>

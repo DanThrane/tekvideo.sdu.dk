@@ -9,7 +9,7 @@
 
 <ol class="breadcrumb">
     <li><g:link uri="/">Hjem</g:link></li>
-    <li class="active">${params.teacher}</li>
+    <li class="active">${teacher.user.username}</li>
 </ol>
 
 <twbs:row>
