@@ -54,6 +54,7 @@ var ivids = {};
 
     function handleTimeUpdate() {
         var timestamp = player.currentTime();
+        console.log(timestamp);
         for (var i = questions.length - 1; i >= 0; i--) {
             var q = questions[i];
             if (q.timecode !== Math.round(timestamp) && q.visible) {

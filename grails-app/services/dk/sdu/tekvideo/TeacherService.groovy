@@ -68,6 +68,7 @@ class TeacherService {
                 video.name = command.name
                 video.youtubeId = command.youtubeId
                 video.timelineJson = command.timelineJson
+                video.description = command.description
                 if (video.validate()) {
                     if (command.isEditing) {
                         video.save()

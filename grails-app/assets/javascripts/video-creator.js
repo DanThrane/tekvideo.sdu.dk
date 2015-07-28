@@ -62,13 +62,15 @@ var Editor = {};
     function publishVideo() {
         MainPanel.showPublishing();
         var name = $("#videoName").val();
+        var description = $("#description").val();
         var youtubeId = videoId;
         var timelineJson = JSON.stringify(currentTimeline);
         var data = {
             name: name,
             youtubeId: youtubeId,
             timelineJson: timelineJson,
-            isEditing: isEditing
+            isEditing: isEditing,
+            description: description
         };
 
         if (isEditing) {

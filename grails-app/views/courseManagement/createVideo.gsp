@@ -111,6 +111,7 @@
                 <g:if test="${!isEditing}">
                     <twbs:select name="subject" labelText="Emne" list="${subjects}" />
                 </g:if>
+                <twbs:textArea name="description" labelText="Beskrivelse" />
                 <twbs:button block="true" style="${ButtonStyle.INFO}" id="stopEdit" disabled="true">
                     <fa:icon icon="${FaIcon.UNLOCK}" /> Lås video op
                 </twbs:button>

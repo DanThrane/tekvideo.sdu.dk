@@ -11,6 +11,7 @@ class CreateVideoCommand {
     String name
     String youtubeId
     String timelineJson
+    String description
     Boolean isEditing
     Video editing
 
@@ -18,5 +19,6 @@ class CreateVideoCommand {
     static constraints = {
         editing nullable: true
         subject nullable: true
+        description nullable: true, blank: true
     }
 }
