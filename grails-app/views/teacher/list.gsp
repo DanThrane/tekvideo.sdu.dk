@@ -19,16 +19,6 @@
 </twbs:row>
 
 <twbs:row>
-    <twbs:column cols="10">
-        <h5>Om underviseren</h5>
-        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean varius varius elit, vel fringilla metus lacinia quis. Nulla sollicitudin facilisis turpis, id fermentum risus ultricies at. Pellentesque id ante tempus nunc placerat malesuada. Sed eu diam ac arcu pretium blandit vel quis nisl. Praesent quis sapien non lorem scelerisque porta nec quis purus. Praesent scelerisque sapien in sapien porttitor lacinia vitae vitae lorem. In id nisi pellentesque nunc volutpat aliquam.</p>
-    </twbs:column>
-    <twbs:column cols="2">
-        <img src="http://lorempixel.com/200/200/people" class="img-rounded img-responsive" />
-    </twbs:column>
-</twbs:row>
-
-<twbs:row>
     <twbs:column>
         <h5>Aktive fag</h5>
         <g:each in="${courses}" var="course">

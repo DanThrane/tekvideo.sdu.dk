@@ -87,17 +87,8 @@
 <twbs:container id="footer">
     <twbs:row>
         <twbs:column cols="3">
-            <h5>Dette er en footer</h5>
-            <a href="#">Proin sit </a><br />
-            <a href="#">In rutrum ex vitae dictum</a><br />
-            <a href="#">Nunc suscipit orci</a><br />
-            <a href="#">Aenean in turpis feugiat</a><br />
         </twbs:column>
         <twbs:column cols="3">
-            <h5>Den kan der være ting i</h5>
-            <a href="#">Sed lobortis nunc venenatis augue</a><br />
-            <a href="#">Vivamus sit amet risus a</a><br />
-            <a href="#">Fusce eget ligula a turpis</a><br />
         </twbs:column>
         <twbs:column cols="6">
             <div class="pull-right">

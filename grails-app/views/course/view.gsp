@@ -36,10 +36,7 @@
 <g:each in="${course.subjects}" var="subject">
     <sdu:linkCard mapping="teaching" params="${[teacher: course.teacher.user.username, course: course.name,
                                                 subject: subject.name]}">
-        <twbs:column cols="3">
-            <img src="http://lorempixel.com/800/400/technics/${subject.name}" class="img-responsive" alt="Thumbnail">
-        </twbs:column>
-        <twbs:column cols="9">
+        <twbs:column cols="12">
             <g:link mapping="teaching" params="${[teacher: course.teacher.user.username, course: course.name,
                                                   subject: subject.name]}">
                 ${subject.name} (${subject.videos.size()} videoer)
