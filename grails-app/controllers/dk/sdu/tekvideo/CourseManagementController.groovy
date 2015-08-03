@@ -121,6 +121,12 @@ class CourseManagementController {
         render result as JSON
     }
 
+    def updateSubjects(UpdateSubjectsCommand command) {
+        def result = teacherService.updateSubjects(command)
+        response.status = result.suggestedHttpStatus
+        render result as JSON
+    }
+
     private void notAllowedCourse() {
         flash.error = "Du har ikke tiladelse til at tilgå dette kursus"
         redirect action: "index"

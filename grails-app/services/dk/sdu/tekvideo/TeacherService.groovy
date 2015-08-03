@@ -101,6 +101,21 @@ class TeacherService {
         }
     }
 
+    ServiceResult<Course> updateSubjects(UpdateSubjectsCommand command) {
+        if (!command.validate()) {
+            fail("teacherservice.invalid_request", false, [:], 400)
+        } else {
+            if (canAccess(command.course)) {
+                command.course.subjects.clear()
+                command.course.subjects.addAll(command.order)
+                command.course.save()
+                ok command.course
+            } else {
+                fail("teacherservice.not_allowed", false, [:], 403)
+            }
+        }
+    }
+
     boolean canAccess(Course course) {
         return course.teacher == getAuthenticatedTeacher()
     }

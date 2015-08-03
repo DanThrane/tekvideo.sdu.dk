@@ -3,6 +3,7 @@
 <head>
     <title>Nyt emne</title>
     <meta name="layout" content="main" />
+    <asset:javascript src="list.js" />
     <sdu:requireAjaxAssets />
 </head>
 
@@ -46,7 +47,7 @@
                 <div id="video-container">
                     <g:each in="${command.domain.videos}" var="video" status="idx">
                         <sdu:card class="video">
-                            <div data-video-id="${video.id}"></div>
+                            <div data-video-id="${video.id}" class="hide"></div>
                             <twbs:row>
                                 <twbs:column cols="8">
                                     <h6>${video.name}</h6>
@@ -89,68 +90,15 @@
 <g:if test="${isEditing}">
     <script>
         $(function () {
-            function movementFromDelta(delta) {
-                if (delta <= 0) {
-                    return "-=" + Math.abs(delta);
-                } else {
-                    return "+=" + Math.abs(delta);
-                }
-            }
-
-            function swapVideos(idxDown, idxUp, callback) {
-                var allVideos = $(".video");
-
-                var upperVid = $(allVideos[idxDown]);
-                var lowerVid = $(allVideos[idxUp]);
-
-                var upperPos = upperVid.position();
-                var lowerPos = lowerVid.position();
-
-                var upperVidMovement = lowerPos.top - upperPos.top;
-                var lowerVidMovement = upperPos.top - lowerPos.top;
-
-                upperVid.animate({ top: movementFromDelta(upperVidMovement) });
-                lowerVid.animate({ top: movementFromDelta(lowerVidMovement )}, function() {
-                    callback();
-                    // Clear the animated properties post-callback
-                    upperVid.css("top", "initial");
-                    lowerVid.css("top", "initial");
-                });
-            }
-
-            $(".video-up").click(function() {
-                var thisVideo = $(this).closest(".video");
-                var index = thisVideo.index();
-                if (index == 0) return;
-
-                var videos = $(".video");
-
-                swapVideos(index - 1, index, function() {
-                    thisVideo.insertBefore($(videos[index - 1]));
-                });
-            });
-
-            $(".video-down").click(function() {
-                var thisVideo = $(this).closest(".video");
-                var index = thisVideo.index();
-                var videos = $(".video");
-
-                if (index == videos.length - 1) return;
-
-                swapVideos(index, index + 1, function() {
-                    thisVideo.insertAfter($(videos[index + 1]));
-                });
-            });
+            var list = new ListManipulator(".video", ".video-up", ".video-down");
+            list.init();
 
             AjaxUtil.registerJSONForm("#save-video-order", "${createLink(action: "updateVideos")}", function() {
-                var order = $.map($("[data-video-id]"), function (element) {
-                    return parseInt($(element).attr("data-video-id"));
+                var order = list.map(function (element) {
+                    return parseInt(element.find("[data-video-id]").attr("data-video-id"));
                 });
 
-                return {
-                    order: order,
-                    subject: ${command.domain.id}
-                };
+                return { order: order, subject: ${command.domain.id} };
             });
         });
     </script>
