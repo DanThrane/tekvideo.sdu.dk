@@ -3,62 +3,42 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <meta name="layout" content="main"/>
-    <title>Front Page</title>
-    <asset:javascript src="home.js"/>
+    <meta name="layout" content="main_fluid"/>
+    <title>Hjem</title>
 </head>
 <body>
 
-<!-- Major frontpage picture -->
-<div class="jumbotron">
-    <div class="container">
-        <h1>Velkommen til TekVideo</h1>
-        <p>Besked</p>
-        <p>Flere beskeder</p>
-        <twbs:row>
-            <twbs:column cols="3">
-                <ul>
-                    <li><strong>Username:</strong> Student</li>
-                    <li><strong>Password:</strong> password</li>
-                </ul>
-            </twbs:column>
-            <twbs:column cols="3">
-                <ul>
-                    <li><strong>Username:</strong> Teacher</li>
-                    <li><strong>Password:</strong> password</li>
-                </ul>
-            </twbs:column>
-        </twbs:row>
-        <p>
-            <twbs:linkButton controller="register" action="index" style="${ButtonStyle.PRIMARY}" size="${ButtonSize.LARGE}">
-                Ny bruger &raquo;
-            </twbs:linkButton>
-            <twbs:linkButton controller="login" action="index" style="${ButtonStyle.PRIMARY}" size="${ButtonSize.LARGE}">
-                Log ind &raquo;
-            </twbs:linkButton>
-        </p>
-    </div>
-</div>
+<g:if test="${student}">
+    <twbs:pageHeader>
+        <h3>Mine fag</h3>
+    </twbs:pageHeader>
 
-<!-- Additional info here -->
-<twbs:container class="marketing">
-    <twbs:row>
-        <twbs:column cols="4" type="${GridSize.LG}">
-            <img src="http://lorempixel.com/200/200/people/" class="img-circle" alt="Generic placeholder image" width="140" height="140" />
-            <h2>Header</h2>
-            <p>Message</p>
+    <sdu:card>
+        <g:each in="${student.c}">
+
+        </g:each>
+    </sdu:card>
+</g:if>
+
+<twbs:pageHeader>
+    <h3>Fremhævet videoer</h3>
+</twbs:pageHeader>
+
+<g:each in="${featuredVideos}" var="video">
+    <sdu:linkCard controller="video" action="viewV" id="${video.id}">
+        <twbs:column cols="1">
+            <img src="http://img.youtube.com/vi/${video.youtubeId}/hqdefault.jpg" class="img-responsive" alt="Video thumbnail">
         </twbs:column>
-        <twbs:column cols="4" type="${GridSize.LG}">
-            <img src="http://lorempixel.com/200/200/city/" class="img-circle" alt="Generic placeholder image" width="140" height="140" />
-            <h2>Header</h2>
-            <p>Message</p>
+        <twbs:column cols="11">
+            <g:link controller="video" action="viewV" id="${video.id}">
+                ${video.name}
+            </g:link>
+            <p>
+                ${video.description}
+            </p>
         </twbs:column>
-        <twbs:column cols="4" type="${GridSize.LG}">
-            <img src="http://lorempixel.com/200/200/nature/" class="img-circle" alt="Generic placeholder image" width="140" height="140" />
-            <h2>Header</h2>
-            <p>Message</p>
-        </twbs:column>
-    </twbs:row>
-</twbs:container>
+    </sdu:linkCard>
+</g:each>
+
 </body>
 </html>

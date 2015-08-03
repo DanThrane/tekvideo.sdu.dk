@@ -51,15 +51,17 @@
                 </g:if>
         );
 
-        // Used by the event framework to determine the origin of the event
-        events.setMetaData({
-            "teacher": "${params.teacher}",
-            "course": "${params.course}",
-            "subject": "${params.subject}",
-            "video": ${params.videoId}
-        });
+        <g:if test="${params.teacher}">
+            // Used by the event framework to determine the origin of the event
+            events.setMetaData({
+                "teacher": "${params.teacher}",
+                "course": "${params.course}",
+                "subject": "${params.subject}",
+                "video": ${params.videoId}
+            });
 
-        events.emit({ "kind": "VISIT_VIDEO" }, true);
+            events.emit({ "kind": "VISIT_VIDEO" }, true);
+        </g:if>
     });
 </script>
 </body>

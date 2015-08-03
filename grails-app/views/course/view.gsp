@@ -1,6 +1,10 @@
 <%@ page contentType="text/html;charset=UTF-8" %>
 <%@ page import="dk.danthrane.twbs.ButtonStyle; dk.danthrane.twbs.ButtonSize" %>
 <html>
+<head>
+    <meta name="layout" content="main">
+    <title>${course.name}</title>
+</head>
 <body>
 
 <twbs:pageHeader>
@@ -49,9 +53,4 @@
 </g:each>
 
 </body>
-
-<head>
-    <meta name="layout" content="main">
-    <title>${course.name}</title>
-</head>
 </html>

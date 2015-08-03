@@ -17,4 +17,9 @@ class VideoController {
         }
     }
 
+    @Secured("permitAll")
+    def viewV(Video video) {
+        render view: "view", model: [video: video, debugMode: false]
+    }
+
 }

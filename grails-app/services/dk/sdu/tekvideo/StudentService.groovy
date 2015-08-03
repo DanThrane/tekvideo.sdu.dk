@@ -21,22 +21,30 @@ class StudentService {
         if (isInCourse(student, course)) {
             fail("Du har er allerede tilmeldt dette kursus!", false)
         } else {
-            course.addToStudents(student).save()
+            new CourseStudent(course: course, student: student).save()
             ok(null, "Du er nu blevet tilmeldt ${course.fullName}!")
         }
     }
 
     boolean isInCourse(Student student, Course course) {
-        // TODO Check if this looks up all students in the course, or if it does something smart (which I hope)
-        return student in course.students
+        CourseStudent.findByStudentAndCourse(student, course) != null
+    }
+
+    Set<Course> getAllCourses(Student student) {
+        CourseStudent.findAllByStudent(student).course
     }
 
     def signoffForCourse(Student student, Course course) {
         if (!isInCourse(student, course)) {
             fail("Du var ikke tilmeldt dette fag til at starte med!", false)
         } else {
-            course.removeFromStudents(student)
-            ok(null, "Du er nu blevet afmeldt ${course.fullName}!")
+            def studentAndCourse = CourseStudent.findByStudentAndCourse(student, course)
+            if (studentAndCourse) {
+                studentAndCourse.delete()
+                ok(null, "Du er nu blevet afmeldt ${course.fullName}!")
+            } else {
+                fail("Noget gik galt - Du var ikke tilmeldt dette fag til at starte med!", false)
+            }
         }
     }
 }
