@@ -8,4 +8,10 @@ class UserTagLib {
         out << springSecurityService.currentUser.username
     }
 
+    def userEmail = { attrs, body ->
+        User user = springSecurityService.currentUser
+        String mail = user ? user.email : null
+        out << (mail ?: "nomail@example.com")
+    }
+
 }

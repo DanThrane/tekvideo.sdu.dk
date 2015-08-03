@@ -9,6 +9,7 @@ import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 
 @Transactional
+@Deprecated
 class AdminService {
 
     public static final DateTimeFormatter TIME_PATTERN = DateTimeFormatter.ofPattern("dd/MM HH:mm")

@@ -10,13 +10,24 @@
 
 <g:if test="${student}">
     <twbs:pageHeader>
-        <h3>Mine fag</h3>
+        <h3>Mine fag <small>for ${student.user.username}</small></h3>
     </twbs:pageHeader>
 
     <sdu:card>
-        <g:each in="${student.c}">
-
-        </g:each>
+        <g:if test="${courses.empty}">
+            Du er ikke tilmeldt nogle fag endnu!
+        </g:if>
+        <g:else>
+            <ul class="list-unstyled">
+                <g:each in="${courses}" var="course">
+                    <li>
+                        <g:link mapping="teaching" params="${[teacher: course.teacher, course: course.name]}">
+                            ${course.name} &mdash; ${course.fullName}
+                        </g:link>
+                    </li>
+                </g:each>
+            </ul>
+        </g:else>
     </sdu:card>
 </g:if>
 

@@ -447,9 +447,6 @@ class BootStrap {
         new AnswerQuestionEvent(timestamp: System.currentTimeMillis(), user: null, teacher: teacher,
                 course: course, subject: subject1, video: video1, answer: "2", correct: false)
                 .save(flush: true, failOnError: true)
-
-        println "Course students at start:"
-        println course.students
     }
 
     def destroy = { /* Not used */ }

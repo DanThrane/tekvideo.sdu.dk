@@ -8,7 +8,7 @@ class Course {
 
     List<Subject> subjects // ordered
     static belongsTo = [teacher: Teacher]
-    static hasMany = [subjects: Subject, students: Student]
+    static hasMany = [subjects: Subject]
 
     static constraints = {
         name nullable: false, blank: false

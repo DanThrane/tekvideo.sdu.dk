@@ -9,6 +9,8 @@ class HomeController {
     def index() {
         def featuredVideos = Video.listOrderByDateCreated(max: 10)
         def student = studentService.authenticatedStudent
-        render view: "/index", model: [featuredVideos: featuredVideos, student: student]
+        Set<Course> courses = student ? studentService.getAllCourses(student) : []
+
+        render view: "/index", model: [featuredVideos: featuredVideos, student: student, courses: courses]
     }
 }
