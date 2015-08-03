@@ -1,11 +1,15 @@
-<%@ page contentType="text/html;charset=UTF-8" %>
+<%@ page import="dk.sdu.tekvideo.FaIcon; dk.danthrane.twbs.ButtonStyle" contentType="text/html;charset=UTF-8" %>
 <html>
 <head>
-    <meta name="layout" content="main">
+    <meta name="layout" content="main_fluid">
     <title>Videoer for ${subject.name}</title>
 </head>
 
 <body>
+
+<twbs:pageHeader>
+    <h3>Videoer <small>${subject.name}</small></h3>
+</twbs:pageHeader>
 
 %{-- Should be automatic --}%
 <twbs:row>
@@ -27,17 +31,13 @@
     </twbs:column>
 </twbs:row>
 
-<twbs:row>
-    <twbs:column><h3>Videoer for ${subject.name}</h3></twbs:column>
-</twbs:row>
-
 <g:each status="i" in="${subject.videos}" var="video">
     <sdu:linkCard mapping="teaching" params="${[teacher: params.teacher, subject: params.subject,
                                                 course: params.course, vidid: i]}">
-        <twbs:column cols="3">
+        <twbs:column cols="2">
             <img src="http://img.youtube.com/vi/${video.youtubeId}/hqdefault.jpg" class="img-responsive" alt="Video thumbnail">
         </twbs:column>
-        <twbs:column cols="9">
+        <twbs:column cols="10">
             <g:link mapping="teaching" params="${[teacher: params.teacher, subject: params.subject,
                                                   course: params.course, vidid: i]}">
                 ${video.name}
@@ -48,6 +48,16 @@
         </twbs:column>
     </sdu:linkCard>
 </g:each>
+
+<g:content key="sidebar-right">
+    <div class="sidebar-options-no-header">
+        <twbs:linkButton style="${ButtonStyle.LINK}" block="true"
+                         controller="course" action="signup" id="${subject.course.id}">
+            <fa:icon icon="${FaIcon.USER_PLUS}" />
+            Tilmelding/Afmelding
+        </twbs:linkButton>
+    </div>
+</g:content>
 
 </body>
 </html>

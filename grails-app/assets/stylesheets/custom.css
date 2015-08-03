@@ -241,3 +241,10 @@ body {
     height: 40px;
     margin-top: -10px;
 }
+
+.sidebar-options-no-header {
+    padding-top: 5px;
+    border-top: 1px solid #eee;
+    position: relative;
+    top: 105px;
+}

@@ -1,14 +1,14 @@
 <%@ page contentType="text/html;charset=UTF-8" %>
-<%@ page import="dk.danthrane.twbs.ButtonStyle; dk.danthrane.twbs.ButtonSize" %>
+<%@ page import="dk.sdu.tekvideo.FaIcon; dk.danthrane.twbs.ButtonStyle; dk.danthrane.twbs.ButtonSize" %>
 <html>
 <head>
-    <meta name="layout" content="main">
+    <meta name="layout" content="main_fluid">
     <title>${course.name}</title>
 </head>
 <body>
 
 <twbs:pageHeader>
-    <h3>Emner &mdash; ${course.fullName} (${course.name})</h3>
+    <h3>Emner <small>${course.fullName} (${course.name})</small></h3>
 </twbs:pageHeader>
 
 %{-- Should be automatic --}%
@@ -26,17 +26,6 @@
     </twbs:column>
 </twbs:row>
 
-
-<twbs:row>
-    <twbs:column cols="3">
-        <twbs:linkButton style="${ButtonStyle.LINK}" controller="course" action="signup" id="${course.id}">
-            Vis til/afmeldinger
-        </twbs:linkButton>
-    </twbs:column>
-</twbs:row>
-
-<hr />
-
 <g:each in="${course.subjects}" var="subject">
     <sdu:linkCard mapping="teaching" params="${[teacher: course.teacher.user.username, course: course.name,
                                                 subject: subject.name]}">
@@ -52,5 +41,14 @@
     </sdu:linkCard>
 </g:each>
 
+<g:content key="sidebar-right">
+    <div class="sidebar-options-no-header">
+        <twbs:linkButton style="${ButtonStyle.LINK}" block="true"
+                         controller="course" action="signup" id="${course.id}">
+            <fa:icon icon="${FaIcon.USER_PLUS}" />
+            Tilmelding/Afmelding
+        </twbs:linkButton>
+    </div>
+</g:content>
 </body>
 </html>
