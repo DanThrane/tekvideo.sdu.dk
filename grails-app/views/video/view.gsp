@@ -44,7 +44,8 @@
     $(document).ready(function() {
         ivids.bootstrap(
                 "#player",
-                "${raw(video.youtubeId)}"
+                "${raw(video.youtubeId)}",
+                ${video.videoType}
                 <g:if test="${video.timelineJson}">
                     , ${raw(video.timelineJson)}
                 </g:if>
