@@ -12,8 +12,7 @@
 </twbs:pageHeader>
 
 <div class="embed-responsive embed-responsive-16by9">
-    <div id="wrapper" style="z-index: 20">
-    </div>
+    <div id="wrapper" style="z-index: 20"></div>
     <div id="player"></div>
 </div>
 

@@ -67,25 +67,28 @@
         <twbs:pageHeader><h3>Forhåndsvisning</h3></twbs:pageHeader>
         <twbs:row>
             <twbs:column cols="9">
-                <div id="wrapper">
-                    <div id="preview-player" style="width: 800px; height: 600px;"></div>
+                <div class="embed-responsive embed-responsive-16by9">
+                    <div id="wrapper" style="z-index: 20"></div>
+                    <div id="preview-player"></div>
                 </div>
             </twbs:column>
             <twbs:column cols="3">
-                <h3>Indhold</h3>
+                <twbs:pageHeader>
+                    <h3>Indhold</h3>
+                </twbs:pageHeader>
 
-                <ul id="videoNavigation">
-                </ul>
+                <ul id="videoNavigation"></ul>
 
-                <twbs:button block="true" style="${ButtonStyle.PRIMARY}" id="stop-preview">
+                <hr>
+                <twbs:button block="true" style="${ButtonStyle.DANGER}" id="stop-preview">
                     <fa:icon icon="${FaIcon.STREET_VIEW}" /> Stop forhåndsvisning
                 </twbs:button>
-            </twbs:column>
-        </twbs:row>
-        <br>
 
-        <twbs:row>
-            <twbs:linkButton elementId="checkAnswers">Tjek svar</twbs:linkButton>
+                <twbs:button style="${ButtonStyle.PRIMARY}" block="true" id="checkAnswers">
+                    <fa:icon icon="${FaIcon.CHECK}" />
+                    Tjek svar
+                </twbs:button>
+            </twbs:column>
         </twbs:row>
     </div>
     <div class="card-item active" id="creator-card">
@@ -97,7 +100,7 @@
         </g:else>
         <twbs:row>
             <twbs:column cols="9">
-                <div id="wrapper">
+                <div>
                     <div id="fields"></div>
                     <div id="player" style="width: 800px; height: 600px;"></div>
                 </div>

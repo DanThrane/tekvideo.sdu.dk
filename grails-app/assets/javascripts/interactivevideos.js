@@ -7,12 +7,15 @@ var ivids = {};
     var isYouTube;
     var questions = [];
 
+    var selector;
+
     var BASELINE_WIDTH = 800;
     var BASELINE_HEIGHT = 600;
     var scaleWidth = 1;
     var scaleHeight = 1;
 
     function bootstrap(playerSelector, vidId, videoType, tline) {
+        selector = playerSelector;
         timeline = tline;
         isYouTube = videoType;
         videoId = vidId;
@@ -32,7 +35,7 @@ var ivids = {};
         var constructor = (isYouTube) ? Popcorn.HTMLYouTubeVideoElement : Popcorn.HTMLVimeoVideoElement;
         var wrapper = constructor(playerSelector);
         wrapper.src = (isYouTube) ?
-            "http://www.youtube.com/watch?v=" + videoId + "&controls=1" :
+            "http://www.youtube.com/watch?v=" + videoId :
             "http://player.vimeo.com/video/" + videoId;
         player = Popcorn(wrapper);
 
@@ -48,15 +51,19 @@ var ivids = {};
                 timecode: player.currentTime()
             }, true);
         });
-        player.on("loadstart", function() { initializeSize(); });
+        player.on("loadstart", function() {
+            initializeSize();
+            console.log("loadstart?");
+        });
         $(window).resize(function () { initializeSize() });
+        setTimeout(function() { initializeSize(); }, 2000);
         initEventHandlers();
     }
 
     function initializeSize() {
         var maxWidth = -1;
         var maxHeight = -1;
-        $("#player").children().each(function (index, element) {
+        $(selector).children().each(function (index, element) {
             var $element = $(element);
             var height = $element.height();
             var width = $element.width();
@@ -68,6 +75,8 @@ var ivids = {};
         $("#wrapper").width(maxWidth).height(maxHeight);
         scaleHeight = maxHeight / BASELINE_HEIGHT;
         scaleWidth = maxWidth / BASELINE_WIDTH;
+        console.log(scaleHeight);
+        console.log(scaleWidth);
     }
 
     ivids.initializeSize = initializeSize;
@@ -203,8 +212,9 @@ var ivids = {};
         field.css({
             position: "absolute",
             top: (offsetTop * scaleHeight) + "px",
-            left: (offsetLeft * scaleWidth) + "px",
-            minWidth: 90 * scaleWidth
+            left: (offsetLeft * scaleWidth + 15) + "px",
+            minWidth: 90 * scaleWidth,
+            minHeight: 20 * scaleHeight
         });
         field.mathquill("editable");
     }
