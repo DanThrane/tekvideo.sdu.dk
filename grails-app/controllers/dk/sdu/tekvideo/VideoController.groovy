@@ -9,9 +9,8 @@ class VideoController {
     @Secured("permitAll")
     def view(String teacherName, String courseName, String subjectName, Integer videoId) {
         Video video = teachingService.getVideo(teacherName, courseName, subjectName, videoId)
-        boolean debugMode = params.containsKey("debug")
         if (video) {
-            [video: video, debugMode: debugMode]
+            [video: video]
         } else {
             render status: 404, text: "Unable to find video!"
         }
@@ -19,7 +18,7 @@ class VideoController {
 
     @Secured("permitAll")
     def viewV(Video video) {
-        render view: "view", model: [video: video, debugMode: false]
+        render view: "view", model: [video: video]
     }
 
 }

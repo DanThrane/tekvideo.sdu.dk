@@ -1,44 +1,37 @@
-<%@ page contentType="text/html;charset=UTF-8" %>
+<%@ page import="dk.danthrane.twbs.ButtonStyle; dk.sdu.tekvideo.FaIcon" contentType="text/html;charset=UTF-8" %>
 <html>
 <head>
-    <meta name="layout" content="main">
+    <meta name="layout" content="main_fluid">
     <title>${video.name}</title>
 </head>
 
 <body>
 
-<twbs:row>
-    <h2>${video.name}</h2>
-</twbs:row>
+<twbs:pageHeader>
+    <h3>${video.name}</h3>
+</twbs:pageHeader>
 
-<twbs:row>
-    <twbs:column cols="9">
-        <div id="wrapper">
-            <g:if test="${debugMode}">
-                <div id="frameOverlay" style="width: 800px; height: 600px;"></div>
-            </g:if>
-            <div id="player" style="width: 800px; height: 600px;"></div>
-        </div>
-    </twbs:column>
-    <twbs:column cols="3">
+<div class="embed-responsive embed-responsive-16by9">
+    <div id="wrapper" style="z-index: 20">
+    </div>
+    <div id="player"></div>
+</div>
+
+<g:content key="sidebar-right">
+    <twbs:pageHeader>
         <h3>Indhold</h3>
+    </twbs:pageHeader>
 
-        <ul id="videoNavigation">
-        </ul>
-    </twbs:column>
-</twbs:row>
-<br>
+    <ul id="videoNavigation">
+    </ul>
 
-<twbs:row>
-    <twbs:linkButton elementId="checkAnswers">Tjek svar</twbs:linkButton>
-</twbs:row>
-
-<g:if test="${debugMode}">
-    <twbs:row>
-        <h3>Debug info:</h3>
-        <b>Mouse position:</b> <span id="cursorPosition"></span>
-    </twbs:row>
-</g:if>
+    <div class="sidebar-pull-bottom">
+        <twbs:button style="${ButtonStyle.PRIMARY}" block="true" id="checkAnswers">
+            <fa:icon icon="${FaIcon.CHECK}" />
+            Tjek svar
+        </twbs:button>
+    </div>
+</g:content>
 
 <script type="text/javascript">
     $(document).ready(function() {
@@ -52,7 +45,7 @@
         );
 
         <g:if test="${params.teacher}">
-            // Used by the event framework to determine the origin of the event
+            %{-- Used by the event framework to determine the origin of the event --}%
             events.setMetaData({
                 "teacher": "${params.teacher}",
                 "course": "${params.course}",

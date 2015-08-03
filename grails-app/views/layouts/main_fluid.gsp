@@ -38,7 +38,8 @@
 
 <twbs:navbar>
     <g:content key="navbar-brand">
-        TekVideo
+        <asset:image src="sdu_branch.png" class="navbar-logo" />
+        Video
     </g:content>
     <twbs:navbarLinks>
         <twbs:navbarLink action="list" controller="course">Kurser</twbs:navbarLink>
@@ -82,26 +83,28 @@
     <g:if test="${flash.message}">
         <twbs:alert type="info">${flash.message}</twbs:alert>
     </g:if>
-    <twbs:row>
+    <twbs:row class="content">
+        <g:ifContentNotAvailable key="sidebar-right">
+            <twbs:column sm="10" push-sm="2">
+                <g:layoutBody/>
+            </twbs:column>
+            <twbs:column sm="2" pull-sm="10" class="sidebar sidebar-left">
+                Left
+                <g:selectContent key="sidebar-left" />
+            </twbs:column>
+        </g:ifContentNotAvailable>
         <g:ifContentAvailable key="sidebar-right">
             <twbs:column sm="8" push-sm="2">
                 <g:layoutBody/>
             </twbs:column>
-            <twbs:column sm="2" pull-sm="8" class="sidebar">
+            <twbs:column sm="2" pull-sm="8" class="sidebar sidebar-left">
                 Left
+                <g:selectContent key="sidebar-left" />
             </twbs:column>
-            <twbs:column sm="2" class="sidebar">
-                Right
+            <twbs:column sm="2" class="sidebar sidebar-right">
+                <g:selectContent key="sidebar-right" />
             </twbs:column>
         </g:ifContentAvailable>
-        <g:ifContentNotAvailable key="sidebar-right">
-            <twbs:column sm="10" push-sm="2" class="content">
-                <g:layoutBody/>
-            </twbs:column>
-            <twbs:column sm="2" pull-sm="10" class="sidebar">
-                Left
-            </twbs:column>
-        </g:ifContentNotAvailable>
     </twbs:row>
 </twbs:container>
 

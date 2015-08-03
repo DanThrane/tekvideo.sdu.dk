@@ -103,6 +103,7 @@
     border-top: 1px solid #eeeeee;
     margin-top: 80px;
     margin-bottom: 30px;
+    padding-top: 25px;
 }
 
 .video-row {
@@ -189,6 +190,54 @@ body {
 }
 
 .sidebar {
-    border-left: 1px solid #d5d5d5;
+    height: 100%;
+    position: absolute;
+    top: 0;
+}
+
+.sidebar-left {
     border-right: 1px solid #d5d5d5;
+    left: 0;
+}
+
+.sidebar-right {
+    border-left: 1px solid #d5d5d5;
+    right: 0;
+}
+
+.content {
+    position: relative
+}
+
+.sidebar-pull-bottom {
+    border-top: 1px solid #eeeeee;
+    padding-top: 23px;
+    position: absolute;
+    bottom: 0;
+    width: 90%; /* Seems to work */
+}
+
+#videoNavigation li {
+    list-style: none;
+    padding-left: 5px;
+    border-left: 2px solid #0d87e9;
+    margin-left: -25px;
+}
+
+#videoNavigation ul > li {
+    list-style: none;
+    padding-left: 5px;
+    margin-left: -50px;
+    border-left: 0;
+}
+
+
+#videoNavigation li.active {
+    border-left: 2px solid #90CAF9;
+}
+
+.navbar-brand > img {
+    display: inline-block;
+    height: 40px;
+    margin-top: -10px;
 }

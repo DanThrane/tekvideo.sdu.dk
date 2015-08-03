@@ -7,6 +7,11 @@ var ivids = {};
     var isYouTube;
     var questions = [];
 
+    var BASELINE_WIDTH = 800;
+    var BASELINE_HEIGHT = 600;
+    var scaleWidth = 1;
+    var scaleHeight = 1;
+
     function bootstrap(playerSelector, vidId, videoType, tline) {
         timeline = tline;
         isYouTube = videoType;
@@ -27,7 +32,7 @@ var ivids = {};
         var constructor = (isYouTube) ? Popcorn.HTMLYouTubeVideoElement : Popcorn.HTMLVimeoVideoElement;
         var wrapper = constructor(playerSelector);
         wrapper.src = (isYouTube) ?
-            "http://www.youtube.com/watch?v=" + videoId + "&controls=0" :
+            "http://www.youtube.com/watch?v=" + videoId + "&controls=1" :
             "http://player.vimeo.com/video/" + videoId;
         player = Popcorn(wrapper);
 
@@ -43,9 +48,29 @@ var ivids = {};
                 timecode: player.currentTime()
             }, true);
         });
-        //player.play();
+        player.on("loadstart", function() { initializeSize(); });
+        $(window).resize(function () { initializeSize() });
         initEventHandlers();
     }
+
+    function initializeSize() {
+        var maxWidth = -1;
+        var maxHeight = -1;
+        $("#player").children().each(function (index, element) {
+            var $element = $(element);
+            var height = $element.height();
+            var width = $element.width();
+            if (width > maxWidth) maxWidth = width;
+            if (height > maxHeight) maxHeight = height;
+        });
+        console.log(maxWidth);
+        console.log(maxHeight);
+        $("#wrapper").width(maxWidth).height(maxHeight);
+        scaleHeight = maxHeight / BASELINE_HEIGHT;
+        scaleWidth = maxWidth / BASELINE_WIDTH;
+    }
+
+    ivids.initializeSize = initializeSize;
 
     function handleSeeked() {
         for (var i = questions.length - 1; i >= 0; i--) {
@@ -177,8 +202,9 @@ var ivids = {};
         var field = $("#" + fieldId);
         field.css({
             position: "absolute",
-            top: offsetTop + "px",
-            left: offsetLeft + "px"
+            top: (offsetTop * scaleHeight) + "px",
+            left: (offsetLeft * scaleWidth) + "px",
+            minWidth: 90 * scaleWidth
         });
         field.mathquill("editable");
     }

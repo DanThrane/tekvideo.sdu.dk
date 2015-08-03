@@ -1,5 +1,7 @@
 #wrapper {
     position: relative;
+    pointer-events: none;
+    background-color: transparent;
 }
 
 #frameOverlay {
@@ -27,5 +29,6 @@
     padding-top: 10px; /* TODO Still some issues with math growing out of box */
     background-color: white;
     font-size: 150%;
+    pointer-events: all;
 }
 
