@@ -35,8 +35,8 @@ var ivids = {};
         var constructor = (isYouTube) ? Popcorn.HTMLYouTubeVideoElement : Popcorn.HTMLVimeoVideoElement;
         var wrapper = constructor(playerSelector);
         wrapper.src = (isYouTube) ?
-            "http://www.youtube.com/watch?v=" + videoId :
-            "http://player.vimeo.com/video/" + videoId;
+        "http://www.youtube.com/watch?v=" + videoId :
+        "http://player.vimeo.com/video/" + videoId;
         player = Popcorn(wrapper);
 
         player.on("timeupdate", handleTimeUpdate);
