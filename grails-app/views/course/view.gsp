@@ -41,14 +41,6 @@
     </sdu:linkCard>
 </g:each>
 
-<g:content key="sidebar-right">
-    <div class="sidebar-options-no-header">
-        <twbs:linkButton style="${ButtonStyle.LINK}" block="true"
-                         controller="course" action="signup" id="${course.id}">
-            <fa:icon icon="${FaIcon.USER_PLUS}" />
-            Tilmelding/Afmelding
-        </twbs:linkButton>
-    </div>
-</g:content>
+<g:render template="sidebar" model="${pageScope.variables}" />
 </body>
 </html>
