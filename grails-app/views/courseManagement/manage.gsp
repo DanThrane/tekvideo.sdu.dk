@@ -97,7 +97,7 @@
         });
 
         $("#subject-delete-button").click(function () {
-            $("[data-subject-id=" + subjectToDelete + "]").closest(".subject").remove();
+            $("[data-subject-id=" + subjectToDelete + "]").closest(".subject")[0].remove();
             $("#subject-delete-modal").modal("hide");
         });
 

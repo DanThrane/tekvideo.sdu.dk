@@ -63,9 +63,10 @@
                                                          id="${video.id}">
                                             <fa:icon icon="${FaIcon.EDIT}" />
                                         </twbs:linkButton>
-                                        <twbs:button style="${ButtonStyle.DANGER}" class="video-delete">
+                                        <twbs:modalButton target="#video-delete-modal" data-id="${video.id}"
+                                                style="${ButtonStyle.DANGER}" class="video-delete">
                                             <fa:icon icon="${FaIcon.TRASH}" />
-                                        </twbs:button>
+                                        </twbs:modalButton>
                                         <twbs:button style="${ButtonStyle.SUCCESS}" class="video-up">
                                             <fa:icon icon="${FaIcon.ARROW_UP}" />
                                         </twbs:button>
@@ -90,11 +91,31 @@
     </twbs:column>
 </twbs:row>
 
+<twbs:modal id="video-delete-modal">
+    <twbs:modalHeader>Er du sikker?</twbs:modalHeader>
+    Dette vil slette videoen fra dette emne!
+    <twbs:modalFooter>
+        <twbs:button data-dismiss="modal">Annulér</twbs:button>
+        <twbs:button style="${ButtonStyle.DANGER}" id="video-delete-button">Slet video</twbs:button>
+    </twbs:modalFooter>
+</twbs:modal>
+
 <g:if test="${isEditing}">
     <script>
         $(function () {
-            var list = new ListManipulator(".video", ".video-up", ".video-down", ".video-delete");
+            var list = new ListManipulator(".video", ".video-up", ".video-down");
             list.init();
+
+            var videoToDelete = null;
+
+            $("#video-delete-modal").on("show.bs.modal", function (e) {
+                videoToDelete = $(e.relatedTarget).data("id");
+            });
+
+            $("#video-delete-button").click(function () {
+                $("[data-video-id=" + videoToDelete + "]").closest(".video")[0].remove();
+                $("#video-delete-modal").modal("hide");
+            });
 
             AjaxUtil.registerJSONForm("#save-video-order", "${createLink(action: "updateVideos")}", function() {
                 var order = list.map(function (element) {
