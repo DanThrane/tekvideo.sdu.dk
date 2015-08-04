@@ -1,8 +1,9 @@
 (function (module) {
-    function ListManipulator(elementSelector, upArrowSelector, downArrowSelector) {
+    function ListManipulator(elementSelector, upArrowSelector, downArrowSelector, deleteSelector) {
         this.elementSelector = elementSelector;
         this.upArrowSelector = upArrowSelector;
         this.downArrowSelector = downArrowSelector;
+        this.deleteSelector = deleteSelector;
     }
 
     ListManipulator.prototype.init = function() {
@@ -30,6 +31,12 @@
                 thisItem.insertAfter($(items[index + 1]));
             });
         });
+
+        if (self.deleteSelector) { // Allow for the delete operation to be optional
+            $(self.deleteSelector).click(function () {
+                $(this).closest(self.elementSelector).remove();
+            });
+        }
     };
 
     ListManipulator.prototype.swapVideos = function (idxDown, idxUp, callback) {

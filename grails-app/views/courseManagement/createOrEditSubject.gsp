@@ -63,10 +63,13 @@
                                                          id="${video.id}">
                                             <fa:icon icon="${FaIcon.EDIT}" />
                                         </twbs:linkButton>
+                                        <twbs:button style="${ButtonStyle.DANGER}" class="video-delete">
+                                            <fa:icon icon="${FaIcon.TRASH}" />
+                                        </twbs:button>
                                         <twbs:button style="${ButtonStyle.SUCCESS}" class="video-up">
                                             <fa:icon icon="${FaIcon.ARROW_UP}" />
                                         </twbs:button>
-                                        <twbs:button style="${ButtonStyle.DANGER}" class="video-down">
+                                        <twbs:button style="${ButtonStyle.INFO}" class="video-down">
                                             <fa:icon icon="${FaIcon.ARROW_DOWN}" />
                                         </twbs:button>
                                     </twbs:buttonToolbar>
@@ -90,7 +93,7 @@
 <g:if test="${isEditing}">
     <script>
         $(function () {
-            var list = new ListManipulator(".video", ".video-up", ".video-down");
+            var list = new ListManipulator(".video", ".video-up", ".video-down", ".video-delete");
             list.init();
 
             AjaxUtil.registerJSONForm("#save-video-order", "${createLink(action: "updateVideos")}", function() {

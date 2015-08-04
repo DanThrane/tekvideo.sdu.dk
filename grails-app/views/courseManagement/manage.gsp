@@ -12,7 +12,6 @@
     <twbs:column>
         <twbs:pageHeader><h3>Administrering af ${course.fullName} (${course.name})</h3></twbs:pageHeader>
 
-
         <twbs:row>
             <twbs:column>
                 <h4>Emner</h4>
@@ -24,31 +23,28 @@
                         <g:each in="${course.subjects}" var="subject">
                             <sdu:card class="subject">
                                 <div data-subject-id="${subject.id}" class="hide"></div>
-                                <twbs:column cols="8" class="card-link">
-                                    <a href="#" class="subject-link" data-id="${subject.id}">
-                                        <span class="block-link"></span>
-                                    </a>
-                                    <a href="#">${subject.name}</a>
-                                </twbs:column>
-                                <twbs:column cols="4" class="pull-right">
+                                <twbs:row>
                                     <twbs:column cols="8">
-                                        <twbs:linkButton action="editSubject" id="${subject.id}" block="true"
-                                                         style="${ButtonStyle.LINK}" size="${ButtonSize.SMALL}">
-                                            <fa:icon icon="${FaIcon.EDIT}" />
-                                            Rediger
-                                        </twbs:linkButton>
+                                        ${subject.name}
                                     </twbs:column>
-                                    <twbs:column cols="2">
-                                        <twbs:button style="${ButtonStyle.SUCCESS}" class="subject-up">
-                                            <fa:icon icon="${FaIcon.ARROW_UP}" />
-                                        </twbs:button>
+                                    <twbs:column cols="4" class="align-right">
+                                        <twbs:buttonToolbar>
+                                            <twbs:linkButton action="editSubject" id="${subject.id}"
+                                                             style="${ButtonStyle.LINK}" size="${ButtonSize.SMALL}">
+                                                <fa:icon icon="${FaIcon.EDIT}" />
+                                            </twbs:linkButton>
+                                            <twbs:button style="${ButtonStyle.DANGER}" class="subject-delete">
+                                                <fa:icon icon="${FaIcon.TRASH}" />
+                                            </twbs:button>
+                                            <twbs:button style="${ButtonStyle.SUCCESS}" class="subject-up">
+                                                <fa:icon icon="${FaIcon.ARROW_UP}" />
+                                            </twbs:button>
+                                            <twbs:button style="${ButtonStyle.INFO}" class="subject-down">
+                                                <fa:icon icon="${FaIcon.ARROW_DOWN}" />
+                                            </twbs:button>
+                                        </twbs:buttonToolbar>
                                     </twbs:column>
-                                    <twbs:column cols="2">
-                                        <twbs:button style="${ButtonStyle.DANGER}" class="subject-down">
-                                            <fa:icon icon="${FaIcon.ARROW_DOWN}" />
-                                        </twbs:button>
-                                    </twbs:column>
-                                </twbs:column>
+                                </twbs:row>
                             </sdu:card>
                         </g:each>
                     </div>
@@ -63,27 +59,25 @@
 </twbs:row>
 
 <g:content key="sidebar-right">
-    <twbs:pageHeader>
-        <h3>Kontrol panel</h3>
-    </twbs:pageHeader>
-
-    <twbs:linkButton action="editCourse" id="${course.id}" style="${ButtonStyle.LINK}" block="true">
-        <fa:icon icon="${FaIcon.EDIT}" />
-        Rediger kursus detaljer
-    </twbs:linkButton>
-    <twbs:linkButton action="createSubject" id="${course.id}" style="${ButtonStyle.LINK}" block="true">
-        <fa:icon icon="${FaIcon.PLUS_CIRCLE}" />
-        Opret nyt emne
-    </twbs:linkButton>
+    <div class="sidebar-options-no-header">
+        <twbs:linkButton action="editCourse" id="${course.id}" style="${ButtonStyle.LINK}" block="true">
+            <fa:icon icon="${FaIcon.EDIT}" />
+            Rediger kursus detaljer
+        </twbs:linkButton>
+        <twbs:linkButton action="createSubject" id="${course.id}" style="${ButtonStyle.LINK}" block="true">
+            <fa:icon icon="${FaIcon.PLUS_CIRCLE}" />
+            Opret nyt emne
+        </twbs:linkButton>
         <twbs:linkButton action="createVideo" id="${course.id}" style="${ButtonStyle.LINK}" block="true">
             <fa:icon icon="${FaIcon.PLAY}" />
             Opret ny video
         </twbs:linkButton>
-    </g:content>
+    </div>
+</g:content>
 
 <script>
     $(function () {
-        var listManipulator = new ListManipulator(".subject", ".subject-up", ".subject-down");
+        var listManipulator = new ListManipulator(".subject", ".subject-up", ".subject-down", ".subject-delete");
         listManipulator.init();
 
         AjaxUtil.registerJSONForm("#save-subject-order", "${createLink(action: "updateSubjects")}", function() {
