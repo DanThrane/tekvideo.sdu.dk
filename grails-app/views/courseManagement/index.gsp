@@ -2,7 +2,7 @@
 <html>
 <head>
     <title>Mine kurser</title>
-    <meta name="layout" content="main" />
+    <meta name="layout" content="main_fluid" />
 </head>
 
 <body>
@@ -10,16 +10,6 @@
 <twbs:row>
     <twbs:column>
         <twbs:pageHeader><h3>Mine kurser</h3></twbs:pageHeader>
-
-        <h4><fa:icon icon="${FaIcon.WRENCH}" /> Kontrol panel</h4>
-        <twbs:row>
-            <twbs:column cols="3">
-                <twbs:linkButton action="createCourse" style="${ButtonStyle.LINK}" block="true">
-                    <fa:icon icon="${FaIcon.PLUS_CIRCLE}" />
-                    Opret nyt kursus
-                </twbs:linkButton>
-            </twbs:column>
-        </twbs:row>
 
         <twbs:row>
             <twbs:column cols="6">
@@ -48,6 +38,15 @@
         </twbs:row>
     </twbs:column>
 </twbs:row>
+
+<g:content key="sidebar-right">
+    <div class="sidebar-options-no-header">
+        <twbs:linkButton action="createCourse" style="${ButtonStyle.LINK}" block="true">
+            <fa:icon icon="${FaIcon.PLUS_CIRCLE}" />
+            Opret nyt kursus
+        </twbs:linkButton>
+    </div>
+</g:content>
 
 </body>
 </html>
