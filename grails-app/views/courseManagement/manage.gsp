@@ -33,9 +33,10 @@
                                                              style="${ButtonStyle.LINK}" size="${ButtonSize.SMALL}">
                                                 <fa:icon icon="${FaIcon.EDIT}" />
                                             </twbs:linkButton>
-                                            <twbs:button style="${ButtonStyle.DANGER}" class="subject-delete">
+                                            <twbs:modalButton target="#subject-delete-modal" data-id="${subject.id}"
+                                                    style="${ButtonStyle.DANGER}" class="subject-delete">
                                                 <fa:icon icon="${FaIcon.TRASH}" />
-                                            </twbs:button>
+                                            </twbs:modalButton>
                                             <twbs:button style="${ButtonStyle.SUCCESS}" class="subject-up">
                                                 <fa:icon icon="${FaIcon.ARROW_UP}" />
                                             </twbs:button>
@@ -58,6 +59,15 @@
     </twbs:column>
 </twbs:row>
 
+<twbs:modal id="subject-delete-modal">
+    <twbs:modalHeader>Er du sikker?</twbs:modalHeader>
+    Dette vil slette emnet fra dette fag!
+    <twbs:modalFooter>
+        <twbs:button data-dismiss="modal">Annulér</twbs:button>
+        <twbs:button style="${ButtonStyle.DANGER}" id="subject-delete-button">Slet emnet</twbs:button>
+    </twbs:modalFooter>
+</twbs:modal>
+
 <g:content key="sidebar-right">
     <div class="sidebar-options-no-header">
         <twbs:linkButton action="editCourse" id="${course.id}" style="${ButtonStyle.LINK}" block="true">
@@ -77,8 +87,19 @@
 
 <script>
     $(function () {
-        var listManipulator = new ListManipulator(".subject", ".subject-up", ".subject-down", ".subject-delete");
+        var listManipulator = new ListManipulator(".subject", ".subject-up", ".subject-down");
         listManipulator.init();
+
+        var subjectToDelete = null;
+
+        $("#subject-delete-modal").on("show.bs.modal", function (e) {
+            subjectToDelete = $(e.relatedTarget).data("id");
+        });
+
+        $("#subject-delete-button").click(function () {
+            $("[data-subject-id=" + subjectToDelete + "]").closest(".subject").remove();
+            $("#subject-delete-modal").modal("hide");
+        });
 
         AjaxUtil.registerJSONForm("#save-subject-order", "${createLink(action: "updateSubjects")}", function() {
             var order = listManipulator.map(function (element) {
