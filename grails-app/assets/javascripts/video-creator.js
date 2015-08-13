@@ -44,7 +44,7 @@ var Editor = {};
     }
 
     function parseVideoID(url) {
-        if (url.toLowerCase().indexOf("youtube") != -1) return parseYouTubeID(url);
+        if (url.toLowerCase().indexOf("youtu") != -1) return parseYouTubeID(url);
         else if (url.toLowerCase().indexOf("vimeo") != -1) return parseVimeoID(url);
         return null;
     }
@@ -335,9 +335,9 @@ var Editor = {};
                     bootstrap.removeFormValidation($("#between-field-type-card"));
                     var hasErrors = false;
                     var minValueElement = $("#betweenMinValue");
-                    var min = parseInt(minValueElement.val());
+                    var min = parseFloat(minValueElement.val().replace(",", "."));
                     var maxValueElement = $("#betweenMaxValue");
-                    var max = parseInt(maxValueElement.val());
+                    var max = parseFloat(maxValueElement.val().replace(",", "."));
 
                     if (isNaN(min)) {
                         bootstrap.addValidationClass(minValueElement, bootstrap.VALIDATION_ERROR);
