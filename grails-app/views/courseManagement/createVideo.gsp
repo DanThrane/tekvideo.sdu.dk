@@ -31,7 +31,7 @@
                         </twbs:column>
                         <twbs:column cols="10">
                             Din video er blevet udgivet succesfuldt! Du kan
-                            <g:link action="createVideo" id="${params.id}">operette en ny video.</g:link>
+                            <g:link action="createVideo" id="${params.id}">oprette en ny video.</g:link>
                             <g:if test="${!isEditing}">
                                 Den er nu tilgængelig på
                                 <g:link mapping="teaching" params="${[teacher: course.teacher, course: course.name]}">
