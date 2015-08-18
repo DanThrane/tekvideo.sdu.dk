@@ -27,7 +27,7 @@
         <twbs:form method="POST" action="${createLink(action: "postSubject", id: course.id)}">
             <sducrud:hiddenFields />
 
-            <twbs:input name="domain.name" bean="${command?.domain}" labelText="Navn" />
+            <twbs:input name="domain.name" bean="${command?.domain}" labelText="Navn" autofocus="true" />
             <twbs:textArea name="domain.description" bean="${command?.domain}" labelText="Beskrivelse"
                            rows="10" />
 
