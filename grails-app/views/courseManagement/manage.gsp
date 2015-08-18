@@ -46,6 +46,12 @@
                                         </twbs:buttonToolbar>
                                     </twbs:column>
                                 </twbs:row>
+                                <hr>
+                                <twbs:row>
+                                    <twbs:column>
+                                        <sdu:abbreviate>${subject.description}</sdu:abbreviate>
+                                    </twbs:column>
+                                </twbs:row>
                             </sdu:card>
                         </g:each>
                     </div>
