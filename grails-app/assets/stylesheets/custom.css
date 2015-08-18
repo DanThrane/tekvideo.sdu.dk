@@ -249,3 +249,15 @@ body {
     position: relative;
     top: 105px;
 }
+
+.card-image {
+    margin: -20px;
+    height: 100%;
+    overflow: hidden;
+    padding: 0 15px 0 0;
+}
+
+.card-image img {
+    height: 100px;
+    max-width: 100%;
+}

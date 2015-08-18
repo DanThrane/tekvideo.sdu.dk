@@ -37,10 +37,10 @@
 
 <g:each in="${featuredVideos}" var="video">
     <sdu:linkCard controller="video" action="viewV" id="${video.id}">
-        <twbs:column cols="1">
-            <img src="http://img.youtube.com/vi/${video.youtubeId}/hqdefault.jpg" class="img-responsive" alt="Video thumbnail">
+        <twbs:column sm="1" class="card-image">
+            <img src="http://img.youtube.com/vi/${video.youtubeId}/hqdefault.jpg" alt="Video thumbnail">
         </twbs:column>
-        <twbs:column cols="11">
+        <twbs:column sm="11">
             <g:link controller="video" action="viewV" id="${video.id}">
                 ${video.name}
             </g:link>
