@@ -1,7 +1,7 @@
 #wrapper {
     position: relative;
-    pointer-events: none;
-    background-color: transparent;
+pointer-events: none;
+background-color: transparent;
 }
 
 #frameOverlay {
