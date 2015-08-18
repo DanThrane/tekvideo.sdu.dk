@@ -218,6 +218,12 @@ var Editor = {};
         var editor = null;
         var defaultEditorText = null;
 
+        var scaleHeight;
+        var scaleWidth;
+
+        var BASELINE_WIDTH = 640; // Wide 360p (Standard on YouTube)
+        var BASELINE_HEIGHT = 360;
+
         /**
          * Displays the card item which holds attribute for the currently selected field type
          */
@@ -238,7 +244,7 @@ var Editor = {};
                 for (var i = 0; i < question.fields.length; i++) {
                     var field = question.fields[i];
                     var domField = createField(i, field);
-                    placeFieldAt(domField, field.leftoffset, field.topoffset);
+                    placeFieldAt(domField, field.leftoffset * (1 / scaleWidth), field.topoffset * (1 / scaleHeight));
                 }
             }
         }
@@ -382,6 +388,10 @@ var Editor = {};
         function createField(id, fieldObject) {
             var rawTemplate = $("#fieldTemplate").html().format(id, fieldObject.name);
             var field = $(rawTemplate);
+            field.css({
+                minWidth: 90 * (1 / scaleWidth),
+                minHeight: 20 * (1 / scaleHeight)
+            });
             $("#fields").append(field);
             startEditing();
             return field;
@@ -436,7 +446,24 @@ var Editor = {};
             editor.getSession().setMode("ace/mode/javascript");
             defaultEditorText = editor.getValue();
 
+            $(window).resize(function () { initSize() });
+            setTimeout(function() { initSize(); }, 2000);
             initDragging();
+        }
+
+        function initSize() {
+            var maxWidth = -1;
+            var maxHeight = -1;
+            $("#player").children().each(function (index, element) {
+                var $element = $(element);
+                var height = $element.height();
+                var width = $element.width();
+                if (width > maxWidth) maxWidth = width;
+                if (height > maxHeight) maxHeight = height;
+            });
+
+            scaleHeight = 1 / (maxHeight / BASELINE_HEIGHT);
+            scaleWidth = 1 / (maxWidth / BASELINE_WIDTH);
         }
 
         function placeFieldAt(target, x, y) {
@@ -480,8 +507,8 @@ var Editor = {};
                 }
 
                 if (editingField !== null) {
-                    editingField.leftoffset = x;
-                    editingField.topoffset = y;
+                    editingField.leftoffset = x * scaleWidth;
+                    editingField.topoffset = y * scaleHeight;
                 }
             }
         }
@@ -522,17 +549,20 @@ var Editor = {};
     var MainPanel = {};
     (function (exports) {
         var mainStack = new CardStack("#main-panel-stack");
+        var sidebarStack = new CardStack("#sidebar-stack");
 
         function showEditor() {
-            mainStack.select("#creator-card");
+            mainStack.select(".creator-card");
+            sidebarStack.select(".creator-card");
         }
 
         function showPreview() {
-            mainStack.select("#preview-card");
+            mainStack.select(".preview-card");
+            sidebarStack.select(".preview-card");
         }
 
         function showPublishing() {
-            mainStack.select("#publish-card");
+            mainStack.select(".publish-card");
         }
 
         exports.showEditor = showEditor;

@@ -121,5 +121,9 @@
         </twbs:column>
     </twbs:row>
 </twbs:container>
+
+<g:ifContentAvailable key="layout-script">
+    <g:selectContent key="layout-script" />
+</g:ifContentAvailable>
 </body>
 </html>

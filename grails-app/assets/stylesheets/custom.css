@@ -134,8 +134,8 @@
 
 .fields-active {
     position: absolute;
-    width: 800px;
-    height: 600px;
+    width: 100%;
+    height: 100%;
     z-index: 9999;
     border: 5px solid #9c27b0;
 }
@@ -193,6 +193,7 @@ body {
     height: 100%;
     position: absolute;
     top: 0;
+    overflow: auto;
 }
 
 .sidebar-left {
