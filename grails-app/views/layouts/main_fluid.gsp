@@ -89,7 +89,7 @@
                 <g:layoutBody/>
             </twbs:column>
             <twbs:column sm="2" pull-sm="10" class="sidebar sidebar-left">
-                Left
+                <sdu:leftSidebar/>
                 <g:selectContent key="sidebar-left" />
             </twbs:column>
         </g:ifContentNotAvailable>
@@ -98,7 +98,7 @@
                 <g:layoutBody/>
             </twbs:column>
             <twbs:column sm="2" pull-sm="8" class="sidebar sidebar-left">
-                Left
+                <sdu:leftSidebar/>
                 <g:selectContent key="sidebar-left" />
             </twbs:column>
             <twbs:column sm="2" class="sidebar sidebar-right">
