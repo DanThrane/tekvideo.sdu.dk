@@ -130,3 +130,5 @@ grails.plugin.springsecurity.controllerAnnotations.staticRules = [
 ]
 
 grails.assets.minifyJs = false // Temporary to fix an issue on the server
+
+markdown.autoLinks = true

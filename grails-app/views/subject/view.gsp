@@ -43,7 +43,7 @@
                 ${video.name}
             </g:link>
             <p>
-                ${video.description}
+                <markdown:renderHtml>${video.description}</markdown:renderHtml>
             </p>
         </twbs:column>
     </sdu:linkCard>

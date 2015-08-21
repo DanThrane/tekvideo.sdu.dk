@@ -34,9 +34,9 @@
                                                   subject: subject.name]}">
                 ${subject.name} (${subject.videos.size()} videoer)
             </g:link>
-            <p>
-                ${subject.description}
-            </p>
+
+            <markdown:renderHtml>${subject.description}</markdown:renderHtml>
+            
         </twbs:column>
     </sdu:linkCard>
 </g:each>

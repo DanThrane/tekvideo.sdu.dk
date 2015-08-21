@@ -37,7 +37,7 @@
                 <hr>
                 <twbs:row>
                     <twbs:column>
-                        <sdu:abbreviate>${course.description}</sdu:abbreviate>
+                        <markdown:renderHtml><sdu:abbreviate>${course.description}</sdu:abbreviate></markdown:renderHtml>
                     </twbs:column>
                 </twbs:row>
             </sdu:card>

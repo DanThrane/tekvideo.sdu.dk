@@ -43,7 +43,7 @@
 <twbs:row>
     <twbs:column>
         <h5>Beskrivelse</h5>
-        <p>${course.description}</p>
+        <markdown:renderHtml>${course.description}</markdown:renderHtml>
     </twbs:column>
 </twbs:row>
 

@@ -25,7 +25,7 @@
 <g:each in="${courses}" var="course">
     <sdu:linkCard mapping="teaching" params="${[teacher: course.teacher, course: course.name]}">
         <a href="#">${course.name} &mdash; ${course.fullName}</a>
-        <p>${course.description}</p>
+        <markdown:renderHtml>${course.description}</markdown:renderHtml>
     </sdu:linkCard>
 </g:each>
 

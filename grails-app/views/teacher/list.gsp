@@ -27,7 +27,7 @@
                     <g:link mapping="teaching" params="${[teacher: params.teacher, course: course.name]}">
                         <b>${course.name}</b>
                     </g:link>
-                    <p>${course.description}</p>
+                    <markdown:renderHtml>${course.description}</markdown:renderHtml>
                 </twbs:column>
             </twbs:row>
         </g:each>
