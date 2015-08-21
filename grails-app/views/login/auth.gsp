@@ -19,7 +19,7 @@
         <twbs:row>
             <twbs:column cols="6">
                 <twbs:linkButton elementId="register" controller="register" style="${ButtonStyle.LINK}" block="true">
-                    Glemt kodeord?
+                    Ny bruger?
                 </twbs:linkButton>
             </twbs:column>
             <twbs:column cols="6">
