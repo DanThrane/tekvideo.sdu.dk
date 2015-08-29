@@ -90,7 +90,7 @@ class CourseManagementService {
         }
     }
 
-    ServiceResult<Subject> updateVideos(UpdateVideosCommand command) {
+    ServiceResult<Subject2> updateVideos(UpdateVideosCommand2 command) {
         if (!command.validate()) {
             fail("teacherservice.invalid_request", false, [:], 400)
         } else {

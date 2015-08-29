@@ -4,6 +4,7 @@ import dk.sdu.tekvideo.Role
 import dk.sdu.tekvideo.Teacher
 import dk.sdu.tekvideo.User
 import dk.sdu.tekvideo.UserRole
+import grails.plugin.springsecurity.SpringSecurityUtils
 
 class UserData {
     static Teacher buildTestTeacher() {
@@ -12,5 +13,10 @@ class UserData {
         def teacher = new Teacher(user: teacherUser, alias: "teach").save(flush: true, failOnError: true)
         UserRole.create teacherUser, teacherRole, true
         return teacher
+    }
+
+    static void authenticateAsTestTeacher(Teacher teacher = null) {
+        if (teacher == null) teacher = Teacher.findAll()[0]
+        SpringSecurityUtils.reauthenticate(teacher.user.username, null)
     }
 }

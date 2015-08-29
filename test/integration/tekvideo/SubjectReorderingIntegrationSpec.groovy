@@ -31,7 +31,7 @@ class SubjectReorderingIntegrationSpec extends IntegrationSpec {
         Course2.findAll()[0].subjects.name == ["Foobar0", "Foobar1", "Foobar2"]
 
         when: "we authenticate the user as the teacher"
-        SpringSecurityUtils.reauthenticate("Teacher", null)
+        UserData.authenticateAsTestTeacher()
 
         and: "we perform a re-ordering of the subjects"
         def command = new UpdateSubjectsCommand2(course: course, order: [subject2, subject3, subject1])
