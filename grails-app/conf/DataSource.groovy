@@ -24,15 +24,22 @@ hibernate {
 environments {
     development {
         dataSource {
-            logSql = true
-            dbCreate = "create-drop" // one of 'create', 'create-drop', 'update', 'validate', ''
-            url = "jdbc:h2:/tmp/devDb;MVCC=TRUE;LOCK_TIMEOUT=10000;AUTO_SERVER=TRUE"
+            dbCreate = "create-drop" //update, create-drop, create
+            driverClassName = "org.postgresql.Driver"
+            dialect = "org.hibernate.dialect.PostgreSQLDialect"
+            url = "jdbc:postgresql://localhost:5432/tekvideo"
+            username = "devuser"
+            password = "devpassword"
         }
     }
     test {
         dataSource {
-            dbCreate = "update"
-            url = "jdbc:h2:mem:testDb;MVCC=TRUE;LOCK_TIMEOUT=10000;DB_CLOSE_ON_EXIT=FALSE"
+            dbCreate = "create-drop" //update, create-drop, create
+            driverClassName = "org.postgresql.Driver"
+            dialect = "org.hibernate.dialect.PostgreSQLDialect"
+            url = "jdbc:postgresql://localhost:5432/tekvideo-test"
+            username = "devuser"
+            password = "devpassword"
         }
     }
     production {
