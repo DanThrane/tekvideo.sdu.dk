@@ -27,11 +27,10 @@ class EventService {
                 return null
             },
             ANSWER_QUESTION: {
-                Map data = teachingService.getCompleteData(it.teacher, it.course, it.subject, it.video)
-                if (data) {
-                    // TODO @Refactor
-                    return new AnswerQuestionEvent(teacher: data.teacher, course: data.course, subject: data.subject,
-                            video: data.video, answer: it.answer, correct: it.correct)
+                Video video = Video.get(it.video)
+
+                if (video) {
+                    return new AnswerQuestionEvent(video: video, answer: it.answer, correct: it.correct)
                 }
                 return null
             }
