@@ -19,10 +19,9 @@ class EventService {
 
     final Map<String, Closure> CUSTOM_MAPPER = [
             VISIT_VIDEO: {
-                def data = teachingService.getCompleteData(it.teacher, it.course, it.subject, it.video)
-                if (data) {
-                    VisitVideoEvent event = new VisitVideoEvent(teacher: data.teacher, course: data.course, subject: data.subject,
-                            video: data.video)
+                Video video = Video.get(it.video)
+                if (video) {
+                    VisitVideoEvent event = new VisitVideoEvent(video: video)
                     return event
                 }
                 return null
