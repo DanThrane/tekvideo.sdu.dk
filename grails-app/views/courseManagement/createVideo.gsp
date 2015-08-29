@@ -317,6 +317,7 @@ return validator; // Return the validator function</div>
 
             <g:if test="${isEditing}">
             $("#videoName").val("${video.name}");
+            $("#description").val("${video.description}");
             Editor.displayVideo(${video.videoType}, "${video.youtubeId}");
             Editor.Timeline.setTimeline(${raw(video.timelineJson)});
             Editor.setPublishEndpoint("<g:createLink action="postVideo" params="[edit: video.id]" />");
