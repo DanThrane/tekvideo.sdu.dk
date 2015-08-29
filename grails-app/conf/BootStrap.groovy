@@ -9,24 +9,48 @@ import dk.sdu.tekvideo.UserRole
 import dk.sdu.tekvideo.Video
 import dk.sdu.tekvideo.events.AnswerQuestionEvent
 import dk.sdu.tekvideo.events.VisitVideoEvent
+import dk.sdu.tekvideo.v2.*
 
 class BootStrap {
 
     def init = { servletContext ->
         environments {
-            development { createTestData() }
+            development {
+//                createTestData()
+                createNewTestData()
+            }
             production { createTestData() }
         }
     }
 
-    void createTestData() {
-        if (Role.count() != 0) {
-            println "Test data already found, skipping (Bootstrap)"
-            return
-        } else {
-            println "Generating new test data (Bootstrap)"
-        }
+    void createNewTestData() {
+        createUsers()
 
+        def teacher = Teacher.findAll()[0]
+
+        def semester = new Semester(spring: false, year: 2015).save(failOnError: true, flush: true)
+        def course = new Course2([
+                name       : "Name",
+                fullName   : "Full Name",
+                description: "A description",
+                semester   : semester,
+                teacher    : teacher
+        ])
+        course.save(failOnError: true, flush: true)
+        def subject1 = new Subject2([
+                name  : "Foobar",
+                course: course
+        ])
+        subject1.save(failOnError: true, flush: true)
+        def video = new Video2([
+                name     : "Linaere ligninger paa matrix form",
+                youtubeId: "f2J9N7wgYas",
+                subject  : subject1
+        ])
+        video.save(failOnError: true, flush: true)
+    }
+
+    void createUsers() {
         def teacherRole = new Role(authority: "ROLE_TEACHER").save(flush: true, failOnError: true)
         def instructorRole = new Role(authority: "ROLE_INSTRUCTOR").save(flush: true, failOnError: true)
         def taRole = new Role(authority: "ROLE_TA").save(flush: true, failOnError: true)
@@ -49,6 +73,18 @@ class BootStrap {
         UserRole.create taUser, taRole, true
         UserRole.create studentUser, studentRole, true
         UserRole.create lazyUser, studentRole, true
+    }
+
+    void createTestData() {
+        if (Role.count() != 0) {
+            println "Test data already found, skipping (Bootstrap)"
+            return
+        } else {
+            println "Generating new test data (Bootstrap)"
+        }
+        createUsers()
+
+        def teacher = Teacher.findAll()[0]
 
         def semester = new Semester(year: 2015, spring: true)
         semester.save(failOnError: true)
