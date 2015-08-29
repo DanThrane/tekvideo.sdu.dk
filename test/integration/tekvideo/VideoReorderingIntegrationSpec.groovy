@@ -1,7 +1,7 @@
 package tekvideo
 
 import dk.sdu.tekvideo.Course
-import dk.sdu.tekvideo.TeacherService
+import dk.sdu.tekvideo.CourseManagementService
 import dk.sdu.tekvideo.UpdateVideosCommand
 import dk.sdu.tekvideo.data.CourseData
 import dk.sdu.tekvideo.data.SubjectData
@@ -10,7 +10,7 @@ import dk.sdu.tekvideo.data.VideoData
 import grails.test.spock.IntegrationSpec
 
 class VideoReorderingIntegrationSpec extends IntegrationSpec {
-    TeacherService teacherService
+    CourseManagementService courseManagementService
 
     void "test re-ordering of videos"() {
         given: "A teacher"
@@ -34,23 +34,23 @@ class VideoReorderingIntegrationSpec extends IntegrationSpec {
         Course.findAll()[0].name == "Name"
         Course.findAll()[0].subjects.size() == 1
         Course.findAll()[0].subjects[0].videos.size() == 4
-        Course.findAll()[0].subjects[0].videos.name == ["Video0", "Video1", "Video2", "Video3"]
+        Course.findAll()[0].subjects[0].videos.name == [video0.name, video1.name, video2.name, video3.name]
 
         when: "we authenticate the user as the teacher"
         UserData.authenticateAsTestTeacher()
 
         and: "we perform a re-ordering of the videos"
         def command = new UpdateVideosCommand(subject: subject, order: [video0, video2, video1, video3])
-        def reply = teacherService.updateVideos(command)
+        def reply = courseManagementService.updateVideos(command)
 
         then: "the list should have re-ordered itself"
         reply.success
-        reply.result.videos.name == ["Video0", "Video2", "Video1", "Video3"]
+        reply.result.videos.name == [video0.name, video2.name, video1.name, video3.name]
 
         Course.findAll().size() == 1
         Course.findAll()[0].name == "Name"
         Course.findAll()[0].subjects.size() == 1
         Course.findAll()[0].subjects[0].videos.size() == 4
-        Course.findAll()[0].subjects[0].videos.name == ["Video0", "Video2", "Video1", "Video3"]
+        Course.findAll()[0].subjects[0].videos.name == [video0.name, video2.name, video1.name, video3.name]
     }
 }

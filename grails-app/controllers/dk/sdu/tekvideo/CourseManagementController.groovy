@@ -8,10 +8,10 @@ import org.springframework.security.access.annotation.Secured
  */
 @Secured("ROLE_TEACHER")
 class CourseManagementController {
-    TeacherService teacherService
+    CourseManagementService courseManagementService
 
     def index() {
-        def courses = teacherService.activeCourses
+        def courses = courseManagementService.activeCourses
         if (courses.success) {
             [activeCourses: courses.result]
         } else {
@@ -20,7 +20,7 @@ class CourseManagementController {
     }
 
     def manage(Course course) {
-        if (teacherService.canAccess(course)) {
+        if (courseManagementService.canAccess(course)) {
             [course: course]
         } else {
             notAllowedCourse()
@@ -28,7 +28,7 @@ class CourseManagementController {
     }
 
     def getVideos(Subject subject) {
-        if (teacherService.canAccess(subject.course)) {
+        if (courseManagementService.canAccess(subject.course)) {
             render template: "videos", model: [videos: subject.videos]
         } else {
             notAllowedCourse()
@@ -36,8 +36,8 @@ class CourseManagementController {
     }
 
     def createSubject(Course course) {
-        def teacher = teacherService.authenticatedTeacher
-        if (teacherService.canAccess(course)) {
+        def teacher = courseManagementService.authenticatedTeacher
+        if (courseManagementService.canAccess(course)) {
             render view: "createOrEditSubject", model: [course: course, teacher: teacher, isEditing: false]
         } else {
             notAllowedCourse()
@@ -45,8 +45,8 @@ class CourseManagementController {
     }
 
     def editSubject(Subject subject) {
-        def teacher = teacherService.authenticatedTeacher
-        if (teacherService.canAccess(subject.course)) {
+        def teacher = courseManagementService.authenticatedTeacher
+        if (courseManagementService.canAccess(subject.course)) {
             render view: "createOrEditSubject",
                     model: [course: subject.course, command: new SubjectCRUDCommand(domain: subject),
                             isEditing: true, teacher: teacher]
@@ -56,8 +56,8 @@ class CourseManagementController {
     }
 
     def postSubject(Course course, SubjectCRUDCommand command) {
-        if (teacherService.canAccess(course)) {
-            def subject = teacherService.createOrEditSubject(course, command)
+        if (courseManagementService.canAccess(course)) {
+            def subject = courseManagementService.createOrEditSubject(course, command)
             if (subject.success) {
                 flash.success = "Ændringer til '$command.domain.name' blev succesfuldt registeret!"
                 redirect action: "manage", id: course.id
@@ -71,7 +71,7 @@ class CourseManagementController {
     }
 
     def createVideo(Course course) {
-        if (teacherService.canAccess(course)) {
+        if (courseManagementService.canAccess(course)) {
             [course: course, subjects: course.subjects, isEditing: false]
         } else {
             notAllowedCourse()
@@ -80,7 +80,7 @@ class CourseManagementController {
 
     def editVideo(Video video) {
         // TODO A bit unclear who should be allowed to edit a video (See issue #14)
-        if (teacherService.authenticatedTeacher) {
+        if (courseManagementService.authenticatedTeacher) {
             render view: "createVideo", model: [isEditing: true, video: video]
         } else {
             notAllowedCourse()
@@ -88,7 +88,7 @@ class CourseManagementController {
     }
 
     def postVideo(CreateVideoCommand command) {
-        def result = teacherService.createOrEditVideo(command)
+        def result = courseManagementService.createOrEditVideo(command)
         response.status = result.suggestedHttpStatus
         render result as JSON
     }
@@ -98,7 +98,7 @@ class CourseManagementController {
     }
 
     def editCourse(Course course) {
-        if (teacherService.canAccess(course)) {
+        if (courseManagementService.canAccess(course)) {
             render view: "createOrEditCourse", model: [command: new CourseCRUDCommand(domain: course), isEditing: true]
         } else {
             notAllowedCourse()
@@ -106,7 +106,7 @@ class CourseManagementController {
     }
 
     def postCourse(CourseCRUDCommand command) {
-        def course = teacherService.createOrEditCourse(command)
+        def course = courseManagementService.createOrEditCourse(command)
         if (course.success) {
             flash.success = "Ændringer til '$command.domain.name' blev succesfuldt registeret!"
             redirect action: "index"
@@ -116,13 +116,13 @@ class CourseManagementController {
     }
 
     def updateVideos(UpdateVideosCommand command) {
-        def result = teacherService.updateVideos(command)
+        def result = courseManagementService.updateVideos(command)
         response.status = result.suggestedHttpStatus
         render result as JSON
     }
 
     def updateSubjects(UpdateSubjectsCommand command) {
-        def result = teacherService.updateSubjects(command)
+        def result = courseManagementService.updateSubjects(command)
         response.status = result.suggestedHttpStatus
         render result as JSON
     }

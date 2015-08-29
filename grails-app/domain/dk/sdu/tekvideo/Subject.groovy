@@ -14,6 +14,7 @@ class Subject {
 
     static mapping = {
         description type: "text"
+        videos cascade: "all-delete-orphan"
     }
 
     static belongsTo = [course: Course]

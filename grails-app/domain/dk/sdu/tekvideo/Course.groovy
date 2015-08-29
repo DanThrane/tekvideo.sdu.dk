@@ -17,6 +17,7 @@ class Course {
 
     static mapping = {
         description type: "text"
+        subjects cascade: "all-delete-orphan"
     }
 
     @Override

@@ -1,9 +1,6 @@
-package dk.sdu.tekvideo.v2
+package dk.sdu.tekvideo
 
-import dk.sdu.tekvideo.*
-
-import static dk.sdu.tekvideo.ServiceResult.fail
-import static dk.sdu.tekvideo.ServiceResult.ok
+import static dk.sdu.tekvideo.ServiceResult.*
 
 /**
  * @author Dan Thrane
