@@ -1,16 +1,16 @@
 package tekvideo
 
-import dk.sdu.tekvideo.UpdateVideosCommand2
+import dk.sdu.tekvideo.Course
+import dk.sdu.tekvideo.TeacherService
+import dk.sdu.tekvideo.UpdateVideosCommand
 import dk.sdu.tekvideo.data.CourseData
 import dk.sdu.tekvideo.data.SubjectData
 import dk.sdu.tekvideo.data.UserData
 import dk.sdu.tekvideo.data.VideoData
-import dk.sdu.tekvideo.v2.Course2
-import dk.sdu.tekvideo.v2.CourseManagementService
 import grails.test.spock.IntegrationSpec
 
 class VideoReorderingIntegrationSpec extends IntegrationSpec {
-    CourseManagementService courseManagementService
+    TeacherService teacherService
 
     void "test re-ordering of videos"() {
         given: "A teacher"
@@ -30,27 +30,27 @@ class VideoReorderingIntegrationSpec extends IntegrationSpec {
 
         when: "we perform a sanity check"
         then:
-        Course2.findAll().size() == 1
-        Course2.findAll()[0].name == "Name"
-        Course2.findAll()[0].subjects.size() == 1
-        Course2.findAll()[0].subjects[0].videos.size() == 4
-        Course2.findAll()[0].subjects[0].videos.name == ["Video0", "Video1", "Video2", "Video3"]
+        Course.findAll().size() == 1
+        Course.findAll()[0].name == "Name"
+        Course.findAll()[0].subjects.size() == 1
+        Course.findAll()[0].subjects[0].videos.size() == 4
+        Course.findAll()[0].subjects[0].videos.name == ["Video0", "Video1", "Video2", "Video3"]
 
         when: "we authenticate the user as the teacher"
         UserData.authenticateAsTestTeacher()
 
         and: "we perform a re-ordering of the videos"
-        def command = new UpdateVideosCommand2(subject: subject, order: [video0, video2, video1, video3])
-        def reply = courseManagementService.updateVideos(command)
+        def command = new UpdateVideosCommand(subject: subject, order: [video0, video2, video1, video3])
+        def reply = teacherService.updateVideos(command)
 
         then: "the list should have re-ordered itself"
         reply.success
         reply.result.videos.name == ["Video0", "Video2", "Video1", "Video3"]
 
-        Course2.findAll().size() == 1
-        Course2.findAll()[0].name == "Name"
-        Course2.findAll()[0].subjects.size() == 1
-        Course2.findAll()[0].subjects[0].videos.size() == 4
-        Course2.findAll()[0].subjects[0].videos.name == ["Video0", "Video2", "Video1", "Video3"]
+        Course.findAll().size() == 1
+        Course.findAll()[0].name == "Name"
+        Course.findAll()[0].subjects.size() == 1
+        Course.findAll()[0].subjects[0].videos.size() == 4
+        Course.findAll()[0].subjects[0].videos.name == ["Video0", "Video2", "Video1", "Video3"]
     }
 }

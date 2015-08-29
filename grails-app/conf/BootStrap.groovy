@@ -7,9 +7,11 @@ import dk.sdu.tekvideo.Teacher
 import dk.sdu.tekvideo.User
 import dk.sdu.tekvideo.UserRole
 import dk.sdu.tekvideo.Video
+import dk.sdu.tekvideo.data.CourseData
+import dk.sdu.tekvideo.data.SubjectData
+import dk.sdu.tekvideo.data.VideoData
 import dk.sdu.tekvideo.events.AnswerQuestionEvent
 import dk.sdu.tekvideo.events.VisitVideoEvent
-import dk.sdu.tekvideo.v2.*
 
 class BootStrap {
 
@@ -28,26 +30,16 @@ class BootStrap {
 
         def teacher = Teacher.findAll()[0]
 
-        def semester = new Semester(spring: false, year: 2015).save(failOnError: true, flush: true)
-        def course = new Course2([
-                name       : "Name",
-                fullName   : "Full Name",
-                description: "A description",
-                semester   : semester,
-                teacher    : teacher
-        ])
-        course.save(failOnError: true, flush: true)
-        def subject1 = new Subject2([
-                name  : "Foobar",
-                course: course
-        ])
-        subject1.save(failOnError: true, flush: true)
-        def video = new Video2([
-                name     : "Linaere ligninger paa matrix form",
-                youtubeId: "f2J9N7wgYas",
-                subject  : subject1
-        ])
-        video.save(failOnError: true, flush: true)
+        (1..10).each {
+            def course = CourseData.buildTestCourse("Course", teacher, true)
+            (1..3).each {
+                def subject = SubjectData.buildTestSubject("Subject", course, true)
+                (1..3).each {
+                    VideoData.buildTestVideo("Video", subject, true)
+                }
+            }
+        }
+
     }
 
     void createUsers() {

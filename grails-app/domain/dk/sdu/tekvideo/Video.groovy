@@ -15,8 +15,7 @@ class Video {
         description     nullable: true
     }
 
-    static hasMany = [subjects: Subject]
-    static belongsTo = Subject
+    static belongsTo = [subject: Subject]
 
     static mapping = {
         timelineJson type: "text"

@@ -1,7 +1,6 @@
 package dk.sdu.tekvideo.v2
 
 import dk.sdu.tekvideo.*
-import dk.sdu.tekvideo.v2.*
 
 import static dk.sdu.tekvideo.ServiceResult.fail
 import static dk.sdu.tekvideo.ServiceResult.ok
@@ -90,7 +89,7 @@ class CourseManagementService {
         }
     }
 
-    ServiceResult<Subject2> updateVideos(UpdateVideosCommand2 command) {
+    ServiceResult<Subject> updateVideos(UpdateVideosCommand command) {
         if (!command.validate()) {
             fail("teacherservice.invalid_request", false, [:], 400)
         } else {
@@ -105,7 +104,7 @@ class CourseManagementService {
         }
     }
 
-    ServiceResult<Course2> updateSubjects(UpdateSubjectsCommand2 command) {
+    ServiceResult<Course> updateSubjects(UpdateSubjectsCommand command) {
         if (!command.validate()) {
             fail("teacherservice.invalid_request", false, [:], 400)
         } else {
@@ -120,7 +119,7 @@ class CourseManagementService {
         }
     }
 
-    boolean canAccess(Course2 course) {
+    boolean canAccess(Course course) {
         return course.teacher == getAuthenticatedTeacher()
     }
 }

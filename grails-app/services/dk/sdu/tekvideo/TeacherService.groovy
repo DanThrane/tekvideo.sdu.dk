@@ -106,23 +106,9 @@ class TeacherService {
             fail("teacherservice.invalid_request", false, [:], 400)
         } else {
             if (canAccess(command.course)) {
-                // As opposed to the videos, this will not cause a delete on the underlying object, since it
-                // can be owned by multiple objects.
-
-                // TODO Find the proper way to do this. For large collections this can be expensive
-                // Might potentially want to create a CourseSubject domain to deal with this, as "hasMany" seems to
-                // have many limitations.
-
-                List<Subject> previous = new ArrayList(command.course.subjects)
                 command.course.subjects.clear()
                 command.course.subjects.addAll(command.order)
                 command.course.save()
-                previous.each {
-                    if (!command.course.subjects.contains(it)) {
-                        command.course.removeFromSubjects(it)
-                    }
-                }
-                command.course.save(flush: true)
                 ok command.course
             } else {
                 fail("teacherservice.not_allowed", false, [:], 403)

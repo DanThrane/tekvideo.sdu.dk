@@ -1,20 +1,20 @@
 package dk.sdu.tekvideo.data
 
-import dk.sdu.tekvideo.v2.Course2
-import dk.sdu.tekvideo.v2.Subject2
+import dk.sdu.tekvideo.Course
+import dk.sdu.tekvideo.Subject
 
 import java.util.concurrent.atomic.AtomicInteger
 
 class SubjectData {
     private static AtomicInteger idx = new AtomicInteger(0)
 
-    static Subject2 buildTestSubject(String prefix = "Subject", Course2 course = null, boolean includeIdSuffix = false) {
+    static Subject buildTestSubject(String prefix = "Subject", Course course = null, boolean includeIdSuffix = false) {
         if (course == null) course = CourseData.buildTestCourse()
 
         String name = prefix
         if (includeIdSuffix) name += idx.getAndIncrement()
 
-        def subject1 = new Subject2([
+        def subject1 = new Subject([
                 name  : name,
                 course: course
         ])
