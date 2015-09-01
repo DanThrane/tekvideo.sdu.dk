@@ -577,6 +577,7 @@ var Editor = {};
     (function (exports) {
         function setTimeline(timeline) {
             currentTimeline = timeline;
+            sortTimeline();
             render();
         }
 
@@ -651,7 +652,14 @@ var Editor = {};
 
         function addSubjectEntry(subject) {
             currentTimeline.push(subject);
+            sortTimeline();
             render();
+        }
+
+        function sortTimeline() {
+            currentTimeline.sort(function (a, b) {
+                return a.timecode - b.timecode;
+            });
         }
 
         function init() {

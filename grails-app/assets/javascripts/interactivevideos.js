@@ -39,7 +39,6 @@ var ivids = {};
             "http://player.vimeo.com/video/" + videoId;
         player = Popcorn(wrapper);
 
-
         player.play();
         player.on("timeupdate", handleTimeUpdate);
         player.on("seeked", handleSeeked);
