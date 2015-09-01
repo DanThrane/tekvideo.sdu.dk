@@ -16,6 +16,7 @@ class Video {
     }
 
     static belongsTo = [subject: Subject]
+    static hasMany = [comments: Comment]
 
     static mapping = {
         timelineJson type: "text"
@@ -26,6 +27,5 @@ class Video {
         if (description == null) return "Ingen beskrivelse"
         return description
     }
-
 
 }
