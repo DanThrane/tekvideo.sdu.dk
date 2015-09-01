@@ -65,11 +65,17 @@ class CourseManagementService {
                 fail "teacherservice.not_allowed"
             } else {
                 def video = (command.isEditing) ? command.editing : new Video()
+                if (command.isEditing && video.subject != command.subject) {
+                    video.subject.removeFromVideos(video)
+                    command.isEditing = false
+                    video = new Video()
+                }
                 video.name = command.name
                 video.youtubeId = command.youtubeId
                 video.timelineJson = command.timelineJson
                 video.description = command.description
                 video.videoType = command.videoType
+                video.subject = command.subject
                 if (video.validate()) {
                     if (command.isEditing) {
                         video.save()

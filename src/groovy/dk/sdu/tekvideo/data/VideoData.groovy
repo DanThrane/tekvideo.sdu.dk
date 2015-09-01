@@ -15,9 +15,10 @@ class VideoData {
         if (includeIdSuffix) name += idx.getAndIncrement()
 
         def video = new Video([
-                name     : name,
-                youtubeId: "f2J9N7wgYas",
-                subject  : subject
+                name        : name,
+                youtubeId   : "f2J9N7wgYas",
+                subject     : subject,
+                timelineJson: "[]"
         ])
         video.save(failOnError: true, flush: true)
     }

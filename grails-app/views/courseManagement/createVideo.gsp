@@ -247,9 +247,7 @@ return validator; // Return the validator function</div>
                 <twbs:input name="videoId" labelText="YouTube/Vimeo Link">
                     For eksempel: <code>https://www.youtube.com/watch?v=DXUAyRRkI6k</code>
                 </twbs:input>
-                <g:if test="${!isEditing}">
-                    <twbs:select name="subject" labelText="Emne" list="${subjects}"/>
-                </g:if>
+                <twbs:select name="subject" labelText="Emne" list="${subjects}"/>
                 <twbs:textArea name="description" labelText="Beskrivelse"/>
                 <twbs:button block="true" style="${ButtonStyle.INFO}" id="stopEdit" disabled="true">
                     <fa:icon icon="${FaIcon.UNLOCK}"/> Lås video op

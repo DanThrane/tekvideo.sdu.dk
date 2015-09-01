@@ -6,7 +6,6 @@ import grails.transaction.Transactional
 @Transactional
 class EventService {
     def springSecurityService
-    def teachingService
 
     final Map<String, Class<? extends Event>> KIND_TO_CLASS = [
             ANSWER_QUESTION: AnswerQuestionEvent,

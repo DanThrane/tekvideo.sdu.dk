@@ -60,8 +60,8 @@ var Editor = {};
         var constructor = (isYouTube) ? Popcorn.HTMLYouTubeVideoElement : Popcorn.HTMLVimeoVideoElement;
         var wrapper = constructor("#player");
         wrapper.src = (isYouTube) ?
-            "http://www.youtube.com/watch?v=" + videoId + "&controls=0" :
-            "http://player.vimeo.com/video/" + videoId;
+        "http://www.youtube.com/watch?v=" + videoId + "&controls=0" :
+        "http://player.vimeo.com/video/" + videoId;
         player = Popcorn(wrapper);
     }
 
@@ -93,13 +93,12 @@ var Editor = {};
             timelineJson: timelineJson,
             isEditing: isEditing,
             description: description,
-            videoType: type
+            videoType: type,
+            subject: $("#subject").val()
         };
 
         if (isEditing) {
             data.editing = editingId;
-        } else {
-            data.subject = $("#subject").val();
         }
 
         Util.postJson(publishEndpoint, data, {
@@ -113,7 +112,7 @@ var Editor = {};
                 console.log("error!");
                 console.log(data);
             },
-            complete: function() {
+            complete: function () {
                 $("#publish-spinner").addClass("hide");
             }
         });
@@ -446,8 +445,12 @@ var Editor = {};
             editor.getSession().setMode("ace/mode/javascript");
             defaultEditorText = editor.getValue();
 
-            $(window).resize(function () { initSize() });
-            setTimeout(function() { initSize(); }, 2000);
+            $(window).resize(function () {
+                initSize()
+            });
+            setTimeout(function () {
+                initSize();
+            }, 2000);
             initDragging();
         }
 
@@ -485,14 +488,14 @@ var Editor = {};
                     restrict: {
                         restriction: "parent",
                         endOnly: true,
-                        elementRect: { top: 0, left: 0, bottom: 1, right: 1 }
+                        elementRect: {top: 0, left: 0, bottom: 1, right: 1}
                     },
 
                     // call this function on every dragmove event
                     onmove: dragMoveListener
                 });
 
-            function dragMoveListener (event) {
+            function dragMoveListener(event) {
                 var target = $(event.target);
                 var x = parseInt((parseInt(target.attr('data-x')) || 0) + event.dx);
                 var y = parseInt((parseInt(target.attr('data-y')) || 0) + event.dy);

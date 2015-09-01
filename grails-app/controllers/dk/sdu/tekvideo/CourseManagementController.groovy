@@ -81,7 +81,7 @@ class CourseManagementController {
     def editVideo(Video video) {
         // TODO A bit unclear who should be allowed to edit a video (See issue #14)
         if (courseManagementService.authenticatedTeacher) {
-            render view: "createVideo", model: [isEditing: true, video: video]
+            render view: "createVideo", model: [isEditing: true, video: video, subjects: video.subject.course.subjects]
         } else {
             notAllowedCourse()
         }
