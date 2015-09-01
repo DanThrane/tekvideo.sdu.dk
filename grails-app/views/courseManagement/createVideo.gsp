@@ -91,132 +91,134 @@
             <div id="player"></div>
         </div>
         <hr>
-
-        %{-- Attributes --}%
-        <div class="card-stack" id="attributes-stack">
-            %{-- Edit subject --}%
-            <div id="subject-form-card" class="card-item">
-                <h4><fa:icon icon="${FaIcon.BOOK}"/> Redigér emne</h4>
-                <twbs:buttonGroup justified="true">
-                    <twbs:button id="addQuestion">
-                        <fa:icon icon="${FaIcon.PLUS}"/> Tilføj spørgsmål
-                    </twbs:button>
-                    <twbs:button style="${ButtonStyle.DANGER}" id="deleteSubject">
-                        <fa:icon icon="${FaIcon.TRASH}"/> Slet
-                    </twbs:button>
-                </twbs:buttonGroup>
-                <hr>
-                <twbs:form id="subject-form">
-                    <twbs:input name="subjectName" labelText="Navn"/>
-                    <twbs:input name="subjectTimecode" labelText="Tidskode">
-                        For eksempel: <code>2:20</code>
-                    </twbs:input>
-                    <twbs:button type="submit" style="${ButtonStyle.SUCCESS}" block="true">
-                        <fa:icon icon="${FaIcon.CHECK}"/>
-                        Gem ændringer
-                    </twbs:button>
-                </twbs:form>
-            </div>
-            %{-- Edit question --}%
-            <div id="question-form-card" class="card-item">
-                <h4><fa:icon icon="${FaIcon.QUESTION}"/> Redigér spørgsmål</h4>
-                <twbs:buttonGroup justified="true">
-                    <twbs:button class="addField">
-                        <fa:icon icon="${FaIcon.PLUS}"/> Tilføj felt
-                    </twbs:button>
-                    <twbs:button style="${ButtonStyle.DANGER}" id="deleteQuestion">
-                        <fa:icon icon="${FaIcon.TRASH}"/> Slet
-                    </twbs:button>
-                </twbs:buttonGroup>
-                <hr>
-                <twbs:form id="question-form">
-                    <twbs:input name="questionName" labelText="Navn"/>
-                    <twbs:input name="questionTimecode" labelText="Tidskode">
-                        For eksempel: <code>2:20</code>
-                    </twbs:input>
-                    <twbs:button type="submit" style="${ButtonStyle.SUCCESS}" block="true">
-                        <fa:icon icon="${FaIcon.CHECK}"/>
-                        Gem ændringer
-                    </twbs:button>
-                </twbs:form>
-            </div>
-            %{-- Edit field --}%
-            <div id="field-form-card" class="card-item">
-                <h4><fa:icon icon="${FaIcon.FILE}"/>  Redigér felt</h4>
-                <twbs:buttonGroup justified="true">
-                    <twbs:button id="backToQuestion">
-                        <fa:icon icon="${FaIcon.BACKWARD}"/> Tilbage til spørgsmål
-                    </twbs:button>
-                    <twbs:button class="addField" style="${ButtonStyle.SUCCESS}">
-                        <fa:icon icon="${FaIcon.PLUS}"/> Tilføj nyt felt
-                    </twbs:button>
-                    <twbs:button style="${ButtonStyle.DANGER}" id="deleteField">
-                        <fa:icon icon="${FaIcon.TRASH}"/> Slet
-                    </twbs:button>
-                </twbs:buttonGroup>
-                <hr>
-                <twbs:form id="field-form">
-                    <twbs:input name="fieldName" labelText="Felt ID">
-                        Hvis du bruger et JavaScript felt, så vil du kunne henvise til feltet ved hjælp af dette ID
-                    </twbs:input>
-                    <twbs:select name="fieldType" labelText="Spørgsmåls type"
-                                 list="${["Ingen", "Mellem", "Tekst", "Brugerdefineret (JavaScript)",
-                                          "Matematisk udtryk"]}"/>
-
-                    <div class="card-stack" id="field-type-stack">
-                        <div class="card-item active" id="no-field-type-card">
-                        </div>
-
-                        <div class="card-item" id="between-field-type-card">
-                            <twbs:input name="betweenMinValue" labelText="Mindste værdi"/>
-                            <twbs:input name="betweenMaxValue" labelText="Højeste værdi"/>
-                        </div>
-
-                        <div class="card-item" id="text-field-type-card">
-                            <twbs:input name="textFieldExact" labelText="Tekst">
-                                <g:content key="addon-left">
-                                    <twbs:inputGroupAddon>
-                                        <twbs:checkbox name="textFieldIgnoreCase"
-                                                       labelText="Case insensitive"/>
-                                    </twbs:inputGroupAddon>
-                                </g:content>
-                                Spørgsmålet er svaret korrekt, kun når input er præcis det skrevet i ovenstående
-                                felt.
-                            </twbs:input>
-                        </div>
-
-                        <div class="card-item" id="userdefined-field-type-card">
-                            <div id="editor">function validator(value) {
-    return value === "6" || utilCheck();
-}
-
-// Utility functions can be defined too
-function utilCheck() {
-    // It is possible to reference other fields using their ID
-    var valueOfOtherField = $("#field-2").text();
-    return valueOfOtherField === "hello";
-}
-
-return validator; // Return the validator function</div>
-                        </div>
-
-                        <div class="card-item" id="expression-field-type-card">
-                            <label>Udtryk</label> <br/>
-
-                            <div id="expression-container">
-                            </div>
-                            <br/>
-                        </div>
-                    </div>
-                    <twbs:button type="submit" block="true" style="${ButtonStyle.SUCCESS}" id="field-save">
-                        <fa:icon icon="${FaIcon.CHECK}"/>
-                        Gem ændringer
-                    </twbs:button>
-                </twbs:form>
-            </div>
-        </div>
     </div>
 </div>
+
+<g:content key="content-below-the-fold">
+    %{-- Attributes --}%
+    <div class="card-stack" id="attributes-stack">
+        %{-- Edit subject --}%
+        <div id="subject-form-card" class="card-item">
+            <h4><fa:icon icon="${FaIcon.BOOK}"/> Redigér emne</h4>
+            <twbs:buttonGroup justified="true">
+                <twbs:button id="addQuestion">
+                    <fa:icon icon="${FaIcon.PLUS}"/> Tilføj spørgsmål
+                </twbs:button>
+                <twbs:button style="${ButtonStyle.DANGER}" id="deleteSubject">
+                    <fa:icon icon="${FaIcon.TRASH}"/> Slet
+                </twbs:button>
+            </twbs:buttonGroup>
+            <hr>
+            <twbs:form id="subject-form">
+                <twbs:input name="subjectName" labelText="Navn"/>
+                <twbs:input name="subjectTimecode" labelText="Tidskode">
+                    For eksempel: <code>2:20</code>
+                </twbs:input>
+                <twbs:button type="submit" style="${ButtonStyle.SUCCESS}" block="true">
+                    <fa:icon icon="${FaIcon.CHECK}"/>
+                    Gem ændringer
+                </twbs:button>
+            </twbs:form>
+        </div>
+        %{-- Edit question --}%
+        <div id="question-form-card" class="card-item">
+            <h4><fa:icon icon="${FaIcon.QUESTION}"/> Redigér spørgsmål</h4>
+            <twbs:buttonGroup justified="true">
+                <twbs:button class="addField">
+                    <fa:icon icon="${FaIcon.PLUS}"/> Tilføj felt
+                </twbs:button>
+                <twbs:button style="${ButtonStyle.DANGER}" id="deleteQuestion">
+                    <fa:icon icon="${FaIcon.TRASH}"/> Slet
+                </twbs:button>
+            </twbs:buttonGroup>
+            <hr>
+            <twbs:form id="question-form">
+                <twbs:input name="questionName" labelText="Navn"/>
+                <twbs:input name="questionTimecode" labelText="Tidskode">
+                    For eksempel: <code>2:20</code>
+                </twbs:input>
+                <twbs:button type="submit" style="${ButtonStyle.SUCCESS}" block="true">
+                    <fa:icon icon="${FaIcon.CHECK}"/>
+                    Gem ændringer
+                </twbs:button>
+            </twbs:form>
+        </div>
+        %{-- Edit field --}%
+        <div id="field-form-card" class="card-item">
+            <h4><fa:icon icon="${FaIcon.FILE}"/>  Redigér felt</h4>
+            <twbs:buttonGroup justified="true">
+                <twbs:button id="backToQuestion">
+                    <fa:icon icon="${FaIcon.BACKWARD}"/> Tilbage til spørgsmål
+                </twbs:button>
+                <twbs:button class="addField" style="${ButtonStyle.SUCCESS}">
+                    <fa:icon icon="${FaIcon.PLUS}"/> Tilføj nyt felt
+                </twbs:button>
+                <twbs:button style="${ButtonStyle.DANGER}" id="deleteField">
+                    <fa:icon icon="${FaIcon.TRASH}"/> Slet
+                </twbs:button>
+            </twbs:buttonGroup>
+            <hr>
+            <twbs:form id="field-form">
+                <twbs:input name="fieldName" labelText="Felt ID">
+                    Hvis du bruger et JavaScript felt, så vil du kunne henvise til feltet ved hjælp af dette ID
+                </twbs:input>
+                <twbs:select name="fieldType" labelText="Spørgsmåls type"
+                             list="${["Ingen", "Mellem", "Tekst", "Brugerdefineret (JavaScript)",
+                                      "Matematisk udtryk"]}"/>
+
+                <div class="card-stack" id="field-type-stack">
+                    <div class="card-item active" id="no-field-type-card">
+                    </div>
+
+                    <div class="card-item" id="between-field-type-card">
+                        <twbs:input name="betweenMinValue" labelText="Mindste værdi"/>
+                        <twbs:input name="betweenMaxValue" labelText="Højeste værdi"/>
+                    </div>
+
+                    <div class="card-item" id="text-field-type-card">
+                        <twbs:input name="textFieldExact" labelText="Tekst">
+                            <g:content key="addon-left">
+                                <twbs:inputGroupAddon>
+                                    <twbs:checkbox name="textFieldIgnoreCase"
+                                                   labelText="Case insensitive"/>
+                                </twbs:inputGroupAddon>
+                            </g:content>
+                            Spørgsmålet er svaret korrekt, kun når input er præcis det skrevet i ovenstående
+                            felt.
+                        </twbs:input>
+                    </div>
+
+                    <div class="card-item" id="userdefined-field-type-card">
+                        <div id="editor">function validator(value) {
+                        return value === "6" || utilCheck();
+                        }
+
+                        // Utility functions can be defined too
+                        function utilCheck() {
+                        // It is possible to reference other fields using their ID
+                        var valueOfOtherField = $("#field-2").text();
+                        return valueOfOtherField === "hello";
+                        }
+
+                        return validator; // Return the validator function</div>
+                    </div>
+
+                    <div class="card-item" id="expression-field-type-card">
+                        <label>Udtryk</label> <br/>
+
+                        <div id="expression-container">
+                        </div>
+                        <br/>
+                    </div>
+                </div>
+                <twbs:button type="submit" block="true" style="${ButtonStyle.SUCCESS}" id="field-save">
+                    <fa:icon icon="${FaIcon.CHECK}"/>
+                    Gem ændringer
+                </twbs:button>
+            </twbs:form>
+        </div>
+    </div>
+</g:content>
 
 %{-- Sidebar --}%
 <g:content key="sidebar-right">
@@ -266,7 +268,9 @@ return validator; // Return the validator function</div>
         </div>
     </div>
     <hr>
+</g:content>
 
+<g:content key="sidebar-right-below-the-fold">
     <h4><fa:icon icon="${FaIcon.VIDEO_CAMERA}"/> Tidslinie</h4>
 
     <div id="timeline-subjects"></div>

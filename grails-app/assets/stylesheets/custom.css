@@ -189,33 +189,23 @@ body {
     background-color: #F9F9F9;
 }
 
-.sidebar {
-    height: 100%;
-    position: absolute;
-    top: 0;
-    overflow: auto;
-}
-
-.sidebar-left {
-    border-right: 1px solid #d5d5d5;
-    left: 0;
-}
-
-.sidebar-right {
-    border-left: 1px solid #d5d5d5;
-    right: 0;
-}
-
 .content {
-    position: relative
+    display: flex;
+    align-items: stretch;
+}
+
+.sidebar {
+    display: flex;
+    flex: 1;
+    align-items: stretch;
+    flex-direction: column;
 }
 
 .sidebar-pull-bottom {
-    border-top: 1px solid #eeeeee;
-    padding-top: 23px;
-    position: absolute;
-    bottom: 0;
-    width: 90%; /* Seems to work */
+    display: flex;
+    flex: 1;
+    align-items: flex-end;
+    justify-content: center;
 }
 
 #videoNavigation li {

@@ -108,6 +108,26 @@
     </twbs:row>
 </twbs:container>
 
+<g:ifContentAvailable key="content-below-the-fold">
+    <twbs:container fluid="true">
+        <twbs:row>
+            <twbs:column sm="8" push-sm="2">
+                <g:selectContent key="content-below-the-fold"/>
+            </twbs:column>
+            <twbs:column sm="2" pull-sm="8" class="sidebar sidebar-left">
+                <g:ifContentAvailable key="sidebar-left-below-the-fold">
+                    <g:selectContent key="sidebar-left-below-the-fold"/>
+                </g:ifContentAvailable>
+            </twbs:column>
+            <g:ifContentAvailable key="sidebar-right-below-the-fold">
+                <twbs:column sm="2" class="sidebar sidebar-right">
+                    <g:selectContent key="sidebar-right-below-the-fold"/>
+                </twbs:column>
+            </g:ifContentAvailable>
+        </twbs:row>
+    </twbs:container>
+</g:ifContentAvailable>
+
 <twbs:container fluid="true" id="footer">
     <twbs:row>
         <twbs:column cols="3">
