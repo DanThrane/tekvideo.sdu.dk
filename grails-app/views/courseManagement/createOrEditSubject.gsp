@@ -59,6 +59,10 @@
                                                                     subject: command.domain, vidid: idx]}">
                                             <fa:icon icon="${FaIcon.YOUTUBE_PLAY}" />
                                         </twbs:linkButton>
+                                        <twbs:linkButton style="${ButtonStyle.LINK}" action="videoStatistics"
+                                                         id="${video.id}">
+                                            <fa:icon icon="${FaIcon.BAR_CHART}"/>
+                                        </twbs:linkButton>
                                         <twbs:linkButton style="${ButtonStyle.LINK}" action="editVideo"
                                                          id="${video.id}">
                                             <fa:icon icon="${FaIcon.EDIT}" />
@@ -74,6 +78,12 @@
                                             <fa:icon icon="${FaIcon.ARROW_DOWN}" />
                                         </twbs:button>
                                     </twbs:buttonToolbar>
+                                </twbs:column>
+                            </twbs:row>
+                            <hr>
+                            <twbs:row>
+                                <twbs:column>
+                                    <markdown:renderHtml><sdu:abbreviate>${video.description}</sdu:abbreviate></markdown:renderHtml>
                                 </twbs:column>
                             </twbs:row>
                         </sdu:card>

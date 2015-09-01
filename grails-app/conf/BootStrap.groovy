@@ -29,13 +29,75 @@ class BootStrap {
         createUsers()
 
         def teacher = Teacher.findAll()[0]
+        def studentUser = Student.findAll()[0].user
 
         (1..10).each {
             def course = CourseData.buildTestCourse("Course", teacher, true)
             (1..3).each {
                 def subject = SubjectData.buildTestSubject("Subject", course, true)
                 (1..3).each {
-                    VideoData.buildTestVideo("Video", subject, true)
+                    def video = VideoData.buildTestVideo("Video", subject, true)
+
+                    new VisitVideoEvent([
+                            timestamp: System.currentTimeMillis() - (1000 * 60 * 35),
+                            user     : studentUser,
+                            video    : video]).save(flush: true, failOnError: true)
+                    new VisitVideoEvent([
+                            timestamp: System.currentTimeMillis() - (1000 * 60 * 90),
+                            user     : studentUser,
+                            video    : video]).save(flush: true, failOnError: true)
+                    new VisitVideoEvent([
+                            timestamp: System.currentTimeMillis() - (1000 * 60 * 300),
+                            user     : studentUser,
+                            video    : video]).save(flush: true, failOnError: true)
+                    new VisitVideoEvent([
+                            timestamp: System.currentTimeMillis(),
+                            user     : null,
+                            video    : video]).save(flush: true, failOnError: true)
+                    new VisitVideoEvent([
+                            timestamp: System.currentTimeMillis(),
+                            user     : null,
+                            video    : video]).save(flush: true, failOnError: true)
+                    new VisitVideoEvent([
+                            timestamp: System.currentTimeMillis(),
+                            user     : null,
+                            video    : video]).save(flush: true, failOnError: true)
+
+                    new AnswerQuestionEvent([
+                            timestamp: System.currentTimeMillis(),
+                            user     : studentUser,
+                            video    : video,
+                            answer   : "42",
+                            correct  : true
+                    ]).save(flush: true, failOnError: true)
+                    new AnswerQuestionEvent([
+                            timestamp: System.currentTimeMillis(),
+                            user     : null,
+                            video    : video,
+                            answer   : "42",
+                            correct  : true
+                    ]).save(flush: true, failOnError: true)
+                    new AnswerQuestionEvent([
+                            timestamp: System.currentTimeMillis(),
+                            user     : null,
+                            video    : video,
+                            answer   : "1",
+                            correct  : false
+                    ]).save(flush: true, failOnError: true)
+                    new AnswerQuestionEvent([
+                            timestamp: System.currentTimeMillis(),
+                            user     : studentUser,
+                            video    : video,
+                            answer   : "1",
+                            correct  : false
+                    ]).save(flush: true, failOnError: true)
+                    new AnswerQuestionEvent([
+                            timestamp: System.currentTimeMillis(),
+                            user     : null,
+                            video    : video,
+                            answer   : "2",
+                            correct  : false
+                    ]).save(flush: true, failOnError: true)
                 }
             }
         }

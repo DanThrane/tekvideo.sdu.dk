@@ -9,6 +9,7 @@ import org.springframework.security.access.annotation.Secured
 @Secured("ROLE_TEACHER")
 class CourseManagementController {
     CourseManagementService courseManagementService
+    VideoStatisticsService videoStatisticsService
 
     def index() {
         def courses = courseManagementService.activeCourses
@@ -48,7 +49,7 @@ class CourseManagementController {
         def teacher = courseManagementService.authenticatedTeacher
         if (courseManagementService.canAccess(subject.course)) {
             render view: "createOrEditSubject",
-                    model: [course: subject.course, command: new SubjectCRUDCommand(domain: subject),
+                    model: [course   : subject.course, command: new SubjectCRUDCommand(domain: subject),
                             isEditing: true, teacher: teacher]
         } else {
             notAllowedCourse()
@@ -103,6 +104,41 @@ class CourseManagementController {
         } else {
             notAllowedCourse()
         }
+    }
+
+    def videoStatistics(Video video) {
+        if (courseManagementService.canAccess(video.subject.course)) {
+            def statistic = videoStatisticsService.findViewingStatistics(
+                    video,
+                    System.currentTimeMillis() - 1000 * 60 * 60 * 24,
+                    System.currentTimeMillis(), 1000 * 60 * 60
+            ).result
+
+            def viewBreakdown = videoStatisticsService.retrieveViewBreakdown(video).result
+            def answerSummary = videoStatisticsService.retrieveAnswerSummary(video).result
+
+            return [
+                    video        : video,
+                    statistics   : statistic,
+                    viewBreakdown: viewBreakdown,
+                    answerSummary: answerSummary
+            ]
+        } else {
+            notAllowedCourse()
+        }
+    }
+
+    def videoViewingChart(Video video, Long period) {
+        // TODO Confirm that the teacher owns this video
+        long from = System.currentTimeMillis()
+        long to = System.currentTimeMillis()
+        long periodInMs
+
+        from -= 1000 * 60 * 60 * 24 * period
+        periodInMs = (to - from) / 24
+
+        def statistics = videoStatisticsService.findViewingStatistics(video, from, to, periodInMs)
+        render statistics as JSON
     }
 
     def postCourse(CourseCRUDCommand command) {
