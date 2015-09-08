@@ -21,7 +21,7 @@
 					<twbs:input name="password2" type="password" labelText="Password (igen)" bean="${command}" />
 
 					<div class="form-buttons">
-						<s2ui:submitButton class="btn btn-primary" elementId='create' form='registerForm' messageCode='${g.message(code:"register.submit")}'/>
+						<s2ui:submitButton class="btn btn-primary" elementId='create' form='registerForm' messageCode='Ny bruger'/>
 					</div>
 				</g:form>
 			</twbs:column>

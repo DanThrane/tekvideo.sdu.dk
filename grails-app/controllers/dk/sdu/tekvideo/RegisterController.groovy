@@ -28,7 +28,7 @@ class RegisterController extends grails.plugin.springsecurity.ui.RegisterControl
                 accountLocked: false, enabled: true).save(flush: true, failOnError: true)
 
         new Student(user: user).save(flush: true)
-        UserRole.create user, Role.findByAuthority("ROLE_USER"), true
+        UserRole.create user, Role.findByAuthority("ROLE_STUDENT"), true
         flash.success = "Account created successfully!"
         SpringSecurityUtils.reauthenticate(command.username, command.password)
         redirect uri: "/"
