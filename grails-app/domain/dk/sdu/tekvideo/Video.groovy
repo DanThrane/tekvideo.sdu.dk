@@ -15,12 +15,13 @@ class Video {
         description     nullable: true
     }
 
-    static belongsTo = [subject: Subject]
+    static belongsTo = [subject: Subject] // Videos don't already have this - Which is a problem
     static hasMany = [comments: Comment]
 
     static mapping = {
         timelineJson type: "text"
         videoType defaultValue: true
+        subject nullable: true
     }
 
     String getDescription() {
