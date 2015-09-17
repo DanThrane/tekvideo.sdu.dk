@@ -27,7 +27,7 @@ environments {
             dbCreate = "create-drop" //update, create-drop, create
             driverClassName = "org.postgresql.Driver"
             dialect = "org.hibernate.dialect.PostgreSQLDialect"
-            url = "jdbc:postgresql://localhost:5432/tekvideo"
+            url = "jdbc:postgresql://localhost:5432/tekvideo-dev"
             username = "devuser"
             password = "devpassword"
         }
