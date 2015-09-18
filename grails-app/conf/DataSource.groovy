@@ -24,12 +24,13 @@ hibernate {
 environments {
     development {
         dataSource {
-            dbCreate = "create-drop" //update, create-drop, create
+            dbCreate = "update" //update, create-drop, create
             driverClassName = "org.postgresql.Driver"
             dialect = "org.hibernate.dialect.PostgreSQLDialect"
-            url = "jdbc:postgresql://localhost:5432/tekvideo"
+            url = "jdbc:postgresql://localhost:5432/tekvideo-dev"
             username = "devuser"
             password = "devpassword"
+
         }
     }
     test {
@@ -37,7 +38,7 @@ environments {
             dbCreate = "create-drop" //update, create-drop, create
             driverClassName = "org.postgresql.Driver"
             dialect = "org.hibernate.dialect.PostgreSQLDialect"
-            url = "jdbc:postgresql://localhost:5432/tekvideo-test"
+            url = "jdbc:postgresql://localhost:5432/tekvideo-tes"
             username = "devuser"
             password = "devpassword"
         }
