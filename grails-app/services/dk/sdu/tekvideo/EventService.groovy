@@ -18,7 +18,7 @@ class EventService {
 
     final Map<String, Closure> CUSTOM_MAPPER = [
             VISIT_VIDEO: {
-                Video video = Video.get(it.video)
+                def video = it.video
                 if (video) {
                     VisitVideoEvent event = new VisitVideoEvent(video: video)
                     return event
@@ -26,7 +26,7 @@ class EventService {
                 return null
             },
             ANSWER_QUESTION: {
-                Video video = Video.get(it.video)
+                def video = it.video
 
                 if (video) {
                     return new AnswerQuestionEvent(video: video, answer: it.answer, correct: it.correct)
