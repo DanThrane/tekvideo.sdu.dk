@@ -3,134 +3,127 @@ import dk.sdu.tekvideo.Video
 
 databaseChangeLog = {
 
-    changeSet(author: "Admin (generated)", id: "1442583748918-1") {
-        createTable(tableName: "comment") {
-            column(name: "id", type: "int8") {
-                constraints(nullable: "false", primaryKey: "true", primaryKeyName: "commentPK")
-            }
-
-            column(name: "version", type: "int8") {
-                constraints(nullable: "false")
-            }
-
-            column(name: "contents", type: "text") {
-                constraints(nullable: "false")
-            }
-
-            column(name: "date_created", type: "timestamp") {
-                constraints(nullable: "false")
-            }
-
-            column(name: "user_id", type: "int8") {
-                constraints(nullable: "false")
-            }
-        }
-    }
-
-    changeSet(author: "Admin (generated)", id: "1442583748918-2") {
-        createTable(tableName: "video_comment") {
-            column(name: "video_comments_id", type: "int8")
-
-            column(name: "comment_id", type: "int8")
-        }
-    }
-
-    changeSet(author: "Admin (generated)", id: "1442583748918-3") {
+    changeSet(author: "Admin (generated)", id: "1442739717408-1") {
         addColumn(tableName: "video") {
             column(name: "subject_id", type: "int8")
         }
     }
 
-    changeSet(author: "Admin (generated)", id: "1442583748918-5") {
+    changeSet(author: "Admin (generated)", id: "1442739717408-2") {
         addNotNullConstraint(columnDataType: "int8", columnName: "student_id", tableName: "course_student")
     }
 
-    changeSet(author: "Admin (generated)", id: "1442583748918-6") {
+    changeSet(author: "Admin (generated)", id: "1442739717408-3") {
         modifyDataType(columnName: "correct", newDataType: "boolean", tableName: "event")
     }
 
-    changeSet(author: "Admin (generated)", id: "1442583748918-7") {
+    changeSet(author: "Admin (generated)", id: "1442739717408-4") {
         modifyDataType(columnName: "account_expired", newDataType: "boolean", tableName: "myusers")
     }
 
-    changeSet(author: "Admin (generated)", id: "1442583748918-8") {
+    changeSet(author: "Admin (generated)", id: "1442739717408-5") {
         modifyDataType(columnName: "account_locked", newDataType: "boolean", tableName: "myusers")
     }
 
-    changeSet(author: "Admin (generated)", id: "1442583748918-9") {
+    changeSet(author: "Admin (generated)", id: "1442739717408-6") {
         modifyDataType(columnName: "enabled", newDataType: "boolean", tableName: "myusers")
     }
 
-    changeSet(author: "Admin (generated)", id: "1442583748918-10") {
+    changeSet(author: "Admin (generated)", id: "1442739717408-7") {
         modifyDataType(columnName: "password_expired", newDataType: "boolean", tableName: "myusers")
     }
 
-    changeSet(author: "Admin (generated)", id: "1442583748918-11") {
+    changeSet(author: "Admin (generated)", id: "1442739717408-8") {
         modifyDataType(columnName: "spring", newDataType: "boolean", tableName: "semester")
     }
 
-    changeSet(author: "Admin (generated)", id: "1442583748918-12") {
+    changeSet(author: "Admin (generated)", id: "1442739717408-9") {
         modifyDataType(columnName: "video_type", newDataType: "boolean", tableName: "video")
     }
 
-    changeSet(author: "Admin (generated)", id: "1442583748918-13") {
+    changeSet(author: "Admin (generated)", id: "1442739717408-10") {
         addPrimaryKey(columnNames: "id", constraintName: "course_studenPK", tableName: "course_student")
     }
 
-    changeSet(author: "Admin (generated)", id: "1442583748918-14") {
+    changeSet(author: "Admin (generated)", id: "1442739717408-11") {
+        dropForeignKeyConstraint(baseTableName: "course2", baseTableSchemaName: "public", constraintName: "fk_cx4j15qtvp0qkfrluvkvh2dy3")
+    }
+
+    changeSet(author: "Admin (generated)", id: "1442739717408-12") {
+        dropForeignKeyConstraint(baseTableName: "course2", baseTableSchemaName: "public", constraintName: "fk_s1e0rfe5brw6e8fgh1jd2mand")
+    }
+
+    changeSet(author: "Admin (generated)", id: "1442739717408-13") {
         dropForeignKeyConstraint(baseTableName: "course_student", baseTableSchemaName: "public", constraintName: "fk_sv1i8oao41apn7tid0t9625lm")
     }
 
-    changeSet(author: "Admin (generated)", id: "1442583748918-15") {
+    changeSet(author: "Admin (generated)", id: "1442739717408-14") {
+        dropForeignKeyConstraint(baseTableName: "course_student2", baseTableSchemaName: "public", constraintName: "fk_h6nu5yqk82dkivlsd6tp41id")
+    }
+
+    changeSet(author: "Admin (generated)", id: "1442739717408-15") {
+        dropForeignKeyConstraint(baseTableName: "course_student2", baseTableSchemaName: "public", constraintName: "fk_dw4yor8qomm1bej0nkihv5erc")
+    }
+
+    changeSet(author: "Admin (generated)", id: "1442739717408-16") {
         dropForeignKeyConstraint(baseTableName: "event", baseTableSchemaName: "public", constraintName: "fk_rj3dgj7ybcm3ky31vro20f7rf")
     }
 
-    changeSet(author: "Admin (generated)", id: "1442583748918-16") {
+    changeSet(author: "Admin (generated)", id: "1442739717408-17") {
         dropForeignKeyConstraint(baseTableName: "event", baseTableSchemaName: "public", constraintName: "fk_n512drne35f8bx23o71yj298q")
     }
 
-    changeSet(author: "Admin (generated)", id: "1442583748918-17") {
+    changeSet(author: "Admin (generated)", id: "1442739717408-18") {
         dropForeignKeyConstraint(baseTableName: "event", baseTableSchemaName: "public", constraintName: "fk_m0spahucwfamp4ngf1t36wiwr")
     }
 
+    changeSet(author: "Admin (generated)", id: "1442739717408-19") {
+        dropForeignKeyConstraint(baseTableName: "event", baseTableSchemaName: "public", constraintName: "fk_fpflfp7l8koab0pwtyav2uyqs")
+    }
+
+    changeSet(author: "Admin (generated)", id: "1442739717408-20") {
+        dropForeignKeyConstraint(baseTableName: "subject2", baseTableSchemaName: "public", constraintName: "fk_h7t837kcuqd7aafdwe13crqla")
+    }
 
 
-    changeSet(author: "Admin (generated)", id: "1442583748918-24") {
+    changeSet(author: "Admin (generated)", id: "1442739717408-23") {
+        dropForeignKeyConstraint(baseTableName: "video2", baseTableSchemaName: "public", constraintName: "fk_ik23il7osoignfd1sxyvy8t7s")
+    }
+
+    changeSet(author: "Admin (generated)", id: "1442739717408-25") {
         dropColumn(columnName: "course_students_id", tableName: "course_student")
     }
 
-    changeSet(author: "Admin (generated)", id: "1442583748918-25") {
+    changeSet(author: "Admin (generated)", id: "1442739717408-26") {
         dropColumn(columnName: "course_id", tableName: "event")
     }
 
-    changeSet(author: "Admin (generated)", id: "1442583748918-26") {
+    changeSet(author: "Admin (generated)", id: "1442739717408-27") {
         dropColumn(columnName: "subject_id", tableName: "event")
     }
 
-    changeSet(author: "Admin (generated)", id: "1442583748918-27") {
+    changeSet(author: "Admin (generated)", id: "1442739717408-28") {
         dropColumn(columnName: "teacher_id", tableName: "event")
     }
 
-    changeSet(author: "Admin (generated)", id: "1442583748918-20") {
-        addForeignKeyConstraint(baseColumnNames: "user_id", baseTableName: "comment", constraintName: "FK_mxoojfj9tmy8088avf57mpm02", deferrable: "false", initiallyDeferred: "false", referencedColumnNames: "id", referencedTableName: "myusers", referencesUniqueColumn: "false")
+    changeSet(author: "Admin (generated)", id: "1442739717408-29") {
+        dropTable(tableName: "course2")
     }
 
-    changeSet(author: "Admin (generated)", id: "1442583748918-21") {
+    changeSet(author: "Admin (generated)", id: "1442739717408-30") {
+        dropTable(tableName: "course_student2")
+    }
+
+    changeSet(author: "Admin (generated)", id: "1442739717408-31") {
+        dropTable(tableName: "subject2")
+    }
+
+    changeSet(author: "Admin (generated)", id: "1442739717408-33") {
+        dropTable(tableName: "video2")
+    }
+
+    changeSet(author: "Admin (generated)", id: "1442739717408-24") {
         addForeignKeyConstraint(baseColumnNames: "subject_id", baseTableName: "video", constraintName: "FK_e2mqsqcagnqvsq1iv37uklumo", deferrable: "false", initiallyDeferred: "false", referencedColumnNames: "id", referencedTableName: "subject", referencesUniqueColumn: "false")
-    }
-
-    changeSet(author: "Admin (generated)", id: "1442583748918-22") {
-        addForeignKeyConstraint(baseColumnNames: "comment_id", baseTableName: "video_comment", constraintName: "FK_k15a7vs0bl11b7q3bc88x9nw3", deferrable: "false", initiallyDeferred: "false", referencedColumnNames: "id", referencedTableName: "comment", referencesUniqueColumn: "false")
-    }
-
-    changeSet(author: "Admin (generated)", id: "1442583748918-23") {
-        addForeignKeyConstraint(baseColumnNames: "video_comments_id", baseTableName: "video_comment", constraintName: "FK_sif69tfsrdmn7vdnmpja18r9b", deferrable: "false", initiallyDeferred: "false", referencedColumnNames: "id", referencedTableName: "video", referencesUniqueColumn: "false")
-    }
-
-    changeSet(author: "Admin (generated)", id: "1442583748918-4") {
-        addColumn(tableName: "video") {
-            column(name: "videos_idx", type: "int4")
-        }
     }
 
     changeSet(author: "Dan", id: "set default values for videos belonging to subjects") {
@@ -163,9 +156,5 @@ databaseChangeLog = {
 
     changeSet(author: "Admin (generated)", id: "1442583748918-28") {
         dropTable(tableName: "subject_videos")
-    }
-
-    changeSet(author: "Dan", id: "Relax foreign key constraint for video events") {
-        dropForeignKeyConstraint(baseTableName: "event", baseTableSchemaName: "public", constraintName: "fk_fpflfp7l8koab0pwtyav2uyqs")
     }
 }

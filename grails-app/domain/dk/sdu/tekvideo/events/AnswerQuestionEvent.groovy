@@ -4,7 +4,7 @@ class AnswerQuestionEvent extends Event {
     String answer
     Boolean correct
 
-    Long video
+    Long videoId
 
     static constraints = {
         answer blank: true, maxSize: 512

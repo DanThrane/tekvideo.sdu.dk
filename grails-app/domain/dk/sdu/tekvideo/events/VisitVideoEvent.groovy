@@ -1,13 +1,13 @@
 package dk.sdu.tekvideo.events
 
 class VisitVideoEvent extends Event {
-    Long video
+    Long videoId
 
     @Override
     public String toString() {
         return "VisitVideoEvent{" +
                 "id=" + id +
-                ", video=" + video +
+                ", video=" + videoId +
                 ", version=" + version +
                 ", super=" + super.toString() +
                 '}';
