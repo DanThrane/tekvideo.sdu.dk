@@ -15,7 +15,7 @@ class Video {
         description     nullable: true
     }
 
-    static belongsTo = [subject: Subject] // Videos don't already have this - Which is a problem
+    static belongsTo = [subject: Subject]
     static hasMany = [comments: Comment]
 
     static mapping = {
