@@ -35,8 +35,8 @@ var ivids = {};
         var constructor = (isYouTube) ? Popcorn.HTMLYouTubeVideoElement : Popcorn.HTMLVimeoVideoElement;
         var wrapper = constructor(playerSelector);
         wrapper.src = (isYouTube) ?
-            "http://www.youtube.com/watch?v=" + videoId + "&controls=0" :
-            "http://player.vimeo.com/video/" + videoId;
+        "http://www.youtube.com/watch?v=" + videoId + "&controls=0" :
+        "http://player.vimeo.com/video/" + videoId;
         player = Popcorn(wrapper);
 
         player.play();
@@ -114,6 +114,7 @@ var ivids = {};
     function initEventHandlers() {
         $("#checkAnswers").click(function (e) {
             e.preventDefault();
+            var questionID = getVisibleQuestionID();
             var question = getVisibleQuestion();
             for (var i = 0; i < question.fields.length; i++) {
                 var field = question.fields[i];
@@ -130,7 +131,10 @@ var ivids = {};
                     events.emit({
                         kind: "ANSWER_QUESTION",
                         answer: val,
-                        correct: correct
+                        correct: correct,
+                        subject: questionID[0],
+                        question: questionID[1],
+                        field: i
                     });
                 }
             }
@@ -257,17 +261,23 @@ var ivids = {};
         }
     }
 
-    function getVisibleQuestion() {
+    function getVisibleQuestionID() {
         for (var i = 0; i < timeline.length; i++) {
             var item = timeline[i];
             for (var j = 0; j < item.questions.length; j++) {
                 var question = item.questions[j];
                 if (question.visible) {
-                    return question;
+                    return [i, j];
                 }
             }
         }
         return null;
+    }
+
+    function getVisibleQuestion() {
+        var id = getVisibleQuestionID();
+        if (id === null) return null;
+        return timeline[id[0]].questions[id[1]];
     }
 
     function removeAllQuestions() {

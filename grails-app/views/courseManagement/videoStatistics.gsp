@@ -37,6 +37,7 @@
 
 <twbs:table hover="true" responsive="true" striped="true">
     <thead>
+    <twbs:th>Spørgsmål</twbs:th>
     <twbs:th>Svar</twbs:th>
     <twbs:th>Antal</twbs:th>
     <twbs:th>Korrekt?</twbs:th>
@@ -44,9 +45,16 @@
     <tbody>
     <g:each in="${answerSummary}" var="summary">
         <tr>
+            <twbs:td>
+                <span class="summary-question" data-id="${summary.subject} ${summary.question} ${summary.field}">
+                    ${summary.subject} ${summary.question} ${summary.field}
+                </span>
+            </twbs:td>
             <twbs:td>${summary.answer}</twbs:td>
             <twbs:td>${summary.frequency}</twbs:td>
-            <twbs:td>${summary.correct}</twbs:td>
+            <twbs:td>
+                <fa:icon icon="${summary.correct ? FaIcon.CHECK : FaIcon.CLOSE}"/>
+            </twbs:td>
         </tr>
     </g:each>
     </tbody>
@@ -88,6 +96,15 @@
 
 
 <script type="text/javascript">
+    var timeline = ${raw(video.timelineJson)};
+
+    $(".summary-question").each(function() {
+        var summary = $(this);
+        var ids = summary.data("id").split(" ").map(function (e) { return parseInt(e); });
+        summary.text(timeline[ids[0]].title + " - " + timeline[ids[0]].questions[ids[1]].title +
+                " - Felt " + ids[2] + " (" + timeline[ids[0]].questions[ids[1]].fields[ids[2]].name + ")");
+    });
+
     var chart = null;
     $(".show-x-day").click(function (e) {
         e.preventDefault();

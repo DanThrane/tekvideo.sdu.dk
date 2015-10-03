@@ -14,17 +14,17 @@
 
 <twbs:table responsive="true" hover="true">
     <thead>
-    <th>Brugernavn</th>
-    <th>Email</th>
-    <th>E-learn ID</th>
+    <twbs:th>Brugernavn</twbs:th>
+    <twbs:th>Email</twbs:th>
+    <twbs:th>E-learn ID</twbs:th>
     </thead>
     <tbody>
     <g:each in="${users}" var="user">
-        <tr>
-            <td>${user.username}</td>
-            <td>${user.email}</td>
-            <td>${user.elearnId}</td>
-        </tr>
+        <twbs:tr>
+            <twbs:td>${user.username}</twbs:td>
+            <twbs:td>${user.email}</twbs:td>
+            <twbs:td>${user.elearnId}</twbs:td>
+        </twbs:tr>
     </g:each>
     </tbody>
 </twbs:table>

@@ -26,7 +26,10 @@ class VideoStatisticsService {
             SELECT
                 e.answer    AS answer,
                 COUNT(*)    AS frequency,
-                e.correct   AS correct
+                e.correct   AS correct,
+                e.subject   AS subject,
+                e.question  AS question,
+                e.field     AS field
             FROM
                 event as e
             WHERE
@@ -34,7 +37,10 @@ class VideoStatisticsService {
                 e.answer IS NOT NULL
             GROUP BY
                 e.answer,
-                e.correct
+                e.correct,
+                e.subject,
+                e.question,
+                e.field
             ORDER BY
                 frequency DESC
             /$
@@ -44,7 +50,16 @@ class VideoStatisticsService {
                     .setLong("video_id", video.id)
                     .list()
 
-            ok resultList.collect { [answer: it[0], frequency: it[1], correct: it[2]] }
+            ok resultList.collect {
+                [
+                        answer   : it[0],
+                        frequency: it[1],
+                        correct  : it[2],
+                        subject  : it[3],
+                        question : it[4],
+                        field    : it[5]
+                ]
+            }
         } else {
             fail("video_statistics.not_found", false, [:], 404)
         }

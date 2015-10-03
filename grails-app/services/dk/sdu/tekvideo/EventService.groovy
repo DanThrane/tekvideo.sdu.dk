@@ -9,15 +9,15 @@ class EventService {
 
     final Map<String, Class<? extends Event>> KIND_TO_CLASS = [
             ANSWER_QUESTION: AnswerQuestionEvent,
-            EXIT_SITE: ExitSiteEvent,
-            PAUSE_VIDEO: PauseVideoEvent,
+            EXIT_SITE      : ExitSiteEvent,
+            PAUSE_VIDEO    : PauseVideoEvent,
             SKIP_TO_CONTENT: SkipToContentEvent,
-            VISIT_SITE: VisitSiteEvent,
-            VISIT_VIDEO: VisitVideoEvent
+            VISIT_SITE     : VisitSiteEvent,
+            VISIT_VIDEO    : VisitVideoEvent
     ]
 
     final Map<String, Closure> CUSTOM_MAPPER = [
-            VISIT_VIDEO: {
+            VISIT_VIDEO    : {
                 def video = it.video
                 if (video) {
                     VisitVideoEvent event = new VisitVideoEvent(video: video)
@@ -29,7 +29,14 @@ class EventService {
                 def video = it.video
 
                 if (video) {
-                    return new AnswerQuestionEvent(video: video, answer: it.answer, correct: it.correct)
+                    return new AnswerQuestionEvent(
+                            video: video,
+                            answer: it.answer,
+                            correct: it.correct,
+                            subject: it.subject,
+                            question: it.question,
+                            field: it.field
+                    )
                 }
                 return null
             }
