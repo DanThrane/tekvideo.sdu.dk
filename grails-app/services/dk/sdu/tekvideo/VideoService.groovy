@@ -6,6 +6,7 @@ import static dk.sdu.tekvideo.ServiceResult.*
 
 class VideoService {
     def springSecurityService
+    def videoStatisticsService
 
     ServiceResult<Comment> createComment(CreateVideoCommentCommand command) {
         User user = springSecurityService.currentUser as User
@@ -42,6 +43,16 @@ class VideoService {
             }
         } else {
             fail "Du har ikke rettigheder til at slette denne kommentar!"
+        }
+    }
+
+    ServiceResult<List<VideoBreakdown>> findVideoBreakdown(List<Video> videos) {
+        ok videos.collect {
+            new VideoBreakdown(
+                    video: it,
+                    commentCount: it.comments.size(),
+                    viewCount: videoStatisticsService.retrieveViewBreakdown(it).result.visits
+            )
         }
     }
 }
