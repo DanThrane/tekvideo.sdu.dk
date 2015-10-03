@@ -82,7 +82,7 @@ class VideoStatisticsService {
 
     ServiceResult<Map> findViewingStatistics(Video video, long from, long to, long periodInMs) {
         if (video) {
-            List<VisitVideoEvent> events = VisitVideoEvent.findAllByVideo(video)
+            List<VisitVideoEvent> events = VisitVideoEvent.findAllByVideoId(video.id)
             List labels = []
             List data = []
             // Generate some labels (X-axis)
