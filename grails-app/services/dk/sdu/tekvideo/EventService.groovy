@@ -20,7 +20,7 @@ class EventService {
             VISIT_VIDEO    : {
                 def video = it.video
                 if (video) {
-                    VisitVideoEvent event = new VisitVideoEvent(video: video)
+                    VisitVideoEvent event = new VisitVideoEvent(videoId: video)
                     return event
                 }
                 return null
@@ -30,7 +30,7 @@ class EventService {
 
                 if (video) {
                     return new AnswerQuestionEvent(
-                            video: video,
+                            videoId: video,
                             answer: it.answer,
                             correct: it.correct,
                             subject: it.subject,
