@@ -95,6 +95,53 @@ class VideoStatisticsService {
         }
     }
 
+    ServiceResult<List<Map>> retrieveViewingStatisticsForStudents(Video video) {
+        if (video) {
+            String query = $/
+            SELECT
+                myusers.id          AS user_id,
+                myusers.username    AS username,
+                event."timestamp"   AS "timestamp",
+                video.id            AS video_id,
+                video.name          AS video_name
+            FROM
+                course_student,
+                myusers,
+                student,
+                course,
+                event,
+                video,
+                subject
+            WHERE
+                course_student.course_id = course.id AND
+                course_student.student_id = student.id AND
+                myusers.id = event.user_id AND
+                student.user_id = myusers.id AND
+                course.id = subject.course_id AND
+                event.video_id = video.id AND
+                video.subject_id = subject.id AND
+                event.class = 'dk.sdu.tekvideo.events.VisitVideoEvent' AND
+                video.id = ?;
+            /$
+            def resultList = sessionFactory.currentSession
+                    .createSQLQuery(query)
+                    .setLong(0, video.id)
+                    .list()
+
+            ok resultList.collect {
+                [
+                        userId: it[0],
+                        username: it[1],
+                        timestamp: it[2],
+                        videoId: it[3],
+                        videoName: it[4]
+                ]
+            }
+        } else {
+            fail("video_statistics.not_found", false, [:], 404)
+        }
+    }
+
     ServiceResult<Map> findViewingStatistics(Video video, long from, long to, long periodInMs) {
         if (video) {
             List<VisitVideoEvent> events = VisitVideoEvent.findAllByVideoId(video.id)

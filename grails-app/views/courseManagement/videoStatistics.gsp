@@ -44,7 +44,7 @@
     </thead>
     <tbody>
     <g:each in="${answerSummary}" var="summary">
-        <tr>
+        <twbs:tr>
             <twbs:td>
                 <span class="summary-question" data-id="${summary.subject} ${summary.question} ${summary.field}">
                     ${summary.subject} ${summary.question} ${summary.field}
@@ -55,7 +55,7 @@
             <twbs:td>
                 <fa:icon icon="${summary.correct ? FaIcon.CHECK : FaIcon.CLOSE}"/>
             </twbs:td>
-        </tr>
+        </twbs:tr>
     </g:each>
     </tbody>
 </twbs:table>
@@ -89,6 +89,26 @@
         </twbs:button>
     </twbs:buttonGroup>
 </twbs:buttonToolbar>
+
+<twbs:pageHeader>
+    <h4>Visninger <small>Blandt tilmeldte studerende</small></h4>
+</twbs:pageHeader>
+<twbs:table hover="true" responsive="true" striped="true">
+    <thead>
+    <twbs:th>Brugernavn</twbs:th>
+    <twbs:th>Tidspunkt</twbs:th>
+    </thead>
+    <tbody>
+    <g:each in="${viewsAmongStudents}" var="summary">
+        <twbs:tr>
+            <twbs:td>${summary.username}</twbs:td>
+            <twbs:td>
+                <date:utilDateFormatter time="${new Date(summary.timestamp as long)}"/>
+            </twbs:td>
+        </twbs:tr>
+    </g:each>
+    </tbody>
+</twbs:table>
 
 <g:content key="sidebar-right">
 

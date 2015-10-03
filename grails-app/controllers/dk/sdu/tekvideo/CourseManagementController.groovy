@@ -107,24 +107,31 @@ class CourseManagementController {
     }
 
     def videoStatistics(Video video) {
-        if (courseManagementService.canAccess(video.subject.course)) {
-            def statistic = videoStatisticsService.findViewingStatistics(
-                    video,
-                    System.currentTimeMillis() - 1000 * 60 * 60 * 24,
-                    System.currentTimeMillis(), 1000 * 60 * 60
-            ).result
-
-            def viewBreakdown = videoStatisticsService.retrieveViewBreakdown(video).result
-            def answerSummary = videoStatisticsService.retrieveAnswerSummary(video).result
-
-            return [
-                    video        : video,
-                    statistics   : statistic,
-                    viewBreakdown: viewBreakdown,
-                    answerSummary: answerSummary
-            ]
+        if (video == null) {
+            flash.error = "Ukendt video"
+            redirect action: "index"
         } else {
-            notAllowedCourse()
+            if (courseManagementService.canAccess(video.subject.course)) {
+                def statistic = videoStatisticsService.findViewingStatistics(
+                        video,
+                        System.currentTimeMillis() - 1000 * 60 * 60 * 24,
+                        System.currentTimeMillis(), 1000 * 60 * 60
+                ).result
+
+                def viewBreakdown = videoStatisticsService.retrieveViewBreakdown(video).result
+                def answerSummary = videoStatisticsService.retrieveAnswerSummary(video).result
+                def viewsAmongStudents = videoStatisticsService.retrieveViewingStatisticsForStudents(video).result
+
+                return [
+                        video             : video,
+                        statistics        : statistic,
+                        viewBreakdown     : viewBreakdown,
+                        answerSummary     : answerSummary,
+                        viewsAmongStudents: viewsAmongStudents
+                ]
+            } else {
+                notAllowedCourse()
+            }
         }
     }
 
