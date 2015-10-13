@@ -31,7 +31,7 @@
     </twbs:column>
 </twbs:row>
 
-<g:each status="i" in="${subject.videos}" var="video">
+<g:each status="i" in="${subject.activeVideos}" var="video">
     <sdu:linkCard mapping="teaching" params="${[teacher: params.teacher, subject: params.subject,
                                                 course: params.course, vidid: i]}">
         <twbs:column cols="2">
