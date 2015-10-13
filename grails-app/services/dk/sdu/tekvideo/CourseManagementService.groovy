@@ -97,8 +97,14 @@ class CourseManagementService {
             fail("teacherservice.invalid_request", false, [:], 400)
         } else {
             if (canAccess(command.subject.course)) {
+                def diff = command.subject.videos.minus(command.order)
+                diff.each {
+                    it.localStatus = NodeStatus.TRASH
+                    it.save()
+                }
                 command.subject.videos.clear()
                 command.subject.videos.addAll(command.order)
+                command.subject.videos.addAll(diff)
                 command.subject.save()
                 ok command.subject
             } else {

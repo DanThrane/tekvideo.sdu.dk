@@ -20,6 +20,10 @@ class Subject implements Node {
 
     static belongsTo = [course: Course]
 
+    List<Video> getActiveVideos() {
+        Video.findAllBySubjectAndLocalStatusNotEqual(this, NodeStatus.TRASH)
+    }
+
     String getDescription() {
         if (description == null) return "Ingen beskrivelse"
         return description

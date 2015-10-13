@@ -45,7 +45,7 @@
 
             <g:if test="${!command.domain.videos?.isEmpty()}">
                 <div id="video-container">
-                    <g:each in="${command.domain.videos}" var="video" status="idx">
+                    <g:each in="${command.domain.activeVideos}" var="video" status="idx">
                         <sdu:card class="video">
                             <div data-video-id="${video.id}" class="hide"></div>
                             <twbs:row>
