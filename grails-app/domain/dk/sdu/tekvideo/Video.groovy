@@ -1,12 +1,13 @@
 package dk.sdu.tekvideo
 
-class Video {
+class Video implements Node {
     String name
     String youtubeId
     String timelineJson
     String description = "Ingen beskrivelse"
     Boolean videoType = true
     Date dateCreated
+    NodeStatus localStatus = NodeStatus.VISIBLE
 
     static constraints = {
         name            nullable: false, blank: false
@@ -27,6 +28,11 @@ class Video {
     String getDescription() {
         if (description == null) return "Ingen beskrivelse"
         return description
+    }
+
+    @Override
+    Node getParent() {
+        subject
     }
 
 }

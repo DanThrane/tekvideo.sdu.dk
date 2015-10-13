@@ -16,7 +16,7 @@ class CourseManagementService {
     ServiceResult<List<Course>> getActiveCourses() {
         def teacher = getAuthenticatedTeacher()
         if (teacher) {
-            ok Course.findAllByTeacher(teacher)
+            ok Course.findAllByTeacherAndLocalStatusNotEqual(teacher, NodeStatus.TRASH)
         } else {
             fail "teacherservice.no_teacher"
         }
@@ -115,6 +115,19 @@ class CourseManagementService {
                 command.course.subjects.clear()
                 command.course.subjects.addAll(command.order)
                 command.course.save()
+                ok command.course
+            } else {
+                fail("teacherservice.not_allowed", false, [:], 403)
+            }
+        }
+    }
+
+    ServiceResult<Course> deleteCourse(DeleteCourseCommand command) {
+        if (!command.validate()) {
+            fail("teacherservice.invalid_request", false, [:], 400)
+        } else {
+            if (canAccess(command.course)) {
+                command.course.localStatus = NodeStatus.TRASH
                 ok command.course
             } else {
                 fail("teacherservice.not_allowed", false, [:], 403)

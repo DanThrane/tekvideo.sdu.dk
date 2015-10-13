@@ -8,6 +8,7 @@ import org.springframework.security.access.annotation.Secured
  */
 @Secured("ROLE_TEACHER")
 class CourseManagementController {
+    CourseService courseService
     CourseManagementService courseManagementService
     VideoStatisticsService videoStatisticsService
 
@@ -171,7 +172,7 @@ class CourseManagementController {
     }
 
     def importCourse() {
-        [courses: Course.list()]
+        [courses: courseService.listActiveCourses()]
     }
 
     def submitImportCourse(ImportCourseCommand command) {
@@ -182,12 +183,18 @@ class CourseManagementController {
         } else {
             if (result.suggestedHttpStatus == 400) {
                 // The request had errors, return to the form
-                render view: "importCourse", model: [courses: Course.list(), command: command]
+                render view: "importCourse", model: [courses: courseService.listActiveCourses(), command: command]
             } else {
                 response.status = result.suggestedHttpStatus
                 render result.message
             }
         }
+    }
+
+    def deleteCourse(DeleteCourseCommand command) {
+        def result = courseManagementService.deleteCourse(command)
+        response.status = result.suggestedHttpStatus
+        render result as JSON
     }
 
     private void notAllowedCourse() {

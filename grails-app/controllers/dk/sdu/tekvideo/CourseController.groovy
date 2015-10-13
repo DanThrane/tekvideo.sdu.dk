@@ -11,7 +11,7 @@ class CourseController {
 
     @Secured("permitAll")
     def list() {
-        List<Course> courses = Course.list()
+        List<Course> courses = courseService.listVisibleCourses()
         [courses: courses]
     }
 

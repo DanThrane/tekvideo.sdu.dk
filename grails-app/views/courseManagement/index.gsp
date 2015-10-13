@@ -3,6 +3,7 @@
 <head>
     <title>Mine kurser</title>
     <meta name="layout" content="main_fluid"/>
+    <sdu:requireAjaxAssets/>
 </head>
 
 <body>
@@ -28,7 +29,7 @@
                                 <fa:icon icon="${FaIcon.EDIT}"/>
                             </twbs:linkButton>
                             <twbs:modalButton target="#course-delete-modal" data-id="${course.id}"
-                                              style="${ButtonStyle.DANGER}" class="subject-delete" disabled="true">
+                                              style="${ButtonStyle.DANGER}" class="course-delete">
                                 <fa:icon icon="${FaIcon.TRASH}"/>
                             </twbs:modalButton>
                         </twbs:buttonToolbar>
@@ -43,6 +44,17 @@
             </sdu:card>
         </g:each>
     </div>
+    <twbs:modal id="course-delete-modal">
+        <twbs:modalHeader>Er du sikker?</twbs:modalHeader>
+        Dette vil slette dette fag!
+        <twbs:modalFooter>
+            <twbs:button data-dismiss="modal">Annulér</twbs:button>
+            <sdu:ajaxSubmitButton style="${ButtonStyle.DANGER}" id="subject-delete-button">
+                <fa:icon icon="${FaIcon.TRASH}"/>
+                Slet fag
+            </sdu:ajaxSubmitButton>
+        </twbs:modalFooter>
+    </twbs:modal>
 </g:else>
 
 <g:content key="sidebar-right">
@@ -57,6 +69,32 @@
         </twbs:linkButton>
     </div>
 </g:content>
+
+<script>
+    $(function () {
+        var courseToDelete = null;
+
+        $("#course-delete-modal").on("show.bs.modal", function (e) {
+            courseToDelete = $(e.relatedTarget).data("id");
+        });
+
+        AjaxUtil.registerJSONForm(
+                "#subject-delete-button",
+                "${createLink(action: "deleteCourse")}",
+                function () {
+                    return {course: courseToDelete};
+                },
+                {
+                    success: function () {
+                        $("#course-delete-modal").modal("hide");
+                        $($("[data-id=" + courseToDelete + "]").closest(".course")[0]).fadeOut(function() {
+                            $(this).remove();
+                        });
+                    }
+                }
+        );
+    });
+</script>
 
 </body>
 </html>

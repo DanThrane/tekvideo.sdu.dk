@@ -78,7 +78,6 @@
         </g:if>
 
         $(".import-course").click(function () {
-            console.log($(this).data("id"));
             $("#course").val($(this).data("id"));
             $("#newCourseName").val($(this).data("name"));
             $("#newCourseFullName").val($(this).data("full-name"));

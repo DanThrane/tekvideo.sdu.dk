@@ -4,4 +4,20 @@ class CourseService {
     int getStudentCount(Course course) {
         CourseStudent.countByCourse(course)
     }
+
+    List<Course> listVisibleCourses() {
+        Course.findAllByLocalStatus(NodeStatus.VISIBLE)
+    }
+
+    List<Course> listActiveCourses() {
+        Course.findAllByLocalStatusNotEqual(NodeStatus.TRASH)
+    }
+
+    List<Course> listAllCoursesInTrash() {
+        Course.findAllByLocalStatus(NodeStatus.TRASH)
+    }
+    
+    List<Course> listAllInivisbleCourses() {
+        Course.findAllByLocalStatus(NodeStatus.INVISIBLE)
+    }
 }

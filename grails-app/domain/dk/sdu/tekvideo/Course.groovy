@@ -1,10 +1,11 @@
 package dk.sdu.tekvideo
 
-class Course {
+class Course implements Node {
     String name
     String fullName
     String description
     Semester semester
+    NodeStatus localStatus = NodeStatus.VISIBLE
 
     List<Subject> subjects // ordered
     static belongsTo = [teacher: Teacher]
@@ -23,5 +24,10 @@ class Course {
     @Override
     String toString() {
         return name
+    }
+
+    @Override
+    Node getParent() {
+        null
     }
 }

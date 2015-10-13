@@ -1,8 +1,9 @@
 package dk.sdu.tekvideo
 
-class Subject {
+class Subject implements Node {
     String name
     String description = "Ingen beskrivelse"
+    NodeStatus localStatus = NodeStatus.VISIBLE
 
     List<Video> videos // The subject will order its own videos
     static hasMany = [videos: Video]
@@ -27,5 +28,10 @@ class Subject {
     @Override
     String toString() {
         return name
+    }
+
+    @Override
+    Node getParent() {
+        course
     }
 }
