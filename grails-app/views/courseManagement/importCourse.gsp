@@ -46,17 +46,17 @@
         <twbs:pageHeader><h3>Importer kursus <small>2 af 2: Rediger detaljer</small></h3></twbs:pageHeader>
 
         <twbs:form method="POST" action="${createLink(action: "submitImportCourse")}">
-            <twbs:input name="newCourseName" labelText="Kursus kode" bean="${command?.newCourseName}"/>
-            <twbs:input name="newCourseFullName" labelText="Kursus navn" bean="${command?.newCourseFullName}"/>
-            <twbs:input name="newSemester" labelText="Semester (År)" bean="${command?.newSemester}">
+            <twbs:input name="newCourseName" labelText="Kursus kode" bean="${command}"/>
+            <twbs:input name="newCourseFullName" labelText="Kursus navn" bean="${command}"/>
+            <twbs:input name="newSemester" labelText="Semester (År)" bean="${command}">
                 <g:content key="addon-left">
                     <twbs:inputGroupAddon>
-                        <twbs:checkbox name="newSemesterSpring" labelText="Forår" bean="${command?.newSemesterSpring}"/>
+                        <twbs:checkbox name="newSemesterSpring" labelText="Forår" bean="${command}"/>
                     </twbs:inputGroupAddon>
                 </g:content>
             </twbs:input>
-            <twbs:textArea name="newDescription" bean="${command?.newDescription}" labelText="Beskrivelse" rows="10" />
-            <twbs:input name="course" type="hidden" showLabel="false" bean="${command?.course}"/>
+            <twbs:textArea name="newDescription" bean="${command}" labelText="Beskrivelse" rows="10" />
+            <twbs:input name="course.id" id="course" type="hidden" showLabel="false" bean="${command?.course}" />
             <twbs:linkButton style="${ButtonStyle.INFO}" elementId="reselect-course" url="#">
                 <fa:icon icon="${FaIcon.BACKWARD}"/>
                 Vælg nyt kursus

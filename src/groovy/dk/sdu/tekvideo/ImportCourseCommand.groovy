@@ -13,6 +13,5 @@ class ImportCourseCommand {
 
     static constraints = {
         newSemester min: 1900, max: 9999
-        newDescription blank: true, nullable: true
     }
 }
