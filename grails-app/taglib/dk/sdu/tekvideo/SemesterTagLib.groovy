@@ -10,7 +10,7 @@ class SemesterTagLib {
 
     def semesterString = { attrs, body ->
         Semester semester = attrs.remove("semester") ?: fail("semester", "sdu:semesterString")
-        out << ((semester.spring) ? "Forår" : "Efterår")
+        out << ((semester.spring) ? "ForÃ¥r" : "EfterÃ¥r")
         out << " "
         out << semester.year
     }

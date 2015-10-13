@@ -6,15 +6,10 @@ import static dk.sdu.tekvideo.ServiceResult.*
  * @author Dan Thrane
  */
 class CourseManagementService {
-    def springSecurityService
-
-    Teacher getAuthenticatedTeacher() {
-        def user = (User) springSecurityService.currentUser
-        return Teacher.findByUser(user)
-    }
+    def teachingService
 
     ServiceResult<List<Course>> getActiveCourses() {
-        def teacher = getAuthenticatedTeacher()
+        def teacher = teachingService.authenticatedTeacher
         if (teacher) {
             ok Course.findAllByTeacherAndLocalStatusNotEqual(teacher, NodeStatus.TRASH)
         } else {
@@ -25,7 +20,7 @@ class CourseManagementService {
     ServiceResult<Subject> createOrEditSubject(Course course, SubjectCRUDCommand command) {
         new DomainServiceUpdater<SubjectCRUDCommand, Subject>(command) {
             ServiceResult init() {
-                def teacher = getAuthenticatedTeacher()
+                def teacher = teachingService.authenticatedTeacher
                 if (teacher && canAccess(course)) {
                     if (!command.isEditing) course.addToSubjects(command.domain)
                     ok null
@@ -39,7 +34,7 @@ class CourseManagementService {
     ServiceResult<Course> createOrEditCourse(CourseCRUDCommand command) {
         new DomainServiceUpdater<CourseCRUDCommand, Course>(command) {
             ServiceResult<Void> init() {
-                def teacher = getAuthenticatedTeacher()
+                def teacher = teachingService.authenticatedTeacher
                 if (teacher) {
                     command.domain.teacher = teacher
                     ok null
@@ -59,7 +54,7 @@ class CourseManagementService {
     }
 
     ServiceResult<Video> createOrEditVideo(CreateVideoCommand command) {
-        def teacher = getAuthenticatedTeacher()
+        def teacher = teachingService.authenticatedTeacher
         if (teacher) {
             if (!command.isEditing && !canAccess(command.subject.course)) {
                 fail "teacherservice.not_allowed"
@@ -148,7 +143,7 @@ class CourseManagementService {
     }
 
     ServiceResult<Course> importCourse(ImportCourseCommand command) {
-        def teacher = getAuthenticatedTeacher()
+        def teacher = teachingService.authenticatedTeacher
         if (teacher == null) {
             fail("teacherservice.not_a_teacher", false, [:], 401)
         } else {
@@ -193,6 +188,6 @@ class CourseManagementService {
     }
 
     boolean canAccess(Course course) {
-        return course.teacher == getAuthenticatedTeacher()
+        return course.teacher == teachingService.authenticatedTeacher
     }
 }

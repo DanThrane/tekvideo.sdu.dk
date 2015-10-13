@@ -4,6 +4,12 @@ import grails.transaction.Transactional
 
 @Transactional
 class TeachingService {
+    def springSecurityService
+
+    Teacher getAuthenticatedTeacher() {
+        def user = (User) springSecurityService.currentUser
+        return Teacher.findByUser(user)
+    }
 
     Teacher getTeacher(String teacherName) {
         def byAlias = Teacher.findByAlias(teacherName)

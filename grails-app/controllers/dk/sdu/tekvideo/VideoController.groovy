@@ -10,7 +10,7 @@ class VideoController {
     @Secured("permitAll")
     def view(String teacherName, String courseName, String subjectName, Integer videoId) {
         Video video = teachingService.getVideo(teacherName, courseName, subjectName, videoId)
-        if (video) {
+        if (videoService.canAccess(video)) {
             [video: video]
         } else {
             render status: 404, text: "Unable to find video!"
@@ -19,14 +19,18 @@ class VideoController {
 
     @Secured("permitAll")
     def viewV(Video video) {
-        render view: "view", model: [video: video]
+        if (videoService.canAccess(video)) {
+            render view: "view", model: [video: video]
+        } else {
+            render status: 404, text: "Unable to find video!"
+        }
     }
 
     @Secured(["ROLE_STUDENT", "ROLE_TEACHER"])
     def postComment(Video video, String comment) {
         def result = videoService.createComment(new CreateVideoCommentCommand(id: video, comment: comment))
         if (result.success) {
-            flash.success = "Din kommentar er blevet tilføjet til videoen"
+            flash.success = "Din kommentar er blevet tilfÃ¸jet til videoen"
         } else {
             flash.error = "Der skete en fejl!"
         }

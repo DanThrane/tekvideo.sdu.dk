@@ -11,6 +11,7 @@ class CourseManagementController {
     CourseService courseService
     CourseManagementService courseManagementService
     VideoStatisticsService videoStatisticsService
+    TeachingService teachingService
 
     def index() {
         def courses = courseManagementService.activeCourses
@@ -38,7 +39,7 @@ class CourseManagementController {
     }
 
     def createSubject(Course course) {
-        def teacher = courseManagementService.authenticatedTeacher
+        def teacher = teachingService.authenticatedTeacher
         if (courseManagementService.canAccess(course)) {
             render view: "createOrEditSubject", model: [course: course, teacher: teacher, isEditing: false]
         } else {
@@ -47,7 +48,7 @@ class CourseManagementController {
     }
 
     def editSubject(Subject subject) {
-        def teacher = courseManagementService.authenticatedTeacher
+        def teacher = teachingService.authenticatedTeacher
         if (courseManagementService.canAccess(subject.course)) {
             render view: "createOrEditSubject",
                     model: [course   : subject.course, command: new SubjectCRUDCommand(domain: subject),
@@ -82,7 +83,7 @@ class CourseManagementController {
 
     def editVideo(Video video) {
         // TODO A bit unclear who should be allowed to edit a video (See issue #14)
-        if (courseManagementService.authenticatedTeacher) {
+        if (teachingService.authenticatedTeacher) {
             render view: "createVideo", model: [isEditing: true, video: video, subjects: video.subject.course.subjects]
         } else {
             notAllowedCourse()

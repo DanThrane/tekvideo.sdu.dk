@@ -18,7 +18,7 @@ class CourseController {
     @Secured("permitAll")
     def viewByTeacher(String teacherName, String courseName) {
         Course course = teachingService.getCourse(teacherName, courseName)
-        if (course) {
+        if (courseService.canAccess(course)) {
             render(view: "view", model: [course: course])
         } else {
             render status: "404", text: "Course not found!"
