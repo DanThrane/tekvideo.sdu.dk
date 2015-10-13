@@ -26,7 +26,7 @@
     </twbs:column>
 </twbs:row>
 
-<g:each in="${course.subjects.findAll { it != null }}" var="subject">
+<g:each in="${course.visibleSubjects}" var="subject">
     <sdu:linkCard mapping="teaching" params="${[teacher: course.teacher.user.username, course: course.name,
                                                 subject: subject.name]}">
         <twbs:column cols="12">

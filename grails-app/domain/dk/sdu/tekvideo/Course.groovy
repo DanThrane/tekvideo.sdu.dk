@@ -1,5 +1,7 @@
 package dk.sdu.tekvideo
 
+import java.util.stream.Collectors
+
 class Course implements Node {
     String name
     String fullName
@@ -19,6 +21,14 @@ class Course implements Node {
     static mapping = {
         description type: "text"
         subjects cascade: "all-delete-orphan"
+    }
+
+    List<Subject> getActiveSubjects() {
+        subjects.stream().filter { it.localStatus != NodeStatus.TRASH }.collect(Collectors.toList())
+    }
+
+    List<Subject> getVisibleSubjects() {
+        subjects.stream().filter { it.localStatus == NodeStatus.VISIBLE }.collect(Collectors.toList())
     }
 
     @Override

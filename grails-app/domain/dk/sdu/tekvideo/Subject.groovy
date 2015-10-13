@@ -1,5 +1,7 @@
 package dk.sdu.tekvideo
 
+import java.util.stream.Collectors
+
 class Subject implements Node {
     String name
     String description = "Ingen beskrivelse"
@@ -21,7 +23,11 @@ class Subject implements Node {
     static belongsTo = [course: Course]
 
     List<Video> getActiveVideos() {
-        Video.findAllBySubjectAndLocalStatusNotEqual(this, NodeStatus.TRASH)
+        videos.stream().filter { it.localStatus != NodeStatus.TRASH }.collect(Collectors.toList())
+    }
+
+    List<Video> getVisibleVideos() {
+        videos.stream().filter { it.localStatus == NodeStatus.VISIBLE }.collect(Collectors.toList())
     }
 
     String getDescription() {

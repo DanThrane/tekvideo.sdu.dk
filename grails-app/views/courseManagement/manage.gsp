@@ -18,7 +18,7 @@
         </g:if>
         <g:else>
             <div class="subject-container">
-                <g:each in="${course.subjects.findAll { it != null }}" var="subject">
+                <g:each in="${course.activeSubjects}" var="subject">
                     <sdu:card class="subject">
                         <div data-subject-id="${subject.id}" class="hide"></div>
                         <twbs:row>

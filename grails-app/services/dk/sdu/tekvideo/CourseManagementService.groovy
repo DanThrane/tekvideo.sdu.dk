@@ -118,8 +118,14 @@ class CourseManagementService {
             fail("teacherservice.invalid_request", false, [:], 400)
         } else {
             if (canAccess(command.course)) {
+                def diff = command.course.subjects.minus(command.order)
+                diff.each {
+                    it.localStatus = NodeStatus.TRASH
+                    it.save()
+                }
                 command.course.subjects.clear()
                 command.course.subjects.addAll(command.order)
+                command.course.subjects.addAll(diff)
                 command.course.save()
                 ok command.course
             } else {
