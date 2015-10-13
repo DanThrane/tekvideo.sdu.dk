@@ -170,6 +170,26 @@ class CourseManagementController {
         render result as JSON
     }
 
+    def importCourse() {
+        [courses: Course.list()]
+    }
+
+    def submitImportCourse(ImportCourseCommand command) {
+        def result = courseManagementService.importCourse(command)
+        if (result.success) {
+            flash.success = "Kurset '$command.course.name' er successfuldt blevet importeret til $command.newCourseName"
+            redirect action: "manage", id: result.result.id
+        } else {
+            if (result.suggestedHttpStatus == 400) {
+                // The request had errors, return to the form
+                render view: "importCourse", model: [courses: Course.list(), command: command]
+            } else {
+                response.status = result.suggestedHttpStatus
+                render result.message
+            }
+        }
+    }
+
     private void notAllowedCourse() {
         flash.error = "Du har ikke tiladelse til at tilgå dette kursus"
         redirect action: "index"

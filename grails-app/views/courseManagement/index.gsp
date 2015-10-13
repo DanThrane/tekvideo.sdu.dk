@@ -51,6 +51,10 @@
             <fa:icon icon="${FaIcon.PLUS_CIRCLE}"/>
             Opret nyt kursus
         </twbs:linkButton>
+        <twbs:linkButton action="importCourse" style="${ButtonStyle.LINK}" block="true">
+            <fa:icon icon="${FaIcon.UPLOAD}"/>
+            Importer kursus
+        </twbs:linkButton>
     </div>
 </g:content>
 

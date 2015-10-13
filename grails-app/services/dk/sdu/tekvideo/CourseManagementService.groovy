@@ -122,6 +122,51 @@ class CourseManagementService {
         }
     }
 
+    ServiceResult<Course> importCourse(ImportCourseCommand command) {
+        def teacher = getAuthenticatedTeacher()
+        if (teacher == null) {
+            fail("teacherservice.not_a_teacher", false, [:], 401)
+        } else {
+            if (command.validate()) {
+                def semester = new Semester(spring: command.newSemesterSpring, year: command.newSemester)
+                        .save(flush: true)
+
+                def course = new Course([
+                        name       : command.newCourseName,
+                        fullName   : command.newCourseFullName,
+                        description: command.newDescription,
+                        semester   : semester,
+                        teacher    : teacher
+                ]).save(flush: true)
+                command.course.subjects.forEach { copySubjectToCourse(it, course) }
+
+                ok course
+            } else {
+                fail("teacherservice.invalid_request", false, [command: command], 400)
+            }
+        }
+    }
+
+    private void copySubjectToCourse(Subject subject, Course course) {
+        def newSubject = new Subject([
+                name       : subject.name,
+                description: subject.description,
+                course     : course
+        ]).save(flush: true)
+        subject.videos.forEach { copyVideoToSubject(it, newSubject) }
+    }
+
+    private void copyVideoToSubject(Video video, Subject subject) {
+        new Video([
+                name        : video.name,
+                youtubeId   : video.youtubeId,
+                timelineJson: video.timelineJson,
+                description : video.description,
+                videoTyupe  : video.videoType,
+                subject     : subject
+        ]).save(flush: true)
+    }
+
     boolean canAccess(Course course) {
         return course.teacher == getAuthenticatedTeacher()
     }
