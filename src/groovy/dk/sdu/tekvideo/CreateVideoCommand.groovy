@@ -15,6 +15,7 @@ class CreateVideoCommand {
     Boolean isEditing
     Video editing
     Boolean videoType
+    Boolean visible
 
     static constraints = {
         editing nullable: true

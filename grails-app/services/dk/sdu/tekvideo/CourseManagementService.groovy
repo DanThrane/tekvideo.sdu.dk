@@ -23,6 +23,7 @@ class CourseManagementService {
                 def teacher = teachingService.authenticatedTeacher
                 if (teacher && canAccess(course)) {
                     if (!command.isEditing) course.addToSubjects(command.domain)
+                    command.domain.localStatus = command.visible ? NodeStatus.VISIBLE : NodeStatus.INVISIBLE
                     ok null
                 } else {
                     fail "teacherservice.not_allowed"
@@ -37,6 +38,7 @@ class CourseManagementService {
                 def teacher = teachingService.authenticatedTeacher
                 if (teacher) {
                     command.domain.teacher = teacher
+                    command.domain.localStatus = command.visible ? NodeStatus.VISIBLE : NodeStatus.INVISIBLE
                     ok null
                 } else {
                     fail "teacherservice.not_allowed"
@@ -71,6 +73,7 @@ class CourseManagementService {
                 video.description = command.description
                 video.videoType = command.videoType
                 video.subject = command.subject
+                video.localStatus = command.visible ? NodeStatus.VISIBLE : NodeStatus.INVISIBLE
                 if (video.validate()) {
                     if (command.isEditing) {
                         video.save()
@@ -156,9 +159,10 @@ class CourseManagementService {
                         fullName   : command.newCourseFullName,
                         description: command.newDescription,
                         semester   : semester,
-                        teacher    : teacher
+                        teacher    : teacher,
+                        localStatus: command.visible ? NodeStatus.VISIBLE : NodeStatus.INVISIBLE
                 ]).save(flush: true)
-                command.course.subjects.forEach { copySubjectToCourse(it, course) }
+                command.course.visibleSubjects.forEach { copySubjectToCourse(it, course) }
 
                 ok course
             } else {
@@ -168,15 +172,17 @@ class CourseManagementService {
     }
 
     private void copySubjectToCourse(Subject subject, Course course) {
+        if (subject == null) return
         def newSubject = new Subject([
                 name       : subject.name,
                 description: subject.description,
                 course     : course
         ]).save(flush: true)
-        subject.videos.forEach { copyVideoToSubject(it, newSubject) }
+        subject.visibleVideos.forEach { copyVideoToSubject(it, newSubject) }
     }
 
     private void copyVideoToSubject(Video video, Subject subject) {
+        if (video == null) return
         new Video([
                 name        : video.name,
                 youtubeId   : video.youtubeId,

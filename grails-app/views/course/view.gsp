@@ -32,7 +32,7 @@
         <twbs:column cols="12">
             <g:link mapping="teaching" params="${[teacher: course.teacher.user.username, course: course.name,
                                                   subject: subject.name]}">
-                ${subject.name} (${subject.videos.size()} videoer)
+                ${subject.name} (${subject.visibleVideos.size()} videoer)
             </g:link>
 
             <markdown:renderHtml>${subject.description}</markdown:renderHtml>

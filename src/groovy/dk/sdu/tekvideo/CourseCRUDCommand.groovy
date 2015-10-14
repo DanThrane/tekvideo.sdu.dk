@@ -9,4 +9,5 @@ import grails.validation.Validateable
 class CourseCRUDCommand extends CRUDCommand<Course> {
     Course domain
     Boolean isEditing
+    Boolean visible
 }

@@ -102,7 +102,13 @@ class CourseManagementController {
 
     def editCourse(Course course) {
         if (courseManagementService.canAccess(course)) {
-            render view: "createOrEditCourse", model: [command: new CourseCRUDCommand(domain: course), isEditing: true]
+            render view: "createOrEditCourse", model: [
+                    command  : new CourseCRUDCommand(
+                            domain: course,
+                            visible: course.localStatus == NodeStatus.VISIBLE
+                    ),
+                    isEditing: true
+            ]
         } else {
             notAllowedCourse()
         }

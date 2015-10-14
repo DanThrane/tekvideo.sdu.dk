@@ -10,6 +10,7 @@ class ImportCourseCommand {
     Boolean newSemesterSpring
     String newDescription
     Course course
+    Boolean visible
 
     static constraints = {
         newSemester min: 1900, max: 9999

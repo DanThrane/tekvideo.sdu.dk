@@ -56,6 +56,7 @@
                 </g:content>
             </twbs:input>
             <twbs:textArea name="newDescription" bean="${command}" labelText="Beskrivelse" rows="10" />
+            <twbs:checkbox labelText="Synligt for studerende" name="visible" value="${command?.visible}" />
             <twbs:input name="course.id" id="course" type="hidden" showLabel="false" bean="${command?.course}" />
             <twbs:linkButton style="${ButtonStyle.INFO}" elementId="reselect-course" url="#">
                 <fa:icon icon="${FaIcon.BACKWARD}"/>

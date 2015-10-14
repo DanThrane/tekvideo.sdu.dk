@@ -94,7 +94,8 @@ var Editor = {};
             isEditing: isEditing,
             description: description,
             videoType: type,
-            subject: $("#subject").val()
+            subject: $("#subject").val(),
+            visible: $("#visible").is(":checked")
         };
 
         if (isEditing) {

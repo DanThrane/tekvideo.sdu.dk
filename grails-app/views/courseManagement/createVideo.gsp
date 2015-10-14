@@ -1,4 +1,4 @@
-<%@ page import="dk.danthrane.twbs.GridSize; dk.danthrane.twbs.InputSize; dk.danthrane.twbs.Icon; dk.danthrane.twbs.ButtonSize; dk.sdu.tekvideo.FaIcon; dk.danthrane.twbs.ButtonStyle" contentType="text/html;charset=UTF-8" %>
+<%@ page import="dk.sdu.tekvideo.NodeStatus; dk.danthrane.twbs.GridSize; dk.danthrane.twbs.InputSize; dk.danthrane.twbs.Icon; dk.danthrane.twbs.ButtonSize; dk.sdu.tekvideo.FaIcon; dk.danthrane.twbs.ButtonStyle" contentType="text/html;charset=UTF-8" %>
 <html>
 <head>
     <g:if test="${isEditing}">
@@ -251,6 +251,8 @@
                 </twbs:input>
                 <twbs:select name="subject" labelText="Emne" list="${subjects}"/>
                 <twbs:textArea name="description" labelText="Beskrivelse"/>
+                <twbs:checkbox labelText="Synligt for studerende" name="visible"
+                               value="${video?.localStatus == NodeStatus.VISIBLE}" />
                 <twbs:button block="true" style="${ButtonStyle.INFO}" id="stopEdit" disabled="true">
                     <fa:icon icon="${FaIcon.UNLOCK}"/> Lås video op
                 </twbs:button>

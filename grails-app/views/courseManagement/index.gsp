@@ -1,4 +1,4 @@
-<%@ page import="dk.danthrane.twbs.ButtonSize; dk.danthrane.twbs.ButtonStyle; dk.sdu.tekvideo.FaIcon" contentType="text/html;charset=UTF-8" %>
+<%@ page import="dk.sdu.tekvideo.NodeStatus; dk.danthrane.twbs.ButtonSize; dk.danthrane.twbs.ButtonStyle; dk.sdu.tekvideo.FaIcon" contentType="text/html;charset=UTF-8" %>
 <html>
 <head>
     <title>Mine kurser</title>
@@ -20,6 +20,8 @@
                 <div data-subject-id="${course.id}" class="hide"></div>
                 <twbs:row>
                     <twbs:column cols="8">
+                        <fa:icon icon="${(course.localStatus == NodeStatus.VISIBLE) ?
+                                FaIcon.EYE : FaIcon.EYE_SLASH}" />
                         ${course.fullName} (${course.name})
                     </twbs:column>
                     <twbs:column cols="4" class="align-right">

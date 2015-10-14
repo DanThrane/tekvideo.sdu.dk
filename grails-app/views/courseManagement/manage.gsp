@@ -1,4 +1,4 @@
-<%@ page import="dk.danthrane.twbs.ButtonSize; dk.danthrane.twbs.ButtonStyle; dk.sdu.tekvideo.FaIcon" contentType="text/html;charset=UTF-8" %>
+<%@ page import="dk.sdu.tekvideo.NodeStatus; dk.danthrane.twbs.ButtonSize; dk.danthrane.twbs.ButtonStyle; dk.sdu.tekvideo.FaIcon" contentType="text/html;charset=UTF-8" %>
 <html>
 <head>
     <title>Administrering af ${course.fullName} (${course.name})</title>
@@ -23,6 +23,8 @@
                         <div data-subject-id="${subject.id}" class="hide"></div>
                         <twbs:row>
                             <twbs:column cols="8">
+                                <fa:icon icon="${(subject.localStatus == NodeStatus.VISIBLE) ?
+                                        FaIcon.EYE : FaIcon.EYE_SLASH}" />
                                 ${subject.name}
                             </twbs:column>
                             <twbs:column cols="4" class="align-right">

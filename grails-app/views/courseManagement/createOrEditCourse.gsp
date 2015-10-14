@@ -1,4 +1,4 @@
-<%@ page import="dk.sdu.tekvideo.FaIcon; dk.danthrane.twbs.ButtonStyle" contentType="text/html;charset=UTF-8" %>
+<%@ page import="dk.sdu.tekvideo.NodeStatus; dk.sdu.tekvideo.FaIcon; dk.danthrane.twbs.ButtonStyle" contentType="text/html;charset=UTF-8" %>
 <html>
 <head>
     <title>Nyt kursus</title>
@@ -37,6 +37,8 @@
                     </twbs:inputGroupAddon>
                 </g:content>
             </twbs:input>
+            <twbs:checkbox labelText="Synligt for studerende" name="visible"
+                           value="${command?.domain?.localStatus == NodeStatus.VISIBLE}" />
 
             <twbs:button type="submit" style="${ButtonStyle.PRIMARY}" block="true">
                 <g:if test="${isEditing}">

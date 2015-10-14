@@ -1,4 +1,4 @@
-<%@ page import="dk.sdu.tekvideo.FaIcon; dk.danthrane.twbs.ButtonStyle" contentType="text/html;charset=UTF-8" %>
+<%@ page import="dk.sdu.tekvideo.NodeStatus; dk.sdu.tekvideo.FaIcon; dk.danthrane.twbs.ButtonStyle" contentType="text/html;charset=UTF-8" %>
 <html>
 <head>
     <title>Nyt emne</title>
@@ -30,6 +30,8 @@
             <twbs:input name="domain.name" bean="${command?.domain}" labelText="Navn" autofocus="true" />
             <twbs:textArea name="domain.description" bean="${command?.domain}" labelText="Beskrivelse"
                            rows="10" />
+            <twbs:checkbox labelText="Synligt for studerende" name="visible"
+                           value="${command?.domain?.localStatus == NodeStatus.VISIBLE}" />
 
             <sducrud:saveButton />
         </twbs:form>
@@ -50,7 +52,11 @@
                             <div data-video-id="${video.id}" class="hide"></div>
                             <twbs:row>
                                 <twbs:column cols="8">
-                                    <h6>${video.name}</h6>
+                                    <h6>
+                                        <fa:icon icon="${(video.localStatus == NodeStatus.VISIBLE) ?
+                                                FaIcon.EYE : FaIcon.EYE_SLASH}" />
+                                        ${video.name}
+                                    </h6>
                                 </twbs:column>
                                 <twbs:column cols="4" class="align-right">
                                     <twbs:buttonToolbar>
