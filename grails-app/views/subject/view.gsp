@@ -1,4 +1,4 @@
-<%@ page import="dk.sdu.tekvideo.FaIcon; dk.danthrane.twbs.ButtonStyle" contentType="text/html;charset=UTF-8" %>
+<%@ page import="dk.sdu.tekvideo.NodeStatus; dk.sdu.tekvideo.FaIcon; dk.danthrane.twbs.ButtonStyle" contentType="text/html;charset=UTF-8" %>
 <html>
 <head>
     <meta name="layout" content="main_fluid">
@@ -31,25 +31,28 @@
     </twbs:column>
 </twbs:row>
 
-<g:each status="i" in="${subject.visibleVideos}" var="video">
-    <sdu:linkCard mapping="teaching" params="${[teacher: params.teacher, subject: params.subject,
-                                                course: params.course, vidid: i]}">
-        <twbs:column cols="2">
-            <img src="http://img.youtube.com/vi/${video.youtubeId}/hqdefault.jpg" class="img-responsive" alt="Video thumbnail">
-        </twbs:column>
-        <twbs:column cols="10">
-            <g:link mapping="teaching" params="${[teacher: params.teacher, subject: params.subject,
-                                                  course: params.course, vidid: i]}">
-                ${video.name}
-            </g:link>
-            <p>
-                <markdown:renderHtml>${video.description}</markdown:renderHtml>
-            </p>
-        </twbs:column>
-    </sdu:linkCard>
+<g:each status="i" in="${subject.videos}" var="video">
+    <g:if test="${video.localStatus == NodeStatus.VISIBLE}">
+        <sdu:linkCard mapping="teaching" params="${[teacher: params.teacher, subject: params.subject,
+                                                    course : params.course, vidid: i]}">
+            <twbs:column cols="2">
+                <img src="http://img.youtube.com/vi/${video.youtubeId}/hqdefault.jpg" class="img-responsive"
+                     alt="Video thumbnail">
+            </twbs:column>
+            <twbs:column cols="10">
+                <g:link mapping="teaching" params="${[teacher: params.teacher, subject: params.subject,
+                                                      course : params.course, vidid: i]}">
+                    ${video.name}
+                </g:link>
+                <p>
+                    <markdown:renderHtml>${video.description}</markdown:renderHtml>
+                </p>
+            </twbs:column>
+        </sdu:linkCard>
+    </g:if>
 </g:each>
 
-<g:render template="/course/sidebar" model="${[course: subject.course]}" />
+<g:render template="/course/sidebar" model="${[course: subject.course]}"/>
 
 </body>
 </html>
