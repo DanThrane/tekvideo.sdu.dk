@@ -76,6 +76,6 @@ class SubjectReorderingIntegrationSpec extends IntegrationSpec {
 
         Course.findAll().size() == 1
         Course.findAll()[0].name == "Name"
-        Course.findAll()[0].subjects.name == [subject1.name, subject2.name]
+        Course.findAll()[0].activeSubjects.name == [subject1.name, subject2.name]
     }
 }
