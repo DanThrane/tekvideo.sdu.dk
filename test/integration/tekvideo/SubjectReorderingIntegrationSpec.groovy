@@ -72,7 +72,7 @@ class SubjectReorderingIntegrationSpec extends IntegrationSpec {
 
         then: "the list should have re-ordered itself"
         reply.success
-        reply.result.subjects.name == [subject1.name, subject2.name]
+        reply.result.activeSubjects.name == [subject1.name, subject2.name]
 
         Course.findAll().size() == 1
         Course.findAll()[0].name == "Name"
