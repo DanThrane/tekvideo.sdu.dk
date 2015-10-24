@@ -15,11 +15,7 @@
     </ul>
 </g:else>
 <twbs:pageHeader><h6>Om TekVideo</h6></twbs:pageHeader>
-<twbs:linkButton url="https://github.com/DanThrane/interactive-videos-grails" style="${ButtonStyle.LINK}" block="true">
+<twbs:linkButton url="https://github.com/DanThrane/tekvideo.sdu.dk" style="${ButtonStyle.LINK}" block="true">
     <fa:icon icon="${FaIcon.GITHUB}"/>
     GitHub
-</twbs:linkButton>
-<twbs:linkButton url="mailto:foo@bar" style="${ButtonStyle.LINK}" block="true">
-    <fa:icon icon="${FaIcon.ENVELOPE}"/>
-    foo@bar.dk
 </twbs:linkButton>
