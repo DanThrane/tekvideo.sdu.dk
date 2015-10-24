@@ -30,6 +30,16 @@ class ServiceResult<E> {
         JSON.registerObjectMarshaller(ServiceResult, jsonMarshaller)
     }
 
+    static def <E> ServiceResult<E> ok() {
+        ok(null, "service_result.success")
+    }
+
+    static def <E> ServiceResult<E> ok(Map<String, Object> args) {
+        E item = args.item ?: null
+        String message = args.message ?: "service_result.success"
+        ok(item, message)
+    }
+
     static def <E> ServiceResult<E> ok(E item, String message = "service_result.success") {
         ServiceResult<E> result = new ServiceResult<E>()
         result.result = item
@@ -37,6 +47,15 @@ class ServiceResult<E> {
         result.success = true
         result.suggestedHttpStatus = 200
         return result
+    }
+
+    static def <E> ServiceResult<E> fail(Map<String, Object> args) {
+        String message = args.message
+        boolean internal = args.internal != null ? args.internal : false
+        Map<String, ?> information = args.information ?: [:]
+        int suggestedHttpStatus = args.suggestedHttpStatus ?: -1
+        Exception exception = args.exception ?: null
+        fail(message, internal, information, suggestedHttpStatus, exception)
     }
 
     static def <E> ServiceResult<E> fail(String message, boolean internal = false, Map<String, ?> information = [:],

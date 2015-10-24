@@ -61,7 +61,7 @@ class VideoService {
             new VideoBreakdown(
                     video: it,
                     commentCount: it.comments.size(),
-                    viewCount: videoStatisticsService.retrieveViewBreakdown(it).result.visits
+                    viewCount: videoStatisticsService.retrieveViewBreakdown(it).result?.visits
             )
         }
     }

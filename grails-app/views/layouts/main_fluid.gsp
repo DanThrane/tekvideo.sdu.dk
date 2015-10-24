@@ -55,13 +55,14 @@
                 <twbs:navbarLink method="POST" controller="login" action="">Log ind</twbs:navbarLink>
             </sec:ifNotLoggedIn>
             <sec:ifLoggedIn>
-                <sec:ifAllGranted roles="ROLE_TEACHER">
-                    <twbs:navbarLink controller="admin">Admin Panel</twbs:navbarLink>
-                </sec:ifAllGranted>
                 <twbs:navDropdownToggle>
                     <sdu:username />
                     <avatar:gravatar email="${sdu.userEmail()}" cssClass="img-rounded" defaultGravatarUrl="http://www.gravatar.com/avatar/?d=identicon" />
                     <twbs:dropdownMenu>
+                        <twbs:dropdownItem controller="AccountManagement" action="index">
+                            <fa:icon icon="${FaIcon.WRENCH}" />
+                            Konto indstillinger
+                        </twbs:dropdownItem>
                         <twbs:dropdownDivider />
                         <twbs:dropdownItem method="POST" controller="logout" action="">Log ud</twbs:dropdownItem>
                     </twbs:dropdownMenu>
