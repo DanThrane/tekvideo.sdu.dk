@@ -16,6 +16,9 @@
         <twbs:input name="j_username" labelText="Brugernavn" />
         <twbs:input name="j_password" type="password" labelText="Kodeord" />
         <twbs:checkbox name="rememberMeParameter" id="remember_me" labelText="Forbliv logget ind" />
+        <twbs:linkButton controller="register" action="forgotPassword" style="${ButtonStyle.LINK}" block="true">
+            Glemt kodeord?
+        </twbs:linkButton>
         <twbs:row>
             <twbs:column cols="6">
                 <twbs:linkButton elementId="register" controller="register" style="${ButtonStyle.LINK}" block="true">

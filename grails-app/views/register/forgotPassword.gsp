@@ -1,47 +1,40 @@
 <html>
 
 <head>
-<title><g:message code='spring.security.ui.forgotPassword.title'/></title>
-<meta name='layout' content='register'/>
+    <title>Glemt kodeord</title>
+    <meta name="layout" content="main"/>
 </head>
 
 <body>
+<div class="form-group">
+    <twbs:container>
+        <twbs:row>
+            <twbs:column cols="8" offset="2">
+                <twbs:pageHeader><h2>Glemt kodeord</h2></twbs:pageHeader>
+                <g:form action='forgotPassword' name="forgotPasswordForm" autocomplete='off'>
+                    <g:if test='${emailSent}'>
+                        <g:message code='spring.security.ui.forgotPassword.sent'/>
+                    </g:if>
 
-<p/>
+                    <g:else>
+                        <twbs:input labelText="Brugernavn" name="username">
+                            Indtast dit brugernavn, og vi vil sende dig en mail til den tilknyttet e-mail
+                        </twbs:input>
 
-<s2ui:form width='400' height='220' elementId='forgotPasswordFormContainer'
-           titleCode='spring.security.ui.forgotPassword.header' center='true'>
+                        <s2ui:submitButton elementId='reset' form='forgotPasswordForm' class="btn btn-primary"
+                                           messageCode='Send anmodning'/>
+                    </g:else>
 
-	<g:form action='forgotPassword' name="forgotPasswordForm" autocomplete='off'>
-
-	<g:if test='${emailSent}'>
-	<br/>
-	<g:message code='spring.security.ui.forgotPassword.sent'/>
-	</g:if>
-
-	<g:else>
-
-	<br/>
-	<h4><g:message code='spring.security.ui.forgotPassword.description'/></h4>
-
-	<table>
-		<tr>
-			<td><label for="username"><g:message code='spring.security.ui.forgotPassword.username'/></label></td>
-			<td><g:textField name="username" size="25" /></td>
-		</tr>
-	</table>
-
-	<s2ui:submitButton elementId='reset' form='forgotPasswordForm' messageCode='spring.security.ui.forgotPassword.submit'/>
-
-	</g:else>
-
-	</g:form>
-</s2ui:form>
+                </g:form>
+            </twbs:column>
+        </twbs:row>
+    </twbs:container>
+</div>
 
 <script>
-$(document).ready(function() {
-	$('#username').focus();
-});
+    $(document).ready(function () {
+        $('#username').focus();
+    });
 </script>
 
 </body>
