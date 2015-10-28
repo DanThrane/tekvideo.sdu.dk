@@ -19,3 +19,7 @@
     <fa:icon icon="${FaIcon.GITHUB}"/>
     GitHub
 </twbs:linkButton>
+<twbs:linkButton controller="about" style="${ButtonStyle.LINK}" block="true">
+    <fa:icon icon="${FaIcon.USERS}"/>
+    Om TekVideo
+</twbs:linkButton>

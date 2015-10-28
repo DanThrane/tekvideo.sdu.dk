@@ -14,12 +14,7 @@
 
 <twbs:row>
     <twbs:column>
-        <h3>Info om ${teacher.user.username}</h3>
-    </twbs:column>
-</twbs:row>
-
-<twbs:row>
-    <twbs:column>
+        <twbs:pageHeader><h3>Info om ${teacher.user.username}</h3></twbs:pageHeader>
         <h5>Aktive fag</h5>
         <g:each in="${courses}" var="course">
             <twbs:row>
