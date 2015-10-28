@@ -8,7 +8,7 @@ class HomeController {
     def videoService
 
     def index() {
-        def featuredVideos = Video.listOrderByDateCreated(max: 10)
+        def featuredVideos = videoService.findFeaturedVideos()
         def student = studentService.authenticatedStudent
         Set<Course> courses = student ? studentService.getAllCourses(student) : []
         def videoBreakdown = videoService.findVideoBreakdown(featuredVideos)

@@ -31,19 +31,19 @@ class StudentService {
     }
 
     Set<Course> getAllCourses(Student student) {
-        CourseStudent.findAllByStudent(student).course
+        CourseStudent.findAllByStudent(student).course.findAll { it.localStatus == NodeStatus.VISIBLE }
     }
 
     def signoffForCourse(Student student, Course course) {
         if (!isInCourse(student, course)) {
-            fail("Du var ikke tilmeldt dette fag til at starte med!", false)
+            fail "Du var ikke tilmeldt dette fag til at starte med!"
         } else {
             def studentAndCourse = CourseStudent.findByStudentAndCourse(student, course)
             if (studentAndCourse) {
                 studentAndCourse.delete()
-                ok(null, "Du er nu blevet afmeldt ${course.fullName}!")
+                ok message: "Du er nu blevet afmeldt ${course.fullName}!"
             } else {
-                fail("Noget gik galt - Du var ikke tilmeldt dette fag til at starte med!", false)
+                fail "Noget gik galt - Du var ikke tilmeldt dette fag til at starte med!"
             }
         }
     }
