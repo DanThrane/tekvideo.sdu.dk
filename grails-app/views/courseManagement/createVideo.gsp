@@ -330,6 +330,7 @@
             <g:else>
             Editor.setPublishEndpoint("<g:createLink action="postVideo" />");
             </g:else>
+            Editor.setVideoInfoEndpoint("<g:createLink controller="videoHost" action="info" />");
         });
     </script>
 </g:content>

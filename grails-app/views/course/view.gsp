@@ -21,7 +21,7 @@
                     ${params.teacher}
                 </g:link>
             </li>
-            <li class="active">Emner &mdash; ${course.fullName} (${course.name})</li>
+            <li class="active">${course.fullName} (${course.name})</li>
         </ol>
     </twbs:column>
 </twbs:row>

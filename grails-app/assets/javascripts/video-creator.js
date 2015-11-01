@@ -10,6 +10,7 @@ var Editor = {};
     var editingFieldIndex = -1;
     var videoId = null;
     var publishEndpoint = null;
+    var videoInfoEndpoint = null;
     var isEditing = false;
     var editingId = null;
     var isYouTube = false;
@@ -18,6 +19,10 @@ var Editor = {};
 
     function setPublishEndpoint(endpoint) {
         publishEndpoint = endpoint;
+    }
+
+    function setVideoInfoEndpoint(endpoint) {
+        videoInfoEndpoint = endpoint;
     }
 
     function parseYouTubeID(url) {
@@ -129,6 +134,10 @@ var Editor = {};
             var parsed = parseVideoID($(this).val());
             if (parsed !== null) {
                 displayVideo(parsed.type, parsed.id);
+                $.getJSON(videoInfoEndpoint + "/" + parsed.id + "?type=" + parsed.type, function (data) {
+                    $("#videoName").val(data.result.title);
+                    $("#description").val(data.result.description);
+                });
             }
         });
 
@@ -709,5 +718,6 @@ var Editor = {};
     exports.Timeline = Timeline;
     exports.displayVideo = displayVideo;
     exports.setPublishEndpoint = setPublishEndpoint;
+    exports.setVideoInfoEndpoint = setVideoInfoEndpoint;
     exports.setEditing = setEditing;
 })(Editor);
