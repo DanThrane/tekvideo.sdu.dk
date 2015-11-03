@@ -587,4 +587,6 @@ databaseChangeLog = {
 	include file: 'add-field-info-to-answer-event.groovy'
 
 	include file: 'add-node-statuses.groovy'
+
+	include file: 'embed-semester-in-course.groovy'
 }

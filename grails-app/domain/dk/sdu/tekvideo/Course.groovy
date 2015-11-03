@@ -6,7 +6,9 @@ class Course implements Node {
     String name
     String fullName
     String description
-    Semester semester
+    Boolean spring
+    Integer year
+
     NodeStatus localStatus = NodeStatus.VISIBLE
 
     List<Subject> subjects // ordered
@@ -16,6 +18,7 @@ class Course implements Node {
     static constraints = {
         name nullable: false, blank: false
         fullName nullable: false, blank: false
+        year min: 1900, max: 9999 // Lets assume we don't have anything outside of this range
     }
 
     static mapping = {

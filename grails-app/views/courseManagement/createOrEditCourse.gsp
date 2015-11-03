@@ -29,10 +29,10 @@
             <twbs:input name="domain.name" bean="${command?.domain}" labelText="Fag kode" />
             <twbs:input name="domain.fullName" bean="${command?.domain}" labelText="Navn" />
             <twbs:textArea name="domain.description" bean="${command?.domain}" labelText="Beskrivelse" rows="10" />
-            <twbs:input name="domain.semester.year" bean="${command?.domain?.semester}" labelText="Semester (År)">
+            <twbs:input name="domain.year" bean="${command?.domain}" labelText="Semester (År)">
                 <g:content key="addon-left">
                     <twbs:inputGroupAddon>
-                        <twbs:checkbox name="domain.semester.spring" bean="${command?.domain?.semester}"
+                        <twbs:checkbox name="domain.spring" bean="${command?.domain}"
                                        labelText="Forår" />
                     </twbs:inputGroupAddon>
                 </g:content>

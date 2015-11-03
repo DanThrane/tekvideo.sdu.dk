@@ -30,7 +30,7 @@
     </twbs:column>
     <twbs:column cols="3">
         <h5><twbs:icon icon="${Icon.TIME}" /> Semester/år</h5>
-        <sdu:semesterString semester="${course.semester}" />
+        <sdu:semesterString course="${course}" />
     </twbs:column>
     <twbs:column cols="3">
         <h5><twbs:icon icon="${Icon.SIGNAL}" /> Tilmeldte</h5>

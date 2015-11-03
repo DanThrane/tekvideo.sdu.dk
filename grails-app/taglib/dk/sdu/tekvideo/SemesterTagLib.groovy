@@ -9,9 +9,9 @@ class SemesterTagLib {
     static namespace = "sdu"
 
     def semesterString = { attrs, body ->
-        Semester semester = attrs.remove("semester") ?: fail("semester", "sdu:semesterString")
-        out << ((semester.spring) ? "Forår" : "Efterår")
+        Course course = attrs.remove("course") ?: fail("course", "sdu:semesterString")
+        out << ((course.spring) ? "Forår" : "Efterår")
         out << " "
-        out << semester.year
+        out << course.year
     }
 }

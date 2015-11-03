@@ -151,14 +151,12 @@ class CourseManagementService {
             fail("teacherservice.not_a_teacher", false, [:], 401)
         } else {
             if (command.validate()) {
-                def semester = new Semester(spring: command.newSemesterSpring, year: command.newSemester)
-                        .save(flush: true)
-
                 def course = new Course([
                         name       : command.newCourseName,
                         fullName   : command.newCourseFullName,
                         description: command.newDescription,
-                        semester   : semester,
+                        year       : command.newSemester,
+                        spring     : command.newSemesterSpring,
                         teacher    : teacher,
                         localStatus: command.visible ? NodeStatus.VISIBLE : NodeStatus.INVISIBLE
                 ]).save(flush: true)

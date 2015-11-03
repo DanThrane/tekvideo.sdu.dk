@@ -1,6 +1,5 @@
 package dk.sdu.tekvideo.data
 
-import dk.sdu.tekvideo.Semester
 import dk.sdu.tekvideo.Teacher
 import dk.sdu.tekvideo.Course
 
@@ -15,12 +14,12 @@ class CourseData {
         String name = prefix
         if (includeIdSuffix) name += idx.getAndIncrement()
 
-        def semester = new Semester(spring: false, year: 2015).save(failOnError: true, flush: true)
         def course = new Course([
                 name       : name,
                 fullName   : "Full Name",
                 description: "A description",
-                semester   : semester,
+                year       : 2015,
+                spring     : false,
                 teacher    : teacher
         ])
         course.save(failOnError: true, flush: true)
