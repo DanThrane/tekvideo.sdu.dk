@@ -7,7 +7,7 @@ import com.google.api.client.http.javanet.NetHttpTransport
 import com.google.api.client.json.JsonFactory
 import com.google.api.client.json.jackson2.JacksonFactory
 import com.google.api.services.youtube.YouTube
-import org.codehaus.groovy.grails.commons.GrailsApplication
+import grails.converters.JSON
 
 import javax.annotation.PostConstruct
 
@@ -37,7 +37,7 @@ class ExternalVideoHostService {
         if (isYoutube) {
             return getYouTubeVideoInformation(id)
         } else {
-            fail "Video service ikke understøttet!"
+            return getVimeoVideoInformation(id)
         }
     }
 
@@ -46,7 +46,7 @@ class ExternalVideoHostService {
             List videos = youtube.videos().list("snippet")
                     .setId(videoId)
                     .setFields("items(id,snippet/title,snippet/description)")
-                    .setKey(apiKey)
+                    .setKey(youtubeApiKey)
                     .execute()
                     .getItems()
 
@@ -64,8 +64,27 @@ class ExternalVideoHostService {
         }
     }
 
-    private String getApiKey() {
+    ServiceResult<Map> getVimeoVideoInformation(String videoId) {
+        try {
+            // The toString calls are needed
+            def content = JSON.parse(new URL("https://api.vimeo.com/videos/$videoId".toString()).getText(
+                    requestProperties: [Authorization: "Bearer $vimeoAccessToken".toString()]
+            ))
+            ok item: [id         : videoId,
+                      title      : content.name,
+                      description: content.description]
+        } catch (Exception e) {
+            e.printStackTrace()
+            fail message: "Kunne ikke hente information om denne video!", exception: e
+        }
+    }
+
+    private String getYoutubeApiKey() {
         grailsApplication.config.apis.youtube.key
+    }
+
+    private String getVimeoAccessToken() {
+        grailsApplication.config.apis.vimeo.token
     }
 
 }
