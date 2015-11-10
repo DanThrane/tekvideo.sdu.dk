@@ -23,10 +23,10 @@
 </twbs:row>
 
 <g:each in="${courses}" var="course">
-    <sdu:linkCard mapping="teaching" params="${[teacher: course.teacher, course: course.name]}">
-        <a href="#">${course.name} &mdash; ${course.fullName}</a>
+    <sdu:card>
+        <sdu:linkToCourse course="${course}">${course.name} &mdash; ${course.fullName}</sdu:linkToCourse>
         <markdown:renderHtml>${course.description}</markdown:renderHtml>
-    </sdu:linkCard>
+    </sdu:card>
 </g:each>
 
 <script type="text/javascript">

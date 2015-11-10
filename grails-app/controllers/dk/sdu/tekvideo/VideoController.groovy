@@ -8,8 +8,8 @@ class VideoController {
     VideoService videoService
 
     @Secured("permitAll")
-    def view(String teacherName, String courseName, String subjectName, Integer videoId) {
-        Video video = teachingService.getVideo(teacherName, courseName, subjectName, videoId)
+    def view(String teacherName, String courseName, String subjectName, Integer videoId, Integer year, Boolean spring) {
+        Video video = teachingService.getVideo(teacherName, courseName, subjectName, videoId, year, spring)
         if (videoService.canAccess(video)) {
             [video: video]
         } else {
@@ -39,7 +39,6 @@ class VideoController {
 
     @Secured("ROLE_TEACHER")
     def deleteComment(Video video, Long comment) {
-        println comment
         def result = videoService.deleteComment(video, Comment.get(comment))
         render result as JSON
     }

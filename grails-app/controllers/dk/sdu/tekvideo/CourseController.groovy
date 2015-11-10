@@ -16,8 +16,8 @@ class CourseController {
     }
 
     @Secured("permitAll")
-    def viewByTeacher(String teacherName, String courseName) {
-        Course course = teachingService.getCourse(teacherName, courseName)
+    def viewByTeacher(String teacherName, String courseName, Integer year, Boolean spring) {
+        Course course = teachingService.getCourse(teacherName, courseName, year, spring)
         if (courseService.canAccess(course)) {
             render(view: "view", model: [course: course])
         } else {

@@ -60,9 +60,8 @@
                                 </twbs:column>
                                 <twbs:column cols="4" class="align-right">
                                     <twbs:buttonToolbar>
-                                        <twbs:linkButton style="${ButtonStyle.LINK}" mapping="teaching"
-                                                         params="${[teacher: teacher, course: course,
-                                                                    subject: command.domain, vidid: idx]}">
+                                        <twbs:linkButton style="${ButtonStyle.LINK}"
+                                                         url="${sdu.createLinkToVideo(video: video, absolute: true)}">
                                             <fa:icon icon="${FaIcon.YOUTUBE_PLAY}" />
                                         </twbs:linkButton>
                                         <twbs:linkButton style="${ButtonStyle.LINK}" action="videoStatistics"

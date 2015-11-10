@@ -17,9 +17,9 @@
         <ol class="breadcrumb">
             <li><g:link uri="/">Hjem</g:link></li>
             <li>
-                <g:link mapping="teaching" params="${[teacher: params.teacher]}">
+                <sdu:linkToTeacher teacher="${params.teacher}">
                     ${params.teacher}
-                </g:link>
+                </sdu:linkToTeacher>
             </li>
             <li class="active">${course.fullName} (${course.name})</li>
         </ol>
@@ -27,18 +27,16 @@
 </twbs:row>
 
 <g:each in="${course.visibleSubjects}" var="subject">
-    <sdu:linkCard mapping="teaching" params="${[teacher: course.teacher.user.username, course: course.name,
-                                                subject: subject.name]}">
+    <sdu:card>
         <twbs:column cols="12">
-            <g:link mapping="teaching" params="${[teacher: course.teacher.user.username, course: course.name,
-                                                  subject: subject.name]}">
+            <sdu:linkToSubject subject="${subject}">
                 ${subject.name} (${subject.visibleVideos.size()} videoer)
-            </g:link>
+            </sdu:linkToSubject>
 
             <markdown:renderHtml>${subject.description}</markdown:renderHtml>
             
         </twbs:column>
-    </sdu:linkCard>
+    </sdu:card>
 </g:each>
 
 <g:render template="sidebar" model="${pageScope.variables}" />

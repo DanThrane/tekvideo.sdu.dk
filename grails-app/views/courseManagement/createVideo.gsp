@@ -35,9 +35,9 @@
                     <g:link action="createVideo" id="${params.id}">oprette en ny video.</g:link>
                     <g:if test="${!isEditing}">
                         Den er nu tilgængelig på
-                        <g:link mapping="teaching" params="${[teacher: course.teacher, course: course.name]}">
+                        <sdu:linkToCourse course="${course}">
                             kursus siden.
-                        </g:link>
+                        </sdu:linkToCourse>
                     </g:if>
 
                 </twbs:column>

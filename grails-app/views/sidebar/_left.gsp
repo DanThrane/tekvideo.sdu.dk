@@ -7,9 +7,9 @@
     <ul>
         <g:each in="${courses}" var="course">
             <li>
-                <g:link mapping="teaching" params="${[teacher: course.teacher, course: course]}">
+                <sdu:linkToCourse course="${course}">
                     ${course.fullName} (${course.name})
-                </g:link>
+                </sdu:linkToCourse>
             </li>
         </g:each>
     </ul>

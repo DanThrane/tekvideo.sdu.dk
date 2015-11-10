@@ -19,9 +19,9 @@
         <g:each in="${courses}" var="course">
             <twbs:row>
                 <twbs:column>
-                    <g:link mapping="teaching" params="${[teacher: params.teacher, course: course.name]}">
+                    <sdu:linkToCourse course="${course}">
                         <b>${course.name}</b>
-                    </g:link>
+                    </sdu:linkToCourse>
                     <markdown:renderHtml>${course.description}</markdown:renderHtml>
                 </twbs:column>
             </twbs:row>

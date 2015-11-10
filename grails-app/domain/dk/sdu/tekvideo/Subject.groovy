@@ -17,7 +17,7 @@ class Subject implements Node {
 
     static mapping = {
         description type: "text"
-        videos cascade: "all-delete-orphan"
+        videos cascade: "all-delete-orphan", indexColumn: [name: "videos_idx", type: Long]
     }
 
     static belongsTo = [course: Course]

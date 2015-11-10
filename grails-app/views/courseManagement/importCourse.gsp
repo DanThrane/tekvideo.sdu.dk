@@ -13,17 +13,16 @@
 
         <g:each in="${courses}" var="course">
             <sdu:card>
-                <g:link mapping="teaching" params="${[teacher: course.teacher, course: course.name]}">
+                <sdu:linkToCourse course="${course}">
                     ${course.name} &mdash; ${course.fullName}
-                </g:link>
+                </sdu:linkToCourse>
                 <hr>
                 <markdown:renderHtml>${course.description}</markdown:renderHtml>
                 <hr>
                 <twbs:row>
                     <twbs:column>
                         <div class="pull-right">
-                            <twbs:linkButton mapping="teaching"
-                                             params="${[teacher: course.teacher, course: course.name]}"
+                            <twbs:linkButton url="${sdu.createLinkToCourse(course: course, absolute: true)}"
                                              style="${ButtonStyle.INFO}" size="${ButtonSize.SMALL}">
                                 <fa:icon icon="${FaIcon.SEARCH}"/>
                                 Mere info

@@ -17,14 +17,14 @@
         <ol class="breadcrumb">
             <li><g:link uri="/">Hjem</g:link></li>
             <li>
-                <g:link mapping="teaching" params="${[teacher: params.teacher]}">
+                <sdu:linkToTeacher teacher="${params.teacher}">
                     ${params.teacher}
-                </g:link>
+                </sdu:linkToTeacher>
             </li>
             <li>
-                <g:link mapping="teaching" params="${[teacher: params.teacher, course: params.course]}">
+                <sdu:linkToCourse course="${subject.course}">
                     ${subject.course.fullName} (${subject.course.name})
-                </g:link>
+                </sdu:linkToCourse>
             </li>
             <li class="active">${subject.name}</li>
         </ol>
@@ -33,22 +33,20 @@
 
 <g:each status="i" in="${subject.videos}" var="video">
     <g:if test="${video.localStatus == NodeStatus.VISIBLE}">
-        <sdu:linkCard mapping="teaching" params="${[teacher: params.teacher, subject: params.subject,
-                                                    course : params.course, vidid: i]}">
+        <sdu:card>
             <twbs:column cols="2">
                 <img src="http://img.youtube.com/vi/${video.youtubeId}/hqdefault.jpg" class="img-responsive"
                      alt="Video thumbnail">
             </twbs:column>
             <twbs:column cols="10">
-                <g:link mapping="teaching" params="${[teacher: params.teacher, subject: params.subject,
-                                                      course : params.course, vidid: i]}">
+                <sdu:linkToVideo video="${video}">
                     ${video.name}
-                </g:link>
+                </sdu:linkToVideo>
                 <p>
                     <markdown:renderHtml>${video.description}</markdown:renderHtml>
                 </p>
             </twbs:column>
-        </sdu:linkCard>
+        </sdu:card>
     </g:if>
 </g:each>
 

@@ -22,9 +22,9 @@
             <ul class="list-unstyled">
                 <g:each in="${courses}" var="course">
                     <li>
-                        <g:link mapping="teaching" params="${[teacher: course.teacher, course: course.name]}">
+                        <sdu:linkToCourse course="${course}">
                             ${course.name} &mdash; ${course.fullName}
-                        </g:link>
+                        </sdu:linkToCourse>
                     </li>
                 </g:each>
             </ul>
@@ -37,7 +37,7 @@
 </twbs:pageHeader>
 
 <g:each in="${featuredVideos}" var="breakdown">
-    <sdu:linkCard controller="video" action="viewV" id="${breakdown.video.id}">
+    <sdu:card>
         <twbs:column sm="1">
             <img src="http://img.youtube.com/vi/${breakdown.video.youtubeId}/hqdefault.jpg"
                  class="img-responsive"
@@ -46,13 +46,16 @@
             <fa:icon icon="${FaIcon.COMMENTS}"/> ${breakdown.commentCount}
         </twbs:column>
         <twbs:column sm="11">
-            <g:link controller="video" action="viewV" id="${breakdown.video.id}">
+            <sdu:linkToVideo video="${breakdown.video}">
                 ${breakdown.video.name}
-            </g:link>
+            </sdu:linkToVideo>
+            %{--<g:link controller="video" action="viewV" id="${breakdown.video.id}">--}%
+                %{--${breakdown.video.name}--}%
+            %{--</g:link>--}%
 
             <markdown:renderHtml>${breakdown.video.description}</markdown:renderHtml>
         </twbs:column>
-    </sdu:linkCard>
+    </sdu:card>
 </g:each>
 
 </body>

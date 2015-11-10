@@ -8,6 +8,7 @@ class Video implements Node {
     Boolean videoType = true
     Date dateCreated
     NodeStatus localStatus = NodeStatus.VISIBLE
+    Long videos_idx
 
     static constraints = {
         name            nullable: false, blank: false
@@ -23,6 +24,7 @@ class Video implements Node {
         timelineJson type: "text"
         videoType defaultValue: true
         subject nullable: true
+        videos_idx updateable: false, insertable: false
     }
 
     String getDescription() {

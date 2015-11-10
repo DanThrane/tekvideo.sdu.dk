@@ -24,9 +24,9 @@
     </twbs:column>
     <twbs:column cols="3">
         <h5><twbs:icon icon="${Icon.EDUCATION}" /> Kursus</h5>
-        <g:link mapping="teaching" params="${[teacher: course.teacher, course: course]}">
+        <sdu:linkToCourse course="${course}">
             ${course.fullName} (${course.name})
-        </g:link>
+        </sdu:linkToCourse>
     </twbs:column>
     <twbs:column cols="3">
         <h5><twbs:icon icon="${Icon.TIME}" /> Semester/år</h5>

@@ -7,8 +7,8 @@ class SubjectController {
     SubjectService subjectService
 
     @Secured("permitAll")
-    def viewByTeacherAndCourse(String teacherName, String courseName, String subjectName) {
-        Subject subject = teachingService.getSubject(teacherName, courseName, subjectName)
+    def viewByTeacherAndCourse(String teacherName, String courseName, String subjectName, Integer year, Boolean spring) {
+        Subject subject = teachingService.getSubject(teacherName, courseName, subjectName, year, spring)
         if (subjectService.canAccess(subject)) {
             render view: "view", model: [subject: subject]
         } else {

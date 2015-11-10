@@ -76,8 +76,7 @@
     <twbs:modalHeader>Del</twbs:modalHeader>
     <twbs:input value="${createLink([controller: "Course", action: "signup", id: course.id, absolute: true])}"
                 name="share-url" class="input-select-all" labelText="URL til tilmeldings siden"/>
-    <twbs:input value="${createLink([mapping: "teaching", params: [teacher: course.teacher, course: course],
-                                     absolute: true])}"
+    <twbs:input value="${sdu.createLinkToCourse([course: course, absolute: true])}"
                 name="share-page" class="input-select-all" labelText="URL til fagets side"/>
 </twbs:modal>
 

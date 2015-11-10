@@ -18,4 +18,5 @@ class TagLibUtils {
         throw new GrailsTagException("Tag $tagName requires attribute $attr!")
     }
 
+    static void assistAutoComplete(... dummy) {}
 }
