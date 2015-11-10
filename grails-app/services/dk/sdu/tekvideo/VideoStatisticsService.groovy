@@ -69,9 +69,9 @@ class VideoStatisticsService {
         if (video) {
             String query = $/
             SELECT
-                COUNT(*)                                            AS visits,
-                COUNT(e.user_id)                                    AS student_visits,
-                SUM(CASE WHEN e.user_id IS NULL THEN 1 ELSE 0 END)  AS guest_visits
+                COUNT(*)                                                          AS visits,
+                COUNT(e.user_id)                                                  AS student_visits,
+                COALESCE(SUM(CASE WHEN e.user_id IS NULL THEN 1 ELSE 0 END), 0)   AS guest_visits
             FROM
                 event as e
             WHERE
@@ -86,12 +86,12 @@ class VideoStatisticsService {
                     .list()
             if (resultList.size() > 0) {
                 def result = resultList[0]
-                ok([visits: result[0], studentVisits: result[1], guestVisits: result[2]])
+                return ok(item: [visits: result[0], studentVisits: result[1], guestVisits: result[2]])
             } else {
-                fail "video_statistics.not_found"
+                return fail("video_statistics.not_found")
             }
         } else {
-            fail("video_statistics.not_found", false, [:], 404)
+            return fail("video_statistics.not_found", false, [:], 404)
         }
     }
 
@@ -161,7 +161,7 @@ class VideoStatisticsService {
                     data[index]++
                 }
             }
-            ok([labels: labels, data: data])
+            ok(item: [labels: labels, data: data])
         } else {
             fail("video_statistics.not_found", false, [:], 404)
         }
