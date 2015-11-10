@@ -16,7 +16,7 @@ class Course implements Node {
     static hasMany = [subjects: Subject]
 
     static constraints = {
-        name nullable: false, blank: false
+        name nullable: false, blank: false, unique: ["teacher", "spring", "year"]
         fullName nullable: false, blank: false
         year min: 1900, max: 9999 // Lets assume we don't have anything outside of this range
     }

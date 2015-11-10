@@ -49,9 +49,6 @@
             <sdu:linkToVideo video="${breakdown.video}">
                 ${breakdown.video.name}
             </sdu:linkToVideo>
-            %{--<g:link controller="video" action="viewV" id="${breakdown.video.id}">--}%
-                %{--${breakdown.video.name}--}%
-            %{--</g:link>--}%
 
             <markdown:renderHtml>${breakdown.video.description}</markdown:renderHtml>
         </twbs:column>

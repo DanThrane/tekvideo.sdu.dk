@@ -589,4 +589,6 @@ databaseChangeLog = {
 	include file: 'add-node-statuses.groovy'
 
 	include file: 'embed-semester-in-course.groovy'
+
+	include file: 'add-course-uniqueness-constraint.groovy'
 }

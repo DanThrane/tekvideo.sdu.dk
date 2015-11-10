@@ -7,9 +7,10 @@ import dk.sdu.tekvideo.UserRole
 import grails.plugin.springsecurity.SpringSecurityUtils
 
 class UserData {
-    static Teacher buildTestTeacher() {
-        def teacherRole = new Role(authority: "ROLE_TEACHER").save(flush: true, failOnError: true)
-        def teacherUser = new User(username: "Teacher", password: "password").save(flush: true, failOnError: true)
+    static Teacher buildTestTeacher(String name = "Teacher") {
+        def teacherRole = Role.findByAuthority("ROLE_TEACHER") ?: new Role(authority: "ROLE_TEACHER")
+                .save(flush: true, failOnError: true)
+        def teacherUser = new User(username: name, password: "password").save(flush: true, failOnError: true)
         def teacher = new Teacher(user: teacherUser, alias: "teach").save(flush: true, failOnError: true)
         UserRole.create teacherUser, teacherRole, true
         return teacher

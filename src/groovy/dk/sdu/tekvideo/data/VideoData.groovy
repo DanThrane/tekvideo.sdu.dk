@@ -8,7 +8,8 @@ import java.util.concurrent.atomic.AtomicInteger
 class VideoData {
     private static AtomicInteger idx = new AtomicInteger(0)
 
-    static Video buildTestVideo(String prefix = "Video", Subject subject = null, boolean includeIdSuffix = false) {
+    static Video buildTestVideo(String prefix = "Video", Subject subject = null, boolean includeIdSuffix = false,
+                                boolean save = true) {
         if (subject == null) subject = SubjectData.buildTestSubject()
 
         String name = prefix
@@ -20,6 +21,11 @@ class VideoData {
                 subject     : subject,
                 timelineJson: "[]"
         ])
-        video.save(failOnError: true, flush: true)
+
+        if (save) {
+            video.save(failOnError: true, flush: true)
+        }
+
+        return video
     }
 }

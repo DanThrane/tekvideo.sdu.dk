@@ -8,7 +8,8 @@ import java.util.concurrent.atomic.AtomicInteger
 class CourseData {
     private static AtomicInteger idx = new AtomicInteger(0)
 
-    static Course buildTestCourse(String prefix = "Course", Teacher teacher = null, boolean includeIdSuffix = false) {
+    static Course buildTestCourse(String prefix = "Course", Teacher teacher = null, boolean includeIdSuffix = false,
+                                  boolean save = true) {
         if (teacher == null) teacher = UserData.buildTestTeacher()
 
         String name = prefix
@@ -22,6 +23,11 @@ class CourseData {
                 spring     : false,
                 teacher    : teacher
         ])
-        course.save(failOnError: true, flush: true)
+
+        if (save) {
+            course.save(failOnError: true, flush: true)
+        }
+
+        return course
     }
 }

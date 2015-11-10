@@ -8,7 +8,8 @@ import java.util.concurrent.atomic.AtomicInteger
 class SubjectData {
     private static AtomicInteger idx = new AtomicInteger(0)
 
-    static Subject buildTestSubject(String prefix = "Subject", Course course = null, boolean includeIdSuffix = false) {
+    static Subject buildTestSubject(String prefix = "Subject", Course course = null, boolean includeIdSuffix = false,
+                                    boolean save = true) {
         if (course == null) course = CourseData.buildTestCourse()
 
         String name = prefix
@@ -18,6 +19,11 @@ class SubjectData {
                 name  : name,
                 course: course
         ])
-        subject1.save(failOnError: true, flush: true)
+
+        if (save) {
+            subject1.save(failOnError: true, flush: true)
+        }
+
+        return subject1
     }
 }
