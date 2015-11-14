@@ -91,8 +91,12 @@
                 <g:layoutBody/>
             </twbs:column>
             <twbs:column sm="2" pull-sm="10" class="sidebar sidebar-left">
-                <sdu:leftSidebar/>
-                <g:selectContent key="sidebar-left" />
+                <g:ifContentNotAvailable key="sidebar-left">
+                    <sdu:leftSidebar/>
+                </g:ifContentNotAvailable>
+                <g:ifContentAvailable key="sidebar-left">
+                    <g:selectContent key="sidebar-left" />
+                </g:ifContentAvailable>
             </twbs:column>
         </g:ifContentNotAvailable>
         <g:ifContentAvailable key="sidebar-right">
