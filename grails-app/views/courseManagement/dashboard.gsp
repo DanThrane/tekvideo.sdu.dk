@@ -1,4 +1,6 @@
 <%@ page import="dk.danthrane.twbs.NavStyle; dk.sdu.tekvideo.NodeStatus; dk.danthrane.twbs.ButtonSize; dk.danthrane.twbs.ButtonStyle; dk.sdu.tekvideo.FaIcon" contentType="text/html;charset=UTF-8" %>
+<%--suppress ALL --%>
+<%--suppress JSDuplicatedDeclaration --%>
 <html>
 <head>
     <title>Mine kurser</title>
@@ -12,7 +14,7 @@
 <g:content key="sidebar-left">
     <b>Tree view of courses/subjects/videos</b><br/>
     <twbs:select
-            list="${["Over den sidste uge", "Over den sidste måned", "Over de sidste 6 måneder", "Over det sidste år", "Siden start"]}"
+            list="${["Fra i dag", "Over den sidste uge", "Over den sidste måned", "Over de sidste 6 måneder", "Over det sidste år", "Siden start"]}"
             name="dataRange" labelText="Vis data"/>
     <ul>
         <g:each in="${0..3}">
@@ -290,12 +292,13 @@
                                         <twbs:column md="6">
                                             <ul class="video-navigation">
                                             </ul>
-                                            <twbs:button class="check-button">
-                                                Tjek svar
-                                            </twbs:button>
                                         </twbs:column>
                                     </twbs:row>
                                 </div>
+
+                                <hr>
+
+                                <div class="participation"></div>
 
                                 <hr>
 
@@ -303,9 +306,35 @@
                                     <h5 style="text-align: center;">Vælg et spørgsmål fra listen for at se information om det</h5>
                                 </div>
 
-                                <div class="answer-selected hide">
+                                <div class="answer-selected">
+                                    <h5>Svar til <span class="question-name"></span></h5>
+
+                                    <div class="field-statistics"></div>
+
                                     <h5>Histogram over svar</h5>
                                     <canvas class="histogram" style="width: 100%; height: 300px"></canvas>
+
+                                    <script type="text/template" class="field-stat-template hide">
+                                    <b>{0}</b> <br/>
+                                    <twbs:table>
+                                        <thead>
+                                        <th>Bruger</th>
+                                        <th>Svar</th>
+                                        <th>Korrekt</th>
+                                        </thead>
+                                        <tbody>
+                                        {1}
+                                        </tbody>
+                                    </twbs:table>
+                                    </script>
+
+                                    <script type="text/template" class="field-stat-row-template">
+                                    <tr>
+                                        <td>{0}</td>
+                                        <td>{1}</td>
+                                        <td>{2}</td>
+                                    </tr>
+                                    </script>
                                 </div>
                             </sdu:card>
                         </div>
@@ -346,6 +375,7 @@
     var AnswerBreakdownComponent = (function () {
         function AnswerBreakdownComponent(element) {
             this.element = $(element);
+            this.player = null;
         }
 
         AnswerBreakdownComponent.prototype.init = function () {
@@ -369,58 +399,196 @@
         };
 
         AnswerBreakdownComponent.prototype._onExpansion = function () {
+            this.element.find(".answer-selected").hide();
+            this.element.find(".no-answer-selected").show();
             this.bootstrapDemoVideo();
         };
 
         AnswerBreakdownComponent.prototype.bootstrapDemoVideo = function () {
-            var player = new InteractiveVideoPlayer(this.element.find(".player-container"));
-            player.startPlayer("5r8TkDyoBu4", true,
-                    [
-                        {
-                            "title": "Stedfunktionen",
-                            "timecode": 0,
-                            "questions": []
-                        },
-                        {
-                            "title": "Bevægelse med konstant hastighed",
-                            "timecode": 68,
-                            "questions": [{
-                                "title": "Brug af stedfunktionen",
-                                "timecode": 200,
-                                "fields": [{
-                                    "name": "field-0",
-                                    "topoffset": 298,
-                                    "leftoffset": 184,
-                                    "answer": {
-                                        "type": "between",
-                                        "min": 2.999,
-                                        "max": 3.001
-                                    }
-                                }, {
-                                    "name": "field-1",
-                                    "topoffset": 299,
-                                    "leftoffset": 283,
-                                    "answer": {
-                                        "type": "between",
-                                        "min": 3.499,
-                                        "max": 3.501
-                                    }
-                                }, {
-                                    "name": "field-2",
-                                    "topoffset": 298,
-                                    "leftoffset": 376,
-                                    "answer": {
-                                        "type": "between",
-                                        "min": 3.999,
-                                        "max": 4.001
-                                    }
-                                }],
-                                "visible": true,
-                                "shown": true
-                            }]
-                        }
-                    ]
-            );
+            var self = this;
+            if (this.player !== null) this.player.destroy();
+            this.player = new InteractiveVideoPlayer(this.element.find(".player-container"));
+            this.player.autoplay = false;
+
+            this.answers = [
+                <g:each in="${0..10}" var="i">
+                <g:each in="${0..2}" var="j">
+                {
+                    "user": "A user ${i}",
+                    "answer": ${new Random().nextInt(50)},
+                    "correct": ${new Random().nextBoolean()},
+                    "subject": 1,
+                    "question": 0,
+                    "field": ${j}
+                },
+                </g:each>
+                </g:each>
+            ];
+            this.students = [
+                <g:each in="${0..20}" var="i">
+                "A user ${i}",
+                </g:each>
+            ];
+            this.timeline = [
+                {
+                    "title": "Stedfunktionen",
+                    "timecode": 0,
+                    "questions": []
+                },
+                {
+                    "title": "Bevægelse med konstant hastighed",
+                    "timecode": 68,
+                    "questions": [{
+                        "title": "Brug af stedfunktionen",
+                        "timecode": 200,
+                        "fields": [{
+                            "name": "field-0",
+                            "topoffset": 298,
+                            "leftoffset": 184,
+                            "answer": {
+                                "type": "between",
+                                "min": 2.999,
+                                "max": 3.001
+                            }
+                        }, {
+                            "name": "field-1",
+                            "topoffset": 299,
+                            "leftoffset": 283,
+                            "answer": {
+                                "type": "between",
+                                "min": 3.499,
+                                "max": 3.501
+                            }
+                        }, {
+                            "name": "field-2",
+                            "topoffset": 298,
+                            "leftoffset": 376,
+                            "answer": {
+                                "type": "between",
+                                "min": 3.999,
+                                "max": 4.001
+                            }
+                        }],
+                        "visible": true,
+                        "shown": true
+                    }]
+                }
+            ];
+            this.player.startPlayer("5r8TkDyoBu4", true, this.timeline);
+            this.player.on("questionShown", function (e) {
+                self.displayField(e.subjectId, e.questionId);
+            });
+
+            this.element.find(".participation").append(this.buildParticipationTable(this.analyzeParticipation()));
+        };
+
+        AnswerBreakdownComponent.prototype.displayField = function (subjectId, questionId) {
+            var question = this.timeline[subjectId].questions[questionId];
+            this.element.find(".no-answer-selected").hide();
+
+            this.element.find(".question-name").text(question.title);
+
+            var statTemplate = this.element.find(".field-stat-template").html();
+            var rowTemplate = this.element.find(".field-stat-row-template").html();
+
+            var ourAnswers = this.answers.filter(function (value) {
+                return value.subject === subjectId && value.question === questionId;
+            });
+
+            var fields = "";
+            for (var i = 0; i < question.fields.length; i++) {
+                var field = question.fields[i];
+                $("#" + field.name).text(field.name);
+                var localAnswers = ourAnswers.filter(function (value) {
+                    return value.field === i;
+                });
+
+                var rows = "";
+                for (var j = 0; j < localAnswers.length; j++) {
+                    var answer = localAnswers[j];
+                    rows += rowTemplate.format(answer.user, answer.answer, answer.correct);
+                }
+
+                fields += statTemplate.format(field.name, rows);
+            }
+            this.element.find(".field-statistics").html(fields);
+
+            this.element.find(".answer-selected").show();
+        };
+
+        AnswerBreakdownComponent.prototype.analyzeParticipation = function () {
+            var students = this.students;
+            var answers = this.answers;
+            var timeline = this.timeline;
+
+            var result = {};
+            for (var i = 0; i < students.length; i++) {
+                result[students[i]] = {"user": students[i], answered: [], correctlyAnswered: []};
+            }
+
+            // Funny looking initialization code:
+            for (var subjectIdx = 0; subjectIdx < timeline.length; subjectIdx++) {
+                var subject = timeline[subjectIdx];
+                for (var studentIdx = 0; studentIdx < students.length; studentIdx++) {
+                    var entry = result[students[studentIdx]];
+                    entry.answered.push([]);
+                    entry.correctlyAnswered.push([]);
+                }
+                for (var questionIdx = 0; questionIdx < subject.questions.length; questionIdx++) {
+                    for (var studentIdx = 0; studentIdx < students.length; studentIdx++) {
+                        var entry = result[students[studentIdx]];
+                        entry.answered[entry.answered.length - 1].push(0);
+                        entry.correctlyAnswered[entry.correctlyAnswered.length - 1].push(0);
+                    }
+                }
+            }
+
+            // Actually finding the stats:
+            for (var i = 0; i < answers.length; i++) {
+                var answer = answers[i];
+                if (answer.user in result) {
+                    var entry = result[answer.user];
+                    entry.answered[answer.subject][answer.question]++;
+                    if (answer.correct) entry.correctlyAnswered[answer.subject][answer.question]++;
+                }
+            }
+            return result;
+        };
+
+        AnswerBreakdownComponent.prototype.buildParticipationTable = function (analysis) {
+            var table = $("<table class='table'></table>");
+            var header = $("<thead></thead>");
+            var body = $("<tbody></tbody>");
+
+            header.append($("<th>Bruger</th>"));
+            for (var subjectIdx = 0; subjectIdx < this.timeline.length; subjectIdx++) {
+                var subject = this.timeline[subjectIdx];
+                for (var questionIdx = 0; questionIdx < subject.questions.length; questionIdx++) {
+                    var question = subject.questions[questionIdx];
+                    var th = $("<th></th>");
+                    th.text(question.title);
+                    header.append(th);
+                }
+            }
+
+            for (var key in analysis) {
+                if (!analysis.hasOwnProperty(key)) continue;
+
+                var row = $("<tr></tr>");
+                var report = analysis[key];
+                var answered = report.answered;
+                row.append($("<td> " + key + " </td>"));
+                for (var i = 0; i < answered.length; i++) {
+                    for (var j = 0; j < answered[i].length; j++) {
+                        row.append($("<td>" + report.correctlyAnswered[i][j] + "/" + report.answered[i][j] + "</td>"));
+                    }
+                }
+                body.append(row);
+            }
+
+            table.append(header);
+            table.append(body);
+            return table;
         };
 
         return AnswerBreakdownComponent;

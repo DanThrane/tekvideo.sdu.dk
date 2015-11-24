@@ -5,6 +5,7 @@ var InteractiveVideoPlayer = (function () {
     function InteractiveVideoPlayer(containerElement) {
         var container = $(containerElement);
         this.eventHandlers = {};
+        this.autoplay = true;
 
         if (container !== undefined) {
             this.playerElement = container.find(".player");
@@ -49,7 +50,10 @@ var InteractiveVideoPlayer = (function () {
         "http://player.vimeo.com/video/" + videoId;
         this.player = Popcorn(wrapper);
 
-        this.player.play();
+        if (this.autoplay) {
+            this.player.play();
+        }
+
         this.player.on("timeupdate", function () {
             self.handleTimeUpdate();
         });
@@ -131,6 +135,12 @@ var InteractiveVideoPlayer = (function () {
                         field.topoffset,
                         field.leftoffset);
                 }
+                var ids = this.getVisibleQuestionID();
+                this._fire("questionShown", {
+                    subjectId: ids[0],
+                    questionId: ids[1],
+                    question: q
+                });
             }
         }
     };
