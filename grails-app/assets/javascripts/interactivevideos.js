@@ -1,69 +1,56 @@
-var ivids = {};
-
-(function(ivids) {
-    var player = null;
-    var timeline;
-    var videoId;
-    var isYouTube;
-    var questions = [];
-
-    var selector;
-
+var InteractiveVideoPlayer = (function () {
     var BASELINE_WIDTH = 640; // Wide 360p (Standard on YouTube)
     var BASELINE_HEIGHT = 360;
-    var scaleWidth = 1;
-    var scaleHeight = 1;
 
-    function bootstrap(playerSelector, vidId, videoType, tline) {
-        selector = playerSelector;
-        timeline = tline;
-        isYouTube = videoType;
-        videoId = vidId;
+    function InteractiveVideoPlayer(selector) {
+        this.selector = selector;
+    }
 
-        if (player !== null) {
-            Popcorn.destroy(player);
-            $(playerSelector).html("");
-            removeAllQuestions();
-        }
+    InteractiveVideoPlayer.prototype.initPlayer = function (videoId, isYouTube, timeline) {
+        var self = this;
+        this.timeline = timeline;
+        this.isYouTube = isYouTube;
+        this.videoId = videoId;
+        this.questions = [];
 
-        if (tline !== undefined) {
-            // The time line may be undefined, in this case the video should simply be displayed
-            initQuestions();
-            buildNavigation();
-        }
+        this.initQuestions();
+        this.buildNavigation();
 
-        var constructor = (isYouTube) ? Popcorn.HTMLYouTubeVideoElement : Popcorn.HTMLVimeoVideoElement;
-        var wrapper = constructor(playerSelector);
-        wrapper.src = (isYouTube) ?
+        var constructor = (this.isYouTube) ? Popcorn.HTMLYouTubeVideoElement : Popcorn.HTMLVimeoVideoElement;
+        var wrapper = constructor(this.selector);
+        wrapper.src = (this.isYouTube) ?
         "http://www.youtube.com/watch?v=" + videoId + "&controls=0" :
         "http://player.vimeo.com/video/" + videoId;
-        player = Popcorn(wrapper);
+        this.player = Popcorn(wrapper);
 
-        player.play();
-        player.on("timeupdate", handleTimeUpdate);
-        player.on("seeked", handleSeeked);
-        player.on("play", function() {
-            removeAllQuestions(); // Remove all questions when we continue playing
-        });
-        player.on("pause", function() {
+        this.player.play();
+        this.player.on("timeupdate", function () { self.handleTimeUpdate(); });
+        this.player.on("seeked", function () { self.handleSeeked(); });
+        this.player.on("play", function () { self.removeAllQuestions() });
+        this.player.on("pause", function () {
             events.emit({
                 kind: "PAUSE_VIDEO",
                 video: document.location.href,
-                timecode: player.currentTime()
+                timecode: self.player.currentTime()
             }, true);
         });
-        player.on("loadstart", function() {
-            initializeSize();
-        });
-        $(window).resize(function () { initializeSize() });
-        setTimeout(function() { initializeSize(); }, 2000);
-        initEventHandlers();
-    }
 
-    function initializeSize() {
+        this.player.on("loadstart", function () { self.initializeSize(); });
+        $(window).resize(function () { self.initializeSize(); });
+        setTimeout(function () { self.initializeSize(); }, 2000);
+        this.initEventHandlers();
+    };
+
+    InteractiveVideoPlayer.prototype.destroy = function () {
+        Popcorn.destroy(player);
+        $(this.selector).html("");
+        this.removeAllQuestions();
+    };
+
+    InteractiveVideoPlayer.prototype.initializeSize = function () {
         var maxWidth = -1;
         var maxHeight = -1;
-        $(selector).children().each(function (index, element) {
+        $(this.selector).children().each(function (index, element) {
             var $element = $(element);
             var height = $element.height();
             var width = $element.width();
@@ -71,37 +58,35 @@ var ivids = {};
             if (height > maxHeight) maxHeight = height;
         });
         $("#wrapper").width(maxWidth).height(maxHeight);
-        scaleHeight = maxHeight / BASELINE_HEIGHT;
-        scaleWidth = maxWidth / BASELINE_WIDTH;
-    }
+        this.scaleHeight = maxHeight / BASELINE_HEIGHT;
+        this.scaleWidth = maxWidth / BASELINE_WIDTH;
+    };
 
-    ivids.initializeSize = initializeSize;
-
-    function handleSeeked() {
-        for (var i = questions.length - 1; i >= 0; i--) {
-            questions[i].visible = false;
-            questions[i].shown = false;
+    InteractiveVideoPlayer.prototype.handleSeeked = function () {
+        for (var i = this.questions.length - 1; i >= 0; i--) {
+            this.questions[i].visible = false;
+            this.questions[i].shown = false;
         }
-        hideAllFields();
-        removeAllQuestions();
-        handleTimeUpdate();
-    }
+        this.hideAllFields();
+        this.removeAllQuestions();
+        this.handleTimeUpdate();
+    };
 
-    function handleTimeUpdate() {
-        var timestamp = player.currentTime();
-        for (var i = questions.length - 1; i >= 0; i--) {
-            var q = questions[i];
+    InteractiveVideoPlayer.prototype.handleTimeUpdate = function () {
+        var timestamp = this.player.currentTime();
+        for (var i = this.questions.length - 1; i >= 0; i--) {
+            var q = this.questions[i];
             if (q.timecode !== Math.round(timestamp) && q.visible) {
-                removeAllQuestions();
+                this.removeAllQuestions();
                 q.visible = false;
             } else if (q.timecode === Math.round(timestamp) && !q.visible && !q.shown) {
                 // Will cause a seek event, which in turn will reset everything
-                player.pause();
+                this.player.pause();
                 q.visible = true;
                 q.shown = true;
-                for(var k = 0; k < q.fields.length; k++) {
+                for (var k = 0; k < q.fields.length; k++) {
                     var field = q.fields[k];
-                    placeInputField(
+                    this.placeInputField(
                         field.name,
                         field.answer,
                         field.topoffset,
@@ -109,19 +94,20 @@ var ivids = {};
                 }
             }
         }
-    }
+    };
 
-    function initEventHandlers() {
+    InteractiveVideoPlayer.prototype.initEventHandlers = function () {
+        var self = this;
         $("#checkAnswers").click(function (e) {
             e.preventDefault();
-            var questionID = getVisibleQuestionID();
-            var question = getVisibleQuestion();
+            var questionID = self.getVisibleQuestionID();
+            var question = self.getVisibleQuestion();
             for (var i = 0; i < question.fields.length; i++) {
                 var field = question.fields[i];
                 var input = $("#" + field.name);
                 var val = parseTex(input.mathquill("latex"));
                 input.removeClass("correct error");
-                var correct = validateAnswer(field, val);
+                var correct = self.validateAnswer(field, val);
                 if (correct) {
                     input.addClass("correct");
                 } else {
@@ -140,32 +126,41 @@ var ivids = {};
             }
             events.flush();
         });
-        $("#frameOverlay").mousemove(function (event) {
-            var parentOffset = $(this).parent().offset();
-            var x = parseInt(event.pageX - parentOffset.left);
-            var y = parseInt(event.pageY - parentOffset.top);
-            var msg = x + ", " + y;
-            $("#cursorPosition").text(msg);
-        });
-    }
+    };
 
-    function initQuestions() {
-        for (var i = timeline.length - 1; i >= 0; i--) {
-            var item = timeline[i];
-            questions = questions.concat(item.questions);
+    InteractiveVideoPlayer.prototype.handleNavigationClick = function (item) {
+        var self = this;
+        return function (e) {
+            var skippedAt = self.player.currentTime();
+            e.preventDefault();
+            self.player.currentTime(item.timecode);
+            events.emit({
+                kind: "SKIP_TO_CONTENT",
+                video: document.location.href,
+                label: item.title,
+                videoTimeCode: self.player.currentTime(),
+                skippedAt: skippedAt
+            }, true);
+        };
+    };
+
+    InteractiveVideoPlayer.prototype.initQuestions = function () {
+        for (var i = this.timeline.length - 1; i >= 0; i--) {
+            var item = this.timeline[i];
+            this.questions = this.questions.concat(item.questions);
         }
-    }
+    };
 
-    function buildNavigation() {
+    InteractiveVideoPlayer.prototype.buildNavigation = function () {
         var nav = $("#videoNavigation");
         nav.html("<ul></ul>");
-        for (var i = 0; i < timeline.length; i++) {
-            var item = timeline[i];
+        for (var i = 0; i < this.timeline.length; i++) {
+            var item = this.timeline[i];
             var nodeId = "navitem" + String(i);
-            var node = $(createNavItem(item, nodeId));
+            var node = $(this.createNavItem(item, nodeId));
 
             nav.append(node);
-            $("#" + nodeId).click(handleNavigationClick(item));
+            $("#" + nodeId).click(this.handleNavigationClick(item));
 
             if (item.questions.length > 0) {
                 var list = $("<ul></ul>");
@@ -173,29 +168,14 @@ var ivids = {};
                 for (var j = 0; j < item.questions.length; j++) {
                     var question = item.questions[j];
                     var questionId = "navitem" + String(i) + String(j);
-                    var questionNode = $(createNavItem(question, questionId));
+                    var questionNode = $(this.createNavItem(question, questionId));
 
                     list.append(questionNode);
-                    $("#" + questionId).click(handleNavigationClick(question));
+                    $("#" + questionId).click(this.handleNavigationClick(question));
                 }
             }
         }
-    }
-
-    function handleNavigationClick(item) {
-        return function(e) {
-            var skippedAt = player.currentTime();
-            e.preventDefault();
-            player.currentTime(item.timecode);
-            events.emit({
-                kind: "SKIP_TO_CONTENT",
-                video: document.location.href,
-                label: item.title,
-                videoTimeCode: player.currentTime(),
-                skippedAt: skippedAt
-            }, true);
-        };
-    }
+    };
 
     /**
      * @brief               Places a single input field used in questions.
@@ -206,20 +186,21 @@ var ivids = {};
      * @param offsetTop     Type: Integer. Y offset relative to top-left corner of player.
      * @param offsetLeft    Type: Integer. X offset relative to top-left corner of player.
      */
-    function placeInputField(fieldId, evalFunction, offsetTop, offsetLeft) {
-        $("#wrapper").append(createInputField(fieldId));
+    InteractiveVideoPlayer.prototype.placeInputField = function (fieldId, evalFunction, offsetTop, offsetLeft) {
+        var self = this;
+        $("#wrapper").append(this.createInputField(fieldId));
         var field = $("#" + fieldId);
         field.css({
             position: "absolute",
-            top: (offsetTop * scaleHeight) + "px",
-            left: (offsetLeft * scaleWidth) + "px",
-            minWidth: 90 * scaleWidth,
-            minHeight: 20 * scaleHeight
+            top: (offsetTop * self.scaleHeight) + "px",
+            left: (offsetLeft * self.scaleWidth) + "px",
+            minWidth: 90 * self.scaleWidth,
+            minHeight: 20 * self.scaleHeight
         });
         field.mathquill("editable");
-    }
+    };
 
-    function validateAnswer(field, value) {
+    InteractiveVideoPlayer.prototype.validateAnswer = function (field, value) {
         var answer = field.answer;
         switch (answer.type) {
             case "expression":
@@ -235,10 +216,6 @@ var ivids = {};
                     value = value.toLowerCase();
                     answer.value = answer.value.toLowerCase();
                 }
-                console.log(answer);
-                console.log(value);
-                console.log(answer.value);
-                console.log(answer.ignoreCase);
                 return value === answer.value;
             case "in-list":
                 return answer.value.indexOf(value) >= 0;
@@ -259,11 +236,11 @@ var ivids = {};
                 }
                 return answer.validator(value);
         }
-    }
+    };
 
-    function getVisibleQuestionID() {
-        for (var i = 0; i < timeline.length; i++) {
-            var item = timeline[i];
+    InteractiveVideoPlayer.prototype.getVisibleQuestionID = function () {
+        for (var i = 0; i < this.timeline.length; i++) {
+            var item = this.timeline[i];
             for (var j = 0; j < item.questions.length; j++) {
                 var question = item.questions[j];
                 if (question.visible) {
@@ -272,32 +249,32 @@ var ivids = {};
             }
         }
         return null;
-    }
+    };
 
-    function getVisibleQuestion() {
-        var id = getVisibleQuestionID();
+    InteractiveVideoPlayer.prototype.getVisibleQuestion = function () {
+        var id = this.getVisibleQuestionID();
         if (id === null) return null;
-        return timeline[id[0]].questions[id[1]];
-    }
+        return this.timeline[id[0]].questions[id[1]];
+    };
 
-    function removeAllQuestions() {
+    InteractiveVideoPlayer.prototype.removeAllQuestions = function () {
         $("#wrapper").find(".question").remove();
-        hideAllFields();
-    }
+        this.hideAllFields();
+    };
 
-    function hideAllFields() {
-        for (var i = questions.length - 1; i >= 0; i--) {
-            questions[i].visible = false;
+    InteractiveVideoPlayer.prototype.hideAllFields = function () {
+        for (var i = this.questions.length - 1; i >= 0; i--) {
+            this.questions[i].visible = false;
         }
-    }
+    };
 
-    function createInputField(id) {
+    InteractiveVideoPlayer.prototype.createInputField = function (id) {
         return '<span class="question" id="' + id + '"></span>';
-    }
+    };
 
-    function createNavItem(item, id) {
-        return '<li><a href="#" id="' + id + '">' + formatTime(item.timecode) +  ' - ' +  item.title + '</a></li>';
-    }
+    InteractiveVideoPlayer.prototype.createNavItem = function (item, id) {
+        return '<li><a href="#" id="' + id + '">' + formatTime(item.timecode) + ' - ' + item.title + '</a></li>';
+    };
 
     function formatTimeUnit(unit) {
         if (unit < 10) return "0" + Math.floor(unit);
@@ -329,7 +306,5 @@ var ivids = {};
         return result;
     }
 
-    ivids.bootstrap = bootstrap;
-    ivids.player = function() { return player; };
-    return ivids;
-})(ivids);
+    return InteractiveVideoPlayer;
+}());

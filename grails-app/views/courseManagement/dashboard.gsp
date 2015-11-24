@@ -270,6 +270,7 @@
                         <div class="answer-breakdown">
                             <sdu:card>
                                 <h5>VIDEO</h5>
+
                                 <p>Der har været <b>42 svar</b> fra <b>10 studerende</b>, samt <b>10 svar</b> fra gæster
                                 </p>
 
@@ -287,12 +288,17 @@
                                     <twbs:column md="6">
                                         <ul id="videoNavigation">
                                         </ul>
+                                        <twbs:button id="checkAnswers">
+                                            Tjek svar
+                                        </twbs:button>
                                     </twbs:column>
                                 </twbs:row>
                                 <hr>
+
                                 <div class="no-answer-selected">
                                     <h5 style="text-align: center;">Vælg et spørgsmål fra listen for at se information om det</h5>
                                 </div>
+
                                 <div class="answer-selected hide">
                                     <h5>Histogram over svar</h5>
                                     <canvas class="histogram" style="width: 100%; height: 300px"></canvas>
@@ -358,15 +364,13 @@
             });
         };
 
-        AnswerBreakdownComponent.prototype._onExpansion = function() {
+        AnswerBreakdownComponent.prototype._onExpansion = function () {
             this.bootstrapDemoVideo();
         };
 
-        AnswerBreakdownComponent.prototype.bootstrapDemoVideo = function() {
-            ivids.bootstrap(
-                    "#player",
-                    "5r8TkDyoBu4",
-                    true,
+        AnswerBreakdownComponent.prototype.bootstrapDemoVideo = function () {
+            var player = new InteractiveVideoPlayer("#player");
+            player.initPlayer("5r8TkDyoBu4", true,
                     [
                         {
                             "title": "Stedfunktionen",
