@@ -276,23 +276,27 @@
 
                                 <p>Videoen består af <b>9</b> spørgsmål. Vælg et af dem for at se hvordan der er blevet svaret på det givne spørgsmål:
                                 </p>
-                                <twbs:row>
-                                    <twbs:column md="6">
-                                        <div class="embed-responsive embed-responsive-16by9"
-                                             style="border: 1px solid black;">
-                                            <div id="wrapper" style="z-index: 20"></div>
 
-                                            <div id="player"></div>
-                                        </div>
-                                    </twbs:column>
-                                    <twbs:column md="6">
-                                        <ul id="videoNavigation">
-                                        </ul>
-                                        <twbs:button id="checkAnswers">
-                                            Tjek svar
-                                        </twbs:button>
-                                    </twbs:column>
-                                </twbs:row>
+                                <div class="player-container">
+                                    <twbs:row>
+                                        <twbs:column md="6">
+                                            <div class="embed-responsive embed-responsive-16by9"
+                                                 style="border: 1px solid black;">
+                                                <div class="wrapper" style="z-index: 20"></div>
+
+                                                <div class="player"></div>
+                                            </div>
+                                        </twbs:column>
+                                        <twbs:column md="6">
+                                            <ul class="video-navigation">
+                                            </ul>
+                                            <twbs:button class="check-button">
+                                                Tjek svar
+                                            </twbs:button>
+                                        </twbs:column>
+                                    </twbs:row>
+                                </div>
+
                                 <hr>
 
                                 <div class="no-answer-selected">
@@ -369,8 +373,8 @@
         };
 
         AnswerBreakdownComponent.prototype.bootstrapDemoVideo = function () {
-            var player = new InteractiveVideoPlayer("#player");
-            player.initPlayer("5r8TkDyoBu4", true,
+            var player = new InteractiveVideoPlayer(this.element.find(".player-container"));
+            player.startPlayer("5r8TkDyoBu4", true,
                     [
                         {
                             "title": "Stedfunktionen",

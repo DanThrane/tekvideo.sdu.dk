@@ -12,7 +12,7 @@
 </twbs:pageHeader>
 
 <div class="embed-responsive embed-responsive-16by9">
-    <div id="wrapper" style="z-index: 20"></div>
+    <div class="wrapper" id="wrapper" style="z-index: 20"></div>
     <div id="player"></div>
 </div>
 
@@ -73,7 +73,7 @@
         <h3>Indhold</h3>
     </twbs:pageHeader>
 
-    <ul id="videoNavigation">
+    <ul id="videoNavigation" class="video-navigation">
     </ul>
 
     <div class="sidebar-pull-bottom">
@@ -87,14 +87,18 @@
 <script type="text/javascript">
     $(document).ready(function () {
         var commentToDelete = null;
-        ivids.bootstrap(
-                "#player",
-                "${raw(video.youtubeId)}",
+
+        var player = new InteractiveVideoPlayer();
+        player.playerElement = $("#player");
+        player.wrapperElement = $("#wrapper");
+        player.navigationElement = $("#videoNavigation");
+        player.checkButton = $("#checkAnswers");
+
+        player.startPlayer("${raw(video.youtubeId)}",
                 ${video.videoType}
                 <g:if test="${video.timelineJson}">
                 , ${raw(video.timelineJson)}
-                </g:if>
-        );
+                </g:if>);
 
         %{-- Used by the event framework to determine the origin of the event --}%
         events.setMetaData({

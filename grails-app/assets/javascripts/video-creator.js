@@ -546,10 +546,18 @@ var Editor = {};
 
     var Preview = {};
     (function (exports) {
+        var player = null;
         function init() {
             $("#start-preview").click(function () {
                 events.disable();
-                ivids.bootstrap("#preview-player", videoId, isYouTube, currentTimeline);
+                if (player !== null) player.destroy();
+                player = new InteractiveVideoPlayer();
+                player.playerElement = $("#preview-player");
+                player.wrapperElement = $("#wrapper");
+                player.navigationElement = $("#videoNavigation");
+                player.checkButton = $("#checkAnswers");
+
+                player.startPlayer(videoId, isYouTube, currentTimeline);
                 MainPanel.showPreview();
             });
             $("#stop-preview").click(function () {

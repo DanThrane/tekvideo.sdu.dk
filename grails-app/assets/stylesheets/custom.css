@@ -208,14 +208,14 @@ body {
     justify-content: center;
 }
 
-#videoNavigation li {
+.video-navigation li {
     list-style: none;
     padding-left: 5px;
     border-left: 2px solid #0d87e9;
     margin-left: -25px;
 }
 
-#videoNavigation ul > li {
+.video-navigation ul > li {
     list-style: none;
     padding-left: 5px;
     margin-left: -50px;
@@ -223,7 +223,7 @@ body {
 }
 
 
-#videoNavigation li.active {
+.video-navigation li.active {
     border-left: 2px solid #90CAF9;
 }
 

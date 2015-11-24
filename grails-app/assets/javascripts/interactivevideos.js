@@ -2,11 +2,36 @@ var InteractiveVideoPlayer = (function () {
     var BASELINE_WIDTH = 640; // Wide 360p (Standard on YouTube)
     var BASELINE_HEIGHT = 360;
 
-    function InteractiveVideoPlayer(selector) {
-        this.selector = selector;
+    function InteractiveVideoPlayer(containerElement) {
+        var container = $(containerElement);
+        this.eventHandlers = {};
+
+        if (container !== undefined) {
+            this.playerElement = container.find(".player");
+            this.checkButton = container.find(".check-button");
+            this.navigationElement = container.find(".video-navigation");
+            this.wrapperElement = container.find(".wrapper");
+        }
     }
 
-    InteractiveVideoPlayer.prototype.initPlayer = function (videoId, isYouTube, timeline) {
+    InteractiveVideoPlayer.prototype.on = function (eventName, handler) {
+        var handlers = this.eventHandlers[eventName];
+        if (handlers === undefined) handlers = [];
+        handlers.push(handler);
+        this.eventHandlers[eventName] = handlers;
+    };
+
+    InteractiveVideoPlayer.prototype._fire = function (eventName, event) {
+        var handlers = this.eventHandlers[eventName];
+        if (handlers !== undefined) {
+            event.type = eventName;
+            for (var i = 0; i < handlers.length; i++) {
+                handlers[i](event);
+            }
+        }
+    };
+
+    InteractiveVideoPlayer.prototype.startPlayer = function (videoId, isYouTube, timeline) {
         var self = this;
         this.timeline = timeline;
         this.isYouTube = isYouTube;
@@ -17,16 +42,23 @@ var InteractiveVideoPlayer = (function () {
         this.buildNavigation();
 
         var constructor = (this.isYouTube) ? Popcorn.HTMLYouTubeVideoElement : Popcorn.HTMLVimeoVideoElement;
-        var wrapper = constructor(this.selector);
+        // Popcorn expects the element passed to be a DOM element, not a jQuery wrapper
+        var wrapper = constructor(this.playerElement[0]);
         wrapper.src = (this.isYouTube) ?
         "http://www.youtube.com/watch?v=" + videoId + "&controls=0" :
         "http://player.vimeo.com/video/" + videoId;
         this.player = Popcorn(wrapper);
 
         this.player.play();
-        this.player.on("timeupdate", function () { self.handleTimeUpdate(); });
-        this.player.on("seeked", function () { self.handleSeeked(); });
-        this.player.on("play", function () { self.removeAllQuestions() });
+        this.player.on("timeupdate", function () {
+            self.handleTimeUpdate();
+        });
+        this.player.on("seeked", function () {
+            self.handleSeeked();
+        });
+        this.player.on("play", function () {
+            self.removeAllQuestions()
+        });
         this.player.on("pause", function () {
             events.emit({
                 kind: "PAUSE_VIDEO",
@@ -35,29 +67,36 @@ var InteractiveVideoPlayer = (function () {
             }, true);
         });
 
-        this.player.on("loadstart", function () { self.initializeSize(); });
-        $(window).resize(function () { self.initializeSize(); });
-        setTimeout(function () { self.initializeSize(); }, 2000);
+        this.player.on("loadstart", function () {
+            self.initializeSize();
+        });
+        $(window).resize(function () {
+            self.initializeSize();
+        });
+        setTimeout(function () {
+            self.initializeSize();
+        }, 2000);
         this.initEventHandlers();
     };
 
     InteractiveVideoPlayer.prototype.destroy = function () {
-        Popcorn.destroy(player);
-        $(this.selector).html("");
+        Popcorn.destroy(this.player);
+        this.playerElement.html("");
         this.removeAllQuestions();
+        this.eventHandlers = {};
     };
 
     InteractiveVideoPlayer.prototype.initializeSize = function () {
         var maxWidth = -1;
         var maxHeight = -1;
-        $(this.selector).children().each(function (index, element) {
+        this.playerElement.children().each(function (index, element) {
             var $element = $(element);
             var height = $element.height();
             var width = $element.width();
             if (width > maxWidth) maxWidth = width;
             if (height > maxHeight) maxHeight = height;
         });
-        $("#wrapper").width(maxWidth).height(maxHeight);
+        this.wrapperElement.width(maxWidth).height(maxHeight);
         this.scaleHeight = maxHeight / BASELINE_HEIGHT;
         this.scaleWidth = maxWidth / BASELINE_WIDTH;
     };
@@ -98,7 +137,7 @@ var InteractiveVideoPlayer = (function () {
 
     InteractiveVideoPlayer.prototype.initEventHandlers = function () {
         var self = this;
-        $("#checkAnswers").click(function (e) {
+        this.checkButton.click(function (e) {
             e.preventDefault();
             var questionID = self.getVisibleQuestionID();
             var question = self.getVisibleQuestion();
@@ -152,7 +191,7 @@ var InteractiveVideoPlayer = (function () {
     };
 
     InteractiveVideoPlayer.prototype.buildNavigation = function () {
-        var nav = $("#videoNavigation");
+        var nav = this.navigationElement;
         nav.html("<ul></ul>");
         for (var i = 0; i < this.timeline.length; i++) {
             var item = this.timeline[i];
@@ -188,7 +227,7 @@ var InteractiveVideoPlayer = (function () {
      */
     InteractiveVideoPlayer.prototype.placeInputField = function (fieldId, evalFunction, offsetTop, offsetLeft) {
         var self = this;
-        $("#wrapper").append(this.createInputField(fieldId));
+        this.wrapperElement.append(this.createInputField(fieldId));
         var field = $("#" + fieldId);
         field.css({
             position: "absolute",
@@ -258,7 +297,7 @@ var InteractiveVideoPlayer = (function () {
     };
 
     InteractiveVideoPlayer.prototype.removeAllQuestions = function () {
-        $("#wrapper").find(".question").remove();
+        this.wrapperElement.find(".question").remove();
         this.hideAllFields();
     };
 

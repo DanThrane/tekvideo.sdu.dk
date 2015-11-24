@@ -1,17 +1,10 @@
-#wrapper {
+.wrapper {
     position: relative;
-pointer-events: none;
-background-color: transparent;
+    pointer-events: none;
+    background-color: transparent;
 }
 
-#frameOverlay {
-    z-index: 0;
-    position: absolute;
-    width: 800px;
-    height: 500px;
-}
-
-#player {
+.player {
     z-index: 1;
 }
 

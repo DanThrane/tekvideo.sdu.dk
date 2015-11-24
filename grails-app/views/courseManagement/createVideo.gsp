@@ -95,7 +95,7 @@
 </div>
 
 <g:content key="content-below-the-fold">
-    %{-- Attributes --}%
+%{-- Attributes --}%
     <div class="card-stack" id="attributes-stack">
         %{-- Edit subject --}%
         <div id="subject-form-card" class="card-item">
@@ -229,7 +229,7 @@
                     <h3>Indhold</h3>
                 </twbs:pageHeader>
 
-                <ul id="videoNavigation"></ul>
+                <ul id="videoNavigation" class="video-navigation"></ul>
 
                 <hr>
                 <twbs:button block="true" style="${ButtonStyle.DANGER}" id="stop-preview">
@@ -252,7 +252,7 @@
                 <twbs:select name="subject" labelText="Emne" list="${subjects}"/>
                 <twbs:textArea name="description" labelText="Beskrivelse"/>
                 <twbs:checkbox labelText="Synligt for studerende" name="visible"
-                               value="${video?.localStatus == NodeStatus.VISIBLE}" />
+                               value="${video?.localStatus == NodeStatus.VISIBLE}"/>
                 <twbs:button block="true" style="${ButtonStyle.INFO}" id="stopEdit" disabled="true">
                     <fa:icon icon="${FaIcon.UNLOCK}"/> Lås video op
                 </twbs:button>
@@ -264,8 +264,8 @@
                     <fa:icon icon="${FaIcon.CHECK}"/> Udgiv video
                 </twbs:button>
                 <p class="help-block">
-                Dette vil gemme videoen og gøre den synlig for alle brugere
-            </p>
+                    Dette vil gemme videoen og gøre den synlig for alle brugere
+                </p>
             </div>
         </div>
     </div>
