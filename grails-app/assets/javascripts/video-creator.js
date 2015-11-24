@@ -15,7 +15,29 @@ var Editor = {};
     var editingId = null;
     var isYouTube = false;
 
+    var scaleHeight;
+    var scaleWidth;
+
+    var BASELINE_WIDTH = 640; // Wide 360p (Standard on YouTube)
+    var BASELINE_HEIGHT = 360;
+
     var attributesStack = new CardStack("#attributes-stack");
+
+    function initSize() {
+        var maxWidth = -1;
+        var maxHeight = -1;
+        $("#player").children().each(function (index, element) {
+            var $element = $(element);
+            var height = $element.height();
+            var width = $element.width();
+            if (width > maxWidth) maxWidth = width;
+            if (height > maxHeight) maxHeight = height;
+        });
+
+        scaleHeight = 1 / (maxHeight / BASELINE_HEIGHT);
+        scaleWidth = 1 / (maxWidth / BASELINE_WIDTH);
+    }
+
 
     function setPublishEndpoint(endpoint) {
         publishEndpoint = endpoint;
@@ -68,6 +90,7 @@ var Editor = {};
         "http://www.youtube.com/watch?v=" + videoId + "&controls=0" :
         "http://player.vimeo.com/video/" + videoId;
         player = Popcorn(wrapper);
+        player.on("canplay", function() { initSize(); });
     }
 
     function startEditing() {
@@ -129,6 +152,9 @@ var Editor = {};
         Questions.init();
         Preview.init();
         Timeline.init();
+
+        $(window).resize(function () { initSize() });
+        setTimeout(function () { initSize(); }, 2000);
 
         $("#videoId").on('change textInput input', function () {
             var parsed = parseVideoID($(this).val());
@@ -227,11 +253,7 @@ var Editor = {};
         var editor = null;
         var defaultEditorText = null;
 
-        var scaleHeight;
-        var scaleWidth;
 
-        var BASELINE_WIDTH = 640; // Wide 360p (Standard on YouTube)
-        var BASELINE_HEIGHT = 360;
 
         /**
          * Displays the card item which holds attribute for the currently selected field type
@@ -455,28 +477,7 @@ var Editor = {};
             editor.getSession().setMode("ace/mode/javascript");
             defaultEditorText = editor.getValue();
 
-            $(window).resize(function () {
-                initSize()
-            });
-            setTimeout(function () {
-                initSize();
-            }, 2000);
             initDragging();
-        }
-
-        function initSize() {
-            var maxWidth = -1;
-            var maxHeight = -1;
-            $("#player").children().each(function (index, element) {
-                var $element = $(element);
-                var height = $element.height();
-                var width = $element.width();
-                if (width > maxWidth) maxWidth = width;
-                if (height > maxHeight) maxHeight = height;
-            });
-
-            scaleHeight = 1 / (maxHeight / BASELINE_HEIGHT);
-            scaleWidth = 1 / (maxWidth / BASELINE_WIDTH);
         }
 
         function placeFieldAt(target, x, y) {
