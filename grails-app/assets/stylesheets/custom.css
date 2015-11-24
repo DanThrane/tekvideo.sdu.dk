@@ -479,3 +479,10 @@ body {
         border-left-width: 0;
     }
 }
+.notification-comment-component {
+    margin: 20px;
+}
+
+.notification-comment-component .form-group, .notification-comment-component input {
+    width: 100% !important;
+}
