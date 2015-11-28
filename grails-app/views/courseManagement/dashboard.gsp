@@ -12,39 +12,32 @@
 <body>
 
 <g:content key="sidebar-left">
-    <b>Tree view of courses/subjects/videos</b><br/>
     <twbs:select
             list="${["Fra i dag", "Over den sidste uge", "Over den sidste måned", "Over de sidste 6 måneder", "Over det sidste år", "Siden start"]}"
             name="dataRange" labelText="Vis data"/>
-    <ul>
-        <g:each in="${0..3}">
+    <ul class="fa-ul">
+        <g:each in="${0..3}" var="i">
             <li>
-                <a href="#">Fag 1</a>
-                <ul>
-                    <li>
-                        <a href="#">Emne 1</a>
-                        <ul>
-                            <li><a href="#">Video 1</a></li>
-                            <li><a href="#">Video 1</a></li>
-                            <li><a href="#">Video 1</a></li>
-                        </ul>
-                    </li>
-                    <li>
-                        <a href="#">Emne 1</a>
-                        <ul>
-                            <li><a href="#">Video 1</a></li>
-                            <li><a href="#">Video 1</a></li>
-                            <li><a href="#">Video 1</a></li>
-                        </ul>
-                    </li>
-                    <li>
-                        <a href="#">Emne 1</a>
-                        <ul>
-                            <li><a href="#">Video 1</a></li>
-                            <li><a href="#">Video 1</a></li>
-                            <li><a href="#">Video 1</a></li>
-                        </ul>
-                    </li>
+                <fa:icon listItem="true" icon="${FaIcon.GRADUATION_CAP}"/>
+                <a href="#">Fag ${i}</a>
+                <a href="#" class="pull-right collapse-tree"><fa:icon icon="${FaIcon.COMPRESS}"/></a>
+                <ul class="fa-ul">
+                    <g:each in="${0..3}" var="j">
+                        <li>
+                            <fa:icon listItem="true" icon="${FaIcon.USERS}"/>
+                            <a href="#">Emne ${j}</a>
+                            <a href="#" class="pull-right collapse-tree"><fa:icon icon="${FaIcon.COMPRESS}"/></a>
+                            <ul class="fa-ul">
+                                <g:each in="${0..3}" var="k">
+                                    <li>
+                                        <fa:icon listItem="true" icon="${FaIcon.PLAY}"/>
+                                        <a href="#">Video ${k}</a>
+                                    </li>
+                                </g:each>
+                            </ul>
+                        </li>
+                    </g:each>
+
                 </ul>
             </li>
         </g:each>
@@ -83,87 +76,89 @@
         <twbs:row>
             <div id="stack" class="card-stack">
                 <div id="views" class="card-item">
-                    <twbs:row>
-                        <twbs:column md="6">
-                            <twbs:pageHeader><h3>Visninger <small>Over den sidste uge</small></h3></twbs:pageHeader>
-                            <canvas id="my-chart" style="width: 100%; height: 500px"></canvas>
-                        </twbs:column>
-                        <twbs:column md="6">
-                            <twbs:pageHeader><h3>Populære Videoer</h3></twbs:pageHeader>
-                            <sdu:card class="popular-video">
-                                <twbs:row>
-                                    <twbs:column md="1">
-                                        <h3>1</h3>
-                                    </twbs:column>
-                                    <twbs:column md="11">
-                                        <div>
-                                            <a href="#">Video 1</a>
-                                            fra
-                                            <a href="#">Emne 1</a>
-                                            i
-                                            <a href="#">Kursus 1</a></div>
+                    <twbs:column md="12">
+                        <twbs:row>
+                            <twbs:column md="6">
+                                <twbs:pageHeader><h3>Visninger <small>Over den sidste uge</small></h3></twbs:pageHeader>
+                                <canvas id="my-chart" style="width: 100%; height: 500px"></canvas>
+                            </twbs:column>
+                            <twbs:column md="6">
+                                <twbs:pageHeader><h3>Populære Videoer</h3></twbs:pageHeader>
+                                <sdu:card class="popular-video">
+                                    <twbs:row>
+                                        <twbs:column md="1">
+                                            <h3>1</h3>
+                                        </twbs:column>
+                                        <twbs:column md="11">
+                                            <div>
+                                                <a href="#">Video 1</a>
+                                                fra
+                                                <a href="#">Emne 1</a>
+                                                i
+                                                <a href="#">Kursus 1</a></div>
 
-                                        <div>I alt <i>42</i> visninger med <i>30</i> svar, hvoraf <i>20 (66%)</i> var korrekte
-                                        </div>
-                                    </twbs:column>
-                                </twbs:row>
-                            </sdu:card>
-                            <sdu:card class="popular-video">
-                                <twbs:row>
-                                    <twbs:column md="1">
-                                        <h3>2</h3>
-                                    </twbs:column>
-                                    <twbs:column md="11">
-                                        <div>
-                                            <a href="#">Video 1</a>
-                                            fra
-                                            <a href="#">Emne 1</a>
-                                            i
-                                            <a href="#">Kursus 1</a></div>
+                                            <div>I alt <i>42</i> visninger med <i>30</i> svar, hvoraf <i>20 (66%)</i> var korrekte
+                                            </div>
+                                        </twbs:column>
+                                    </twbs:row>
+                                </sdu:card>
+                                <sdu:card class="popular-video">
+                                    <twbs:row>
+                                        <twbs:column md="1">
+                                            <h3>2</h3>
+                                        </twbs:column>
+                                        <twbs:column md="11">
+                                            <div>
+                                                <a href="#">Video 1</a>
+                                                fra
+                                                <a href="#">Emne 1</a>
+                                                i
+                                                <a href="#">Kursus 1</a></div>
 
-                                        <div>I alt <i>42</i> visninger med <i>30</i> svar, hvoraf <i>20 (66%)</i> var korrekte
-                                        </div>
-                                    </twbs:column>
-                                </twbs:row>
-                            </sdu:card>
-                            <sdu:card class="popular-video">
-                                <twbs:row>
-                                    <twbs:column md="1">
-                                        <h3>3</h3>
-                                    </twbs:column>
-                                    <twbs:column md="11">
-                                        <div>
-                                            <a href="#">Video 1</a>
-                                            fra
-                                            <a href="#">Emne 1</a>
-                                            i
-                                            <a href="#">Kursus 1</a></div>
+                                            <div>I alt <i>42</i> visninger med <i>30</i> svar, hvoraf <i>20 (66%)</i> var korrekte
+                                            </div>
+                                        </twbs:column>
+                                    </twbs:row>
+                                </sdu:card>
+                                <sdu:card class="popular-video">
+                                    <twbs:row>
+                                        <twbs:column md="1">
+                                            <h3>3</h3>
+                                        </twbs:column>
+                                        <twbs:column md="11">
+                                            <div>
+                                                <a href="#">Video 1</a>
+                                                fra
+                                                <a href="#">Emne 1</a>
+                                                i
+                                                <a href="#">Kursus 1</a></div>
 
-                                        <div>I alt <i>42</i> visninger med <i>30</i> svar, hvoraf <i>20 (66%)</i> var korrekte
-                                        </div>
-                                    </twbs:column>
-                                </twbs:row>
-                            </sdu:card>
-                            <sdu:card class="popular-video">
-                                <twbs:row>
-                                    <twbs:column md="1">
-                                        <h3>4</h3>
-                                    </twbs:column>
-                                    <twbs:column md="11">
-                                        <div>
-                                            <a href="#">Video 1</a>
-                                            fra
-                                            <a href="#">Emne 1</a>
-                                            i
-                                            <a href="#">Kursus 1</a></div>
+                                            <div>I alt <i>42</i> visninger med <i>30</i> svar, hvoraf <i>20 (66%)</i> var korrekte
+                                            </div>
+                                        </twbs:column>
+                                    </twbs:row>
+                                </sdu:card>
+                                <sdu:card class="popular-video">
+                                    <twbs:row>
+                                        <twbs:column md="1">
+                                            <h3>4</h3>
+                                        </twbs:column>
+                                        <twbs:column md="11">
+                                            <div>
+                                                <a href="#">Video 1</a>
+                                                fra
+                                                <a href="#">Emne 1</a>
+                                                i
+                                                <a href="#">Kursus 1</a></div>
 
-                                        <div>I alt <i>42</i> visninger med <i>30</i> svar, hvoraf <i>20 (66%)</i> var korrekte
-                                        </div>
-                                    </twbs:column>
-                                </twbs:row>
-                            </sdu:card>
-                        </twbs:column>
-                    </twbs:row>
+                                            <div>I alt <i>42</i> visninger med <i>30</i> svar, hvoraf <i>20 (66%)</i> var korrekte
+                                            </div>
+                                        </twbs:column>
+                                    </twbs:row>
+                                </sdu:card>
+                            </twbs:column>
+                        </twbs:row>
+                    </twbs:column>
                 </div>
 
                 <div id="comments" class="card-item">
@@ -298,43 +293,71 @@
 
                                 <hr>
 
-                                <div class="participation"></div>
+                                <twbs:nav justified="true" style="${NavStyle.TAB}" class="sub-menu">
+                                    <twbs:navbarLink url="#!/participation" data-href="participation" active="true">
+                                        <fa:icon icon="${FaIcon.USERS}"/>
+                                        Deltagelse fra studerende
+                                    </twbs:navbarLink>
+                                    <twbs:navbarLink url="#!/breakdown" data-href="breakdown">
+                                        <fa:icon icon="${FaIcon.PIE_CHART}"/>
+                                        Analyse af svar
+                                    </twbs:navbarLink>
+                                    <twbs:navbarLink url="#!/raw" data-href="raw">
+                                        <fa:icon icon="${FaIcon.AREA_CHART}"/>
+                                        Rå data
+                                    </twbs:navbarLink>
+                                </twbs:nav>
 
-                                <hr>
+                                <div class="stats">
+                                    <div class="participation item">
+                                        <div class="participation-table"></div>
+                                    </div>
 
-                                <div class="no-answer-selected">
-                                    <h5 style="text-align: center;">Vælg et spørgsmål fra listen for at se information om det</h5>
-                                </div>
+                                    <div class="breakdown item hide">
+                                        <div class="no-answer-selected">
+                                            <h5 style="text-align: center;">Vælg et spørgsmål fra listen for at se information om det</h5>
+                                        </div>
 
-                                <div class="answer-selected">
-                                    <h5>Svar til <span class="question-name"></span></h5>
+                                        <div class="answer-selected">
+                                            <h5>Fordeling af svar til <span class="question-name"></span></h5>
 
-                                    <div class="field-statistics"></div>
+                                            <canvas class="histogram" style="width: 100%; height: 300px"></canvas>
+                                        </div>
+                                    </div>
 
-                                    <h5>Histogram over svar</h5>
-                                    <canvas class="histogram" style="width: 100%; height: 300px"></canvas>
+                                    <div class="raw item hide">
+                                        <div class="no-answer-selected">
+                                            <h5 style="text-align: center;">Vælg et spørgsmål fra listen for at se information om det</h5>
+                                        </div>
 
-                                    <script type="text/template" class="field-stat-template hide">
-                                    <b>{0}</b> <br/>
-                                    <twbs:table>
-                                        <thead>
-                                        <th>Bruger</th>
-                                        <th>Svar</th>
-                                        <th>Korrekt</th>
-                                        </thead>
-                                        <tbody>
-                                        {1}
-                                        </tbody>
-                                    </twbs:table>
-                                    </script>
+                                        <div class="answer-selected">
+                                            <h5>Svar til <span class="question-name"></span></h5>
 
-                                    <script type="text/template" class="field-stat-row-template">
-                                    <tr>
-                                        <td>{0}</td>
-                                        <td>{1}</td>
-                                        <td>{2}</td>
-                                    </tr>
-                                    </script>
+                                            <div class="field-statistics"></div>
+
+                                            <script type="text/template" class="field-stat-template hide">
+                                            <b>{0}</b> <br/>
+                                            <twbs:table>
+                                                <thead>
+                                                <th>Bruger</th>
+                                                <th>Svar</th>
+                                                <th>Korrekt</th>
+                                                </thead>
+                                                <tbody>
+                                                {1}
+                                                </tbody>
+                                            </twbs:table>
+                                            </script>
+
+                                            <script type="text/template" class="field-stat-row-template">
+                                            <tr>
+                                                <td>{0}</td>
+                                                <td>{1}</td>
+                                                <td>{2}</td>
+                                            </tr>
+                                            </script>
+                                        </div>
+                                    </div>
                                 </div>
                             </sdu:card>
                         </div>
@@ -379,23 +402,67 @@
         }
 
         AnswerBreakdownComponent.prototype.init = function () {
-            var ctx = this.element.find(".histogram").get(0).getContext("2d");
-            var data = {
-                labels: ["Svar: 22", "Svar: 42", "Svar: 50"],
-                datasets: [
-                    {
-                        label: "22",
-                        fillColor: "rgba(220,220,220,0.5)",
-                        strokeColor: "rgba(220,220,220,0.8)",
-                        highlightFill: "rgba(220,220,220,0.75)",
-                        highlightStroke: "rgba(220,220,220,1)",
-                        data: [65, 10, 30]
-                    }
-                ]
-            };
-            var histogram = new Chart(ctx).Bar(data, {
-                multiTooltipTemplate: "<\%= datasetLabel %> - <\%= value %>"
+            var self = this;
+
+            this.element.find(".sub-menu a").click(function (e) {
+                e.preventDefault();
+
+                self.element.find(".stats .item").addClass("hide");
+                var page = $(this).data("href");
+                self.element.find(".stats").find("." + page).removeClass("hide");
+
+                self.element.find(".sub-menu li").removeClass("active");
+                $(this).parent().addClass("active");
+                self.initAnswerSubPage(page);
             });
+        };
+
+        var COLORS = ["#F44336", "#E91E63", "#9C27B0", "#673AB7", "#3F51B5", "#2196F3", "#03A9F4", "#00BCD4",
+            "#009688", "#4CAF50", "#8BC34A", "#CDDC39", "#FFEB3B", "#FFC107", "#FF9800", "#FF5722", "#795548",
+            "#9E9E9E", "#607D8B"];
+
+        var HIGHLIGHT_COLORS = ["#EF5350", "#EC407A", "#AB47BC", "#7E57C2", "#5C6BC0", "#42A5F5", "#29B6F6",
+            "#26C6DA", "#26A69A", "#66BB6A", "#9CCC65", "#D4E157", "#FFEE58", "#FFCA28", "#FFA726", "#FF7043",
+            "#8D6E63", "#BDBDBD", "#78909C"];
+
+        function prepareAnswerAnalysis(answers) {
+            var prep = {};
+            for (var i = 0; i < answers.length; i++) {
+                if (answers[i].answer in prep) {
+                    prep[answers[i].answer]++;
+                } else {
+                    prep[answers[i].answer] = 1;
+                }
+            }
+
+            var labels = [];
+            var count = [];
+            for (var key in prep) {
+                if (!prep.hasOwnProperty(key)) continue;
+                labels.push(key);
+                count.push(prep[key]);
+            }
+
+            return {labels: labels, count: count};
+        }
+
+        AnswerBreakdownComponent.prototype.initAnswerSubPage = function (page) {
+            switch (page) {
+                case "breakdown":
+                    var ctx = this.element.find(".histogram").get(0).getContext("2d");
+                    var prep = prepareAnswerAnalysis(this.answers);
+                    var data = [];
+                    for (var i = 0; i < prep.labels.length; i++) {
+                        data.push({
+                            value: prep.count[i],
+                            color: COLORS[i],
+                            highlight: HIGHLIGHT_COLORS[i],
+                            label: "Svar " + prep.labels[i]
+                        });
+                    }
+                    var chart = new Chart(ctx).Pie(data);
+                    break;
+            }
         };
 
         AnswerBreakdownComponent.prototype._onExpansion = function () {
@@ -415,7 +482,7 @@
                 <g:each in="${0..2}" var="j">
                 {
                     "user": "A user ${i}",
-                    "answer": ${new Random().nextInt(50)},
+                    "answer": ${new Random().nextInt(20)},
                     "correct": ${new Random().nextBoolean()},
                     "subject": 1,
                     "question": 0,
@@ -479,7 +546,7 @@
                 self.displayField(e.subjectId, e.questionId);
             });
 
-            this.element.find(".participation").append(this.buildParticipationTable(this.analyzeParticipation()));
+            this.element.find(".participation-table").append(this.buildParticipationTable(this.analyzeParticipation()));
         };
 
         AnswerBreakdownComponent.prototype.displayField = function (subjectId, questionId) {
@@ -613,6 +680,12 @@
             var breakdown = new AnswerBreakdownComponent(element);
             breakdown.init();
             breakdown._onExpansion();
+        });
+
+        $(".collapse-tree").click(function (e) {
+            e.preventDefault();
+            $(this).parent().find("ul").slideToggle();
+            $(this).find("i").toggleClass("fa-compress fa-expand");
         });
     });
     var timeline = [];

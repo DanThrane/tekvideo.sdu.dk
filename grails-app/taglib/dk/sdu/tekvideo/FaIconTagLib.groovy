@@ -14,6 +14,7 @@ class FaIconTagLib {
         Boolean border = attrs.border ?: false
         Boolean inverse = attrs.inverse ?: false
         Boolean fixedWidth = attrs.fixedWidth ?: false
+        Boolean listItem = attrs.listItem ?: false
 
         out << "<i class=\"fa fa-$icon.name"
         if (rotate != -1) {
@@ -40,6 +41,9 @@ class FaIconTagLib {
         }
         if (fixedWidth) {
             out << " fa-fw"
+        }
+        if (listItem) {
+            out << " fa-li"
         }
         out << "\"></i>"
     }
