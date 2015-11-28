@@ -22,10 +22,6 @@ class CourseManagementController {
         }
     }
 
-    def dashboard() {
-
-    }
-
     def manage(Course course) {
         if (courseManagementService.canAccess(course)) {
             [course: course]
