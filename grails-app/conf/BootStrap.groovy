@@ -1,5 +1,6 @@
 import dk.sdu.tekvideo.*
 import dk.sdu.tekvideo.data.CourseData
+import dk.sdu.tekvideo.data.EventData
 import dk.sdu.tekvideo.data.SubjectData
 import dk.sdu.tekvideo.data.VideoData
 import dk.sdu.tekvideo.events.*
@@ -35,7 +36,6 @@ class BootStrap {
     }
 
     void createNewTestData() {
-        truncateTestData()
         if (Role.count() != 0) {
             println "Test data already found, skipping (Bootstrap)"
             return
@@ -53,68 +53,9 @@ class BootStrap {
             (1..3).each {
                 def subject = SubjectData.buildTestSubject("Subject", course, true)
                 (1..3).each {
-                    def vid = VideoData.buildTestVideo("Video", subject, true)
-                    def video = vid.id
-
-                    new VisitVideoEvent([
-                            timestamp: System.currentTimeMillis() - (1000 * 60 * 35),
-                            user     : studentUser,
-                            videoId  : video]).save(flush: true, failOnError: true)
-                    new VisitVideoEvent([
-                            timestamp: System.currentTimeMillis() - (1000 * 60 * 90),
-                            user     : studentUser,
-                            videoId  : video]).save(flush: true, failOnError: true)
-                    new VisitVideoEvent([
-                            timestamp: System.currentTimeMillis() - (1000 * 60 * 300),
-                            user     : studentUser,
-                            videoId  : video]).save(flush: true, failOnError: true)
-                    new VisitVideoEvent([
-                            timestamp: System.currentTimeMillis(),
-                            user     : null,
-                            videoId  : video]).save(flush: true, failOnError: true)
-                    new VisitVideoEvent([
-                            timestamp: System.currentTimeMillis(),
-                            user     : null,
-                            videoId  : video]).save(flush: true, failOnError: true)
-                    new VisitVideoEvent([
-                            timestamp: System.currentTimeMillis(),
-                            user     : null,
-                            videoId  : video]).save(flush: true, failOnError: true)
-
-                    new AnswerQuestionEvent([
-                            timestamp: System.currentTimeMillis(),
-                            user     : studentUser,
-
-                            answer   : "answer",
-                            correct  : false,
-                            subject  : 0,
-                            question : 1,
-                            field    : 0,
-                            videoId  : video,
-                    ]).save(flush: true, failOnError: true)
-                    new AnswerQuestionEvent([
-                            timestamp: System.currentTimeMillis(),
-                            user     : studentUser,
-
-                            answer   : "answer",
-                            correct  : false,
-                            subject  : 1,
-                            question : 1,
-                            field    : 0,
-                            videoId  : video,
-                    ]).save(flush: true, failOnError: true)
-                    new AnswerQuestionEvent([
-                            timestamp: System.currentTimeMillis(),
-                            user     : studentUser,
-
-                            answer   : "answer",
-                            correct  : false,
-                            subject  : 2,
-                            question : 1,
-                            field    : 0,
-                            videoId  : video,
-                    ]).save(flush: true, failOnError: true)
-
+                    def video = VideoData.buildTestVideo("Video", subject, true)
+                    (1..10).each { EventData.buildVisitVideoEvent(video) }
+                    (1..10).each { EventData.buildAnswerEvent(video) }
                 }
             }
         }
