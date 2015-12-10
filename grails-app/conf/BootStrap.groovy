@@ -2,8 +2,7 @@ import dk.sdu.tekvideo.*
 import dk.sdu.tekvideo.data.CourseData
 import dk.sdu.tekvideo.data.SubjectData
 import dk.sdu.tekvideo.data.VideoData
-import dk.sdu.tekvideo.events.AnswerQuestionEvent
-import dk.sdu.tekvideo.events.VisitVideoEvent
+import dk.sdu.tekvideo.events.*
 
 class BootStrap {
 
@@ -18,7 +17,25 @@ class BootStrap {
         }
     }
 
+    void truncateTestData() {
+        Comment.executeUpdate('delete from Comment')
+        Video.executeUpdate('delete from Video')
+        Subject.executeUpdate('delete from Subject')
+        Course.executeUpdate('delete from Course')
+
+        CourseStudent.executeUpdate('delete from CourseStudent')
+        Event.executeUpdate('delete from Event')
+
+        Student.executeUpdate('delete from Student')
+        Teacher.executeUpdate('delete from Teacher')
+
+        UserRole.executeUpdate('delete from UserRole')
+        User.executeUpdate('delete from User')
+        Role.executeUpdate('delete from Role')
+    }
+
     void createNewTestData() {
+        truncateTestData()
         if (Role.count() != 0) {
             println "Test data already found, skipping (Bootstrap)"
             return
@@ -42,63 +59,62 @@ class BootStrap {
                     new VisitVideoEvent([
                             timestamp: System.currentTimeMillis() - (1000 * 60 * 35),
                             user     : studentUser,
-                            video    : video]).save(flush: true, failOnError: true)
+                            videoId  : video]).save(flush: true, failOnError: true)
                     new VisitVideoEvent([
                             timestamp: System.currentTimeMillis() - (1000 * 60 * 90),
                             user     : studentUser,
-                            video    : video]).save(flush: true, failOnError: true)
+                            videoId  : video]).save(flush: true, failOnError: true)
                     new VisitVideoEvent([
                             timestamp: System.currentTimeMillis() - (1000 * 60 * 300),
                             user     : studentUser,
-                            video    : video]).save(flush: true, failOnError: true)
+                            videoId  : video]).save(flush: true, failOnError: true)
                     new VisitVideoEvent([
                             timestamp: System.currentTimeMillis(),
                             user     : null,
-                            video    : video]).save(flush: true, failOnError: true)
+                            videoId  : video]).save(flush: true, failOnError: true)
                     new VisitVideoEvent([
                             timestamp: System.currentTimeMillis(),
                             user     : null,
-                            video    : video]).save(flush: true, failOnError: true)
+                            videoId  : video]).save(flush: true, failOnError: true)
                     new VisitVideoEvent([
                             timestamp: System.currentTimeMillis(),
                             user     : null,
-                            video    : video]).save(flush: true, failOnError: true)
+                            videoId  : video]).save(flush: true, failOnError: true)
 
                     new AnswerQuestionEvent([
                             timestamp: System.currentTimeMillis(),
                             user     : studentUser,
-                            video    : video,
-                            answer   : "42",
-                            correct  : true
-                    ]).save(flush: true, failOnError: true)
-                    new AnswerQuestionEvent([
-                            timestamp: System.currentTimeMillis(),
-                            user     : null,
-                            video    : video,
-                            answer   : "42",
-                            correct  : true
-                    ]).save(flush: true, failOnError: true)
-                    new AnswerQuestionEvent([
-                            timestamp: System.currentTimeMillis(),
-                            user     : null,
-                            video    : video,
-                            answer   : "1",
-                            correct  : false
+
+                            answer   : "answer",
+                            correct  : false,
+                            subject  : 0,
+                            question : 1,
+                            field    : 0,
+                            videoId  : video,
                     ]).save(flush: true, failOnError: true)
                     new AnswerQuestionEvent([
                             timestamp: System.currentTimeMillis(),
                             user     : studentUser,
-                            video    : video,
-                            answer   : "1",
-                            correct  : false
+
+                            answer   : "answer",
+                            correct  : false,
+                            subject  : 1,
+                            question : 1,
+                            field    : 0,
+                            videoId  : video,
                     ]).save(flush: true, failOnError: true)
                     new AnswerQuestionEvent([
                             timestamp: System.currentTimeMillis(),
-                            user     : null,
-                            video    : video,
-                            answer   : "2",
-                            correct  : false
+                            user     : studentUser,
+
+                            answer   : "answer",
+                            correct  : false,
+                            subject  : 2,
+                            question : 1,
+                            field    : 0,
+                            videoId  : video,
                     ]).save(flush: true, failOnError: true)
+
                 }
             }
         }

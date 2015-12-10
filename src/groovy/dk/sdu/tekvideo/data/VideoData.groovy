@@ -23,7 +23,7 @@ class VideoData {
         ])
 
         if (save) {
-            video.save(failOnError: true, flush: true)
+            subject.addToVideos(video).save(failOnError: true, flush: true)
         }
 
         return video

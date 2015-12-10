@@ -583,12 +583,8 @@ databaseChangeLog = {
 	}
 
 	include file: 'add-video-belongs-to-subject.groovy'
-
 	include file: 'add-field-info-to-answer-event.groovy'
-
 	include file: 'add-node-statuses.groovy'
-
 	include file: 'embed-semester-in-course.groovy'
-
 	include file: 'add-course-uniqueness-constraint.groovy'
 }

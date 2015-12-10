@@ -15,6 +15,7 @@ class Video implements Node {
         youtubeId       nullable: false, blank: false
         timelineJson    nullable: true
         description     nullable: true
+        videos_idx      nullable: true
     }
 
     static belongsTo = [subject: Subject]
