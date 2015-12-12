@@ -24,11 +24,7 @@ class ServiceResult<E> {
         return map
     }
 
-    private ServiceResult() {
-        // TODO Figure out of we really need to do this on every single instance
-        // Something about a bug in bootstrap and JSON marshallers
-        JSON.registerObjectMarshaller(ServiceResult, jsonMarshaller)
-    }
+    private ServiceResult() {}
 
     static def <E> ServiceResult<E> ok() {
         ok(null, "service_result.success")
