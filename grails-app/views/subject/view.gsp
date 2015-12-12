@@ -31,23 +31,21 @@
     </twbs:column>
 </twbs:row>
 
-<g:each status="i" in="${subject.videos}" var="video">
-    <g:if test="${video.localStatus == NodeStatus.VISIBLE}">
-        <sdu:card>
-            <twbs:column cols="2">
-                <img src="http://img.youtube.com/vi/${video.youtubeId}/hqdefault.jpg" class="img-responsive"
-                     alt="Video thumbnail">
-            </twbs:column>
-            <twbs:column cols="10">
-                <sdu:linkToVideo video="${video}">
-                    ${video.name}
-                </sdu:linkToVideo>
-                <p>
-                    <markdown:renderHtml>${video.description}</markdown:renderHtml>
-                </p>
-            </twbs:column>
-        </sdu:card>
-    </g:if>
+<g:each status="i" in="${subject.visibleVideos}" var="video">
+    <sdu:card>
+        <twbs:column cols="2">
+            <img src="http://img.youtube.com/vi/${video.youtubeId}/hqdefault.jpg" class="img-responsive"
+                 alt="Video thumbnail">
+        </twbs:column>
+        <twbs:column cols="10">
+            <sdu:linkToVideo video="${video}">
+                ${video.name}
+            </sdu:linkToVideo>
+            <p>
+                <markdown:renderHtml>${video.description}</markdown:renderHtml>
+            </p>
+        </twbs:column>
+    </sdu:card>
 </g:each>
 
 <g:render template="/course/sidebar" model="${[course: subject.course]}"/>
