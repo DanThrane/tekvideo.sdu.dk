@@ -192,6 +192,8 @@ class CourseManagementService {
     }
 
     boolean canAccess(Course course) {
+        println course.teacher
+        println teachingService.authenticatedTeacher
         return course.teacher == teachingService.authenticatedTeacher
     }
 }

@@ -486,3 +486,7 @@ body {
 .notification-comment-component .form-group, .notification-comment-component input {
     width: 100% !important;
 }
+
+.tree .selected {
+    font-weight: 600;
+}
