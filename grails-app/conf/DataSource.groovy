@@ -30,7 +30,6 @@ environments {
             url = "jdbc:postgresql://localhost:5432/tekvideo-dev"
             username = "devuser"
             password = "devpassword"
-
         }
     }
     test {
