@@ -31,11 +31,6 @@ $(function () {
             onDataChange();
         });
 
-        $(".notification-comment-component").each(function (idx, element) {
-            var component = new NotificationCommentComponent(element);
-            component.init();
-        });
-
         $(".answer-breakdown").each(function (idx, element) {
             var breakdown = new AnswerBreakdown(element);
             breakdown.init();

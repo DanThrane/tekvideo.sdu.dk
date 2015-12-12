@@ -41,4 +41,19 @@ class DashboardController {
             render node as JSON
         }
     }
+
+    def comments(String identifier, Integer period) {
+        def node = dashboardService.nodeFromIdentifier(identifier)
+        if (node.success) {
+            def leaves = dashboardService.findLeaves(node.result)
+            if (leaves.success) {
+                def stats = dashboardService.findRecentComments(leaves.result, period)
+                render stats as JSON
+            } else {
+                render leaves as JSON
+            }
+        } else {
+            render node as JSON
+        }
+    }
 }

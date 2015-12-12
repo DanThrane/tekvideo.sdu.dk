@@ -112,30 +112,6 @@ class DashboardService {
         return [labels: labels, data: data]
     }
 
-    Map asdqwe(List<Video> leaves, Long period) {
-        if (leaves == null) leaves = []
-        def videoIds = leaves.stream().map { it.id }.collect(Collectors.toList())
-        long from = System.currentTimeMillis() - period * 24 * 60 * 60 * 1000
-        long to = System.currentTimeMillis()
-
-        List<AnswerQuestionEvent> answerEvents = period <= 0 ?
-                AnswerQuestionEvent.findAllByVideoIdInList(videoIds).findAll { it != null } :
-                AnswerQuestionEvent.findAllByVideoIdInListAndTimestampBetween(videoIds, from, to).findAll { it != null }
-
-        List<VisitVideoEvent> visitEvents = period <= 0 ?
-                VisitVideoEvent.findAllByVideoIdInList(videoIds).findAll { it != null } :
-                VisitVideoEvent.findAllByVideoIdInListAndTimestampBetween(videoIds, from, to).findAll { it != null }
-
-        long totalVisits = visitEvents.size()
-        long totalAnswers = answerEvents.size()
-        long correctAnswers = answerEvents.findAll { it.correct }.size()
-
-        return [totalVisits   : totalVisits,
-                totalAnswers  : totalAnswers,
-                correctAnswers: correctAnswers]
-    }
-
-
     List<Map> findPopularVideos(List<Video> leaves, Long period) {
         if (leaves == null) leaves = []
         def videoIds = leaves.stream().map { it.id }.collect(Collectors.toList())
@@ -197,6 +173,57 @@ class DashboardService {
                     "answerCount": it[1] ?: 0,
                     "correctAnswers": it[2] ?: 0,
                     "visits": it[3] ?: 0,
+            ]
+        }
+    }
+
+    List<Map> findRecentComments(List<Video> leaves, Long period) {
+        if (leaves == null) leaves = []
+        def videoIds = leaves.stream().map { it.id }.collect(Collectors.toList())
+        long from = System.currentTimeMillis() - period * 24 * 60 * 60 * 1000
+        long to = System.currentTimeMillis()
+
+        String query = $/
+            SELECT
+                myusers.username,
+                user_id AS user_id,
+                video.id AS video_id,
+                video.name AS video_title,
+                comment.date_created,
+                contents,
+                comment_id
+            FROM
+                comment,
+                video_comment,
+                myusers,
+                video
+            WHERE
+                video_comment.comment_id = comment.id AND
+                video_comment.video_comments_id IN :video_ids AND
+                comment.date_created >= to_timestamp(:from_timestamp) AND
+                comment.date_created <= to_timestamp(:to_timestamp) AND
+                myusers.id = comment.user_id AND
+                video.id = video_comment.video_comments_id
+            ORDER BY
+                video_comment.video_comments_id;
+        /$
+
+        def resultList = sessionFactory.currentSession
+                .createSQLQuery(query)
+                .setParameterList("video_ids", videoIds)
+                .setLong("from_timestamp", (long) (from / 1000))
+                .setLong("to_timestamp", (long) (to / 1000))
+                .list()
+
+        return resultList.collect {
+            [
+                    "username": it[0],
+                    "userId": it[1],
+                    "videoId": it[2],
+                    "videoTitle": it[3],
+                    "dateCreated": it[4],
+                    "comment": it[5],
+                    "commentId": it[6]
             ]
         }
     }
