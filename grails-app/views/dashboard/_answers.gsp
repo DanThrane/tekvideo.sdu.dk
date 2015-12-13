@@ -1,7 +1,6 @@
 <%@ page import="dk.sdu.tekvideo.DashboardPeriod; dk.danthrane.twbs.NavStyle; dk.sdu.tekvideo.NodeStatus; dk.danthrane.twbs.ButtonSize; dk.danthrane.twbs.ButtonStyle; dk.sdu.tekvideo.FaIcon" contentType="text/html;charset=UTF-8" %>
 <div id="answers" class="card-item active">
     <twbs:column md="12">
-        <twbs:pageHeader><h4>Et emne</h4></twbs:pageHeader>
         <div id="answer-thumbnail-container"></div>
     </twbs:column>
 
@@ -24,7 +23,12 @@
         <twbs:column>
             <div class="answer-breakdown">
                 <sdu:card>
-                    <h5>{0}</h5>
+                    <h5>
+                        {0}
+                        <div class="pull-right">
+                            <twbs:button style="${ButtonStyle.DANGER}" class="close-answer-breakdown">&times;</twbs:button>
+                        </div>
+                    </h5>
 
                     <p>Vælg et spørgsmål af dem for at se hvordan der er blevet svaret på det givne spørgsmål:</p>
 

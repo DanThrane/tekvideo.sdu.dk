@@ -38,7 +38,7 @@ var AnswersPage = (function () {
                 ));
 
                 currentRow.append(template);
-                $(template).click(thumbnailHandler(self.app, video, students, period));
+                $(template).click(thumbnailHandler(self, self.app, video, students, period));
             }
         }).always(function() {
             self.app.removeSpinner();
@@ -47,10 +47,19 @@ var AnswersPage = (function () {
         });
     };
 
-    function thumbnailHandler(app, video, students, period) {
-        var answerBreakdown = new AnswerBreakdown(app, video, students, period);
+    AnswersPage.prototype.hide = function () {
+        $("#answer-thumbnail-container").hide();
+    };
+
+    AnswersPage.prototype.show = function () {
+        $("#answer-thumbnail-container").show();
+    };
+
+    function thumbnailHandler(answerPage, app, video, students, period) {
+        var answerBreakdown = new AnswerBreakdown(answerPage, app, video, students, period);
         return function(e) {
             e.preventDefault();
+            answerPage.hide();
             answerBreakdown.init();
         };
     }

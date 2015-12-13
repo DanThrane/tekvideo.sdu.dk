@@ -7,7 +7,8 @@ var AnswerBreakdown = (function () {
         "#26C6DA", "#26A69A", "#66BB6A", "#9CCC65", "#D4E157", "#FFEE58", "#FFCA28", "#FFA726", "#FF7043",
         "#8D6E63", "#BDBDBD", "#78909C"];
 
-    function AnswerBreakdown(app, video, students, period) {
+    function AnswerBreakdown(answerPage, app, video, students, period) {
+        this.answerPage = answerPage;
         this.video = video;
         this.timeline = JSON.parse(video.timelineJson);
         this.students = students.map(function(e) { return e.username; });
@@ -38,6 +39,12 @@ var AnswerBreakdown = (function () {
             self.element.find(".sub-menu li").removeClass("active");
             $(this).parent().addClass("active");
             self.initAnswerSubPage(page);
+        });
+
+        this.element.find(".close-answer-breakdown").click(function (e) {
+            e.preventDefault();
+            self.answerPage.show();
+            $container.empty(); // Remove ourselves from the DOM
         });
 
         this.findAnswers();
