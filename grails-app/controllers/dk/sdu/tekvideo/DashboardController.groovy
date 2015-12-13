@@ -1,5 +1,6 @@
 package dk.sdu.tekvideo
 
+import dk.sdu.tekvideo.events.AnswerQuestionEvent
 import grails.converters.JSON
 import org.springframework.security.access.annotation.Secured
 
@@ -56,4 +57,34 @@ class DashboardController {
             render node as JSON
         }
     }
+
+    def videos(String identifier) {
+        def node = dashboardService.nodeFromIdentifier(identifier)
+        if (node.success) {
+            def leaves = dashboardService.findLeaves(node.result)
+            if (leaves.success) {
+                render leaves.result as JSON
+            } else {
+                render leaves as JSON
+            }
+        } else {
+            render node as JSON
+        }
+    }
+
+    def students(String identifier) {
+        def node = dashboardService.nodeFromIdentifier(identifier)
+        if (node.success) {
+            render dashboardService.findStudents(node.result) as JSON
+        } else {
+            render node as JSON
+        }
+    }
+
+    def answers(Video id, Long period) {
+        def answers = dashboardService.getAnswers(id, period)
+        response.status = answers.suggestedHttpStatus
+        render answers as JSON
+    }
+
 }

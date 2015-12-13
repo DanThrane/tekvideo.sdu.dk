@@ -1,8 +1,5 @@
 package dk.sdu.tekvideo
 
-import dk.sdu.tekvideo.ServiceError
-import grails.converters.JSON
-
 /**
  * A standardized way for a service to report back a result.
  *

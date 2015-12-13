@@ -12,6 +12,10 @@ class BootStrap {
 
     def init = { servletContext ->
         JSON.registerObjectMarshaller(ServiceResult, ServiceResult.jsonMarshaller)
+        JSON.registerObjectMarshaller(AnswerQuestionEvent, AnswerQuestionEvent.jsonMarshaller)
+        JSON.registerObjectMarshaller(Video, Video.jsonMarshaller)
+        JSON.registerObjectMarshaller(Student, Student.jsonMarshaller)
+
         environments {
             development {
                 createNewTestData()

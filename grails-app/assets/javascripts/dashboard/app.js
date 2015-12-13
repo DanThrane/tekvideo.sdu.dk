@@ -6,7 +6,7 @@
 $(function () {
     (function () {
         var exports = {};
-        exports.activePage = "views";
+        exports.activePage = "answers";
         exports.root = null;
 
         var stack = new CardStack("#stack");
@@ -29,12 +29,6 @@ $(function () {
             $(this).parent().addClass("active");
             exports.activePage = id;
             onDataChange();
-        });
-
-        $(".answer-breakdown").each(function (idx, element) {
-            var breakdown = new AnswerBreakdown(element);
-            breakdown.init();
-            breakdown._onExpansion();
         });
 
         var treeNodes = $(".collapse-tree");

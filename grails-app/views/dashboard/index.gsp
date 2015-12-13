@@ -57,7 +57,7 @@
         <twbs:row>
             <twbs:column md="12">
                 <twbs:nav style="${NavStyle.TAB}" justified="true">
-                    <twbs:navbarLink uri="#" data-href="views" class="menu-item" active="true">
+                    <twbs:navbarLink uri="#" data-href="views" class="menu-item">
                         <fa:icon icon="${FaIcon.YOUTUBE_PLAY}"/>
                         Afspilninger
                         <twbs:badge>42</twbs:badge>
@@ -72,7 +72,7 @@
                         Aktivitet
                         <twbs:badge>12</twbs:badge>
                     </twbs:navbarLink>
-                    <twbs:navbarLink uri="#" data-href="answers" class="menu-item">
+                    <twbs:navbarLink uri="#" data-href="answers" class="menu-item" active="true">
                         <fa:icon icon="${FaIcon.PENCIL_SQUARE}"/>
                         Svar
                         <twbs:badge>18</twbs:badge>

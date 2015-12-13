@@ -28,6 +28,18 @@ class Video implements Node {
         videos_idx updateable: false, insertable: false
     }
 
+    static jsonMarshaller = { Video it ->
+        [
+                id          : it.id,
+                name        : it.name,
+                youtubeId   : it.youtubeId,
+                timelineJson: it.timelineJson,
+                description : it.description,
+                videoType   : it.videoType,
+                dateCreated : it.dateCreated,
+        ]
+    }
+
     String getDescription() {
         if (description == null) return "Ingen beskrivelse"
         return description

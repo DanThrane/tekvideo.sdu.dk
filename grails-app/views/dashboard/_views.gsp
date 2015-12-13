@@ -1,9 +1,9 @@
 <%@ page import="dk.sdu.tekvideo.DashboardPeriod; dk.danthrane.twbs.NavStyle; dk.sdu.tekvideo.NodeStatus; dk.danthrane.twbs.ButtonSize; dk.danthrane.twbs.ButtonStyle; dk.sdu.tekvideo.FaIcon" contentType="text/html;charset=UTF-8" %>
-<div id="views" class="card-item active">
+<div id="views" class="card-item">
     <twbs:column md="12">
         <twbs:row>
             <twbs:column md="6">
-                <twbs:pageHeader><h3>Visninger <small>Over den sidste uge</small></h3></twbs:pageHeader>
+                <twbs:pageHeader><h3>Visninger</h3></twbs:pageHeader>
                 <canvas id="my-chart" style="width: 100%; height: 500px"></canvas>
             </twbs:column>
             <twbs:column md="6">

@@ -166,13 +166,13 @@ class DashboardService {
             def video = Video.get(it[0] as Long)
 
             [
-                    "videoId": it[0],
-                    "videoName": video.name,
-                    "subjectName": video.subject.name,
-                    "courseName": video.subject.course.name,
-                    "answerCount": it[1] ?: 0,
+                    "videoId"       : it[0],
+                    "videoName"     : video.name,
+                    "subjectName"   : video.subject.name,
+                    "courseName"    : video.subject.course.name,
+                    "answerCount"   : it[1] ?: 0,
                     "correctAnswers": it[2] ?: 0,
-                    "visits": it[3] ?: 0,
+                    "visits"        : it[3] ?: 0,
             ]
         }
     }
@@ -217,14 +217,32 @@ class DashboardService {
 
         return resultList.collect {
             [
-                    "username": it[0],
-                    "userId": it[1],
-                    "videoId": it[2],
-                    "videoTitle": it[3],
+                    "username"   : it[0],
+                    "userId"     : it[1],
+                    "videoId"    : it[2],
+                    "videoTitle" : it[3],
                     "dateCreated": it[4],
-                    "comment": it[5],
-                    "commentId": it[6]
+                    "comment"    : it[5],
+                    "commentId"  : it[6]
             ]
+        }
+    }
+
+    Set<Student> findStudents(Node node) {
+        return CourseStudent.findAllByCourse(findCourse(node)).student // TODO Don't think this is efficient
+    }
+
+    ServiceResult<List<AnswerQuestionEvent>> getAnswers(Video video, Long period) {
+        if (video) {
+            if (courseManagementService.canAccess(video.subject.course)) {
+                long from = System.currentTimeMillis() - period * 24 * 60 * 60 * 1000
+                long to = System.currentTimeMillis()
+                ok item: AnswerQuestionEvent.findAllByVideoIdAndTimestampBetween(video.id, from, to)
+            } else {
+                fail message: "You are not authorized to access this video!", suggestedHttpStatus: 403
+            }
+        } else {
+            fail message: "Unknown video", suggestedHttpStatus: 404
         }
     }
 }
