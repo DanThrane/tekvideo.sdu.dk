@@ -144,7 +144,7 @@ class DashboardService {
                 ) AS answers ON (event.video_id = answers.video_id)
             WHERE
                 class='dk.sdu.tekvideo.events.VisitVideoEvent' AND
-                event.video_id IN (SELECT id FROM video) AND
+                event.video_id IN :video_ids AND
                 event.timestamp >= :from_timestamp AND
                 event.timestamp <= :to_timestamp AND
                 event.video_id IN :video_ids
@@ -243,6 +243,97 @@ class DashboardService {
             }
         } else {
             fail message: "Unknown video", suggestedHttpStatus: 404
+        }
+    }
+
+    ServiceResult<List<Map>> findStudentActivity(Node node, List<Video> leaves, Long period) {
+        def course = findCourse(node)
+        if (leaves == null) leaves = []
+        def videoIds = leaves.stream().map { it.id }.collect(Collectors.toList())
+        if (course) {
+            long from = System.currentTimeMillis() - period * 24 * 60 * 60 * 1000
+            long to = System.currentTimeMillis()
+
+            String query = $/
+                SELECT
+                    course_students.username,
+                    course_students.user_id,
+                    course_students.elearn_id,
+                    course_students.student_id,
+                    answers.answer_count,
+                    answers.correct_answers,
+                    views.unique_views
+                FROM
+                  (
+                    SELECT
+                        myusers.username as username,
+                        myusers.elearn_id as elearn_id,
+                        myusers.id as user_id,
+                        student.id as student_id
+                    FROM
+                        course,
+                        course_student,
+                        myusers,
+                        student
+                    WHERE
+                        course.id = :course_id AND
+                        course.id = course_student.course_id AND
+                        student.id = course_student.student_id AND
+                        myusers.id = student.user_id
+                  ) AS course_students
+                  LEFT OUTER JOIN
+                  (
+                    SELECT
+                        user_id,
+                        COUNT(*) AS answer_count,
+                        SUM(CASE correct WHEN TRUE THEN 1 ELSE 0 END) AS correct_answers
+                    FROM
+                        event
+                    WHERE
+                        event.class = 'dk.sdu.tekvideo.events.AnswerQuestionEvent' AND
+                        event.timestamp >= :from_timestamp AND
+                        event.timestamp <= :to_timestamp AND
+                        event.video_id IN :video_ids
+                    GROUP BY
+                        user_id
+                  ) AS answers ON (answers.user_id = course_students.user_id)
+                  LEFT OUTER JOIN
+                  (
+                    SELECT
+                        user_id,
+                        COUNT(DISTINCT video_id) AS unique_views
+                    FROM
+                        event
+                    WHERE
+                        event.class = 'dk.sdu.tekvideo.events.VisitVideoEvent' AND
+                        event.timestamp >= :from_timestamp AND
+                        event.timestamp <= :to_timestamp AND
+                        event.video_id IN :video_ids
+                    GROUP BY
+                        user_id
+                  ) AS views ON(answers.user_id = views.user_id);
+            /$
+            def resultList = sessionFactory.currentSession
+                    .createSQLQuery(query)
+                    .setParameterList("video_ids", videoIds)
+                    .setLong("course_id", course.id)
+                    .setLong("from_timestamp", from)
+                    .setLong("to_timestamp", to)
+                    .list()
+
+            ok item: resultList.collect {
+                [
+                        username      : it[0],
+                        userId        : it[1],
+                        elearnId      : it[2],
+                        studentId     : it[3],
+                        answerCount   : it[4] ?: 0,
+                        correctAnswers: it[5] ?: 0,
+                        uniqueViews   : it[6] ?: 0
+                ]
+            }
+        } else {
+            fail message: "Course not found!"
         }
     }
 }
