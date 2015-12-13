@@ -133,11 +133,11 @@ var AnswerBreakdown = (function () {
             var rows = "";
             for (var j = 0; j < localAnswers.length; j++) {
                 var answer = localAnswers[j];
-                rows += rowTemplate.format(this.formatUser(answer.user), answer.answer,
-                    this.formatCorrect(answer.correct));
+                rows += rowTemplate.format(Util.raw(this.formatUser(answer.user)), answer.answer,
+                    Util.raw(this.formatCorrect(answer.correct)));
             }
 
-            fields += statTemplate.format(field.name, rows);
+            fields += statTemplate.format(field.name, Util.raw(rows));
         }
         this.element.find(".field-statistics").html(fields);
 
@@ -146,7 +146,7 @@ var AnswerBreakdown = (function () {
 
     AnswerBreakdown.prototype.formatUser = function (user) {
         if (user !== null) {
-            return user;
+            return Util.escapeHtml(user);
         } else {
             if (this.guestTemplate === undefined) {
                 this.guestTemplate = $("#guest-template").html();

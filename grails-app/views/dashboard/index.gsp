@@ -44,12 +44,7 @@
 <twbs:row>
     <twbs:column md="12">
         <h3>
-            Et Emne 1
-            <small>Fra Et Fag 1 (Forår 2005)</small>
-
-            <div id="spinner" class="pull-right hide">
-                <fa:icon icon="${FaIcon.SPINNER}" spin="true"/>
-            </div>
+            Underviser dashboard
             <div id="error-message" class="pull-right hide" style="margin-right: 30px;">
                 <small class="text-danger">Der er sket en fejl!</small>
             </div>
