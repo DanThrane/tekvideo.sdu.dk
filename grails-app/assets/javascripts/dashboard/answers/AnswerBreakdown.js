@@ -115,8 +115,8 @@ var AnswerBreakdown = (function () {
 
         this.element.find(".question-name").text(question.title);
 
-        var statTemplate = this.element.find(".field-stat-template").html();
-        var rowTemplate = this.element.find(".field-stat-row-template").html();
+        var statTemplate = $("#field-stat-template").html();
+        var rowTemplate = $("#field-stat-row-template").html();
 
         var ourAnswers = this.answers.filter(function (value) {
             return value.subject === subjectId && value.question === questionId;

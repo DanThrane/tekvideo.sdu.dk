@@ -5,9 +5,9 @@
         <div id="answer-thumbnail-container"></div>
     </twbs:column>
 
-    <div id="row-template" class="hide"><twbs:row class="answer-template-row"/></div>
+    <script type="text/template" id="row-template"><twbs:row class="answer-template-row"/></script>
 
-    <div id="answer-thumbnail-template" class="hide">
+    <script type="text/template" id="answer-thumbnail-template">
         <twbs:column md="2">
             <sdu:linkCard class="answer-thumbnail" uri="#">
                 <img src="http://img.youtube.com/vi/{0}/hqdefault.jpg" class="img-responsive"
@@ -16,11 +16,11 @@
                 <a href="#">{1}</a>
             </sdu:linkCard>
         </twbs:column>
-    </div>
+    </script>
 
     <div id="answer-breakdown-container"></div>
 
-    <div id="answer-breakdown-template" class="hide">
+    <script type="text/template" id="answer-breakdown-template">
         <twbs:column>
             <div class="answer-breakdown">
                 <sdu:card>
@@ -88,33 +88,33 @@
                                 <h5>Svar til <span class="question-name"></span></h5>
 
                                 <div class="field-statistics"></div>
-
-                                <script type="text/template" class="field-stat-template hide">
-                                <b>{0}</b> <br/>
-                                <twbs:table>
-                                    <thead>
-                                    <th>Bruger</th>
-                                    <th>Svar</th>
-                                    <th>Korrekt</th>
-                                    </thead>
-                                    <tbody>
-                                    {1}
-                                    </tbody>
-                                </twbs:table>
-                                </script>
-
-                                <script type="text/template" class="field-stat-row-template">
-                                <tr>
-                                    <td>{0}</td>
-                                    <td>{1}</td>
-                                    <td>{2}</td>
-                                </tr>
-                                </script>
                             </div>
                         </div>
                     </div>
                 </sdu:card>
             </div>
         </twbs:column>
-    </div>
+    </script>
+
+    <script type="text/template" id="field-stat-template">
+    <b>{0}</b> <br/>
+    <twbs:table>
+        <thead>
+        <th>Bruger</th>
+        <th>Svar</th>
+        <th>Korrekt</th>
+        </thead>
+        <tbody>
+        {1}
+        </tbody>
+    </twbs:table>
+    </script>
+
+    <script type="text/template" id="field-stat-row-template">
+    <tr>
+        <td>{0}</td>
+        <td>{1}</td>
+        <td>{2}</td>
+    </tr>
+    </script>
 </div>
