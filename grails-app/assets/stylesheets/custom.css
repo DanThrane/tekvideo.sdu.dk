@@ -490,3 +490,8 @@ body {
 .tree .selected {
     font-weight: 600;
 }
+
+#popular-video-container:empty:after {
+    content: "Ingen videoer er blevet set i denne kategori!";
+    font-weight: bold;
+}
