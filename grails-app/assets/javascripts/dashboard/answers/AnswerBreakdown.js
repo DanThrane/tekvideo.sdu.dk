@@ -133,7 +133,8 @@ var AnswerBreakdown = (function () {
             var rows = "";
             for (var j = 0; j < localAnswers.length; j++) {
                 var answer = localAnswers[j];
-                rows += rowTemplate.format(answer.user, answer.answer, answer.correct);
+                rows += rowTemplate.format(this.formatUser(answer.user), answer.answer,
+                    this.formatCorrect(answer.correct));
             }
 
             fields += statTemplate.format(field.name, rows);
@@ -141,6 +142,25 @@ var AnswerBreakdown = (function () {
         this.element.find(".field-statistics").html(fields);
 
         this.element.find(".answer-selected").show();
+    };
+
+    AnswerBreakdown.prototype.formatUser = function (user) {
+        if (user !== null) {
+            return user;
+        } else {
+            if (this.guestTemplate === undefined) {
+                this.guestTemplate = $("#guest-template").html();
+            }
+            return this.guestTemplate;
+        }
+    };
+
+    AnswerBreakdown.prototype.formatCorrect = function (correct) {
+        if (this.correctTemplate === undefined || this.wrongTemplate === undefined) {
+            this.correctTemplate = $("#correct-template").html();
+            this.wrongTemplate = $("#wrong-template").html();
+        }
+        return (correct) ? this.correctTemplate : this.wrongTemplate;
     };
 
     AnswerBreakdown.prototype.analyzeParticipation = function () {

@@ -117,4 +117,16 @@
         <td>{2}</td>
     </tr>
     </script>
+
+    <script type="text/template" id="guest-template">
+        <fa:icon icon="${FaIcon.USER_SECRET}" /> Gæst
+    </script>
+
+    <script type="text/template" id="correct-template">
+        <span class="text-success"><fa:icon icon="${FaIcon.CHECK}" /></span>
+    </script>
+
+    <script type="text/template" id="wrong-template">
+        <span class="text-danger"><fa:icon icon="${FaIcon.TIMES}" /></span>
+    </script>
 </div>
