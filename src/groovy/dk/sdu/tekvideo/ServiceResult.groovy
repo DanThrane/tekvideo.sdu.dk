@@ -31,7 +31,7 @@ class ServiceResult<E> {
     }
 
     static def <E> ServiceResult<E> ok(Map<String, Object> args) {
-        E item = args.item ?: null
+        E item = args.containsKey("item") ? args.item : null
         String message = args.message ?: "service_result.success"
         ok(item, message)
     }
