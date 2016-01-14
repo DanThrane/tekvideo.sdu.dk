@@ -23,12 +23,14 @@ $(function () {
 
         $(".menu-item").click(function (e) {
             e.preventDefault();
-            var id = $(this).data("href");
-            stack.select("#" + id);
-            $(".nav li").removeClass("active");
-            $(this).parent().addClass("active");
-            exports.activePage = id;
-            onDataChange();
+            if (exports.root !== null) {
+                var id = $(this).data("href");
+                stack.select("#" + id);
+                $(".nav li").removeClass("active");
+                $(this).parent().addClass("active");
+                exports.activePage = id;
+                onDataChange();
+            }
         });
 
         var treeNodes = $(".collapse-tree");
@@ -45,6 +47,10 @@ $(function () {
 
         $(".tree-link").click(function (e) {
             e.preventDefault();
+            if (exports.root === null) {
+                // Enable other tabs
+                $(".menu-item").parent().removeClass("disabled")
+            }
             $(".tree .selected").removeClass("selected");
             $(this).parent().addClass("selected");
             exports.root = $(this).attr("href").replace("#/", "");

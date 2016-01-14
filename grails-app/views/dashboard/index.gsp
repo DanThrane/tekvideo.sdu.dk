@@ -56,19 +56,19 @@
                         <fa:icon icon="${FaIcon.HOME}"/>
                         Hjem
                     </twbs:navbarLink>
-                    <twbs:navbarLink uri="#" data-href="views" class="menu-item">
+                    <twbs:navbarLink uri="#" data-href="views" class="menu-item" disabled="true">
                         <fa:icon icon="${FaIcon.YOUTUBE_PLAY}"/>
                         Afspilninger
                     </twbs:navbarLink>
-                    <twbs:navbarLink uri="#" data-href="comments" class="menu-item">
+                    <twbs:navbarLink uri="#" data-href="comments" class="menu-item" disabled="true">
                         <fa:icon icon="${FaIcon.COMMENT}"/>
                         Kommentarer
                     </twbs:navbarLink>
-                    <twbs:navbarLink uri="#" data-href="students" class="menu-item">
+                    <twbs:navbarLink uri="#" data-href="students" class="menu-item" disabled="true">
                         <fa:icon icon="${FaIcon.GRADUATION_CAP}"/>
                         Studerende
                     </twbs:navbarLink>
-                    <twbs:navbarLink uri="#" data-href="answers" class="menu-item">
+                    <twbs:navbarLink uri="#" data-href="answers" class="menu-item" disabled="true">
                         <fa:icon icon="${FaIcon.PENCIL_SQUARE}"/>
                         Svar
                     </twbs:navbarLink>
