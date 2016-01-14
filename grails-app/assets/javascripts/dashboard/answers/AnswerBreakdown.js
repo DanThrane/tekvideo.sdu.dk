@@ -11,7 +11,9 @@ var AnswerBreakdown = (function () {
         this.answerPage = answerPage;
         this.video = video;
         this.timeline = JSON.parse(video.timelineJson);
-        this.students = students.map(function(e) { return e.username; });
+        this.students = students.map(function (e) {
+            return e.username;
+        });
         this.period = period;
         this.app = app;
         this.player = null;
@@ -57,7 +59,7 @@ var AnswerBreakdown = (function () {
             console.log(data);
             self.answers = data.result;
             self.initializePlayer();
-        }).always(function() {
+        }).always(function () {
             self.app.removeSpinner();
         });
     };
@@ -86,18 +88,6 @@ var AnswerBreakdown = (function () {
     AnswerBreakdown.prototype.initAnswerSubPage = function (page) {
         switch (page) {
             case "breakdown":
-                var ctx = this.element.find(".histogram").get(0).getContext("2d");
-                var prep = prepareAnswerAnalysis(this.answers);
-                var data = [];
-                for (var i = 0; i < prep.labels.length; i++) {
-                    data.push({
-                        value: prep.count[i],
-                        color: COLORS[i],
-                        highlight: HIGHLIGHT_COLORS[i],
-                        label: "Svar " + prep.labels[i]
-                    });
-                }
-                var chart = new Chart(ctx).Pie(data);
                 break;
         }
     };
@@ -110,13 +100,13 @@ var AnswerBreakdown = (function () {
 
         this.player.startPlayer(this.video.youtubeId, this.video.videoType, this.timeline);
         this.player.on("questionShown", function (e) {
-            self.displayField(e.subjectId, e.questionId);
+            self.onQuestionSelected(e.subjectId, e.questionId);
         });
 
         this.element.find(".participation-table").append(this.buildParticipationTable(this.analyzeParticipation()));
     };
 
-    AnswerBreakdown.prototype.displayField = function (subjectId, questionId) {
+    AnswerBreakdown.prototype.onQuestionSelected = function (subjectId, questionId) {
         var question = this.timeline[subjectId].questions[questionId];
         this.element.find(".no-answer-selected").hide();
 
@@ -128,6 +118,19 @@ var AnswerBreakdown = (function () {
         var ourAnswers = this.answers.filter(function (value) {
             return value.subject === subjectId && value.question === questionId;
         });
+
+        var ctx = this.element.find(".histogram").get(0).getContext("2d");
+        var prep = prepareAnswerAnalysis(ourAnswers);
+        var data = [];
+        for (var i = 0; i < prep.labels.length; i++) {
+            data.push({
+                value: prep.count[i],
+                color: COLORS[i],
+                highlight: HIGHLIGHT_COLORS[i],
+                label: "Svar '" + prep.labels[i] + "'"
+            });
+        }
+        var chart = new Chart(ctx).Pie(data);
 
         var fields = "";
         for (var i = 0; i < question.fields.length; i++) {
