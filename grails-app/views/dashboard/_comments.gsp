@@ -50,10 +50,10 @@
                                 <twbs:column md="10">
                                     <twbs:input
                                             placeholder="Skriv en besked her for at svare på kommentaren"
-                                            showLabel="false" name="comment"/>
+                                            showLabel="false" name="comment" disabled="true"/>
                                 </twbs:column>
                                 <twbs:column md="2">
-                                    <twbs:button style="${ButtonStyle.SUCCESS}" block="true">
+                                    <twbs:button style="${ButtonStyle.SUCCESS}" block="true" disabled="true">
                                         <fa:icon icon="${FaIcon.COMMENT}"/> Svar nu
                                     </twbs:button>
                                 </twbs:column>
