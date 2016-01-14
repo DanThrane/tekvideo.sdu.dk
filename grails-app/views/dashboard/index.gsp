@@ -12,7 +12,7 @@
 <body>
 
 <g:content key="sidebar-left">
-    <twbs:select list="${DashboardPeriod.values()}" name="dataRange" labelText="Vis data"/>
+    <twbs:select list="${DashboardPeriod.values()}" name="dataRange" labelText="Vis data" value="${DashboardPeriod.MONTH}"/>
     <ul class="fa-ul tree">
         <g:each in="${courses.findAll { it != null }}" var="course">
             <li>
@@ -55,22 +55,18 @@
                     <twbs:navbarLink uri="#" data-href="views" class="menu-item">
                         <fa:icon icon="${FaIcon.YOUTUBE_PLAY}"/>
                         Afspilninger
-                        <twbs:badge>42</twbs:badge>
                     </twbs:navbarLink>
                     <twbs:navbarLink uri="#" data-href="comments" class="menu-item">
                         <fa:icon icon="${FaIcon.COMMENT}"/>
                         Kommentarer
-                        <twbs:badge>1</twbs:badge>
                     </twbs:navbarLink>
                     <twbs:navbarLink uri="#" data-href="students" class="menu-item">
                         <fa:icon icon="${FaIcon.GRADUATION_CAP}"/>
-                        Aktivitet
-                        <twbs:badge>12</twbs:badge>
+                        Studerende
                     </twbs:navbarLink>
                     <twbs:navbarLink uri="#" data-href="answers" class="menu-item" active="true">
                         <fa:icon icon="${FaIcon.PENCIL_SQUARE}"/>
                         Svar
-                        <twbs:badge>18</twbs:badge>
                     </twbs:navbarLink>
                 </twbs:nav>
             </twbs:column>
