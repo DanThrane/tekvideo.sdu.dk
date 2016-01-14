@@ -115,8 +115,10 @@ class DashboardService {
     List<Map> findPopularVideos(List<Video> leaves, Long period) {
         if (leaves == null) leaves = []
         def videoIds = leaves.stream().map { it.id }.collect(Collectors.toList())
-        long from = System.currentTimeMillis() - period * 24 * 60 * 60 * 1000
+        long from = (period > 0) ? System.currentTimeMillis() - period * 24 * 60 * 60 * 1000 : 0
         long to = System.currentTimeMillis()
+
+        if (!videoIds) return []
 
         String query = $/
             SELECT
@@ -146,8 +148,7 @@ class DashboardService {
                 class='dk.sdu.tekvideo.events.VisitVideoEvent' AND
                 event.video_id IN :video_ids AND
                 event.timestamp >= :from_timestamp AND
-                event.timestamp <= :to_timestamp AND
-                event.video_id IN :video_ids
+                event.timestamp <= :to_timestamp
             GROUP BY
                 event.video_id, answers.answerCount, answers.correctAnswers
             ORDER BY
@@ -180,7 +181,7 @@ class DashboardService {
     List<Map> findRecentComments(List<Video> leaves, Long period) {
         if (leaves == null) leaves = []
         def videoIds = leaves.stream().map { it.id }.collect(Collectors.toList())
-        long from = System.currentTimeMillis() - period * 24 * 60 * 60 * 1000
+        long from = (period > 0) ? System.currentTimeMillis() - period * 24 * 60 * 60 * 1000 : 0
         long to = System.currentTimeMillis()
 
         String query = $/
@@ -235,7 +236,7 @@ class DashboardService {
     ServiceResult<List<AnswerQuestionEvent>> getAnswers(Video video, Long period) {
         if (video) {
             if (courseManagementService.canAccess(video.subject.course)) {
-                long from = System.currentTimeMillis() - period * 24 * 60 * 60 * 1000
+                long from = (period > 0) ? System.currentTimeMillis() - period * 24 * 60 * 60 * 1000 : 0
                 long to = System.currentTimeMillis()
                 ok item: AnswerQuestionEvent.findAllByVideoIdAndTimestampBetween(video.id, from, to)
             } else {
@@ -251,7 +252,7 @@ class DashboardService {
         if (leaves == null) leaves = []
         def videoIds = leaves.stream().map { it.id }.collect(Collectors.toList())
         if (course) {
-            long from = System.currentTimeMillis() - period * 24 * 60 * 60 * 1000
+            long from = (period > 0) ? System.currentTimeMillis() - period * 24 * 60 * 60 * 1000 : 0
             long to = System.currentTimeMillis()
 
             String query = $/

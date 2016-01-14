@@ -35,8 +35,7 @@
                     <div class="player-container">
                         <twbs:row>
                             <twbs:column md="6">
-                                <div class="embed-responsive embed-responsive-16by9"
-                                     style="border: 1px solid black;">
+                                <div class="embed-responsive embed-responsive-16by9">
                                     <div class="wrapper" style="z-index: 20"></div>
 
                                     <div class="player"></div>
