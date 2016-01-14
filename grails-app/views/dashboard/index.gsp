@@ -52,6 +52,10 @@
         <twbs:row>
             <twbs:column md="12">
                 <twbs:nav style="${NavStyle.TAB}" justified="true">
+                    <twbs:navbarLink uri="#" data-href="home" class="menu-item" active="true">
+                        <fa:icon icon="${FaIcon.HOME}"/>
+                        Hjem
+                    </twbs:navbarLink>
                     <twbs:navbarLink uri="#" data-href="views" class="menu-item">
                         <fa:icon icon="${FaIcon.YOUTUBE_PLAY}"/>
                         Afspilninger
@@ -64,7 +68,7 @@
                         <fa:icon icon="${FaIcon.GRADUATION_CAP}"/>
                         Studerende
                     </twbs:navbarLink>
-                    <twbs:navbarLink uri="#" data-href="answers" class="menu-item" active="true">
+                    <twbs:navbarLink uri="#" data-href="answers" class="menu-item">
                         <fa:icon icon="${FaIcon.PENCIL_SQUARE}"/>
                         Svar
                     </twbs:navbarLink>
@@ -73,6 +77,7 @@
         </twbs:row>
         <twbs:row>
             <div id="stack" class="card-stack">
+                <g:render template="home"/>
                 <g:render template="views"/>
                 <g:render template="comments"/>
                 <g:render template="students"/>
