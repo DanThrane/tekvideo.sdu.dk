@@ -11,6 +11,7 @@
             <tbody>
             </tbody>
         </twbs:table>
+        <div id="students-no-data" class="hide">Fandt ingen studerende i dette emne</div>
     </twbs:column>
 
     <script type="text/template" id="student-row-template">

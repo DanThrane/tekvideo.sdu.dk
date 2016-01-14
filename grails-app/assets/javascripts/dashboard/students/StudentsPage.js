@@ -23,6 +23,11 @@ var StudentsPage = (function () {
                 ));
                 $body.append(row);
             }
+            if (!activity.length) {
+                $("#students-no-data").removeClass("hide");
+            } else {
+                $("#students-no-data").addClass("hide");
+            }
         }).always(function () {
             self.app.removeSpinner();
         });

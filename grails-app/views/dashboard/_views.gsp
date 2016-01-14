@@ -5,6 +5,9 @@
             <twbs:column md="6">
                 <twbs:pageHeader><h3>Visninger</h3></twbs:pageHeader>
                 <canvas id="my-chart" style="width: 100%; height: 500px"></canvas>
+                <div id="views-no-data" class="hide">
+                    Der er ingen kommentarer til dette emne.
+                </div>
             </twbs:column>
             <twbs:column md="6">
                 <twbs:pageHeader><h3>Populære Videoer</h3></twbs:pageHeader>

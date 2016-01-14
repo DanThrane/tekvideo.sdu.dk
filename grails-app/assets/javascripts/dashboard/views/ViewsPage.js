@@ -6,8 +6,6 @@ var ViewsPage = (function () {
 
     ViewsPage.prototype.onSelect = function (root, period) {
         var self = this;
-        console.log(root);
-        console.log(period);
         this.app.displaySpinner();
         $("#error-message").removeClass("hide").hide();
         var chartPromise = $.getJSON(baseUrl + "dashboard/visits?identifier=" + root + "&period=" + period,
@@ -32,6 +30,12 @@ var ViewsPage = (function () {
                     self.viewsChart.destroy();
                 }
                 self.viewsChart = new Chart(ctx).Line(chartData);
+
+                if (!data.data) {
+                    $("#views-no-data").removeClass("hide");
+                } else {
+                    $("#views-no-data").addClass("hide");
+                }
             });
 
         var popularVideosPromise = $.getJSON(baseUrl + "dashboard/popularVideos?identifier=" + root + "&period=" +

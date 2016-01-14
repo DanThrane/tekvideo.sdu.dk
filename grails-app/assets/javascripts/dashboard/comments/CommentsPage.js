@@ -29,6 +29,12 @@ var CommentsPage = (function () {
                 var component = new NotificationCommentComponent(template);
                 component.init();
             }
+
+            if (!data.length) {
+                $("#comment-no-data").removeClass("hide");
+            } else {
+                $("#comment-no-data").addClass("hide");
+            }
         });
     };
     return CommentsPage;

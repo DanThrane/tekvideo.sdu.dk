@@ -40,6 +40,11 @@ var AnswersPage = (function () {
                 currentRow.append(template);
                 $(template).click(thumbnailHandler(self, self.app, video, students, period));
             }
+
+            if (currentRow !== null) {
+                $container.append(currentRow);
+            }
+
         }).always(function() {
             self.app.removeSpinner();
         }).fail(function () {

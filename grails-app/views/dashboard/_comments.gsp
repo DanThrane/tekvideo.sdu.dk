@@ -1,6 +1,9 @@
 <%@ page import="dk.sdu.tekvideo.DashboardPeriod; dk.danthrane.twbs.NavStyle; dk.sdu.tekvideo.NodeStatus; dk.danthrane.twbs.ButtonSize; dk.danthrane.twbs.ButtonStyle; dk.sdu.tekvideo.FaIcon" contentType="text/html;charset=UTF-8" %>
 <div id="comments" class="card-item">
     <twbs:column md="12">
+        <div id="comment-no-data" class="hide">
+            Der er ingen data tilgænglig for dette emne.
+        </div>
         <div id="comment-container"></div>
 
         <div id="comment-template" class="hide">
