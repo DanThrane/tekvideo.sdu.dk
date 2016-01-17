@@ -51,12 +51,16 @@ databaseChangeLog = {
 	changeSet(author: "Dan", id: "set default values for answer events") {
 		grailsChange {
             change {
-                AnswerQuestionEvent.list().each { event ->
-                    event.field = 0
-                    event.subject = 0
-                    event.question = 0
-                    event.save(failOnError: true, flush: true)
-                }
+				boolean hasEvent = false
+				sql.eachRow("SELECT COUNT(*) FROM event;") { if (it.count > 0) hasEvent = true }
+				if (hasEvent) {
+					AnswerQuestionEvent.list().each { event ->
+						event.field = 0
+						event.subject = 0
+						event.question = 0
+						event.save(failOnError: true, flush: true)
+					}
+				}
             }
         }
 	}

@@ -17,18 +17,22 @@ databaseChangeLog = {
 	changeSet(author: "Dan", id: "copy old semester information") {
 		grailsChange {
 			change {
-				Course.list().each {
-					Long semesterId = null
-					Integer year = null
-					Boolean spring = null
-					sql.eachRow("SELECT semester_id FROM course WHERE id = ${it.id};") { semesterId = it.semester_id }
-					sql.eachRow("SELECT year, spring FROM semester WHERE id = ${semesterId};") {
-						spring = it.spring
-						year = it.year
+				boolean hasSomething = false
+				sql.eachRow("SELECT COUNT(*) FROM course;") { if (it.count > 0) hasSomething = true }
+				if (hasSomething) {
+					Course.list().each {
+						Long semesterId = null
+						Integer year = null
+						Boolean spring = null
+						sql.eachRow("SELECT semester_id FROM course WHERE id = ${it.id};") { semesterId = it.semester_id }
+						sql.eachRow("SELECT year, spring FROM semester WHERE id = ${semesterId};") {
+							spring = it.spring
+							year = it.year
+						}
+						it.year = year
+						it.spring = spring
+						it.save(failOnError: true, flush: true)
 					}
-					it.year = year
-					it.spring = spring
-					it.save(failOnError: true, flush: true)
 				}
 			}
 		}

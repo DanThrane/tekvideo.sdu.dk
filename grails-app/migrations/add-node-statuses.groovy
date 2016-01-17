@@ -26,17 +26,21 @@ databaseChangeLog = {
 	changeSet(author: "Dan", id: "set default node statuses") {
 		grailsChange {
 			change {
-				Video.list().each {
-					it.localStatus = NodeStatus.VISIBLE
-					it.save(flush: true)
-				}
-				Subject.list().each {
-					it.localStatus = NodeStatus.VISIBLE
-					it.save(flush: true)
-				}
-				Course.list().each {
-					it.localStatus = NodeStatus.VISIBLE
-					it.save(flush: true)
+				boolean hasSomething = false
+				sql.eachRow("SELECT COUNT(*) FROM video, subject, course;") { if (it.count > 0) hasSomething = true }
+				if (hasSomething) {
+					Video.list().each {
+						it.localStatus = NodeStatus.VISIBLE
+						it.save(flush: true)
+					}
+					Subject.list().each {
+						it.localStatus = NodeStatus.VISIBLE
+						it.save(flush: true)
+					}
+					Course.list().each {
+						it.localStatus = NodeStatus.VISIBLE
+						it.save(flush: true)
+					}
 				}
 			}
 		}
