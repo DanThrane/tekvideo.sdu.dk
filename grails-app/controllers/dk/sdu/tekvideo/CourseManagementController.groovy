@@ -10,7 +10,6 @@ import org.springframework.security.access.annotation.Secured
 class CourseManagementController {
     CourseService courseService
     CourseManagementService courseManagementService
-    VideoStatisticsService videoStatisticsService
     TeachingService teachingService
 
     def index() {
@@ -112,48 +111,6 @@ class CourseManagementController {
         } else {
             notAllowedCourse()
         }
-    }
-
-    def videoStatistics(Video video) {
-        if (video == null) {
-            flash.error = "Ukendt video"
-            redirect action: "index"
-        } else {
-            if (courseManagementService.canAccess(video.subject.course)) {
-                def statistic = videoStatisticsService.findViewingStatistics(
-                        video,
-                        System.currentTimeMillis() - 1000 * 60 * 60 * 24,
-                        System.currentTimeMillis(), 1000 * 60 * 60
-                ).result
-
-                def viewBreakdown = videoStatisticsService.retrieveViewBreakdown(video).result
-                def answerSummary = videoStatisticsService.retrieveAnswerSummary(video).result
-                def viewsAmongStudents = videoStatisticsService.retrieveViewingStatisticsForStudents(video).result
-
-                return [
-                        video             : video,
-                        statistics        : statistic,
-                        viewBreakdown     : viewBreakdown,
-                        answerSummary     : answerSummary,
-                        viewsAmongStudents: viewsAmongStudents
-                ]
-            } else {
-                notAllowedCourse()
-            }
-        }
-    }
-
-    def videoViewingChart(Video video, Long period) {
-        // TODO Confirm that the teacher owns this video
-        long from = System.currentTimeMillis()
-        long to = System.currentTimeMillis()
-        long periodInMs
-
-        from -= 1000 * 60 * 60 * 24 * period
-        periodInMs = (to - from) / 24
-
-        def statistics = videoStatisticsService.findViewingStatistics(video, from, to, periodInMs)
-        render statistics as JSON
     }
 
     def postCourse(CourseCRUDCommand command) {

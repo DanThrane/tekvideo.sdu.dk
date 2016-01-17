@@ -64,10 +64,6 @@
                                                          url="${sdu.createLinkToVideo(video: video, absolute: true)}">
                                             <fa:icon icon="${FaIcon.YOUTUBE_PLAY}" />
                                         </twbs:linkButton>
-                                        <twbs:linkButton style="${ButtonStyle.LINK}" action="videoStatistics"
-                                                         id="${video.id}">
-                                            <fa:icon icon="${FaIcon.BAR_CHART}"/>
-                                        </twbs:linkButton>
                                         <twbs:linkButton style="${ButtonStyle.LINK}" action="editVideo"
                                                          id="${video.id}">
                                             <fa:icon icon="${FaIcon.EDIT}" />
