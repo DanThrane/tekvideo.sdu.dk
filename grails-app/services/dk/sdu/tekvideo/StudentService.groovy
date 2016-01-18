@@ -6,7 +6,6 @@ import grails.transaction.Transactional
 
 @Transactional
 class StudentService {
-
     def springSecurityService
 
     Student getAuthenticatedStudent() {

@@ -8,6 +8,8 @@ class CourseController {
     TeachingService teachingService
     StudentService studentService
     CourseService courseService
+    VideoStatisticsService videoStatisticsService
+    def springSecurityService
 
     @Secured("permitAll")
     def list() {
@@ -16,25 +18,15 @@ class CourseController {
     }
 
     @Secured("permitAll")
-    def list2() {
-        List<Course> courses = courseService.listVisibleCourses()
-        [courses: courses]
-    }
-
-    @Secured("permitAll")
     def viewByTeacher(String teacherName, String courseName, Integer year, Boolean spring) {
         Course course = teachingService.getCourse(teacherName, courseName, year, spring)
         if (courseService.canAccess(course)) {
-            render(view: "view", model: [course: course])
-        } else {
-            render status: "404", text: "Course not found!"
-        }
-    }
-
-    @Secured("permitAll")
-    def view2(Course course) {
-        if (courseService.canAccess(course)) {
-            render(view: "view2", model: [course: course])
+            boolean isTeacher = teachingService.authenticatedTeacher == course.teacher
+            Map<Long, Integer> views = videoStatisticsService.findVideoVisitCountInCourse(
+                    (User) springSecurityService.currentUser, course)
+            render(view: "view", model: [course: course,
+                                         isTeacher: isTeacher,
+                                         views: views])
         } else {
             render status: "404", text: "Course not found!"
         }
@@ -43,8 +35,10 @@ class CourseController {
     @Secured("ROLE_STUDENT")
     def signup(Course course) {
         Student student = studentService.authenticatedStudent
-        [course: course, studentCount: courseService.getStudentCount(course), inCourse: studentService.isInCourse(student, course),
-         student: student] // TODO Check if inCourse loads in all students
+        [course      : course,
+         studentCount: courseService.getStudentCount(course),
+         inCourse    : studentService.isInCourse(student, course),
+         student     : student] // TODO Check if inCourse loads in all students
     }
 
     @Secured("ROLE_STUDENT")

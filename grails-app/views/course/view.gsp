@@ -37,31 +37,32 @@
         <twbs:row>
             <twbs:column cols="6">
                 <markdown:renderHtml>${subject.description}</markdown:renderHtml>
-
-                <hr>
-                <b>Du har i dette emne</b><br />
-                <ul>
-                    <li>Gennemført 3 ud af 5 videoer</li>
-                    <li>Svaret rigtigt på 92% af spørgsmålene</li>
-                </ul>
             </twbs:column>
             <twbs:column cols="6">
                 <ul class="course-subject-menu">
                     <g:each in="${subject.visibleVideos}" var="video">
                         <li>
                             <twbs:buttonGroup size="${ButtonSize.SMALL}">
-                                <twbs:button style="${ButtonStyle.PRIMARY}">
+                                <twbs:linkButton url="${sdu.createLinkToVideo(video: video)}"
+                                                 style="${ButtonStyle.PRIMARY}">
                                     <fa:icon icon="${FaIcon.YOUTUBE_PLAY}"/>
-                                </twbs:button>
-                                <twbs:button style="${ButtonStyle.INFO}">
-                                    <fa:icon icon="${FaIcon.LINE_CHART}"/>
-                                </twbs:button>
-                                <twbs:button style="${ButtonStyle.INFO}">
-                                    <fa:icon icon="${FaIcon.PENCIL}"/>
-                                </twbs:button>
+                                </twbs:linkButton>
+                                <g:if test="${isTeacher}">
+                                    %{-- TODO Not yet implemented --}%
+                                    <twbs:button style="${ButtonStyle.INFO}" disabled="true">
+                                        <fa:icon icon="${FaIcon.LINE_CHART}"/>
+                                    </twbs:button>
+                                    <twbs:button style="${ButtonStyle.INFO}" disabled="true">
+                                        <fa:icon icon="${FaIcon.PENCIL}"/>
+                                    </twbs:button>
+                                </g:if>
                             </twbs:buttonGroup>
-                            <a href="#">${video.name}</a>
-                            <span class="text-success">[<fa:icon icon="${FaIcon.CHECK}"/>]</span>
+                            <sdu:linkToVideo video="${video}">
+                                ${video.name}
+                            </sdu:linkToVideo>
+                            <g:if test="${views[video.id] > 0}">
+                                <span class="text-success">[<fa:icon icon="${FaIcon.CHECK}"/>]</span>
+                            </g:if>
                         </li>
                     </g:each>
                 </ul>
