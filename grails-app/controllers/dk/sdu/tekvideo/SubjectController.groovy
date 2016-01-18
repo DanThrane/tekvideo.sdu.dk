@@ -15,4 +15,9 @@ class SubjectController {
             render status: 404, text: "Unable to find subject!"
         }
     }
+
+    @Secured("permitAll")
+    def view2(Subject subject) {
+        [subject: subject]
+    }
 }

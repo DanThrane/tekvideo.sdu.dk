@@ -16,10 +16,25 @@ class CourseController {
     }
 
     @Secured("permitAll")
+    def list2() {
+        List<Course> courses = courseService.listVisibleCourses()
+        [courses: courses]
+    }
+
+    @Secured("permitAll")
     def viewByTeacher(String teacherName, String courseName, Integer year, Boolean spring) {
         Course course = teachingService.getCourse(teacherName, courseName, year, spring)
         if (courseService.canAccess(course)) {
             render(view: "view", model: [course: course])
+        } else {
+            render status: "404", text: "Course not found!"
+        }
+    }
+
+    @Secured("permitAll")
+    def view2(Course course) {
+        if (courseService.canAccess(course)) {
+            render(view: "view2", model: [course: course])
         } else {
             render status: "404", text: "Course not found!"
         }

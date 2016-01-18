@@ -14,12 +14,3 @@
         </g:each>
     </ul>
 </g:else>
-<twbs:pageHeader><h6>Om TekVideo</h6></twbs:pageHeader>
-<twbs:linkButton url="https://github.com/DanThrane/tekvideo.sdu.dk" style="${ButtonStyle.LINK}" block="true">
-    <fa:icon icon="${FaIcon.GITHUB}"/>
-    GitHub
-</twbs:linkButton>
-<twbs:linkButton controller="about" style="${ButtonStyle.LINK}" block="true">
-    <fa:icon icon="${FaIcon.USERS}"/>
-    Om TekVideo
-</twbs:linkButton>
