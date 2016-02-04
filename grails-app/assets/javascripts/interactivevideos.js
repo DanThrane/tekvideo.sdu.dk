@@ -71,15 +71,19 @@ var InteractiveVideoPlayer = (function () {
             }, true);
         });
 
-        this.player.on("loadstart", function () {
-            self.initializeSize();
-        });
         $(window).resize(function () {
             self.initializeSize();
         });
-        setTimeout(function () {
-            self.initializeSize();
-        }, 2000);
+
+        // Hack: "loadstart" event no longer received by popcorn.js (see issue #62)
+        // As a result we simply guess when loading has taken place, and hope that we get the correct sizes loaded.
+        self.initializeSize();
+        setTimeout(function () { self.initializeSize(); }, 250);
+        setTimeout(function () { self.initializeSize(); }, 500);
+        setTimeout(function () { self.initializeSize(); }, 1000);
+        setTimeout(function () { self.initializeSize(); }, 1500);
+        setTimeout(function () { self.initializeSize(); }, 2000);
+
         this.initEventHandlers();
     };
 
@@ -245,7 +249,10 @@ var InteractiveVideoPlayer = (function () {
             left: (offsetLeft * self.scaleWidth) + "px",
             minWidth: 90 * self.scaleWidth,
             minHeight: 20 * self.scaleHeight
+            //zIndex: 10000
         });
+        console.log((offsetTop * self.scaleHeight));
+        console.log(offsetLeft * self.scaleWidth);
         field.mathquill("editable");
     };
 
