@@ -248,8 +248,8 @@ var InteractiveVideoPlayer = (function () {
             top: (offsetTop * self.scaleHeight) + "px",
             left: (offsetLeft * self.scaleWidth) + "px",
             minWidth: 90 * self.scaleWidth,
-            minHeight: 20 * self.scaleHeight
-            //zIndex: 10000
+            minHeight: 20 * self.scaleHeight,
+            zIndex: 10000
         });
         console.log((offsetTop * self.scaleHeight));
         console.log(offsetLeft * self.scaleWidth);
