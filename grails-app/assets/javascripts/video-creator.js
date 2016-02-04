@@ -523,6 +523,13 @@ var Editor = {};
                 if (editingField !== null) {
                     editingField.leftoffset = x * scaleWidth;
                     editingField.topoffset = y * scaleHeight;
+
+                    if (editingField.leftoffset < 0) {
+                        editingField.leftoffset = 0;
+                    }
+                    if (editingField.topoffset < 0) {
+                        editingField.topoffset = 0;
+                    }
                 }
             }
         }

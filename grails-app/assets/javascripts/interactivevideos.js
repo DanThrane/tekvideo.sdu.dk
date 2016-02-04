@@ -242,6 +242,10 @@ var InteractiveVideoPlayer = (function () {
     InteractiveVideoPlayer.prototype.placeInputField = function (fieldId, evalFunction, offsetTop, offsetLeft) {
         var self = this;
         this.wrapperElement.append(this.createInputField(fieldId));
+
+        if (offsetTop < 0) offsetTop = 0;
+        if (offsetLeft < 0) offsetLeft = 0;
+
         var field = $("#" + fieldId);
         field.css({
             position: "absolute",
