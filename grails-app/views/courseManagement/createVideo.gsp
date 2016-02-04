@@ -273,13 +273,15 @@
 </g:content>
 
 <g:content key="sidebar-right-below-the-fold">
-    <h4><fa:icon icon="${FaIcon.VIDEO_CAMERA}"/> Tidslinie</h4>
+    <div id="sidebar-right-timeline">
+        <h4><fa:icon icon="${FaIcon.VIDEO_CAMERA}"/> Tidslinie</h4>
 
-    <div id="timeline-subjects"></div>
-    <br/>
-    <twbs:button block="true" style="${ButtonStyle.SUCCESS}" id="addSubject">
-        <fa:icon icon="${FaIcon.PLUS}"/>
-    </twbs:button>
+        <div id="timeline-subjects"></div>
+        <br/>
+        <twbs:button block="true" style="${ButtonStyle.SUCCESS}" id="addSubject">
+            <fa:icon icon="${FaIcon.PLUS}"/>
+        </twbs:button>
+    </div>
 </g:content>
 
 %{-- Templates --}%

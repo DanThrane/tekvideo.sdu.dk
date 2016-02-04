@@ -251,8 +251,6 @@ var InteractiveVideoPlayer = (function () {
             minHeight: 20 * self.scaleHeight,
             zIndex: 10000
         });
-        console.log((offsetTop * self.scaleHeight));
-        console.log(offsetLeft * self.scaleWidth);
         field.mathquill("editable");
     };
 

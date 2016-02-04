@@ -559,9 +559,14 @@ var Editor = {};
 
                 player.startPlayer(videoId, isYouTube, currentTimeline);
                 MainPanel.showPreview();
+                $("#attributes-stack").hide();
+                $("#sidebar-right-timeline").hide();
             });
             $("#stop-preview").click(function () {
                 MainPanel.showEditor();
+                $("#attributes-stack").show();
+                $("#sidebar-right-timeline").show();
+                if (player !== null) player.destroy();
             });
         }
 
