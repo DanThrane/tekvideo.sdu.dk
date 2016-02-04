@@ -6,6 +6,7 @@ var InteractiveVideoPlayer = (function () {
         var container = $(containerElement);
         this.eventHandlers = {};
         this.autoplay = true;
+        this.lastTime = 0;
 
         if (container !== undefined) {
             this.playerElement = container.find(".player");
@@ -114,13 +115,22 @@ var InteractiveVideoPlayer = (function () {
             this.questions[i].visible = false;
             this.questions[i].shown = false;
         }
-        this.hideAllFields();
         this.removeAllQuestions();
         this.handleTimeUpdate();
     };
 
     InteractiveVideoPlayer.prototype.handleTimeUpdate = function () {
         var timestamp = this.player.currentTime();
+
+        // Workaround for "seeked" event always being fired (see issue #65)
+        if (timestamp < this.lastTime) {
+            this.lastTime = timestamp; // Without this we get infinite recursion back and forth between this function
+            this.lastTime = timestamp; // Without this we get infinite recursion back and forth between this function
+            this.handleSeeked();       // and handleSeeked()
+            return;
+        }
+        this.lastTime = timestamp;
+
         for (var i = this.questions.length - 1; i >= 0; i--) {
             var q = this.questions[i];
             if (q.timecode !== Math.round(timestamp) && q.visible) {
@@ -201,6 +211,10 @@ var InteractiveVideoPlayer = (function () {
         for (var i = this.timeline.length - 1; i >= 0; i--) {
             var item = this.timeline[i];
             this.questions = this.questions.concat(item.questions);
+        }
+        for (var i = 0; i < this.questions.length; i++) {
+            this.questions[i].shown = false;
+            this.questions[i].visible = false;
         }
     };
 
