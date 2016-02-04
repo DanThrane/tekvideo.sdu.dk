@@ -224,7 +224,8 @@ class DashboardService {
                     "videoTitle" : it[3],
                     "dateCreated": it[4],
                     "comment"    : it[5],
-                    "commentId"  : it[6]
+                    "commentId"  : it[6],
+                    "videoUrl"   : teachingService.generateLinkToVideo(Video.get(it[2]), [absolute: true])
             ]
         }
     }

@@ -47,6 +47,4 @@ class VideoStatisticsService {
             return fail("video_statistics.not_found", false, [:], 404)
         }
     }
-
-
 }

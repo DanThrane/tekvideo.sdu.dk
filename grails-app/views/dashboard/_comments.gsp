@@ -13,7 +13,7 @@
                         <twbs:row>
                             <twbs:column md="10">
                                 <b>
-                                    {0} til <a href="#">{1}</a> {2}
+                                    {0} til <a href="{4}">{1}</a> {2}
                                 </b>
                                 <i>{3}</i>
                             </twbs:column>

@@ -19,11 +19,12 @@ var CommentsPage = (function () {
 
             for (var i = 0; i < data.length; i++) {
                 var comment = data[i];
-                    var template = $(rawTemplate.format(
+                var template = $(rawTemplate.format(
                     comment.username,
                     comment.videoTitle,
                     comment.dateCreated,
-                    comment.comment
+                    comment.comment,
+                    comment.videoUrl
                 ));
                 $comments.append(template);
                 var component = new NotificationCommentComponent(template);
