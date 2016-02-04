@@ -1,5 +1,7 @@
 package dk.sdu.tekvideo
 
+import org.apache.http.HttpStatus
+
 import static dk.sdu.tekvideo.ServiceResult.*
 
 /**
@@ -7,6 +9,15 @@ import static dk.sdu.tekvideo.ServiceResult.*
  */
 class CourseManagementService {
     def teachingService
+
+    ServiceResult<List<Course>> getCourses(NodeStatus status) {
+        def teacher = teachingService.authenticatedTeacher
+        if (teacher) {
+            ok Course.findAllByTeacherAndLocalStatus(teacher, status)
+        } else {
+            fail "teacherservice.no_teacher"
+        }
+    }
 
     ServiceResult<List<Course>> getActiveCourses() {
         def teacher = teachingService.authenticatedTeacher
@@ -193,5 +204,20 @@ class CourseManagementService {
 
     boolean canAccess(Course course) {
         return course.teacher == teachingService.authenticatedTeacher
+    }
+
+    ServiceResult<Void> changeCourseStatus(Course course, NodeStatus status) {
+        def teacher = teachingService.authenticatedTeacher
+        if (teacher && course.teacher == teacher) {
+            if (status != null) {
+                course.localStatus = status
+                course.save()
+                ok()
+            } else {
+                fail message: "Ugyldig forspørgsel", suggestedHttpStatus: HttpStatus.SC_BAD_REQUEST
+            }
+        } else {
+            fail message: "Ugyldigt kursus", suggestedHttpStatus: HttpStatus.SC_NOT_FOUND
+        }
     }
 }
