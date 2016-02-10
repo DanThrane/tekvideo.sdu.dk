@@ -77,7 +77,7 @@ class TeachingService {
     }
 
     String generateLinkToTeacher(Teacher teacher, Map additionalAttrs = [:]) {
-        grailsLinkGenerator.link(prepareAttributes(teacher.alias, additionalAttrs))
+        grailsLinkGenerator.link(prepareAttributes(teacher.toString(), additionalAttrs))
     }
 
     String generateLinkToCourse(Course course, Map additionalAttrs = [:]) {

@@ -9,7 +9,7 @@ class TeachingTagLib {
     def teachingService
 
     def createLinkToTeacher = { attrs, body ->
-        Teacher teacher = attrs.remove("teacher") ?: fail("teacher", "sdu:createLinkToTeacher") as Course
+        Teacher teacher = attrs.remove("teacher") ?: fail("teacher", "sdu:createLinkToTeacher")
         out << teachingService.generateLinkToTeacher(teacher, attrs)
     }
 

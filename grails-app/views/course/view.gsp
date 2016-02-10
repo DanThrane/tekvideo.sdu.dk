@@ -17,8 +17,8 @@
         <ol class="breadcrumb">
             <li><g:link uri="/">Hjem</g:link></li>
             <li>
-                <sdu:linkToTeacher teacher="${params.teacher}">
-                    ${params.teacher}
+                <sdu:linkToTeacher teacher="${course.teacher}">
+                    ${course.teacher}
                 </sdu:linkToTeacher>
             </li>
             <li class="active">${course.fullName} (${course.name})</li>
