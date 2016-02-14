@@ -43,7 +43,4 @@ Exception: ${sw.toString()}"""
         }
     }
 
-    def bad() {
-        throw new IllegalStateException("BAD!")
-    }
 }
