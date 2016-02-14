@@ -121,6 +121,7 @@ grails {
         props = ["mail.smtp.auth":"true",
                  "mail.smtp.socketFactory.port":"465",
                  "mail.smtp.socketFactory.class":"javax.net.ssl.SSLSocketFactory",
+                 "mail.smtp.ssl.enable": "true",
                  "mail.smtp.socketFactory.fallback":"false"]
     }
 }
