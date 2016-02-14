@@ -113,6 +113,9 @@ var Editor = {};
         var name = $("#videoName").val();
         var description = $("#description").val();
         var youtubeId = videoId;
+        if (currentTimeline === null) {
+            currentTimeline = []; // Fail-safe for issue #66
+        }
         var timelineJson = JSON.stringify(currentTimeline);
         var type = isYouTube;
         var data = {

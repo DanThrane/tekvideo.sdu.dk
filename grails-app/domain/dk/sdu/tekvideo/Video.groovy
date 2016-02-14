@@ -45,6 +45,11 @@ class Video implements Node {
         return description
     }
 
+    String getTimelineJson() {
+        if (timelineJson == null) return "[]"
+        return timelineJson
+    }
+
     @Override
     Node getParent() {
         subject
