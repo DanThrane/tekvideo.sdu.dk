@@ -5,7 +5,7 @@ import grails.test.mixin.TestFor
 import spock.lang.Specification
 
 @TestFor(ErrorController)
-class ErrorControllerTest extends Specification {
+class ErrorControllerSpec extends Specification {
     def "test error reporting"() {
         given: "a mocked mail service"
         def mailService = Mock(MailService)

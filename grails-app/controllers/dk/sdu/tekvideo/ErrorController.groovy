@@ -27,7 +27,7 @@ Query string: ${request.queryString}
 Cookies: ${request.cookies.collect { "[${it.name}, ${it.value}, ${it.domain}]" }.join(",")}
 Method: ${request.method}
 Parameters: ${request.parameterMap}
-User: ${springSecurityService.currentUser?.username}
+User: ${springSecurityService?.currentUser?.username}
 Exception: ${sw.toString()}"""
 
         if (Environment.current == Environment.DEVELOPMENT) {
