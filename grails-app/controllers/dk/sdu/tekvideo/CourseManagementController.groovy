@@ -13,11 +13,31 @@ class CourseManagementController {
     TeachingService teachingService
 
     def index() {
-        def courses = courseManagementService.activeCourses
+        String statusStr = params.status ?: "VISIBLE"
+        def status = NodeStatus.fromValue(statusStr.toUpperCase()) ?: NodeStatus.VISIBLE
+        def courses = courseManagementService.getCourses(status)
+
         if (courses.success) {
-            [activeCourses: courses.result]
+            [activeCourses: courses.result, status: status]
         } else {
             render status: courses.suggestedHttpStatus, text: courses.message
+        }
+    }
+
+    def courseStatus(Course course, String status) {
+        def current = course?.localStatus
+        def statusS = NodeStatus.fromValue(status?.toUpperCase()) ?: null
+        if (statusS == null) {
+            flash.error = "Ugyldig status"
+            redirect(action: "index")
+        } else {
+            def res = courseManagementService.changeCourseStatus(course, statusS)
+            if (res.success) {
+                redirect(action: "index", params: [status: current])
+            } else {
+                flash.error = res.message
+                redirect(action: "index")
+            }
         }
     }
 

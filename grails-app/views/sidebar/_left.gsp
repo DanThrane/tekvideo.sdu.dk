@@ -1,5 +1,5 @@
 <%@ page import="dk.danthrane.twbs.ButtonStyle; dk.sdu.tekvideo.FaIcon" %>
-<twbs:pageHeader><h6>Mine fag</h6></twbs:pageHeader>
+<twbs:pageHeader><h4>Mine fag</h4></twbs:pageHeader>
 <g:if test="${courses.empty}">
     Du er ikke tilmeldt nogle fag! Hvorfor <g:link controller="course" action="list">tilmelder du dig ikke et?</g:link>
 </g:if>
