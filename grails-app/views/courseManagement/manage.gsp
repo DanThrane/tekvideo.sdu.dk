@@ -8,7 +8,7 @@
 </head>
 
 <body>
-<twbs:pageHeader><h3>Administrering af emne</h3></twbs:pageHeader>
+<twbs:pageHeader><h3>Administrering af fag <small>${course.fullName} (${course.name})</small></h3></twbs:pageHeader>
 
 <twbs:row>
     <twbs:column>
@@ -31,7 +31,7 @@
                     <twbs:row>
                         <twbs:column cols="6">
                             <div class="node-header">
-                                <g:link action="editSubject" id="${subject.id}">
+                                <g:link action="manageSubject" id="${subject.id}">
                                     ${subject.name}
                                 </g:link>
                                 <ul class="list-inline course-list">
@@ -145,17 +145,6 @@
     $(function () {
         var listManipulator = new ListManipulator(".subject", ".subject-up", ".subject-down");
         listManipulator.init();
-
-        var subjectToDelete = null;
-
-        $("#subject-delete-modal").on("show.bs.modal", function (e) {
-            subjectToDelete = $(e.relatedTarget).data("id");
-        });
-
-        $("#subject-delete-button").click(function () {
-            $("[data-subject-id=" + subjectToDelete + "]").closest(".subject")[0].remove();
-            $("#subject-delete-modal").modal("hide");
-        });
 
         AjaxUtil.registerJSONForm("#save-subject-order", "${createLink(action: "updateSubjects")}", function () {
             var order = listManipulator.map(function (element) {

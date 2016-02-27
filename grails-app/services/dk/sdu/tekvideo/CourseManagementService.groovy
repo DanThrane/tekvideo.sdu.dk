@@ -250,4 +250,18 @@ class CourseManagementService {
             fail message: "Ugyldigt kursus", suggestedHttpStatus: HttpStatus.SC_NOT_FOUND
         }
     }
+
+    ServiceResult<Void> changeVideoStatus(Video video, NodeStatus status) {
+        if (canAccess(video.subject.course)) {
+            if (status != null) {
+                video.localStatus = status
+                video.save()
+                ok()
+            } else {
+                fail message: "Ugyldig forspørgsel", suggestedHttpStatus: HttpStatus.SC_BAD_REQUEST
+            }
+        } else {
+            fail message: "Ugyldigt kursus", suggestedHttpStatus: HttpStatus.SC_NOT_FOUND
+        }
+    }
 }

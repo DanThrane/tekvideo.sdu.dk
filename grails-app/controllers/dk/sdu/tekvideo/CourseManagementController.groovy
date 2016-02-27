@@ -24,6 +24,7 @@ class CourseManagementController {
         }
     }
 
+    // TODO: This should really be refactored
     def courseStatus(Course course, String status) {
         def current = course?.localStatus
         def statusS = NodeStatus.fromValue(status?.toUpperCase()) ?: null
@@ -58,6 +59,23 @@ class CourseManagementController {
         }
     }
 
+    def videoStatus(Video video, String status) {
+        def current = video?.localStatus
+        def statusS = NodeStatus.fromValue(status?.toUpperCase()) ?: null
+        if (statusS == null) {
+            flash.error = "Ugyldig status"
+            redirect(action: "index")
+        } else {
+            def res = courseManagementService.changeVideoStatus(video, statusS)
+            if (res.success) {
+                redirect(action: "manageSubject", params: [status: current, id: video.subjectId])
+            } else {
+                flash.error = res.message
+                redirect(action: "index")
+            }
+        }
+    }
+
     def manage(Course course) {
         String statusStr = params.status ?: "VISIBLE"
         def status = NodeStatus.fromValue(statusStr.toUpperCase()) ?: NodeStatus.VISIBLE
@@ -65,6 +83,18 @@ class CourseManagementController {
 
         if (courseManagementService.canAccess(course) && subjects.success) {
             [course: course, subjects: subjects.result, status: status]
+        } else {
+            notAllowedCourse()
+        }
+    }
+
+    def manageSubject(Subject subject) {
+        String statusStr = params.status ?: "VISIBLE"
+        def status = NodeStatus.fromValue(statusStr.toUpperCase()) ?: NodeStatus.VISIBLE
+        def videos = courseManagementService.getVideos(status, subject)
+
+        if (courseManagementService.canAccess(subject.course) && videos.success) {
+            [subject: subject, videos: videos.result, status: status]
         } else {
             notAllowedCourse()
         }
@@ -122,9 +152,14 @@ class CourseManagementController {
     }
 
     def editVideo(Video video) {
-        // TODO A bit unclear who should be allowed to edit a video (See issue #14)
         if (teachingService.authenticatedTeacher) {
-            render view: "createVideo", model: [isEditing: true, video: video, subjects: video.subject.course.subjects]
+            render view: "createVideo", model: [
+                    isEditing: true,
+                    video    : video,
+                    subjects : video.subject.course.subjects,
+                    course   : video.subject.course,
+                    subject  : video.subject
+            ]
         } else {
             notAllowedCourse()
         }

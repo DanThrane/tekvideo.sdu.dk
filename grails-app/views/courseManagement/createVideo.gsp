@@ -85,6 +85,30 @@
             <twbs:pageHeader><h3>Ny video til ${course.fullName} (${course.name})</h3></twbs:pageHeader>
         </g:else>
 
+        <twbs:row>
+            <twbs:column>
+                <ol class="breadcrumb">
+                    <li><g:link action="index" controller="courseManagement">Mine Kurser</g:link></li>
+                    <li>
+                        <g:link action="manage" controller="courseManagement" id="${course.id}">
+                            ${course.fullName} (${course.name})
+                        </g:link>
+                    </li>
+                    <g:if test="${isEditing}">
+                        <li>
+                            <g:link action="manageSubject" controller="courseManagement" id="${video.subjectId}">
+                                ${video.subject.name}
+                            </g:link>
+                        </li>
+                        <li class="active">Redigering af ${video.name}</li>
+                    </g:if>
+                    <g:else>
+                        <li class="active">Ny video</li>
+                    </g:else>
+                </ol>
+            </twbs:column>
+        </twbs:row>
+
         <div class="embed-responsive embed-responsive-16by9">
             <div id="fields" style="z-index: 20"></div>
 
