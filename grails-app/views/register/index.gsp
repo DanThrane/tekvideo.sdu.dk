@@ -13,17 +13,22 @@
                 <twbs:pageHeader><h2>Ny bruger</h2></twbs:pageHeader>
                 <g:form action='register' name='registerForm'>
 
-                    <twbs:input name="username" bean="${command}" labelText="Brugernavn"/>
-                    <twbs:input name="email" bean="${command}" labelText="Email" type="email"/>
-                    <twbs:input name="password" type="password" labelText="Password" bean="${command}">
+                    <twbs:input name="username" bean="${command}" labelText="Brugernavn (*)"/>
+                    <twbs:input name="email" bean="${command}" labelText="Email (*)" type="email"/>
+                    <twbs:input name="password" type="password" labelText="Password (*)" bean="${command}">
                         Kodeordet skal indeholde bogstaver, tal, og special symboler
                     </twbs:input>
-                    <twbs:input name="password2" type="password" labelText="Password (igen)" bean="${command}"/>
+                    <twbs:input name="password2" type="password" labelText="Password (igen) (*)" bean="${command}"/>
+
+                    <twbs:input name="elearnId" bean="${command}" labelText="E-Learn ID" />
+                    <twbs:input name="realName" bean="${command}" labelText="Navn" />
 
                     <div class="form-buttons">
                         <s2ui:submitButton class="btn btn-primary" elementId='create' form='registerForm'
                                            messageCode='Ny bruger'/>
                     </div>
+
+                    <p>(*): Påkrævet</p>
                 </g:form>
             </twbs:column>
         </twbs:row>
