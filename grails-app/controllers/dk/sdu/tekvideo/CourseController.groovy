@@ -28,8 +28,10 @@ class CourseController {
     @Secured("ROLE_STUDENT")
     def signup(Course course) {
         Student student = studentService.authenticatedStudent
-        [course: course, studentCount: courseService.getStudentCount(course), inCourse: studentService.isInCourse(student, course),
-         student: student] // TODO Check if inCourse loads in all students
+        [course      : course,
+         studentCount: courseService.getStudentCount(course),
+         inCourse    : studentService.isInCourse(student, course),
+         student     : student]
     }
 
     @Secured("ROLE_STUDENT")
