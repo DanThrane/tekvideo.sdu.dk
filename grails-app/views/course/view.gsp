@@ -5,10 +5,11 @@
     <meta name="layout" content="main_fluid">
     <title>${course.name}</title>
 </head>
+
 <body>
 
 <twbs:pageHeader>
-    <h3>Emner <small>${course.fullName} (${course.name})</small></h3>
+    <h3>${course.fullName} (${course.name})</h3>
 </twbs:pageHeader>
 
 %{-- Should be automatic --}%
@@ -28,17 +29,53 @@
 
 <g:each in="${course.visibleSubjects}" var="subject">
     <sdu:card>
-        <twbs:column cols="12">
-            <sdu:linkToSubject subject="${subject}">
-                ${subject.name} (${subject.visibleVideos.size()} videoer)
-            </sdu:linkToSubject>
-
-            <markdown:renderHtml>${subject.description}</markdown:renderHtml>
-            
-        </twbs:column>
+        <twbs:row>
+            <twbs:column>
+                <h5><sdu:linkToSubject subject="${subject}">${subject.name}</sdu:linkToSubject></h5>
+            </twbs:column>
+        </twbs:row>
+        <twbs:row>
+            <twbs:column cols="6">
+                <markdown:renderHtml>${subject.description}</markdown:renderHtml>
+            </twbs:column>
+            <twbs:column cols="6">
+                <ul class="course-subject-menu">
+                    <g:each in="${subject.visibleVideos}" var="video">
+                        <li>
+                            <twbs:buttonGroup size="${ButtonSize.SMALL}">
+                                <twbs:linkButton url="${sdu.createLinkToVideo(video: video)}"
+                                                 style="${ButtonStyle.PRIMARY}">
+                                    <fa:icon icon="${FaIcon.YOUTUBE_PLAY}"/>
+                                </twbs:linkButton>
+                                <g:if test="${isTeacher}">
+                                    %{-- TODO Not yet implemented --}%
+                                    <twbs:button style="${ButtonStyle.INFO}" disabled="true">
+                                        <fa:icon icon="${FaIcon.LINE_CHART}"/>
+                                    </twbs:button>
+                                    <twbs:button style="${ButtonStyle.INFO}" disabled="true">
+                                        <fa:icon icon="${FaIcon.PENCIL}"/>
+                                    </twbs:button>
+                                </g:if>
+                            </twbs:buttonGroup>
+                            <sdu:linkToVideo video="${video}">
+                                ${video.name}
+                            </sdu:linkToVideo>
+                            <g:if test="${views[video.id] > 0}">
+                                <span class="text-success">[<fa:icon icon="${FaIcon.CHECK}"/>]</span>
+                            </g:if>
+                        </li>
+                    </g:each>
+                </ul>
+            </twbs:column>
+        </twbs:row>
     </sdu:card>
 </g:each>
 
-<g:render template="sidebar" model="${pageScope.variables}" />
+<g:content key="sidebar-left">
+    <twbs:pageHeader><h6>Dette fag <small>${course.name}</small></h6></twbs:pageHeader>
+    <markdown:renderHtml>${course.description}</markdown:renderHtml>
+</g:content>
+
+<g:render template="sidebar" model="${pageScope.variables}"/>
 </body>
 </html>

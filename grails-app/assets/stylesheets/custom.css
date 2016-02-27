@@ -515,3 +515,17 @@ body {
     padding-left: 10px;
     display: inline-block;
 }
+
+.course-subject-menu li {
+    list-style: none;
+    margin-bottom: 10px;
+}
+
+.course-subject-menu li .btn-group {
+    margin-right: 10px;
+}
+
+.signup-btn {
+    float: right;
+    margin-top: -5.75px;
+}
