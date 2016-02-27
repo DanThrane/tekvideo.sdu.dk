@@ -12,7 +12,6 @@
     <h3>${course.fullName} (${course.name})</h3>
 </twbs:pageHeader>
 
-%{-- Should be automatic --}%
 <twbs:row>
     <twbs:column>
         <ol class="breadcrumb">
@@ -47,15 +46,6 @@
                                                  style="${ButtonStyle.PRIMARY}">
                                     <fa:icon icon="${FaIcon.YOUTUBE_PLAY}"/>
                                 </twbs:linkButton>
-                                <g:if test="${isTeacher}">
-                                    %{-- TODO Not yet implemented --}%
-                                    <twbs:button style="${ButtonStyle.INFO}" disabled="true">
-                                        <fa:icon icon="${FaIcon.LINE_CHART}"/>
-                                    </twbs:button>
-                                    <twbs:button style="${ButtonStyle.INFO}" disabled="true">
-                                        <fa:icon icon="${FaIcon.PENCIL}"/>
-                                    </twbs:button>
-                                </g:if>
                             </twbs:buttonGroup>
                             <sdu:linkToVideo video="${video}">
                                 ${video.name}
@@ -72,8 +62,10 @@
 </g:each>
 
 <g:content key="sidebar-left">
-    <twbs:pageHeader><h6>Dette fag <small>${course.name}</small></h6></twbs:pageHeader>
-    <markdown:renderHtml>${course.description}</markdown:renderHtml>
+    <div class="course-sidebar">
+        <twbs:pageHeader><h4>Dette fag <small>${course.name}</small></h4></twbs:pageHeader>
+        <markdown:renderHtml>${course.description}</markdown:renderHtml>
+    </div>
 </g:content>
 
 <g:render template="sidebar" model="${pageScope.variables}"/>

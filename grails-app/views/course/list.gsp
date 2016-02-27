@@ -27,35 +27,13 @@
             <sdu:card>
                 <h5>
                     <sdu:linkToCourse course="${course}">${course.name} &mdash; ${course.fullName}</sdu:linkToCourse>
-                        <twbs:button style="${ButtonStyle.SUCCESS}" size="${ButtonSize.SMALL}" class="signup-btn">
-                            <fa:icon icon="${FaIcon.USER_PLUS}"/> Tilmeld
-                        </twbs:button>
+                    <sdu:signupButton course="${course}" />
                 </h5>
                 <markdown:renderHtml>${course.description}</markdown:renderHtml>
             </sdu:card>
         </g:each>
     </twbs:column>
 </twbs:row>
-
-<nav>
-    <ul class="pagination">
-        <li>
-            <a href="#" aria-label="Previous">
-                <span aria-hidden="true">&laquo;</span>
-            </a>
-        </li>
-        <li><a href="#">1</a></li>
-        <li class="active"><a href="#">2</a></li>
-        <li><a href="#">3</a></li>
-        <li><a href="#">4</a></li>
-        <li><a href="#">5</a></li>
-        <li>
-            <a href="#" aria-label="Next">
-                <span aria-hidden="true">&raquo;</span>
-            </a>
-        </li>
-    </ul>
-</nav>
 
 </body>
 </html>

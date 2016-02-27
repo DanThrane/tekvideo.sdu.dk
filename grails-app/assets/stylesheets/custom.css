@@ -529,3 +529,7 @@ body {
     float: right;
     margin-top: -5.75px;
 }
+
+.course-sidebar {
+    overflow-x: hidden;
+}

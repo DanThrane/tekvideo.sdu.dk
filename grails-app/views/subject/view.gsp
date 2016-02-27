@@ -37,12 +37,13 @@
                  alt="Video thumbnail">
         </twbs:column>
         <twbs:column cols="10">
-            <sdu:linkToVideo video="${video}">
-                ${video.name}
-            </sdu:linkToVideo>
-            <p>
-                <markdown:renderHtml>${video.description}</markdown:renderHtml>
-            </p>
+            <h5>
+                <sdu:linkToVideo video="${video}">
+                    ${video.name}
+                </sdu:linkToVideo>
+            </h5>
+
+            <p><markdown:renderHtml>${video.description}</markdown:renderHtml></p>
         </twbs:column>
     </sdu:card>
 </g:each>
