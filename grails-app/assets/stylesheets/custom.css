@@ -496,8 +496,19 @@ body {
     font-weight: bold;
 }
 
-.course-header {
+.node-header {
     font-size: 12pt;
+}
+
+.node-header-spacer {
+    display: inline-block;
+    width: 10px;
+    text-align: center;
+    color: #9d9d9e;
+}
+
+.node-header-spacer::after {
+    content: '|';
 }
 
 .course-list {

@@ -41,9 +41,30 @@ class CourseManagementController {
         }
     }
 
+    def subjectStatus(Subject subject, String status) {
+        def current = subject?.localStatus
+        def statusS = NodeStatus.fromValue(status?.toUpperCase()) ?: null
+        if (statusS == null) {
+            flash.error = "Ugyldig status"
+            redirect(action: "index")
+        } else {
+            def res = courseManagementService.changeSubjectStatus(subject, statusS)
+            if (res.success) {
+                redirect(action: "manage", params: [status: current, id: subject.courseId])
+            } else {
+                flash.error = res.message
+                redirect(action: "index")
+            }
+        }
+    }
+
     def manage(Course course) {
-        if (courseManagementService.canAccess(course)) {
-            [course: course]
+        String statusStr = params.status ?: "VISIBLE"
+        def status = NodeStatus.fromValue(statusStr.toUpperCase()) ?: NodeStatus.VISIBLE
+        def subjects = courseManagementService.getSubjects(status, course)
+
+        if (courseManagementService.canAccess(course) && subjects.success) {
+            [course: course, subjects: subjects.result, status: status]
         } else {
             notAllowedCourse()
         }

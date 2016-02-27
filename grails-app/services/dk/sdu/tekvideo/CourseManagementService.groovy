@@ -19,6 +19,22 @@ class CourseManagementService {
         }
     }
 
+    ServiceResult<List<Subject>> getSubjects(NodeStatus status, Course course) {
+        if (canAccess(course)) {
+            ok Subject.findAllByCourseAndLocalStatus(course, status)
+        } else {
+            fail "teacherservice.no_teacher"
+        }
+    }
+
+    ServiceResult<List<Video>> getVideos(NodeStatus status, Subject subject) {
+        if (canAccess(subject.course)) {
+            ok Video.findAllBySubjectAndLocalStatus(subject, status)
+        } else {
+            fail "teacherservice.no_teacher"
+        }
+    }
+
     ServiceResult<List<Course>> getActiveCourses() {
         def teacher = teachingService.authenticatedTeacher
         if (teacher) {
@@ -212,6 +228,20 @@ class CourseManagementService {
             if (status != null) {
                 course.localStatus = status
                 course.save()
+                ok()
+            } else {
+                fail message: "Ugyldig forspørgsel", suggestedHttpStatus: HttpStatus.SC_BAD_REQUEST
+            }
+        } else {
+            fail message: "Ugyldigt kursus", suggestedHttpStatus: HttpStatus.SC_NOT_FOUND
+        }
+    }
+
+    ServiceResult<Void> changeSubjectStatus(Subject subject, NodeStatus status) {
+        if (canAccess(subject.course)) {
+            if (status != null) {
+                subject.localStatus = status
+                subject.save()
                 ok()
             } else {
                 fail message: "Ugyldig forspørgsel", suggestedHttpStatus: HttpStatus.SC_BAD_REQUEST

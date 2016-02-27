@@ -1,4 +1,4 @@
-<%@ page import="dk.sdu.tekvideo.NodeStatus; dk.danthrane.twbs.ButtonSize; dk.danthrane.twbs.ButtonStyle; dk.sdu.tekvideo.FaIcon" contentType="text/html;charset=UTF-8" %>
+<%@ page import="dk.danthrane.twbs.NavStyle; dk.sdu.tekvideo.NodeStatus; dk.danthrane.twbs.ButtonSize; dk.danthrane.twbs.ButtonStyle; dk.sdu.tekvideo.FaIcon" contentType="text/html;charset=UTF-8" %>
 <html>
 <head>
     <title>Administrering af ${course.fullName} (${course.name})</title>
@@ -8,69 +8,85 @@
 </head>
 
 <body>
-<twbs:pageHeader><h3>Administrering af ${course.fullName} (${course.name})</h3></twbs:pageHeader>
+<twbs:pageHeader><h3>Administrering af emne</h3></twbs:pageHeader>
 
 <twbs:row>
     <twbs:column>
-        <h4>Emner</h4>
-        <g:if test="${course.subjects.isEmpty()}">
-            <p>Kurset har ikke nogen emner</p>
-        </g:if>
-        <g:else>
-            <div class="subject-container">
-                <g:each in="${course.activeSubjects}" var="subject">
-                    <sdu:card class="subject">
-                        <div data-subject-id="${subject.id}" class="hide"></div>
-                        <twbs:row>
-                            <twbs:column cols="8">
-                                <fa:icon icon="${(subject.localStatus == NodeStatus.VISIBLE) ?
-                                        FaIcon.EYE : FaIcon.EYE_SLASH}" />
-                                ${subject.name}
-                            </twbs:column>
-                            <twbs:column cols="4" class="align-right">
-                                <twbs:buttonToolbar>
-                                    <twbs:linkButton action="editSubject" id="${subject.id}"
-                                                     style="${ButtonStyle.LINK}" size="${ButtonSize.SMALL}">
-                                        <fa:icon icon="${FaIcon.EDIT}"/>
-                                    </twbs:linkButton>
-                                    <twbs:modalButton target="#subject-delete-modal" data-id="${subject.id}"
-                                                      style="${ButtonStyle.DANGER}" class="subject-delete">
-                                        <fa:icon icon="${FaIcon.TRASH}"/>
-                                    </twbs:modalButton>
-                                    <twbs:button style="${ButtonStyle.SUCCESS}" class="subject-up">
-                                        <fa:icon icon="${FaIcon.ARROW_UP}"/>
-                                    </twbs:button>
-                                    <twbs:button style="${ButtonStyle.INFO}" class="subject-down">
-                                        <fa:icon icon="${FaIcon.ARROW_DOWN}"/>
-                                    </twbs:button>
-                                </twbs:buttonToolbar>
-                            </twbs:column>
-                        </twbs:row>
-                        <hr>
-                        <twbs:row>
-                            <twbs:column>
-                                <markdown:renderHtml><sdu:abbreviate>${subject.description}</sdu:abbreviate></markdown:renderHtml>
-                            </twbs:column>
-                        </twbs:row>
-                    </sdu:card>
-                </g:each>
-            </div>
-            <sdu:ajaxSubmitButton style="${ButtonStyle.PRIMARY}" id="save-subject-order">
-                <fa:icon icon="${FaIcon.EDIT}"/>
-                Gem rækkefølge
-            </sdu:ajaxSubmitButton>
-        </g:else>
+        <ol class="breadcrumb">
+            <li><g:link action="index" controller="courseManagement">Mine Kurser</g:link></li>
+            <li class="active">${course.fullName} (${course.name})</li>
+        </ol>
     </twbs:column>
 </twbs:row>
 
-<twbs:modal id="subject-delete-modal">
-    <twbs:modalHeader>Er du sikker?</twbs:modalHeader>
-    Dette vil slette emnet fra dette fag!
-    <twbs:modalFooter>
-        <twbs:button data-dismiss="modal">Annulér</twbs:button>
-        <twbs:button style="${ButtonStyle.DANGER}" id="subject-delete-button">Slet emnet</twbs:button>
-    </twbs:modalFooter>
-</twbs:modal>
+<sdu:card>
+    <g:if test="${subjects.isEmpty()}">
+        <p>Ingen emner her</p>
+    </g:if>
+    <g:else>
+        <div class="subject-container">
+            <g:each in="${subjects}" var="subject">
+                <div class="subject">
+                    <div data-subject-id="${subject.id}" class="hide"></div>
+                    <twbs:row>
+                        <twbs:column cols="6">
+                            <div class="node-header">
+                                <g:link action="editSubject" id="${subject.id}">
+                                    ${subject.name}
+                                </g:link>
+                                <ul class="list-inline course-list">
+                                    <!-- I definitely didn't implement the bullets like this because I'm too lazy ;-) -->
+                                    <li>&raquo; ${subject.videos.size()} video(r)</li>
+                                </ul>
+                            </div>
+                        </twbs:column>
+                        <twbs:column cols="6" class="align-right">
+                            <twbs:button style="${ButtonStyle.SUCCESS}" disabled="true">
+                                <fa:icon icon="${FaIcon.PLUS_CIRCLE}"/> Tilføj video
+                            </twbs:button>
+                            <twbs:buttonGroup>
+                                <twbs:dropdownToggle style="${ButtonStyle.WARNING}">
+                                    <fa:icon icon="${FaIcon.ARROW_CIRCLE_RIGHT}"/> Flyt til
+
+                                    <twbs:dropdownMenu>
+                                        <twbs:dropdownItem disabled="${status == NodeStatus.VISIBLE}"
+                                                           action="subjectStatus" id="${subject.id}"
+                                                           params="${[status: NodeStatus.VISIBLE]}">
+                                            <fa:icon icon="${FaIcon.EYE}"/> Synlige
+                                        </twbs:dropdownItem>
+                                        <twbs:dropdownItem disabled="${status == NodeStatus.INVISIBLE}"
+                                                           action="subjectStatus" id="${subject.id}"
+                                                           params="${[status: NodeStatus.INVISIBLE]}">
+                                            <fa:icon icon="${FaIcon.EYE_SLASH}"/> Usynlige
+                                        </twbs:dropdownItem>
+                                        <twbs:dropdownItem disabled="${status == NodeStatus.TRASH}"
+                                                           action="subjectStatus" id="${subject.id}"
+                                                           params="${[status: NodeStatus.TRASH]}">
+                                            <fa:icon icon="${FaIcon.TRASH}"/> Papirkurv
+                                        </twbs:dropdownItem>
+                                    </twbs:dropdownMenu>
+                                </twbs:dropdownToggle>
+                            </twbs:buttonGroup>
+                            <div class="node-header-spacer"></div>
+                            <twbs:button style="${ButtonStyle.PRIMARY}" class="subject-up">
+                                <fa:icon icon="${FaIcon.ARROW_UP}"/>
+                            </twbs:button>
+                            <twbs:button style="${ButtonStyle.INFO}" class="subject-down">
+                                <fa:icon icon="${FaIcon.ARROW_DOWN}"/>
+                            </twbs:button>
+                        </twbs:column>
+                    </twbs:row>
+                    <twbs:row>
+                        <twbs:column>
+                            <markdown:renderHtml text="${sdu.abbreviate([:], { subject.description })}"/>
+                        </twbs:column>
+                    </twbs:row>
+                    <hr>
+                </div>
+            </g:each>
+        </div>
+    </g:else>
+</sdu:card>
 
 <twbs:modal id="subject-share">
     <twbs:modalHeader>Del</twbs:modalHeader>
@@ -81,24 +97,48 @@
 </twbs:modal>
 
 <g:content key="sidebar-right">
-    <div class="sidebar-options-no-header">
-        <twbs:linkButton action="editCourse" id="${course.id}" style="${ButtonStyle.LINK}" block="true">
-            <fa:icon icon="${FaIcon.EDIT}"/>
-            Rediger kursus detaljer
-        </twbs:linkButton>
-        <twbs:linkButton action="createSubject" id="${course.id}" style="${ButtonStyle.LINK}" block="true">
-            <fa:icon icon="${FaIcon.PLUS_CIRCLE}"/>
-            Opret nyt emne
-        </twbs:linkButton>
-        <twbs:linkButton action="createVideo" id="${course.id}" style="${ButtonStyle.LINK}" block="true">
-            <fa:icon icon="${FaIcon.PLAY}"/>
-            Opret ny video
-        </twbs:linkButton>
-        <twbs:button id="share-button" style="${ButtonStyle.LINK}" block="true">
-            <fa:icon icon="${FaIcon.SHARE}"/>
-            Del
-        </twbs:button>
-    </div>
+    <twbs:pageHeader>
+        <h4>Filter</h4>
+    </twbs:pageHeader>
+    <twbs:nav style="${NavStyle.PILL}" stacked="true">
+        <twbs:navItem active="${status == NodeStatus.VISIBLE}" action="manage" id="${course.id}"
+                      params="${[status: NodeStatus.VISIBLE]}">
+            <fa:icon icon="${FaIcon.EYE}"/> Synlige
+        </twbs:navItem>
+        <twbs:navItem active="${status == NodeStatus.INVISIBLE}" action="manage" id="${course.id}"
+                      params="${[status: NodeStatus.INVISIBLE]}">
+            <fa:icon icon="${FaIcon.EYE_SLASH}"/> Usynlige
+        </twbs:navItem>
+        <twbs:navItem active="${status == NodeStatus.TRASH}" action="manage" id="${course.id}"
+                      params="${[status: NodeStatus.TRASH]}">
+            <fa:icon icon="${FaIcon.TRASH}"/> Papirkurv
+        </twbs:navItem>
+    </twbs:nav>
+
+    <twbs:pageHeader>
+        <h4>Handlinger</h4>
+    </twbs:pageHeader>
+    <twbs:linkButton action="editCourse" id="${course.id}" style="${ButtonStyle.LINK}" block="true">
+        <fa:icon icon="${FaIcon.EDIT}"/>
+        Rediger kursus detaljer
+    </twbs:linkButton>
+    <twbs:linkButton action="createSubject" id="${course.id}" style="${ButtonStyle.LINK}" block="true">
+        <fa:icon icon="${FaIcon.PLUS_CIRCLE}"/>
+        Opret nyt emne
+    </twbs:linkButton>
+    <twbs:linkButton action="createVideo" id="${course.id}" style="${ButtonStyle.LINK}" block="true">
+        <fa:icon icon="${FaIcon.PLAY}"/>
+        Opret ny video
+    </twbs:linkButton>
+    <twbs:button id="share-button" style="${ButtonStyle.LINK}" block="true">
+        <fa:icon icon="${FaIcon.SHARE}"/>
+        Del
+    </twbs:button>
+    <hr>
+    <sdu:ajaxSubmitButton style="${ButtonStyle.LINK}" id="save-subject-order">
+        <fa:icon icon="${FaIcon.EDIT}"/>
+        Gem rækkefølge
+    </sdu:ajaxSubmitButton>
 </g:content>
 
 <script>

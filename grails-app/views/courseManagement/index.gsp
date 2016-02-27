@@ -10,6 +10,14 @@
 
 <twbs:pageHeader><h3>Mine kurser</h3></twbs:pageHeader>
 
+<twbs:row>
+    <twbs:column>
+        <ol class="breadcrumb">
+            <li class="active">Mine Kurser</li>
+        </ol>
+    </twbs:column>
+</twbs:row>
+
 <sdu:card>
     <g:if test="${activeCourses.isEmpty()}">
         <p>Du har ingen aktive kurser!</p>
@@ -19,7 +27,7 @@
             <div data-subject-id="${course.id}" class="hide"></div>
             <twbs:row>
                 <twbs:column cols="8">
-                    <div class="course-header">
+                    <div class="node-header">
                         <g:link action="manage" id="${course.id}">${course.fullName} (${course.name})</g:link>
                         <ul class="list-inline course-list">
                             <!-- I definitely didn't implement the bullets like this because I'm too lazy ;-) -->
@@ -60,7 +68,7 @@
                                 <twbs:dropdownItem>
                                     <fa:icon icon="${FaIcon.USERS}" /> Emne
                                 </twbs:dropdownItem>
-                                <twbs:dropdownItem>
+                                <twbs:dropdownItem disabled="true">
                                     <fa:icon icon="${FaIcon.PLAY}" /> Video
                                 </twbs:dropdownItem>
                             </twbs:dropdownMenu>

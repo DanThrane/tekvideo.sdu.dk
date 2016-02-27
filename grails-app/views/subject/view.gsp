@@ -11,7 +11,6 @@
     <h3>Videoer <small>${subject.name}</small></h3>
 </twbs:pageHeader>
 
-%{-- Should be automatic --}%
 <twbs:row>
     <twbs:column>
         <ol class="breadcrumb">
