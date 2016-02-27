@@ -118,6 +118,10 @@
     <twbs:linkButton action="editSubject" id="${subject.id}" style="${ButtonStyle.LINK}" block="true">
         <fa:icon icon="${FaIcon.EDIT}"/> Rediger emne detaljer
     </twbs:linkButton>
+    <twbs:linkButton action="createVideo" id="${subject.courseId}" params="${[subject: subject.id]}"
+                     style="${ButtonStyle.LINK}" block="true">
+        <fa:icon icon="${FaIcon.PLUS}"/> Tilføj video
+    </twbs:linkButton>
     <hr>
     <sdu:ajaxSubmitButton style="${ButtonStyle.LINK}" id="save-video-order" block="true">
         <fa:icon icon="${FaIcon.EDIT}"/>

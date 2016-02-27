@@ -41,9 +41,11 @@
                             </div>
                         </twbs:column>
                         <twbs:column cols="6" class="align-right">
-                            <twbs:button style="${ButtonStyle.SUCCESS}" disabled="true">
+                            <twbs:linkButton style="${ButtonStyle.SUCCESS}" action="createVideo"
+                                             controller="courseManagement" id="${subject.courseId}"
+                                             params="${[subject: subject.id]}">
                                 <fa:icon icon="${FaIcon.PLUS_CIRCLE}"/> Tilføj video
-                            </twbs:button>
+                            </twbs:linkButton>
                             <twbs:buttonGroup>
                                 <twbs:dropdownToggle style="${ButtonStyle.WARNING}">
                                     <fa:icon icon="${FaIcon.ARROW_CIRCLE_RIGHT}"/> Flyt til

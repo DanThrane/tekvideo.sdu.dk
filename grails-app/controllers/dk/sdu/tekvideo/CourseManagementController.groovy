@@ -145,7 +145,7 @@ class CourseManagementController {
 
     def createVideo(Course course) {
         if (courseManagementService.canAccess(course)) {
-            [course: course, subjects: course.subjects, isEditing: false]
+            [course: course, subjects: course.subjects, isEditing: false, subject: params.subject]
         } else {
             notAllowedCourse()
         }

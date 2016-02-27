@@ -65,10 +65,10 @@
                             <fa:icon icon="${FaIcon.PLUS_CIRCLE}" /> Tilføj
 
                             <twbs:dropdownMenu>
-                                <twbs:dropdownItem>
+                                <twbs:dropdownItem action="createSubject" id="${course.id}">
                                     <fa:icon icon="${FaIcon.USERS}" /> Emne
                                 </twbs:dropdownItem>
-                                <twbs:dropdownItem disabled="true">
+                                <twbs:dropdownItem action="createVideo" id="${course.id}">
                                     <fa:icon icon="${FaIcon.PLAY}" /> Video
                                 </twbs:dropdownItem>
                             </twbs:dropdownMenu>
