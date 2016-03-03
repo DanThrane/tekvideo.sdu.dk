@@ -98,6 +98,29 @@
     </g:else>
 </sdu:card>
 
+<g:content key="sidebar-left">
+    <div id="container">
+        <ul>
+            <li>Root node
+                <ul>
+                    <li id="child_node">Child node</li>
+                </ul>
+            </li>
+        </ul>
+    </div>
+    <script>
+        $(function() {
+            $('#container').jstree({
+                'core': {
+                    'themes': {
+                        'name': 'proton',
+                        'responsive': true
+                    }
+                }
+            });
+        });
+    </script>
+</g:content>
 
 <g:content key="sidebar-right">
     <twbs:pageHeader>
@@ -154,6 +177,9 @@
         );
     });
 </script>
+
+<asset:javascript src="./lib/jstree.js" />
+<asset:stylesheet src="./vendor/jstree_style.css" />
 
 </body>
 </html>
