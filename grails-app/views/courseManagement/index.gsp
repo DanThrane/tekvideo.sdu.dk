@@ -288,6 +288,16 @@
                     };
                     return options;
                 }
+            },
+            "dnd": {
+                "is_draggable": function (nodes) {
+                    for (var i = 0; i < nodes.length; i++) {
+                        if (nodes[i].type === "course") {
+                            return false;
+                        }
+                    }
+                    return true;
+                }
             }
         }).bind("move_node.jstree", function (e, data) {
             console.log("move event!");
