@@ -33,7 +33,7 @@
 </g:if>
 
 <twbs:pageHeader>
-    <h3>Fremhævet videoer</h3>
+    <h3>Fremhævede videoer</h3>
 </twbs:pageHeader>
 
 <g:each in="${featuredVideos}" var="breakdown">

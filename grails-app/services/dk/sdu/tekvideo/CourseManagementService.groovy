@@ -18,10 +18,10 @@ class CourseManagementService {
         if (courses.success) {
             return courses.result.collect {
                 [
-                        id: it.id,
-                        text: it.fullName,
+                        id      : it.id,
+                        text    : it.fullName,
                         children: it.activeSubjects.size() > 0, // TODO Not efficient
-                        type: "course"
+                        type    : "course"
                 ]
             }
         } else {
@@ -34,10 +34,10 @@ class CourseManagementService {
         if (subjects.success) {
             return subjects.result.collect {
                 [
-                        id: it.id,
-                        text: it.name,
+                        id      : it.id,
+                        text    : it.name,
                         children: it.activeVideos.size() > 0, // TODO Not efficient
-                        type: "subject"
+                        type    : "subject"
                 ]
             }
         } else {
@@ -50,10 +50,10 @@ class CourseManagementService {
         if (videos.success) {
             return videos.result.collect {
                 [
-                        id: it.id,
-                        text: it.name,
+                        id      : it.id,
+                        text    : it.name,
                         children: false,
-                        type: "video"
+                        type    : "video"
                 ]
             }
         } else {
@@ -96,23 +96,23 @@ class CourseManagementService {
     }
 
     ServiceResult<Subject> createOrEditSubject(Course course, SubjectCRUDCommand command) {
-        new DomainServiceUpdater<SubjectCRUDCommand, Subject>(command) {
-            ServiceResult init() {
+        new DomainServiceUpdater<SubjectCRUDCommand, Subject>({
+            init {
                 def teacher = teachingService.authenticatedTeacher
                 if (teacher && canAccess(course)) {
                     if (!command.isEditing) course.addToSubjects(command.domain)
                     command.domain.localStatus = command.visible ? NodeStatus.VISIBLE : NodeStatus.INVISIBLE
-                    ok null
+                    ok()
                 } else {
                     fail "teacherservice.not_allowed"
                 }
             }
-        }.dispatch()
+        }).dispatch(command)
     }
 
     ServiceResult<Course> createOrEditCourse(CourseCRUDCommand command) {
-        new DomainServiceUpdater<CourseCRUDCommand, Course>(command) {
-            ServiceResult<Void> init() {
+        new DomainServiceUpdater<CourseCRUDCommand, Course>({
+            init {
                 def teacher = teachingService.authenticatedTeacher
                 if (teacher) {
                     command.domain.teacher = teacher
@@ -123,14 +123,14 @@ class CourseManagementService {
                 }
             }
 
-            ServiceResult<Void> postValidation() {
+            postValidation {
                 if (command.isEditing && !canAccess(command.domain)) {
                     fail "teacherservice.not_allowed"
                 } else {
                     ok null
                 }
             }
-        }.dispatch()
+        }).dispatch(command)
     }
 
     ServiceResult<Video> createOrEditVideo(CreateVideoCommand command) {

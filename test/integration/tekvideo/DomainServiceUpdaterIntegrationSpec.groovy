@@ -20,14 +20,14 @@ class DomainServiceUpdaterIntegrationSpec extends IntegrationSpec {
         def course = getValidCourse()
 
         and: "a service updater"
-        def updater = new DomainServiceUpdater(new CRUDCommand(domain: course))
+        def updater = new DomainServiceUpdater<CRUDCommand, Course>()
 
         when: "the updater has not yet been called"
         then:
         Course.list().isEmpty()
 
         when: "the dispatch method is called"
-        updater.dispatch()
+        updater.dispatch(new Command(domain: course))
 
         then: "the course is saved"
         Course.list().size() == 1
@@ -43,4 +43,7 @@ class DomainServiceUpdaterIntegrationSpec extends IntegrationSpec {
         course.teacher = teacher
         return course
     }
+
+    static class Command implements CRUDCommand<Course> {}
+
 }
