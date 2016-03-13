@@ -1,6 +1,7 @@
 var ManagementTreeView = (function () {
-    function ManagementTreeView(sel) {
+    function ManagementTreeView(sel, base) {
         this.selector = sel;
+        this.baseUrl = base;
     }
 
     function handleEdit(node) {
@@ -61,6 +62,7 @@ var ManagementTreeView = (function () {
     }
 
     ManagementTreeView.prototype.init = function () {
+        var self = this;
         $(this.selector).jstree({
             "core": {
                 "check_callback": true,
@@ -71,15 +73,15 @@ var ManagementTreeView = (function () {
                 "data": {
                     "url": function (node) {
                         if (node.id === "#") {
-                            return "jstCourses";
+                            return self.baseUrl + "courseManagement/jstCourses";
                         } else {
                             switch (node.type) {
                                 case "course":
-                                    return "jstSubjects/" + node.id;
+                                    return self.baseUrl + "courseManagement/jstSubjects/" + node.id;
                                 case "subject":
-                                    return "jstVideos/" + node.id;
+                                    return self.baseUrl + "courseManagement/jstVideos/" + node.id;
                                 default:
-                                    console.log("Unknown node ");
+                                    console.log("Unknown node");
                                     console.log(node);
                                     return null;
                             }

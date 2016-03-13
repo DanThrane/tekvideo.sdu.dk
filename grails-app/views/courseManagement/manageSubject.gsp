@@ -129,6 +129,10 @@
     </sdu:ajaxSubmitButton>
 </g:content>
 
+<g:content key="sidebar-left">
+    <div id="tree-container"></div>
+</g:content>
+
 <script>
     $(function () {
         var list = new ListManipulator(".video", ".video-up", ".video-down");
@@ -141,7 +145,13 @@
 
             return {order: order, subject: ${subject.id}};
         });
+
+        var tree = new ManagementTreeView("#tree-container", "${createLink(absolute:true, uri:'/')}");
+        tree.init();
     });
 </script>
+
+<asset:javascript src="./courseManagement/app.js"/>
+<asset:stylesheet src="./vendor/proton/style.min.css"/>
 </body>
 </html>

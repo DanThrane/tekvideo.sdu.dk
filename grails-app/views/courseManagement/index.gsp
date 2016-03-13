@@ -156,7 +156,7 @@
                 }
         );
 
-        var tree = new ManagementTreeView("#tree-container");
+        var tree = new ManagementTreeView("#tree-container", "${createLink(absolute:true, uri:'/')}");
         tree.init();
     });
 </script>
