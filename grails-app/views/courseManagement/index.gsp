@@ -156,6 +156,63 @@
                 }
         );
 
+        function handleEdit(node) {
+            return function (obj) {
+                var location = null;
+                switch (node.type) {
+                    case "course":
+                        location = "manage/" + node.id;
+                        break;
+                    case "subject":
+                        location = "manageSubject/" + node.id;
+                        break;
+                    case "video":
+                        location = "editVideo/" + node.id;
+                        break;
+                }
+                if (location !== null) {
+                    document.location.href = location;
+                }
+            }
+        }
+
+        function handleStatusChange(node, status) {
+            return function (obj) {
+                var location = null;
+                switch (node.type) {
+                    case "course":
+                        location = "courseStatus/" + node.id + "?status=" + status;
+                        break;
+                    case "subject":
+                        location = "subjectStatus/" + node.id + "?status=" + status;
+                        break;
+                    case "video":
+                        location = "videoStatus/" + node.id + "?status=" + status;
+                        break;
+                }
+                if (location !== null) {
+                    document.location.href = location; // TODO This will redirect to the wrong page
+                }
+            }
+        }
+
+        function handleCreate(node) {
+            return function (obj) {
+                var location = null;
+                switch (node.type) {
+                    case "course":
+                        location = "createSubject/" + node.id;
+                        break;
+                    case "subject":
+                        location = "createVideo/" + node.parent + "?subject=" + node.id;
+                        break;
+                }
+                if (location !== null) {
+                    document.location.href = location;
+                }
+            };
+        }
+
         $('#tree-container').jstree({
             "core": {
                 "check_callback": true,
@@ -208,36 +265,26 @@
                     if (node.type !== "video") {
                         options.create = {
                             "label": "Tilføj element",
-                            "action": function (obj) {
-                                console.log("create");
-                            }
+                            "action": handleCreate(node)
                         };
                     }
                     options.edit = {
                         "label": "Rediger",
-                        "action": function (obj) {
-                            console.log("edit");
-                        }
+                        "action": handleEdit(node)
                     };
                     options.move_to_visible = {
                         "label": "Flyt til: Synlige",
                         "separator_before": true,
                         "_disabled": true,
-                        "action": function (obj) {
-                            console.log("vis");
-                        }
+                        "action": handleStatusChange(node, "VISIBLE")
                     };
                     options.move_to_invisible = {
                         "label": "Flyt til: Usynlige",
-                        "action": function (obj) {
-                            console.log("invis");
-                        }
+                        "action": handleStatusChange(node, "INVISIBLE")
                     };
                     options.move_to_trash = {
                         "label": "Flyt til: Papirkurv",
-                        "action": function (obj) {
-                            console.log("trash");
-                        }
+                        "action": handleStatusChange(node, "TRASH")
                     };
                     return options;
                 }
