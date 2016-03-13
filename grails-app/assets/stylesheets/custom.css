@@ -533,3 +533,7 @@ body {
 .course-sidebar {
     overflow-x: hidden;
 }
+
+#tree-container {
+    overflow-y: hidden;
+}

@@ -31,7 +31,7 @@
                         <g:link action="manage" id="${course.id}">${course.fullName} (${course.name})</g:link>
                         <ul class="list-inline course-list">
                             <!-- I definitely didn't implement the bullets like this because I'm too lazy ;-) -->
-                            <li>&raquo; <sdu:semesterString course="${course}" /></li>
+                            <li>&raquo; <sdu:semesterString course="${course}"/></li>
                             <li>&raquo; ${course.subjects.size()} emne(r)</li>
                         </ul>
                     </div>
@@ -39,7 +39,7 @@
                 <twbs:column cols="4" class="align-right">
                     <twbs:buttonGroup>
                         <twbs:dropdownToggle style="${ButtonStyle.WARNING}">
-                            <fa:icon icon="${FaIcon.ARROW_CIRCLE_RIGHT}" /> Flyt til
+                            <fa:icon icon="${FaIcon.ARROW_CIRCLE_RIGHT}"/> Flyt til
 
                             <twbs:dropdownMenu>
                                 <twbs:dropdownItem disabled="${status == NodeStatus.VISIBLE}"
@@ -62,14 +62,14 @@
                     </twbs:buttonGroup>
                     <twbs:buttonGroup>
                         <twbs:dropdownToggle style="${ButtonStyle.SUCCESS}">
-                            <fa:icon icon="${FaIcon.PLUS_CIRCLE}" /> Tilføj
+                            <fa:icon icon="${FaIcon.PLUS_CIRCLE}"/> Tilføj
 
                             <twbs:dropdownMenu>
                                 <twbs:dropdownItem action="createSubject" id="${course.id}">
-                                    <fa:icon icon="${FaIcon.USERS}" /> Emne
+                                    <fa:icon icon="${FaIcon.USERS}"/> Emne
                                 </twbs:dropdownItem>
                                 <twbs:dropdownItem action="createVideo" id="${course.id}">
-                                    <fa:icon icon="${FaIcon.PLAY}" /> Video
+                                    <fa:icon icon="${FaIcon.PLAY}"/> Video
                                 </twbs:dropdownItem>
                             </twbs:dropdownMenu>
                         </twbs:dropdownToggle>
@@ -99,27 +99,7 @@
 </sdu:card>
 
 <g:content key="sidebar-left">
-    <div id="container">
-        <ul>
-            <li>Root node
-                <ul>
-                    <li id="child_node">Child node</li>
-                </ul>
-            </li>
-        </ul>
-    </div>
-    <script>
-        $(function() {
-            $('#container').jstree({
-                'core': {
-                    'themes': {
-                        'name': 'proton',
-                        'responsive': true
-                    }
-                }
-            });
-        });
-    </script>
+    <div id="tree-container"></div>
 </g:content>
 
 <g:content key="sidebar-right">
@@ -175,11 +155,63 @@
                     }
                 }
         );
+
+        $('#tree-container').jstree({
+            "core": {
+                "check_callback": true,
+                "themes": {
+                    "name": "proton",
+                    "responsive": true
+                },
+                "data": {
+                    "url": function (node) {
+                        if (node.id === "#") {
+                            return "jstCourses";
+                        } else {
+                            switch (node.type) {
+                                case "course":
+                                    return "jstSubjects/" + node.id;
+                                case "subject":
+                                    return "jstVideos/" + node.id;
+                                default:
+                                    console.log("Unknown node ");
+                                    console.log(node);
+                                    return null;
+                            }
+                        }
+                    },
+                    "dataType": "json",
+                    "contentType": "application/json"
+                }
+            },
+            "types": {
+                "#": {
+                    "valid_children": ["course"]
+                },
+                "course": {
+                    "icon": "fa fa-graduation-cap",
+                    "valid_children": ["subject"]
+                },
+                "subject": {
+                    "icon": "fa fa-users",
+                    "valid_children": ["video"]
+                },
+                "video": {
+                    "icon": "fa fa-play",
+                    "valid_children": []
+                }
+            },
+            "plugins": ["contextmenu", "dnd", "search", "state", "types", "wholerow"]
+        }).bind("move_node.jstree", function (e, data) {
+            console.log("move event!");
+            console.log(e);
+            console.log(data);
+        });
     });
 </script>
 
-<asset:javascript src="./lib/jstree.js" />
-<asset:stylesheet src="./vendor/jstree_style.css" />
+<asset:javascript src="./lib/jstree.js"/>
+<asset:stylesheet src="./vendor/proton/style.min.css"/>
 
 </body>
 </html>

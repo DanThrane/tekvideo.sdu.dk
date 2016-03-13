@@ -24,6 +24,18 @@ class CourseManagementController {
         }
     }
 
+    def jstCourses() {
+        render courseManagementService.getJsTreeCourses() as JSON
+    }
+
+    def jstSubjects(Course course) {
+        render courseManagementService.getJsTreeSubjects(course) as JSON
+    }
+
+    def jstVideos(Subject subject) {
+        render courseManagementService.getJsTreeVideos(subject) as JSON
+    }
+
     // TODO: This should really be refactored
     def courseStatus(Course course, String status) {
         def current = course?.localStatus
