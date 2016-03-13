@@ -201,7 +201,47 @@
                     "valid_children": []
                 }
             },
-            "plugins": ["contextmenu", "dnd", "search", "state", "types", "wholerow"]
+            "plugins": ["contextmenu", "dnd", "search", "state", "types", "wholerow"],
+            "contextmenu": {
+                "items": function (node) {
+                    var options = {};
+                    if (node.type !== "video") {
+                        options.create = {
+                            "label": "Tilføj element",
+                            "action": function (obj) {
+                                console.log("create");
+                            }
+                        };
+                    }
+                    options.edit = {
+                        "label": "Rediger",
+                        "action": function (obj) {
+                            console.log("edit");
+                        }
+                    };
+                    options.move_to_visible = {
+                        "label": "Flyt til: Synlige",
+                        "separator_before": true,
+                        "_disabled": true,
+                        "action": function (obj) {
+                            console.log("vis");
+                        }
+                    };
+                    options.move_to_invisible = {
+                        "label": "Flyt til: Usynlige",
+                        "action": function (obj) {
+                            console.log("invis");
+                        }
+                    };
+                    options.move_to_trash = {
+                        "label": "Flyt til: Papirkurv",
+                        "action": function (obj) {
+                            console.log("trash");
+                        }
+                    };
+                    return options;
+                }
+            }
         }).bind("move_node.jstree", function (e, data) {
             console.log("move event!");
             console.log(e);
