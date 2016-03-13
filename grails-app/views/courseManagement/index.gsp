@@ -300,9 +300,30 @@
                 }
             }
         }).bind("move_node.jstree", function (e, data) {
-            console.log("move event!");
-            console.log(e);
-            console.log(data);
+            if (data.old_parent !== data.parent) {
+                console.log("Not yet implemented.");
+            } else {
+                var parent = parseInt(data.parent);
+                var orderStrings = data.new_instance._model.data[parent].children;
+                var order = [];
+                for (var i = 0; i < orderStrings.length; i++) order[i] = parseInt(orderStrings[i]);
+                switch (data.node.type) {
+                    case "subject":
+                        var message = {
+                            course: parent,
+                            order: order
+                        };
+                        Util.postJson("updateSubjects", message, {});
+                        break;
+                    case "video":
+                        var message = {
+                            subject: parent,
+                            order: order
+                        };
+                        Util.postJson("updateVideos", message, {});
+                        break;
+                }
+            }
         });
     });
 </script>
