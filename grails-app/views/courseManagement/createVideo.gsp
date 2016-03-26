@@ -339,6 +339,10 @@
 
 %{-- End templates --}%
 
+<g:content key="sidebar-left">
+    <div id="tree-container"></div>
+</g:content>
+
 <g:content key="layout-script">
     <asset:javascript src="video-creator.js"/>
     <script>
@@ -360,8 +364,13 @@
             $("#subject").val(${subject});
             </g:if>
             Editor.setVideoInfoEndpoint("<g:createLink controller="videoHost" action="info" />");
+
+            var tree = new ManagementTreeView("#tree-container", "${createLink(absolute:true, uri:'/')}");
+            tree.init();
         });
     </script>
+    <asset:javascript src="./courseManagement/app.js"/>
+    <asset:stylesheet src="./vendor/proton/style.min.css"/>
 </g:content>
 </body>
 </html>

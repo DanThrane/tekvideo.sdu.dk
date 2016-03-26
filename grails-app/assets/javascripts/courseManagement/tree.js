@@ -2,64 +2,68 @@ var ManagementTreeView = (function () {
     function ManagementTreeView(sel, base) {
         this.selector = sel;
         this.baseUrl = base;
+        console.log(this.baseUrl);
     }
 
-    function handleEdit(node) {
+    ManagementTreeView.prototype.handleEdit = function(node) {
+        var self = this;
         return function (obj) {
             var location = null;
             switch (node.type) {
                 case "course":
-                    location = "manage/" + node.id;
+                    location = self.baseUrl + "courseManagement/manage/" + node.id;
                     break;
                 case "subject":
-                    location = "manageSubject/" + node.id;
+                    location = self.baseUrl + "courseManagement/manageSubject/" + node.id;
                     break;
                 case "video":
-                    location = "editVideo/" + node.id;
+                    location = self.baseUrl + "courseManagement/editVideo/" + node.id;
                     break;
             }
             if (location !== null) {
                 document.location.href = location;
             }
         }
-    }
+    };
 
-    function handleStatusChange(node, status) {
+    ManagementTreeView.prototype.handleStatusChange = function(node, status) {
+        var self = this;
         return function (obj) {
             var location = null;
             switch (node.type) {
                 case "course":
-                    location = "courseStatus/" + node.id + "?status=" + status;
+                    location = self.baseUrl + "courseManagement/courseStatus/" + node.id + "?status=" + status;
                     break;
                 case "subject":
-                    location = "subjectStatus/" + node.id + "?status=" + status;
+                    location = self.baseUrl + "courseManagement/subjectStatus/" + node.id + "?status=" + status;
                     break;
                 case "video":
-                    location = "videoStatus/" + node.id + "?status=" + status;
+                    location = self.baseUrl + "courseManagement/videoStatus/" + node.id + "?status=" + status;
                     break;
             }
             if (location !== null) {
                 document.location.href = location; // TODO This will redirect to the wrong page
             }
         }
-    }
+    };
 
-    function handleCreate(node) {
+    ManagementTreeView.prototype.handleCreate = function(node) {
+        var self = this;
         return function (obj) {
             var location = null;
             switch (node.type) {
                 case "course":
-                    location = "createSubject/" + node.id;
+                    location = self.baseUrl + "courseManagement/createSubject/" + node.id;
                     break;
                 case "subject":
-                    location = "createVideo/" + node.parent + "?subject=" + node.id;
+                    location = self.baseUrl + "courseManagement/createVideo/" + node.parent + "?subject=" + node.id;
                     break;
             }
             if (location !== null) {
                 document.location.href = location;
             }
         };
-    }
+    };
 
     ManagementTreeView.prototype.init = function () {
         var self = this;
@@ -115,26 +119,26 @@ var ManagementTreeView = (function () {
                     if (node.type !== "video") {
                         options.create = {
                             "label": "Tilføj element",
-                            "action": handleCreate(node)
+                            "action": self.handleCreate(node)
                         };
                     }
                     options.edit = {
                         "label": "Rediger",
-                        "action": handleEdit(node)
+                        "action": self.handleEdit(node)
                     };
                     options.move_to_visible = {
                         "label": "Flyt til: Synlige",
                         "separator_before": true,
                         "_disabled": true,
-                        "action": handleStatusChange(node, "VISIBLE")
+                        "action": self.handleStatusChange(node, "VISIBLE")
                     };
                     options.move_to_invisible = {
                         "label": "Flyt til: Usynlige",
-                        "action": handleStatusChange(node, "INVISIBLE")
+                        "action": self.handleStatusChange(node, "INVISIBLE")
                     };
                     options.move_to_trash = {
                         "label": "Flyt til: Papirkurv",
-                        "action": handleStatusChange(node, "TRASH")
+                        "action": self.handleStatusChange(node, "TRASH")
                     };
                     return options;
                 }
@@ -163,14 +167,14 @@ var ManagementTreeView = (function () {
                             course: parent,
                             order: order
                         };
-                        Util.postJson("updateSubjects", message, {});
+                        Util.postJson(self.baseUrl + "courseManagement/updateSubjects", message, {});
                         break;
                     case "video":
                         var message = {
                             subject: parent,
                             order: order
                         };
-                        Util.postJson("updateVideos", message, {});
+                        Util.postJson(self.baseUrl + "courseManagement/updateVideos", message, {});
                         break;
                 }
             }
