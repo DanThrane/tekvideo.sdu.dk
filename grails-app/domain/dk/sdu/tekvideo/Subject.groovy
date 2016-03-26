@@ -6,6 +6,7 @@ class Subject implements Node {
     String name
     String description = "Ingen beskrivelse"
     NodeStatus localStatus = NodeStatus.VISIBLE
+    Long subjects_idx
 
     List<Video> videos // The subject will order its own videos
     static hasMany = [videos: Video]
@@ -13,11 +14,13 @@ class Subject implements Node {
     static constraints = {
         name nullable: false, blank: false
         description nullable: true
+        subjects_idx nullable: true
     }
 
     static mapping = {
         description type: "text"
         videos cascade: "all-delete-orphan", indexColumn: [name: "videos_idx", type: Long]
+        subjects_idx updateable: false, insertable: false
     }
 
     static belongsTo = [course: Course]

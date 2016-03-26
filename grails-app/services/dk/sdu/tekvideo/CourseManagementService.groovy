@@ -34,12 +34,13 @@ class CourseManagementService {
         if (subjects.success) {
             return subjects.result.collect {
                 [
-                        id      : it.id,
-                        text    : it.name,
-                        children: it.activeVideos.size() > 0, // TODO Not efficient
-                        type    : "subject"
+                        id          : it.id,
+                        text        : it.name,
+                        children    : it.activeVideos.size() > 0, // TODO Not efficient
+                        type        : "subject",
+                        subjects_idx: it.subjects_idx
                 ]
-            }
+            }.sort { it.subjects_idx }
         } else {
             return Collections.emptyList()
         }
@@ -50,12 +51,13 @@ class CourseManagementService {
         if (videos.success) {
             return videos.result.collect {
                 [
-                        id      : it.id,
-                        text    : it.name,
-                        children: false,
-                        type    : "video"
+                        id        : it.id,
+                        text      : it.name,
+                        children  : false,
+                        type      : "video",
+                        videos_idx: it.videos_idx
                 ]
-            }
+            }.sort { it.videos_idx }
         } else {
             return Collections.emptyList()
         }
