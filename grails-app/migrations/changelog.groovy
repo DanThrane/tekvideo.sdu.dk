@@ -589,4 +589,6 @@ databaseChangeLog = {
 	include file: 'add-course-uniqueness-constraint.groovy'
 
 	include file: 'add-real-name-to-user.groovy'
+
+	include file: 'change_video_description_type.groovy'
 }
