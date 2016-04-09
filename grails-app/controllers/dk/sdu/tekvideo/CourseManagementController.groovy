@@ -223,6 +223,18 @@ class CourseManagementController {
         render result as JSON
     }
 
+    def moveVideo(MoveVideoCommand command) {
+        def result = courseManagementService.moveVideo(command)
+        response.status = result.suggestedHttpStatus
+        render result as JSON
+    }
+
+    def moveSubject(MoveSubjectCommand command) {
+        def result = courseManagementService.moveSubject(command)
+        response.status = result.suggestedHttpStatus
+        render result as JSON
+    }
+
     def importCourse() {
         [courses: courseService.listActiveCourses()]
     }

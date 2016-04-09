@@ -2,10 +2,9 @@ var ManagementTreeView = (function () {
     function ManagementTreeView(sel, base) {
         this.selector = sel;
         this.baseUrl = base;
-        console.log(this.baseUrl);
     }
 
-    ManagementTreeView.prototype.handleEdit = function(node) {
+    ManagementTreeView.prototype.handleEdit = function (node) {
         var self = this;
         return function (obj) {
             var location = null;
@@ -26,7 +25,7 @@ var ManagementTreeView = (function () {
         }
     };
 
-    ManagementTreeView.prototype.handleStatusChange = function(node, status) {
+    ManagementTreeView.prototype.handleStatusChange = function (node, status) {
         var self = this;
         return function (obj) {
             var location = null;
@@ -47,7 +46,7 @@ var ManagementTreeView = (function () {
         }
     };
 
-    ManagementTreeView.prototype.handleCreate = function(node) {
+    ManagementTreeView.prototype.handleCreate = function (node) {
         var self = this;
         return function (obj) {
             var location = null;
@@ -63,6 +62,29 @@ var ManagementTreeView = (function () {
                 document.location.href = location;
             }
         };
+    };
+
+    ManagementTreeView.prototype._sendUpdatedOrder = function (data) {
+        var parent = parseInt(data.parent);
+        var orderStrings = data.new_instance._model.data[parent].children;
+        var order = [];
+        for (var i = 0; i < orderStrings.length; i++) order[i] = parseInt(orderStrings[i]);
+        switch (data.node.type) {
+            case "subject":
+                var message = {
+                    course: parent,
+                    order: order
+                };
+                Util.postJson(self.baseUrl + "courseManagement/updateSubjects", message, {});
+                break;
+            case "video":
+                var message = {
+                    subject: parent,
+                    order: order
+                };
+                Util.postJson(self.baseUrl + "courseManagement/updateVideos", message, {});
+                break;
+        }
     };
 
     ManagementTreeView.prototype.init = function () {
@@ -155,28 +177,26 @@ var ManagementTreeView = (function () {
             }
         }).bind("move_node.jstree", function (e, data) {
             if (data.old_parent !== data.parent) {
-                console.log("Not yet implemented.");
-            } else {
-                var parent = parseInt(data.parent);
-                var orderStrings = data.new_instance._model.data[parent].children;
-                var order = [];
-                for (var i = 0; i < orderStrings.length; i++) order[i] = parseInt(orderStrings[i]);
                 switch (data.node.type) {
                     case "subject":
                         var message = {
-                            course: parent,
-                            order: order
+                            subject: data.node.id,
+                            newCourse: data.parent,
+                            position: data.position
                         };
-                        Util.postJson(self.baseUrl + "courseManagement/updateSubjects", message, {});
+                        Util.postJson(self.baseUrl + "courseManagement/moveSubject", message, {});
                         break;
                     case "video":
                         var message = {
-                            subject: parent,
-                            order: order
+                            video: data.node.id,
+                            newSubject: data.parent,
+                            position: data.position
                         };
-                        Util.postJson(self.baseUrl + "courseManagement/updateVideos", message, {});
+                        Util.postJson(self.baseUrl + "courseManagement/moveVideo", message, {});
                         break;
                 }
+            } else {
+                self._sendUpdatedOrder(data);
             }
         });
     };

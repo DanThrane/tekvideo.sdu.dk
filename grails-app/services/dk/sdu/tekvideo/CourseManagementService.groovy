@@ -1,6 +1,7 @@
 package dk.sdu.tekvideo
 
 import org.apache.http.HttpStatus
+import org.hibernate.SessionFactory
 
 import static dk.sdu.tekvideo.ServiceResult.*
 
@@ -9,6 +10,7 @@ import static dk.sdu.tekvideo.ServiceResult.*
  */
 class CourseManagementService {
     def teachingService
+    SessionFactory sessionFactory
 
     /**
      * Returns the courses owned by the current teacher in a format jsTree will understand.
@@ -60,6 +62,66 @@ class CourseManagementService {
             }.sort { it.videos_idx }
         } else {
             return Collections.emptyList()
+        }
+    }
+
+    ServiceResult<Subject> moveSubject(MoveSubjectCommand command) {
+        if (command.validate()) {
+            // This is a somewhat dirty hack, but doing it the proper way appears to require a complete restructuring
+            // of the data model
+            def subject = command.subject
+            def newCourse = command.newCourse
+
+            String query = $/
+            UPDATE subject
+            SET course_id = :course_id, subjects_idx = :position
+            WHERE subject.id = :subject_id
+            /$
+
+            def updateCount = sessionFactory.currentSession
+                    .createSQLQuery(query)
+                    .setLong("course_id", newCourse.id)
+                    .setLong("subject_id", subject.id)
+                    .setLong("position", command.position)
+                    .executeUpdate()
+
+            if (updateCount > 0) {
+                ok item: subject
+            } else {
+                fail message: "Unable to execute update"
+            }
+        } else {
+            fail message: "Bad arguments", suggestedHttpStatus: HttpStatus.SC_BAD_REQUEST
+        }
+    }
+
+    ServiceResult<Video> moveVideo(MoveVideoCommand command) {
+        if (command.validate()) {
+            // This is a somewhat dirty hack, but doing it the proper way appears to require a complete restructuring
+            // of the data model
+            def video = command.video
+            def newSubject = command.newSubject
+
+            String query = $/
+            UPDATE video
+            SET subject_id = :subject_id, videos_idx = :position
+            WHERE video.id = :video_id
+            /$
+
+            def updateCount = sessionFactory.currentSession
+                    .createSQLQuery(query)
+                    .setLong("subject_id", newSubject.id)
+                    .setLong("video_id", video.id)
+                    .setLong("position", command.position)
+                    .executeUpdate()
+
+            if (updateCount > 0) {
+                ok item: video
+            } else {
+                fail message: "Unable to execute update"
+            }
+        } else {
+            fail message: "Bad arguments", suggestedHttpStatus: HttpStatus.SC_BAD_REQUEST
         }
     }
 
