@@ -10,21 +10,91 @@ import org.springframework.security.access.annotation.Secured
 class CourseManagementController {
     CourseService courseService
     CourseManagementService courseManagementService
-    VideoStatisticsService videoStatisticsService
     TeachingService teachingService
 
     def index() {
-        def courses = courseManagementService.activeCourses
+        String statusStr = params.status ?: "VISIBLE"
+        def status = NodeStatus.fromValue(statusStr.toUpperCase()) ?: NodeStatus.VISIBLE
+        def courses = courseManagementService.getCourses(status)
+
         if (courses.success) {
-            [activeCourses: courses.result]
+            [activeCourses: courses.result, status: status]
         } else {
             render status: courses.suggestedHttpStatus, text: courses.message
         }
     }
 
+    // TODO: This should really be refactored
+    def courseStatus(Course course, String status) {
+        def current = course?.localStatus
+        def statusS = NodeStatus.fromValue(status?.toUpperCase()) ?: null
+        if (statusS == null) {
+            flash.error = "Ugyldig status"
+            redirect(action: "index")
+        } else {
+            def res = courseManagementService.changeCourseStatus(course, statusS)
+            if (res.success) {
+                redirect(action: "index", params: [status: current])
+            } else {
+                flash.error = res.message
+                redirect(action: "index")
+            }
+        }
+    }
+
+    def subjectStatus(Subject subject, String status) {
+        def current = subject?.localStatus
+        def statusS = NodeStatus.fromValue(status?.toUpperCase()) ?: null
+        if (statusS == null) {
+            flash.error = "Ugyldig status"
+            redirect(action: "index")
+        } else {
+            def res = courseManagementService.changeSubjectStatus(subject, statusS)
+            if (res.success) {
+                redirect(action: "manage", params: [status: current, id: subject.courseId])
+            } else {
+                flash.error = res.message
+                redirect(action: "index")
+            }
+        }
+    }
+
+    def videoStatus(Video video, String status) {
+        def current = video?.localStatus
+        def statusS = NodeStatus.fromValue(status?.toUpperCase()) ?: null
+        if (statusS == null) {
+            flash.error = "Ugyldig status"
+            redirect(action: "index")
+        } else {
+            def res = courseManagementService.changeVideoStatus(video, statusS)
+            if (res.success) {
+                redirect(action: "manageSubject", params: [status: current, id: video.subjectId])
+            } else {
+                flash.error = res.message
+                redirect(action: "index")
+            }
+        }
+    }
+
     def manage(Course course) {
-        if (courseManagementService.canAccess(course)) {
-            [course: course]
+        String statusStr = params.status ?: "VISIBLE"
+        def status = NodeStatus.fromValue(statusStr.toUpperCase()) ?: NodeStatus.VISIBLE
+        def subjects = courseManagementService.getSubjects(status, course)
+
+        if (courseManagementService.canAccess(course) && subjects.success) {
+            [course: course, subjects: subjects.result, status: status]
+        } else {
+            notAllowedCourse()
+        }
+    }
+
+    def manageSubject(Subject subject) {
+        String statusStr = params.status ?: "VISIBLE"
+        def status = NodeStatus.fromValue(statusStr.toUpperCase()) ?: NodeStatus.VISIBLE
+        def videos = courseManagementService.getVideos(status, subject)
+
+        if (courseManagementService.canAccess(subject.course) && videos.success) {
+            [subject: subject, videos: videos.result, status: status]
         } else {
             notAllowedCourse()
         }
@@ -75,16 +145,21 @@ class CourseManagementController {
 
     def createVideo(Course course) {
         if (courseManagementService.canAccess(course)) {
-            [course: course, subjects: course.subjects, isEditing: false]
+            [course: course, subjects: course.subjects, isEditing: false, subject: params.subject]
         } else {
             notAllowedCourse()
         }
     }
 
     def editVideo(Video video) {
-        // TODO A bit unclear who should be allowed to edit a video (See issue #14)
         if (teachingService.authenticatedTeacher) {
-            render view: "createVideo", model: [isEditing: true, video: video, subjects: video.subject.course.subjects]
+            render view: "createVideo", model: [
+                    isEditing: true,
+                    video    : video,
+                    subjects : video.subject.course.subjects,
+                    course   : video.subject.course,
+                    subject  : video.subject
+            ]
         } else {
             notAllowedCourse()
         }
@@ -112,48 +187,6 @@ class CourseManagementController {
         } else {
             notAllowedCourse()
         }
-    }
-
-    def videoStatistics(Video video) {
-        if (video == null) {
-            flash.error = "Ukendt video"
-            redirect action: "index"
-        } else {
-            if (courseManagementService.canAccess(video.subject.course)) {
-                def statistic = videoStatisticsService.findViewingStatistics(
-                        video,
-                        System.currentTimeMillis() - 1000 * 60 * 60 * 24,
-                        System.currentTimeMillis(), 1000 * 60 * 60
-                ).result
-
-                def viewBreakdown = videoStatisticsService.retrieveViewBreakdown(video).result
-                def answerSummary = videoStatisticsService.retrieveAnswerSummary(video).result
-                def viewsAmongStudents = videoStatisticsService.retrieveViewingStatisticsForStudents(video).result
-
-                return [
-                        video             : video,
-                        statistics        : statistic,
-                        viewBreakdown     : viewBreakdown,
-                        answerSummary     : answerSummary,
-                        viewsAmongStudents: viewsAmongStudents
-                ]
-            } else {
-                notAllowedCourse()
-            }
-        }
-    }
-
-    def videoViewingChart(Video video, Long period) {
-        // TODO Confirm that the teacher owns this video
-        long from = System.currentTimeMillis()
-        long to = System.currentTimeMillis()
-        long periodInMs
-
-        from -= 1000 * 60 * 60 * 24 * period
-        periodInMs = (to - from) / 24
-
-        def statistics = videoStatisticsService.findViewingStatistics(video, from, to, periodInMs)
-        render statistics as JSON
     }
 
     def postCourse(CourseCRUDCommand command) {

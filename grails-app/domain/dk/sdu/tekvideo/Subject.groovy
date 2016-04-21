@@ -23,11 +23,11 @@ class Subject implements Node {
     static belongsTo = [course: Course]
 
     List<Video> getActiveVideos() {
-        videos.stream().filter { it.localStatus != NodeStatus.TRASH }.collect(Collectors.toList())
+        videos.stream().filter { it != null && it.localStatus != NodeStatus.TRASH }.collect(Collectors.toList())
     }
 
     List<Video> getVisibleVideos() {
-        videos.stream().filter { it.localStatus == NodeStatus.VISIBLE }.collect(Collectors.toList())
+        videos.stream().filter { it != null && it.localStatus == NodeStatus.VISIBLE }.collect(Collectors.toList())
     }
 
     String getDescription() {

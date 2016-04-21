@@ -85,6 +85,30 @@
             <twbs:pageHeader><h3>Ny video til ${course.fullName} (${course.name})</h3></twbs:pageHeader>
         </g:else>
 
+        <twbs:row>
+            <twbs:column>
+                <ol class="breadcrumb">
+                    <li><g:link action="index" controller="courseManagement">Mine Kurser</g:link></li>
+                    <li>
+                        <g:link action="manage" controller="courseManagement" id="${course.id}">
+                            ${course.fullName} (${course.name})
+                        </g:link>
+                    </li>
+                    <g:if test="${isEditing}">
+                        <li>
+                            <g:link action="manageSubject" controller="courseManagement" id="${video.subjectId}">
+                                ${video.subject.name}
+                            </g:link>
+                        </li>
+                        <li class="active">Redigering af ${video.name}</li>
+                    </g:if>
+                    <g:else>
+                        <li class="active">Ny video</li>
+                    </g:else>
+                </ol>
+            </twbs:column>
+        </twbs:row>
+
         <div class="embed-responsive embed-responsive-16by9">
             <div id="fields" style="z-index: 20"></div>
 
@@ -273,13 +297,15 @@
 </g:content>
 
 <g:content key="sidebar-right-below-the-fold">
-    <h4><fa:icon icon="${FaIcon.VIDEO_CAMERA}"/> Tidslinie</h4>
+    <div id="sidebar-right-timeline">
+        <h4><fa:icon icon="${FaIcon.VIDEO_CAMERA}"/> Tidslinie</h4>
 
-    <div id="timeline-subjects"></div>
-    <br/>
-    <twbs:button block="true" style="${ButtonStyle.SUCCESS}" id="addSubject">
-        <fa:icon icon="${FaIcon.PLUS}"/>
-    </twbs:button>
+        <div id="timeline-subjects"></div>
+        <br/>
+        <twbs:button block="true" style="${ButtonStyle.SUCCESS}" id="addSubject">
+            <fa:icon icon="${FaIcon.PLUS}"/>
+        </twbs:button>
+    </div>
 </g:content>
 
 %{-- Templates --}%
@@ -330,6 +356,9 @@
             <g:else>
             Editor.setPublishEndpoint("<g:createLink action="postVideo" />");
             </g:else>
+            <g:if test="${subject != null && !isEditing}">
+            $("#subject").val(${subject});
+            </g:if>
             Editor.setVideoInfoEndpoint("<g:createLink controller="videoHost" action="info" />");
         });
     </script>

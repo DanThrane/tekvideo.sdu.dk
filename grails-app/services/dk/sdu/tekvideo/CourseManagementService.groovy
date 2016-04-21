@@ -1,5 +1,7 @@
 package dk.sdu.tekvideo
 
+import org.apache.http.HttpStatus
+
 import static dk.sdu.tekvideo.ServiceResult.*
 
 /**
@@ -7,6 +9,31 @@ import static dk.sdu.tekvideo.ServiceResult.*
  */
 class CourseManagementService {
     def teachingService
+
+    ServiceResult<List<Course>> getCourses(NodeStatus status) {
+        def teacher = teachingService.authenticatedTeacher
+        if (teacher) {
+            ok Course.findAllByTeacherAndLocalStatus(teacher, status)
+        } else {
+            fail "teacherservice.no_teacher"
+        }
+    }
+
+    ServiceResult<List<Subject>> getSubjects(NodeStatus status, Course course) {
+        if (canAccess(course)) {
+            ok Subject.findAllByCourseAndLocalStatus(course, status)
+        } else {
+            fail "teacherservice.no_teacher"
+        }
+    }
+
+    ServiceResult<List<Video>> getVideos(NodeStatus status, Subject subject) {
+        if (canAccess(subject.course)) {
+            ok Video.findAllBySubjectAndLocalStatus(subject, status)
+        } else {
+            fail "teacherservice.no_teacher"
+        }
+    }
 
     ServiceResult<List<Course>> getActiveCourses() {
         def teacher = teachingService.authenticatedTeacher
@@ -193,5 +220,48 @@ class CourseManagementService {
 
     boolean canAccess(Course course) {
         return course.teacher == teachingService.authenticatedTeacher
+    }
+
+    ServiceResult<Void> changeCourseStatus(Course course, NodeStatus status) {
+        def teacher = teachingService.authenticatedTeacher
+        if (teacher && course.teacher == teacher) {
+            if (status != null) {
+                course.localStatus = status
+                course.save()
+                ok()
+            } else {
+                fail message: "Ugyldig forspørgsel", suggestedHttpStatus: HttpStatus.SC_BAD_REQUEST
+            }
+        } else {
+            fail message: "Ugyldigt kursus", suggestedHttpStatus: HttpStatus.SC_NOT_FOUND
+        }
+    }
+
+    ServiceResult<Void> changeSubjectStatus(Subject subject, NodeStatus status) {
+        if (canAccess(subject.course)) {
+            if (status != null) {
+                subject.localStatus = status
+                subject.save()
+                ok()
+            } else {
+                fail message: "Ugyldig forspørgsel", suggestedHttpStatus: HttpStatus.SC_BAD_REQUEST
+            }
+        } else {
+            fail message: "Ugyldigt kursus", suggestedHttpStatus: HttpStatus.SC_NOT_FOUND
+        }
+    }
+
+    ServiceResult<Void> changeVideoStatus(Video video, NodeStatus status) {
+        if (canAccess(video.subject.course)) {
+            if (status != null) {
+                video.localStatus = status
+                video.save()
+                ok()
+            } else {
+                fail message: "Ugyldig forspørgsel", suggestedHttpStatus: HttpStatus.SC_BAD_REQUEST
+            }
+        } else {
+            fail message: "Ugyldigt kursus", suggestedHttpStatus: HttpStatus.SC_NOT_FOUND
+        }
     }
 }

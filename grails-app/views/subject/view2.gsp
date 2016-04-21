@@ -11,6 +11,7 @@
     <h3>Videoer <small>${subject.name}</small></h3>
 </twbs:pageHeader>
 
+%{-- Should be automatic --}%
 <twbs:row>
     <twbs:column>
         <ol class="breadcrumb">
@@ -37,13 +38,12 @@
                  alt="Video thumbnail">
         </twbs:column>
         <twbs:column cols="10">
-            <h5>
-                <sdu:linkToVideo video="${video}">
-                    ${video.name}
-                </sdu:linkToVideo>
-            </h5>
-
-            <p><markdown:renderHtml>${video.description}</markdown:renderHtml></p>
+            <sdu:linkToVideo video="${video}">
+                ${video.name}
+            </sdu:linkToVideo>
+            <p>
+                <markdown:renderHtml>${video.description}</markdown:renderHtml>
+            </p>
         </twbs:column>
     </sdu:card>
 </g:each>

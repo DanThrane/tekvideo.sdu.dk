@@ -11,14 +11,11 @@
     <twbs:column>
         <twbs:pageHeader><h3>Om TekVideo</h3></twbs:pageHeader>
         <twbs:row>
-            <twbs:column md="8">
-                <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis in congue metus. Praesent faucibus magna eu metus fringilla elementum. Sed fermentum ante vel neque accumsan, vel dapibus massa pellentesque. Donec aliquam lacus ut libero vestibulum, a accumsan erat bibendum. Vivamus quam magna, iaculis condimentum sodales tristique, consectetur sit amet tortor. Morbi accumsan tristique leo vitae ultricies. Donec sed blandit massa, et tempor felis.</p>
-                <p>Nulla a maximus orci. Phasellus auctor, lectus eu ullamcorper suscipit, ex enim fringilla ex, imperdiet viverra velit nisi nec metus. Vestibulum et massa laoreet, pellentesque felis at, porttitor arcu. Sed ultricies pulvinar aliquet. Fusce eget egestas massa. Sed accumsan accumsan neque eu congue. Sed gravida, nisi in interdum pretium, mi nisi finibus risus, non pharetra nisl velit interdum ex. Nunc blandit accumsan lobortis. Ut aliquam turpis eget semper bibendum.</p>
-                <p>Mauris nec ultrices lectus. Vestibulum et tortor non turpis egestas semper. Donec facilisis porta ligula, id interdum turpis sollicitudin ut. Aenean vitae facilisis nulla. Pellentesque tempor, orci sed hendrerit condimentum, erat augue elementum dui, vitae hendrerit augue orci rhoncus arcu. Nunc vel ornare nisl, id finibus odio. Aliquam aliquet metus vestibulum neque semper eleifend. Vestibulum congue commodo euismod. Nulla in erat id ex scelerisque suscipit. Phasellus posuere ornare molestie. Duis venenatis nec ex sed tincidunt. Vivamus facilisis non urna vitae posuere. Curabitur vehicula leo at tempus condimentum. Ut maximus, quam vitae congue pharetra, nunc sem faucibus quam, vitae mollis massa nisi a arcu. Donec commodo neque nulla, in vestibulum turpis congue sed.</p>
-                <p>Proin facilisis justo in molestie commodo. Sed aliquam dignissim urna, quis gravida orci pretium a. Nam eros ex, ultricies sed tortor non, fermentum maximus neque. Nulla convallis, turpis rutrum molestie rhoncus, velit nulla ultrices tortor, ac vehicula est nibh non erat. Suspendisse potenti. Mauris vulputate felis in lorem malesuada lacinia. Duis a risus nec massa pulvinar sodales vel a odio. Pellentesque ornare sit amet justo non euismod. Maecenas tristique velit ac est molestie, non feugiat elit facilisis. Aenean eget dignissim est.</p>
-            </twbs:column>
-            <twbs:column md="4">
-                <img src="https://placekitten.com/400/600" class="img-responsive">
+            <twbs:column>
+                <p>Siden <a href="http://tekvideo.sdu.dk">tekvideo.sdu.dk</a> er et forsøg på at lette håndtering af videoer i forbindelse med undervisning på TEK SDU.</p>
+                <p>På siden har undervisere mulighed for at arrangere videoer i fag og kortere faglige forløb. Videoer fra <a href="https://youtube.com">YouTube</a> og <a href="https://vimeo.com">Vimeo</a> kan benyttes. Desuden er der mulighed for at indlejre spørgsmål i videoerne, således at de studerende kan prøve kræfter med ny teori i form af et spørgsmål, lige efter at de er blevet præsenteret for den nødvendige teori.</p>
+                <p>Siden er udviklet med støtte fra e-læringsprojektpuljen på SDU. Henrik Skov Midtiby er står bag ideen til siden og Dan Sebastian Thrane står for udviklingen af siden.</p>
+                <p>Kildekoden til siden er tilgængelig under en open source licens på <a href="https://github.com/DanThrane/tekvideo.sdu.dk">github.com</a>.</p>
             </twbs:column>
         </twbs:row>
     </twbs:column>

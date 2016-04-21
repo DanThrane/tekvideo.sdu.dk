@@ -6,6 +6,7 @@ var InteractiveVideoPlayer = (function () {
         var container = $(containerElement);
         this.eventHandlers = {};
         this.autoplay = true;
+        this.lastTime = 0;
 
         if (container !== undefined) {
             this.playerElement = container.find(".player");
@@ -71,15 +72,19 @@ var InteractiveVideoPlayer = (function () {
             }, true);
         });
 
-        this.player.on("loadstart", function () {
-            self.initializeSize();
-        });
         $(window).resize(function () {
             self.initializeSize();
         });
-        setTimeout(function () {
-            self.initializeSize();
-        }, 2000);
+
+        // Hack: "loadstart" event no longer received by popcorn.js (see issue #62)
+        // As a result we simply guess when loading has taken place, and hope that we get the correct sizes loaded.
+        self.initializeSize();
+        setTimeout(function () { self.initializeSize(); }, 250);
+        setTimeout(function () { self.initializeSize(); }, 500);
+        setTimeout(function () { self.initializeSize(); }, 1000);
+        setTimeout(function () { self.initializeSize(); }, 1500);
+        setTimeout(function () { self.initializeSize(); }, 2000);
+
         this.initEventHandlers();
     };
 
@@ -110,13 +115,22 @@ var InteractiveVideoPlayer = (function () {
             this.questions[i].visible = false;
             this.questions[i].shown = false;
         }
-        this.hideAllFields();
         this.removeAllQuestions();
         this.handleTimeUpdate();
     };
 
     InteractiveVideoPlayer.prototype.handleTimeUpdate = function () {
         var timestamp = this.player.currentTime();
+
+        // Workaround for "seeked" event always being fired (see issue #65)
+        if (timestamp < this.lastTime) {
+            this.lastTime = timestamp; // Without this we get infinite recursion back and forth between this function
+            this.lastTime = timestamp; // Without this we get infinite recursion back and forth between this function
+            this.handleSeeked();       // and handleSeeked()
+            return;
+        }
+        this.lastTime = timestamp;
+
         for (var i = this.questions.length - 1; i >= 0; i--) {
             var q = this.questions[i];
             if (q.timecode !== Math.round(timestamp) && q.visible) {
@@ -198,6 +212,10 @@ var InteractiveVideoPlayer = (function () {
             var item = this.timeline[i];
             this.questions = this.questions.concat(item.questions);
         }
+        for (var i = 0; i < this.questions.length; i++) {
+            this.questions[i].shown = false;
+            this.questions[i].visible = false;
+        }
     };
 
     InteractiveVideoPlayer.prototype.buildNavigation = function () {
@@ -238,13 +256,18 @@ var InteractiveVideoPlayer = (function () {
     InteractiveVideoPlayer.prototype.placeInputField = function (fieldId, evalFunction, offsetTop, offsetLeft) {
         var self = this;
         this.wrapperElement.append(this.createInputField(fieldId));
+
+        if (offsetTop < 0) offsetTop = 0;
+        if (offsetLeft < 0) offsetLeft = 0;
+
         var field = $("#" + fieldId);
         field.css({
             position: "absolute",
             top: (offsetTop * self.scaleHeight) + "px",
             left: (offsetLeft * self.scaleWidth) + "px",
             minWidth: 90 * self.scaleWidth,
-            minHeight: 20 * self.scaleHeight
+            minHeight: 20 * self.scaleHeight,
+            zIndex: 10000
         });
         field.mathquill("editable");
     };

@@ -16,54 +16,7 @@ import org.hibernate.SessionFactory
  */
 @Transactional
 class VideoStatisticsService {
-    private static final DateTimeFormatter TIME_PATTERN = DateTimeFormatter.ofPattern("dd/MM HH:mm")
-
     SessionFactory sessionFactory
-
-    ServiceResult<List> retrieveAnswerSummary(Video video) {
-        if (video) {
-            String query = $/
-            SELECT
-                e.answer    AS answer,
-                COUNT(*)    AS frequency,
-                e.correct   AS correct,
-                e.subject   AS subject,
-                e.question  AS question,
-                e.field     AS field
-            FROM
-                event as e
-            WHERE
-                e.video_id = :video_id AND
-                e.answer IS NOT NULL
-            GROUP BY
-                e.answer,
-                e.correct,
-                e.subject,
-                e.question,
-                e.field
-            ORDER BY
-                frequency DESC
-            /$
-
-            def resultList = sessionFactory.currentSession
-                    .createSQLQuery(query)
-                    .setLong("video_id", video.id)
-                    .list()
-
-            ok resultList.collect {
-                [
-                        answer   : it[0],
-                        frequency: it[1],
-                        correct  : it[2],
-                        subject  : it[3],
-                        question : it[4],
-                        field    : it[5]
-                ]
-            }
-        } else {
-            fail("video_statistics.not_found", false, [:], 404)
-        }
-    }
 
     ServiceResult<Map> retrieveViewBreakdown(Video video) {
         if (video) {
@@ -95,75 +48,53 @@ class VideoStatisticsService {
         }
     }
 
-    ServiceResult<List<Map>> retrieveViewingStatisticsForStudents(Video video) {
-        if (video) {
-            String query = $/
+
+    /**
+     * Returns a mapping between every video in the course to a number of views for a particular user.
+     *
+     * @param user      The user to lookup the video visit count, can be null. If null, visit counts for every video
+     *                  will be 0.
+     * @param course    The course to limit the search to
+     * @return          A mapping between every video in a course to the number of visits to said video.
+     */
+    Map<Long, Integer> findVideoVisitCountInCourse(User user, Course course) {
+        String query = $/
+            WITH
+                events_by_user AS (
+                  SELECT
+                    event.video_id, COUNT(*) AS visit_count
+                  FROM
+                    event
+                  WHERE
+                    event.class = 'dk.sdu.tekvideo.events.VisitVideoEvent' AND
+                    user_id = :user_id
+                  GROUP BY
+                    event.video_id
+              ),
+                selected_videos AS (
+                  SELECT
+                    video.id AS selected_video_id
+                  FROM
+                    course, subject, video
+                  WHERE
+                    course_id = course.id AND subject_id = subject.id AND course.id = :course_id
+              )
             SELECT
-                myusers.id          AS user_id,
-                myusers.username    AS username,
-                event."timestamp"   AS "timestamp",
-                video.id            AS video_id,
-                video.name          AS video_name
+              selected_video_id, visit_count
             FROM
-                course_student,
-                myusers,
-                student,
-                course,
-                event,
-                video,
-                subject
-            WHERE
-                course_student.course_id = course.id AND
-                course_student.student_id = student.id AND
-                myusers.id = event.user_id AND
-                student.user_id = myusers.id AND
-                course.id = subject.course_id AND
-                event.video_id = video.id AND
-                video.subject_id = subject.id AND
-                event.class = 'dk.sdu.tekvideo.events.VisitVideoEvent' AND
-                video.id = ?;
-            /$
-            def resultList = sessionFactory.currentSession
-                    .createSQLQuery(query)
-                    .setLong(0, video.id)
-                    .list()
+              selected_videos LEFT OUTER JOIN events_by_user ON (video_id = selected_video_id);
+        /$
 
-            ok resultList.collect {
-                [
-                        userId: it[0],
-                        username: it[1],
-                        timestamp: it[2],
-                        videoId: it[3],
-                        videoName: it[4]
-                ]
-            }
-        } else {
-            fail("video_statistics.not_found", false, [:], 404)
-        }
+        long userId = (user != null) ? user.id : -1
+        def resultList = sessionFactory.currentSession
+                .createSQLQuery(query)
+                .setLong("user_id", userId)
+                .setLong("course_id", course.id)
+                .list()
+
+        Map<Long, Integer> result = [:]
+        resultList.each { result[it[0] as Long] = it[1] ?: 0 }
+        return result
     }
 
-    ServiceResult<Map> findViewingStatistics(Video video, long from, long to, long periodInMs) {
-        if (video) {
-            List<VisitVideoEvent> events = VisitVideoEvent.findAllByVideoId(video.id)
-            List labels = []
-            List data = []
-            // Generate some labels (X-axis)
-            long counter = from
-            while (counter < to) {
-                labels.add(TIME_PATTERN.format(new Date(counter).toInstant().atZone(ZoneId.systemDefault())))
-                data.add(0)
-                counter += periodInMs
-            }
-            events.each {
-                long time = it.timestamp
-                int index = (time - from) / periodInMs
-                if (index > 0) {
-                    data[index]++
-                }
-            }
-            ok(item: [labels: labels, data: data])
-        } else {
-            fail("video_statistics.not_found", false, [:], 404)
-        }
-    }
 }

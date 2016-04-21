@@ -1,8 +1,5 @@
 package dk.sdu.tekvideo
 
-import dk.sdu.tekvideo.ServiceError
-import grails.converters.JSON
-
 /**
  * A standardized way for a service to report back a result.
  *
@@ -24,18 +21,14 @@ class ServiceResult<E> {
         return map
     }
 
-    private ServiceResult() {
-        // TODO Figure out of we really need to do this on every single instance
-        // Something about a bug in bootstrap and JSON marshallers
-        JSON.registerObjectMarshaller(ServiceResult, jsonMarshaller)
-    }
+    private ServiceResult() {}
 
     static def <E> ServiceResult<E> ok() {
         ok(null, "service_result.success")
     }
 
     static def <E> ServiceResult<E> ok(Map<String, Object> args) {
-        E item = args.item ?: null
+        E item = args.containsKey("item") ? args.item : null
         String message = args.message ?: "service_result.success"
         ok(item, message)
     }

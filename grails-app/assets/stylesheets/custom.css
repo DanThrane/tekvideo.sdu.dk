@@ -486,3 +486,50 @@ body {
 .notification-comment-component .form-group, .notification-comment-component input {
     width: 100% !important;
 }
+
+.tree .selected {
+    font-weight: 600;
+}
+
+#popular-video-container:empty:after {
+    content: "Ingen videoer er blevet set i denne kategori!";
+    font-weight: bold;
+}
+
+.node-header {
+    font-size: 12pt;
+}
+
+.node-header-spacer {
+    display: inline-block;
+    width: 10px;
+    text-align: center;
+    color: #9d9d9e;
+}
+
+.node-header-spacer::after {
+    content: '|';
+}
+
+.course-list {
+    padding-left: 10px;
+    display: inline-block;
+}
+
+.course-subject-menu li {
+    list-style: none;
+    margin-bottom: 10px;
+}
+
+.course-subject-menu li .btn-group {
+    margin-right: 10px;
+}
+
+.signup-btn {
+    float: right;
+    margin-top: -5.75px;
+}
+
+.course-sidebar {
+    overflow-x: hidden;
+}

@@ -1,4 +1,4 @@
-<%@ page import="dk.sdu.tekvideo.FaIcon" contentType="text/html;charset=UTF-8" %>
+<%@ page import="dk.danthrane.twbs.ButtonStyle; dk.sdu.tekvideo.FaIcon" contentType="text/html;charset=UTF-8" %>
 <!DOCTYPE html>
 <html>
 <head>
@@ -47,6 +47,7 @@
         <sec:ifAllGranted roles="ROLE_TEACHER">
             <twbs:navbarLink controller="courseManagement">Mine kurser</twbs:navbarLink>
             <twbs:navbarLink controller="accountManagement" action="manage">Kontoadministration</twbs:navbarLink>
+            <twbs:navbarLink controller="dashboard">Video Statistikker</twbs:navbarLink>
         </sec:ifAllGranted>
     </twbs:navbarLinks>
     <twbs:navbarPullRight>
@@ -134,9 +135,23 @@
     </twbs:container>
 </g:ifContentAvailable>
 
-<twbs:container fluid="true" id="footer">
+<twbs:container id="footer">
     <twbs:row>
         <twbs:column cols="3">
+            <ul class="list-unstyled">
+                <li>
+                    <a href="https://github.com/DanThrane/tekvideo.sdu.dk">
+                        <fa:icon icon="${FaIcon.GITHUB}"/>
+                        GitHub
+                    </a>
+                </li>
+                <li>
+                    <g:link controller="about">
+                        <fa:icon icon="${FaIcon.USERS}"/>
+                        Om TekVideo
+                    </g:link>
+                </li>
+            </ul>
         </twbs:column>
         <twbs:column cols="3">
         </twbs:column>

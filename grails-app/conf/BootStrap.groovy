@@ -4,10 +4,18 @@ import dk.sdu.tekvideo.data.EventData
 import dk.sdu.tekvideo.data.SubjectData
 import dk.sdu.tekvideo.data.VideoData
 import dk.sdu.tekvideo.events.*
+import dk.sdu.tekvideo.events.AnswerQuestionEvent
+import dk.sdu.tekvideo.events.VisitVideoEvent
+import grails.converters.JSON
 
 class BootStrap {
 
     def init = { servletContext ->
+        JSON.registerObjectMarshaller(ServiceResult, ServiceResult.jsonMarshaller)
+        JSON.registerObjectMarshaller(AnswerQuestionEvent, AnswerQuestionEvent.jsonMarshaller)
+        JSON.registerObjectMarshaller(Video, Video.jsonMarshaller)
+        JSON.registerObjectMarshaller(Student, Student.jsonMarshaller)
+
         environments {
             development {
                 createNewTestData()

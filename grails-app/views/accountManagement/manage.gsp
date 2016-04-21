@@ -14,6 +14,7 @@
 
 <twbs:table responsive="true" hover="true">
     <thead>
+    <twbs:th>Navn</twbs:th>
     <twbs:th>Brugernavn</twbs:th>
     <twbs:th>Email</twbs:th>
     <twbs:th>E-learn ID</twbs:th>
@@ -21,9 +22,10 @@
     <tbody>
     <g:each in="${users}" var="user">
         <twbs:tr>
+            <twbs:td>${user.realName ?: "Ikke angivet"}</twbs:td>
             <twbs:td>${user.username}</twbs:td>
             <twbs:td>${user.email}</twbs:td>
-            <twbs:td>${user.elearnId}</twbs:td>
+            <twbs:td>${user.elearnId ?: "Ikke angivet"}</twbs:td>
         </twbs:tr>
     </g:each>
     </tbody>

@@ -113,6 +113,9 @@ var Editor = {};
         var name = $("#videoName").val();
         var description = $("#description").val();
         var youtubeId = videoId;
+        if (currentTimeline === null) {
+            currentTimeline = []; // Fail-safe for issue #66
+        }
         var timelineJson = JSON.stringify(currentTimeline);
         var type = isYouTube;
         var data = {
@@ -523,6 +526,13 @@ var Editor = {};
                 if (editingField !== null) {
                     editingField.leftoffset = x * scaleWidth;
                     editingField.topoffset = y * scaleHeight;
+
+                    if (editingField.leftoffset < 0) {
+                        editingField.leftoffset = 0;
+                    }
+                    if (editingField.topoffset < 0) {
+                        editingField.topoffset = 0;
+                    }
                 }
             }
         }
@@ -559,9 +569,14 @@ var Editor = {};
 
                 player.startPlayer(videoId, isYouTube, currentTimeline);
                 MainPanel.showPreview();
+                $("#attributes-stack").hide();
+                $("#sidebar-right-timeline").hide();
             });
             $("#stop-preview").click(function () {
                 MainPanel.showEditor();
+                $("#attributes-stack").show();
+                $("#sidebar-right-timeline").show();
+                if (player !== null) player.destroy();
             });
         }
 

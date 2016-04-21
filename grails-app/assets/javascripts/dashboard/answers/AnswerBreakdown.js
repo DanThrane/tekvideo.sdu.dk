@@ -7,13 +7,29 @@ var AnswerBreakdown = (function () {
         "#26C6DA", "#26A69A", "#66BB6A", "#9CCC65", "#D4E157", "#FFEE58", "#FFCA28", "#FFA726", "#FF7043",
         "#8D6E63", "#BDBDBD", "#78909C"];
 
-    function AnswerBreakdown(element) {
-        this.element = $(element);
+    function AnswerBreakdown(answerPage, app, video, students, period) {
+        this.answerPage = answerPage;
+        this.video = video;
+        this.timeline = JSON.parse(video.timelineJson);
+        this.students = students.map(function (e) {
+            return e.username;
+        });
+        this.period = period;
+        this.app = app;
         this.player = null;
     }
 
     AnswerBreakdown.prototype.init = function () {
         var self = this;
+
+        var $container = $("#answer-breakdown-container");
+        var rawTemplate = $("#answer-breakdown-template").html();
+        var component = $(rawTemplate.format(self.video.name));
+        self.element = component;
+        $container.html(component);
+
+        this.element.find(".answer-selected").hide();
+        this.element.find(".no-answer-selected").show();
 
         this.element.find(".sub-menu a").click(function (e) {
             e.preventDefault();
@@ -25,6 +41,26 @@ var AnswerBreakdown = (function () {
             self.element.find(".sub-menu li").removeClass("active");
             $(this).parent().addClass("active");
             self.initAnswerSubPage(page);
+        });
+
+        this.element.find(".close-answer-breakdown").click(function (e) {
+            e.preventDefault();
+            self.answerPage.show();
+            $container.empty(); // Remove ourselves from the DOM
+        });
+
+        this.findAnswers();
+    };
+
+    AnswerBreakdown.prototype.findAnswers = function () {
+        var self = this;
+        self.app.displaySpinner();
+        $.getJSON(baseUrl + "dashboard/answers/" + self.video.id + "?period=" + self.period, function (data) {
+            console.log(data);
+            self.answers = data.result;
+            self.initializePlayer();
+        }).always(function () {
+            self.app.removeSpinner();
         });
     };
 
@@ -52,64 +88,49 @@ var AnswerBreakdown = (function () {
     AnswerBreakdown.prototype.initAnswerSubPage = function (page) {
         switch (page) {
             case "breakdown":
-                var ctx = this.element.find(".histogram").get(0).getContext("2d");
-                var prep = prepareAnswerAnalysis(this.answers);
-                var data = [];
-                for (var i = 0; i < prep.labels.length; i++) {
-                    data.push({
-                        value: prep.count[i],
-                        color: COLORS[i],
-                        highlight: HIGHLIGHT_COLORS[i],
-                        label: "Svar " + prep.labels[i]
-                    });
-                }
-                var chart = new Chart(ctx).Pie(data);
                 break;
         }
     };
 
-    AnswerBreakdown.prototype._onExpansion = function () {
-        this.element.find(".answer-selected").hide();
-        this.element.find(".no-answer-selected").show();
-        this.bootstrapDemoVideo();
-    };
-
-    AnswerBreakdown.prototype.bootstrapDemoVideo = function () {
+    AnswerBreakdown.prototype.initializePlayer = function () {
         var self = this;
         if (this.player !== null) this.player.destroy();
         this.player = new InteractiveVideoPlayer(this.element.find(".player-container"));
         this.player.autoplay = false;
 
-        this.answers = [{
-            "user": "A user ${i}",
-            "answer": 1,
-            "correct": false,
-            "subject": 1,
-            "question": 0,
-            "field": 0
-        }];
-        this.students = ["A User"];
-        this.timeline = [];
-        this.player.startPlayer("5r8TkDyoBu4", true, this.timeline);
+        this.player.startPlayer(this.video.youtubeId, this.video.videoType, this.timeline);
         this.player.on("questionShown", function (e) {
-            self.displayField(e.subjectId, e.questionId);
+            self.onQuestionSelected(e.subjectId, e.questionId);
         });
 
         this.element.find(".participation-table").append(this.buildParticipationTable(this.analyzeParticipation()));
     };
 
-    AnswerBreakdown.prototype.displayField = function (subjectId, questionId) {
+    AnswerBreakdown.prototype.onQuestionSelected = function (subjectId, questionId) {
         var question = this.timeline[subjectId].questions[questionId];
         this.element.find(".no-answer-selected").hide();
 
         this.element.find(".question-name").text(question.title);
 
-        var statTemplate = this.element.find(".field-stat-template").html();
-        var rowTemplate = this.element.find(".field-stat-row-template").html();
+        var statTemplate = $("#field-stat-template").html();
+        var rowTemplate = $("#field-stat-row-template").html();
 
         var ourAnswers = this.answers.filter(function (value) {
             return value.subject === subjectId && value.question === questionId;
         });
+
+        var ctx = this.element.find(".histogram").get(0).getContext("2d");
+        var prep = prepareAnswerAnalysis(ourAnswers);
+        var data = [];
+        for (var i = 0; i < prep.labels.length; i++) {
+            data.push({
+                value: prep.count[i],
+                color: COLORS[i],
+                highlight: HIGHLIGHT_COLORS[i],
+                label: "Svar '" + prep.labels[i] + "'"
+            });
+        }
+        var chart = new Chart(ctx).Pie(data);
 
         var fields = "";
         for (var i = 0; i < question.fields.length; i++) {
@@ -122,14 +143,34 @@ var AnswerBreakdown = (function () {
             var rows = "";
             for (var j = 0; j < localAnswers.length; j++) {
                 var answer = localAnswers[j];
-                rows += rowTemplate.format(answer.user, answer.answer, answer.correct);
+                rows += rowTemplate.format(Util.raw(this.formatUser(answer.user)), answer.answer,
+                    Util.raw(this.formatCorrect(answer.correct)));
             }
 
-            fields += statTemplate.format(field.name, rows);
+            fields += statTemplate.format(field.name, Util.raw(rows));
         }
         this.element.find(".field-statistics").html(fields);
 
         this.element.find(".answer-selected").show();
+    };
+
+    AnswerBreakdown.prototype.formatUser = function (user) {
+        if (user !== null) {
+            return Util.escapeHtml(user);
+        } else {
+            if (this.guestTemplate === undefined) {
+                this.guestTemplate = $("#guest-template").html();
+            }
+            return this.guestTemplate;
+        }
+    };
+
+    AnswerBreakdown.prototype.formatCorrect = function (correct) {
+        if (this.correctTemplate === undefined || this.wrongTemplate === undefined) {
+            this.correctTemplate = $("#correct-template").html();
+            this.wrongTemplate = $("#wrong-template").html();
+        }
+        return (correct) ? this.correctTemplate : this.wrongTemplate;
     };
 
     AnswerBreakdown.prototype.analyzeParticipation = function () {

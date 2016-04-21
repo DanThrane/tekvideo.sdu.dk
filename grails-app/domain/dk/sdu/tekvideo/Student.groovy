@@ -5,4 +5,11 @@ class Student {
 
     static constraints = {
     }
+
+    static jsonMarshaller = { Student it ->
+        [
+                id      : it.id,
+                username: it.user.username
+        ]
+    }
 }

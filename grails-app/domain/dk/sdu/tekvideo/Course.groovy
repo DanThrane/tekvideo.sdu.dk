@@ -27,11 +27,11 @@ class Course implements Node {
     }
 
     List<Subject> getActiveSubjects() {
-        subjects.stream().filter { it.localStatus != NodeStatus.TRASH }.collect(Collectors.toList())
+        subjects.stream().filter { it != null && it.localStatus != NodeStatus.TRASH }.collect(Collectors.toList())
     }
 
     List<Subject> getVisibleSubjects() {
-        subjects.stream().filter { it.localStatus == NodeStatus.VISIBLE }.collect(Collectors.toList())
+        subjects.stream().filter { it != null && it.localStatus == NodeStatus.VISIBLE }.collect(Collectors.toList())
     }
 
     @Override

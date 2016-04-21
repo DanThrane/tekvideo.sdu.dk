@@ -6,55 +6,26 @@ import static dk.sdu.tekvideo.TagLibUtils.fail
 class TeachingTagLib {
     static namespace = "sdu"
 
-    private Map prepareAttributes(String teacher, Map attrs) {
-        def base = [
-                mapping: "teaching",
-                params : [teacher: teacher]
-        ]
-
-        base.putAll(attrs)
-        return base
-    }
-
-    private Map prepareCourseAttributes(Course course, Map attrs) {
-        def res = prepareAttributes(course.teacher.toString(), attrs)
-        res.params.course = course.name
-        res.params.year = course.year
-        res.params.fall = course.spring ? "0" : "1"
-        return res
-    }
-
-    private Map prepareSubjectAttributes(Subject subject, Map attrs) {
-        def res = prepareCourseAttributes(subject.course, attrs)
-        res.params.subject = subject.name
-        return res
-    }
-
-    private Map prepareVideoAttributes(Video video, Map attrs) {
-        def res = prepareSubjectAttributes(video.subject, attrs)
-        res.params.vidid = video.videos_idx
-        return res
-    }
+    def teachingService
 
     def createLinkToTeacher = { attrs, body ->
-        def teacher = attrs.remove("teacher") ?: fail("teacher", "sdu:createLinkToTeacher") as Course
-        out << createLink(prepareAttributes(teacher.toString(), attrs))
+        Teacher teacher = attrs.remove("teacher") ?: fail("teacher", "sdu:createLinkToTeacher")
+        out << teachingService.generateLinkToTeacher(teacher, attrs)
     }
 
     def createLinkToCourse = { attrs, body ->
         Course course = attrs.remove("course") ?: fail("course", "sdu:createLinkToCourse") as Course
-        out << createLink(prepareCourseAttributes(course, attrs))
+        out << teachingService.generateLinkToCourse(course, attrs)
     }
 
     def createLinkToSubject = { attrs, body ->
         Subject subject = attrs.remove("subject") ?: fail("subject", "sdu:createLinkToSubject") as Subject
-        out << createLink(prepareSubjectAttributes(subject, attrs))
+        out << teachingService.generateLinkToSubject(subject, attrs)
     }
 
     def createLinkToVideo = { attrs, body ->
         Video video = attrs.remove("video") ?: fail("video", "sdu:createLinkToVideo") as Video
-        def attributes = prepareVideoAttributes(video, attrs)
-        out << createLink(attributes)
+        out << teachingService.generateLinkToVideo(video, attrs)
     }
 
     def linkToTeacher = { attrs, body ->
