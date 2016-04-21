@@ -3,13 +3,18 @@ package dk.sdu.tekvideo
 import static dk.sdu.tekvideo.ServiceResult.ok
 import static dk.sdu.tekvideo.ServiceResult.fail
 
+/**
+ * Provides services for changing basic information about a user's account.
+ */
 class AccountManagementService {
     def springSecurityService
 
-    Map findAccountInformation() {
-        [users: User.list()]
-    }
-
+    /**
+     * Updates the user's e-learn ID.
+     *
+     * @param command    The update command
+     * @return A service result, indicating success or failure along with an appreciate message.
+     */
     ServiceResult<Void> updateElearn(UpdateElearnCommand command) {
         def user = springSecurityService.currentUser as User
         if (user) {
@@ -25,6 +30,13 @@ class AccountManagementService {
         }
     }
 
+    /**
+     * Updates the user's password. This will validate the command, to require that the password is correctly
+     * listed twice, and that the new password is valid according to the security module's constraints.
+     *
+     * @param command    The update command
+     * @return A service result, indicating success or failure along with an appreciate message.
+     */
     ServiceResult<Void> updatePassword(UpdatePasswordCommand command) {
         def user = springSecurityService.currentUser as User
         if (user) {
