@@ -1,7 +1,7 @@
 package dk.sdu.tekvideo
 
 class CourseService {
-    def teachingService
+    def userService
 
     boolean canAccess(Course course) {
         def status = course?.status
@@ -9,7 +9,7 @@ class CourseService {
         course != null &&
                 (status == NodeStatus.VISIBLE ||
                         (status == NodeStatus.INVISIBLE &&
-                                teachingService.authenticatedTeacher == course.teacher))
+                                userService.authenticatedTeacher == course.teacher))
     }
 
     int getStudentCount(Course course) {

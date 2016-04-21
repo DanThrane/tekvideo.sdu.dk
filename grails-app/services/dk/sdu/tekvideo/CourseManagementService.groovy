@@ -8,10 +8,10 @@ import static dk.sdu.tekvideo.ServiceResult.*
  * @author Dan Thrane
  */
 class CourseManagementService {
-    def teachingService
+    def userService
 
     ServiceResult<List<Course>> getCourses(NodeStatus status) {
-        def teacher = teachingService.authenticatedTeacher
+        def teacher = userService.authenticatedTeacher
         if (teacher) {
             ok Course.findAllByTeacherAndLocalStatus(teacher, status)
         } else {
@@ -36,7 +36,7 @@ class CourseManagementService {
     }
 
     ServiceResult<List<Course>> getActiveCourses() {
-        def teacher = teachingService.authenticatedTeacher
+        def teacher = userService.authenticatedTeacher
         if (teacher) {
             ok Course.findAllByTeacherAndLocalStatusNotEqual(teacher, NodeStatus.TRASH)
         } else {
@@ -47,7 +47,7 @@ class CourseManagementService {
     ServiceResult<Subject> createOrEditSubject(Course course, SubjectCRUDCommand command) {
         new DomainServiceUpdater<SubjectCRUDCommand, Subject>(command) {
             ServiceResult init() {
-                def teacher = teachingService.authenticatedTeacher
+                def teacher = userService.authenticatedTeacher
                 if (teacher && canAccess(course)) {
                     if (!command.isEditing) course.addToSubjects(command.domain)
                     command.domain.localStatus = command.visible ? NodeStatus.VISIBLE : NodeStatus.INVISIBLE
@@ -62,7 +62,7 @@ class CourseManagementService {
     ServiceResult<Course> createOrEditCourse(CourseCRUDCommand command) {
         new DomainServiceUpdater<CourseCRUDCommand, Course>(command) {
             ServiceResult<Void> init() {
-                def teacher = teachingService.authenticatedTeacher
+                def teacher = userService.authenticatedTeacher
                 if (teacher) {
                     command.domain.teacher = teacher
                     command.domain.localStatus = command.visible ? NodeStatus.VISIBLE : NodeStatus.INVISIBLE
@@ -83,7 +83,7 @@ class CourseManagementService {
     }
 
     ServiceResult<Video> createOrEditVideo(CreateVideoCommand command) {
-        def teacher = teachingService.authenticatedTeacher
+        def teacher = userService.authenticatedTeacher
         if (teacher) {
             if (!command.isEditing && !canAccess(command.subject.course)) {
                 fail "teacherservice.not_allowed"
@@ -173,7 +173,7 @@ class CourseManagementService {
     }
 
     ServiceResult<Course> importCourse(ImportCourseCommand command) {
-        def teacher = teachingService.authenticatedTeacher
+        def teacher = userService.authenticatedTeacher
         if (teacher == null) {
             fail("teacherservice.not_a_teacher", false, [:], 401)
         } else {
@@ -219,11 +219,11 @@ class CourseManagementService {
     }
 
     boolean canAccess(Course course) {
-        return course.teacher == teachingService.authenticatedTeacher
+        return course.teacher == userService.authenticatedTeacher
     }
 
     ServiceResult<Void> changeCourseStatus(Course course, NodeStatus status) {
-        def teacher = teachingService.authenticatedTeacher
+        def teacher = userService.authenticatedTeacher
         if (teacher && course.teacher == teacher) {
             if (status != null) {
                 course.localStatus = status

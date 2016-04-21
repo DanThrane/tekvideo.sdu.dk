@@ -6,26 +6,26 @@ import static dk.sdu.tekvideo.TagLibUtils.fail
 class TeachingTagLib {
     static namespace = "sdu"
 
-    def teachingService
+    def urlMappingService
 
     def createLinkToTeacher = { attrs, body ->
         Teacher teacher = attrs.remove("teacher") ?: fail("teacher", "sdu:createLinkToTeacher")
-        out << teachingService.generateLinkToTeacher(teacher, attrs)
+        out << urlMappingService.generateLinkToTeacher(teacher, attrs)
     }
 
     def createLinkToCourse = { attrs, body ->
         Course course = attrs.remove("course") ?: fail("course", "sdu:createLinkToCourse") as Course
-        out << teachingService.generateLinkToCourse(course, attrs)
+        out << urlMappingService.generateLinkToCourse(course, attrs)
     }
 
     def createLinkToSubject = { attrs, body ->
         Subject subject = attrs.remove("subject") ?: fail("subject", "sdu:createLinkToSubject") as Subject
-        out << teachingService.generateLinkToSubject(subject, attrs)
+        out << urlMappingService.generateLinkToSubject(subject, attrs)
     }
 
     def createLinkToVideo = { attrs, body ->
         Video video = attrs.remove("video") ?: fail("video", "sdu:createLinkToVideo") as Video
-        out << teachingService.generateLinkToVideo(video, attrs)
+        out << urlMappingService.generateLinkToVideo(video, attrs)
     }
 
     def linkToTeacher = { attrs, body ->

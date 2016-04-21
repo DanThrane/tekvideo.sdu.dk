@@ -8,9 +8,9 @@ import org.springframework.security.access.annotation.Secured
  */
 @Secured("ROLE_TEACHER")
 class CourseManagementController {
+    UserService userService
     CourseService courseService
     CourseManagementService courseManagementService
-    TeachingService teachingService
 
     def index() {
         String statusStr = params.status ?: "VISIBLE"
@@ -109,7 +109,7 @@ class CourseManagementController {
     }
 
     def createSubject(Course course) {
-        def teacher = teachingService.authenticatedTeacher
+        def teacher = userService.authenticatedTeacher
         if (courseManagementService.canAccess(course)) {
             render view: "createOrEditSubject", model: [course: course, teacher: teacher, isEditing: false]
         } else {
@@ -118,7 +118,7 @@ class CourseManagementController {
     }
 
     def editSubject(Subject subject) {
-        def teacher = teachingService.authenticatedTeacher
+        def teacher = userService.authenticatedTeacher
         if (courseManagementService.canAccess(subject.course)) {
             render view: "createOrEditSubject",
                     model: [course   : subject.course, command: new SubjectCRUDCommand(domain: subject),
@@ -152,7 +152,7 @@ class CourseManagementController {
     }
 
     def editVideo(Video video) {
-        if (teachingService.authenticatedTeacher) {
+        if (userService.authenticatedTeacher) {
             render view: "createVideo", model: [
                     isEditing: true,
                     video    : video,

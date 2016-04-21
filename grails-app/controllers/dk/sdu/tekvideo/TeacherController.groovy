@@ -4,11 +4,11 @@ import org.springframework.security.access.annotation.Secured
 
 class TeacherController {
 
-    TeachingService teachingService
+    UrlMappingService urlMappingService
 
     @Secured("permitAll")
     def list(String teacherName) {
-        Teacher teacher = teachingService.getTeacher(teacherName)
+        Teacher teacher = urlMappingService.getTeacher(teacherName)
         if (teacher) {
             [teacher: teacher, courses: teacher.courses]
         } else {

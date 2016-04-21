@@ -16,7 +16,7 @@ import grails.transaction.Transactional
 class DashboardService {
     private static final DateTimeFormatter TIME_PATTERN = DateTimeFormatter.ofPattern("dd/MM HH:mm")
 
-    def teachingService
+    def urlMappingService
     CourseManagementService courseManagementService
     SessionFactory sessionFactory
 
@@ -225,7 +225,7 @@ class DashboardService {
                     "dateCreated": it[4],
                     "comment"    : it[5],
                     "commentId"  : it[6],
-                    "videoUrl"   : teachingService.generateLinkToVideo(Video.get(it[2]), [absolute: true])
+                    "videoUrl"   : urlMappingService.generateLinkToVideo(Video.get(it[2]), [absolute: true])
             ]
         }
     }
