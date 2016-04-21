@@ -129,17 +129,24 @@ databaseChangeLog = {
     changeSet(author: "Dan", id: "set default values for videos belonging to subjects") {
         grailsChange {
             change {
-                def defaultSubject = Subject.list()[0]
-                Video.list().each { video ->
-                    Long id = null
-                    sql.eachRow("SELECT subject_id FROM subject_videos WHERE video_id = ${video.id};") {
-                        id = it.subject_id
-                    }
+                int count = 0
+                sql.eachRow("SELECT COUNT(*) FROM video;") {
+                    count = it.count
+                }
 
-                    def subject = Subject.get(id) ?: defaultSubject
-                    video.subject = subject
-                    subject.addToVideos(video)
-                    video.save(failOnError: true, flush: true)
+                if (count > 0) {
+                    def defaultSubject = Subject.list()[0]
+                    Video.list().each { video ->
+                        Long id = null
+                        sql.eachRow("SELECT subject_id FROM subject_videos WHERE video_id = ${video.id};") {
+                            id = it.subject_id
+                        }
+
+                        def subject = Subject.get(id) ?: defaultSubject
+                        video.subject = subject
+                        subject.addToVideos(video)
+                        video.save(failOnError: true, flush: true)
+                    }
                 }
             }
         }

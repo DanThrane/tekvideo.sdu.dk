@@ -6,14 +6,19 @@ databaseChangeLog = {
 	changeSet(author: "Dan", id: "Rename deleted and invisible courses") {
 		grailsChange {
 			change {
-                int idx = 0
-                Course.list().each {
-                    if (it.localStatus != NodeStatus.VISIBLE) {
-                        it.name += " [RENAMED-$idx]"
-                        idx++
-                    }
-                    it.save(flush: true, failOnError: true)
-                }
+				int count = 0
+				sql.eachRow("SELECT COUNT(*) FROM course;") { count = it.count }
+
+				if (count > 0) {
+					int idx = 0
+					Course.list().each {
+						if (it.localStatus != NodeStatus.VISIBLE) {
+							it.name += " [RENAMED-$idx]"
+							idx++
+						}
+						it.save(flush: true, failOnError: true)
+					}
+				}
 			}
 		}
 	}
