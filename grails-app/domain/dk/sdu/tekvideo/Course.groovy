@@ -1,7 +1,5 @@
 package dk.sdu.tekvideo
 
-import java.util.stream.Collectors
-
 class Course implements Node {
     String name
     String fullName
@@ -11,9 +9,7 @@ class Course implements Node {
 
     NodeStatus localStatus = NodeStatus.VISIBLE
 
-    List<Subject> subjects // ordered
     static belongsTo = [teacher: Teacher]
-    static hasMany = [subjects: Subject]
 
     static constraints = {
         name nullable: false, blank: false, unique: ["teacher", "spring", "year"]
@@ -23,15 +19,21 @@ class Course implements Node {
 
     static mapping = {
         description type: "text"
-        subjects cascade: "all-delete-orphan"
     }
 
     List<Subject> getActiveSubjects() {
-        subjects.stream().filter { it != null && it.localStatus != NodeStatus.TRASH }.collect(Collectors.toList())
+        subjects.findAll { it != null && it.localStatus != NodeStatus.TRASH }
     }
 
     List<Subject> getVisibleSubjects() {
-        subjects.stream().filter { it != null && it.localStatus == NodeStatus.VISIBLE }.collect(Collectors.toList())
+        subjects.findAll { it != null && it.localStatus == NodeStatus.VISIBLE }
+    }
+
+    // TODO get subjects
+
+    List<Subject> getSubjects() {
+        def join = CourseSubject.findAllByCourse(this)
+        Subject.findAllByIdInList(join.subject.i)
     }
 
     @Override

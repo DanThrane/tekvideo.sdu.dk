@@ -1,6 +1,5 @@
 import dk.sdu.tekvideo.Course
 import dk.sdu.tekvideo.CourseSubject
-import dk.sdu.tekvideo.NodeStatus
 import dk.sdu.tekvideo.Subject
 import dk.sdu.tekvideo.SubjectVideo
 import dk.sdu.tekvideo.Video
