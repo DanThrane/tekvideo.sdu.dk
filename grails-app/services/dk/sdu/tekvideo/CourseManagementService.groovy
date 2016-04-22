@@ -290,11 +290,11 @@ class CourseManagementService {
     }
 
     /**
+     * Changes the status of a single course. This can only be done if the teacher owns the associated course.
      *
-     *
-     * @param course
-     * @param status
-     * @return
+     * @param course    The node to change status on
+     * @param status    The status to update to
+     * @return failure if the authenticated user is not the teacher of the course, otherwise OK
      */
     ServiceResult<Void> changeCourseStatus(Course course, NodeStatus status) {
         def teacher = userService.authenticatedTeacher
@@ -311,6 +311,13 @@ class CourseManagementService {
         }
     }
 
+    /**
+     * Changes the status of a single subject. This can only be done if the teacher owns the associated course.
+     *
+     * @param course    The node to change status on
+     * @param status    The status to update to
+     * @return failure if the authenticated user is not the teacher of the course, otherwise OK
+     */
     ServiceResult<Void> changeSubjectStatus(Subject subject, NodeStatus status) {
         if (canAccess(subject.course)) {
             if (status != null) {
@@ -325,6 +332,13 @@ class CourseManagementService {
         }
     }
 
+    /**
+     * Changes the status of a single video. This can only be done if the teacher owns the associated course.
+     *
+     * @param course    The node to change status on
+     * @param status    The status to update to
+     * @return failure if the authenticated user is not the teacher of the course, otherwise OK
+     */
     ServiceResult<Void> changeVideoStatus(Video video, NodeStatus status) {
         if (canAccess(video.subject.course)) {
             if (status != null) {
@@ -339,6 +353,12 @@ class CourseManagementService {
         }
     }
 
+    /**
+     * Utility method for copying a subject to a course.
+     *
+     * @param subject    The subject to copy
+     * @param course     The destination course
+     */
     private void copySubjectToCourse(Subject subject, Course course) {
         if (subject == null) return
         def newSubject = new Subject([
@@ -349,6 +369,12 @@ class CourseManagementService {
         subject.visibleVideos.forEach { copyVideoToSubject(it, newSubject) }
     }
 
+    /**
+     * Utility method for copying a video to a subject.
+     *
+     * @param video      The video
+     * @param subject    The destination subject
+     */
     private void copyVideoToSubject(Video video, Subject subject) {
         if (video == null) return
         new Video([
