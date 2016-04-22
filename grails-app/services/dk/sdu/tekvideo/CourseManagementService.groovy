@@ -5,11 +5,21 @@ import org.apache.http.HttpStatus
 import static dk.sdu.tekvideo.ServiceResult.*
 
 /**
+ * Provides services for course management. These services generally require a teacher to be authenticated. Teachers
+ * are also generally only allowed to operator on their own courses.
+ *
  * @author Dan Thrane
  */
 class CourseManagementService {
     def userService
 
+    /**
+     * Finds courses belonging to the authenticated teacher of the given status. If there is no authenticated teacher,
+     * then this method will fail.
+     *
+     * @param status    The node status to look for
+     * @return A list of courses or failure
+     */
     ServiceResult<List<Course>> getCourses(NodeStatus status) {
         def teacher = userService.authenticatedTeacher
         if (teacher) {
@@ -19,6 +29,13 @@ class CourseManagementService {
         }
     }
 
+    /**
+     * Finds subjects belonging to the authenticated teacher of the given status. If there is no authenticated teacher,
+     * then this method will fail.
+     *
+     * @param status    The node status to look for
+     * @return A list of subjects or failure
+     */
     ServiceResult<List<Subject>> getSubjects(NodeStatus status, Course course) {
         if (canAccess(course)) {
             ok Subject.findAllByCourseAndLocalStatus(course, status)
@@ -27,6 +44,13 @@ class CourseManagementService {
         }
     }
 
+    /**
+     * Finds videos belonging to the authenticated teacher of the given status. If there is no authenticated teacher,
+     * then this method will fail.
+     *
+     * @param status    The node status to look for
+     * @return A list of videos or failure
+     */
     ServiceResult<List<Video>> getVideos(NodeStatus status, Subject subject) {
         if (canAccess(subject.course)) {
             ok Video.findAllBySubjectAndLocalStatus(subject, status)
@@ -35,6 +59,12 @@ class CourseManagementService {
         }
     }
 
+    /**
+     * Finds all courses that are not marked as TRASH for the authenticated teacher. If there is no authenticated
+     * teacher, then this method will fail.
+     *
+     * @return A list of courses or failure
+     */
     ServiceResult<List<Course>> getActiveCourses() {
         def teacher = userService.authenticatedTeacher
         if (teacher) {
@@ -44,6 +74,14 @@ class CourseManagementService {
         }
     }
 
+    /**
+     * Creates, or edits an existing, subject belonging to a course. This is only possible to do if the authenticated
+     * user is the teacher of the supplied course (and subject, if given), if not this method will fail.
+     *
+     * @param course     The course to add the subject to
+     * @param command    The CRUD command for the subject
+     * @return If successful the newly created/existing subject
+     */
     ServiceResult<Subject> createOrEditSubject(Course course, SubjectCRUDCommand command) {
         new DomainServiceUpdater<SubjectCRUDCommand, Subject>(command) {
             ServiceResult init() {
@@ -59,6 +97,13 @@ class CourseManagementService {
         }.dispatch()
     }
 
+    /**
+     * Creates, or edits an existing, course. This is only possible to do if the authenticated user is a teacher.
+     * If not this method will fail.
+     *
+     * @param command    The CRUD command
+     * @return If successful the newly created/existing course
+     */
     ServiceResult<Course> createOrEditCourse(CourseCRUDCommand command) {
         new DomainServiceUpdater<CourseCRUDCommand, Course>(command) {
             ServiceResult<Void> init() {
@@ -82,6 +127,18 @@ class CourseManagementService {
         }.dispatch()
     }
 
+    // TODO Might want to copy over comments and statistics (when moving)
+    /**
+     * Creates, or edits an existing, video. This is only possible to do if the authenticated user is a teacher of the
+     * associated course, and if relevant the supplied video.
+     *
+     * This method also allows for an existing video to be moved to a new subject. In this case the video will be
+     * re-created and added to the new subject. The video on the old subject will be removed from the database. This
+     * will cause any comments associated with the video to be deleted!
+     *
+     * @param command    The CRUD command
+     * @return If successful the newly created/existing video
+     */
     ServiceResult<Video> createOrEditVideo(CreateVideoCommand command) {
         def teacher = userService.authenticatedTeacher
         if (teacher) {
@@ -117,6 +174,13 @@ class CourseManagementService {
         }
     }
 
+    /**
+     * Updates the video list of a subject. This allows for videos to be moved up and down in the list, as well as
+     * removing videos entirely from the list. Any video deleted will be marked as TRASH.
+     *
+     * @param command    The update command
+     * @return The subject being edited
+     */
     ServiceResult<Subject> updateVideos(UpdateVideosCommand command) {
         if (!command.validate()) {
             fail("teacherservice.invalid_request", false, [:], 400)
@@ -138,6 +202,13 @@ class CourseManagementService {
         }
     }
 
+    /**
+     * Updates the subject list of a course. This allows for subjects to be moved up and down in the list, as well as
+     * removing subjects entirely from the list. Any subject deleted will be marked as TRASH.
+     *
+     * @param command    The update command
+     * @return The course being edited
+     */
     ServiceResult<Course> updateSubjects(UpdateSubjectsCommand command) {
         if (!command.validate()) {
             fail("teacherservice.invalid_request", false, [:], 400)
@@ -159,6 +230,12 @@ class CourseManagementService {
         }
     }
 
+    /**
+     * Deletes a course, essentially marking it as TRASH.
+     *
+     * @param command    The delete command.
+     * @return The course in question.
+     */
     ServiceResult<Course> deleteCourse(DeleteCourseCommand command) {
         if (!command.validate()) {
             fail("teacherservice.invalid_request", false, [:], 400)
@@ -172,6 +249,12 @@ class CourseManagementService {
         }
     }
 
+    /**
+     * Creates a copy of the course given in the command with the new attributes as specified.
+     *
+     * @param command    The import command
+     * @return The new course
+     */
     ServiceResult<Course> importCourse(ImportCourseCommand command) {
         def teacher = userService.authenticatedTeacher
         if (teacher == null) {
@@ -196,32 +279,23 @@ class CourseManagementService {
         }
     }
 
-    private void copySubjectToCourse(Subject subject, Course course) {
-        if (subject == null) return
-        def newSubject = new Subject([
-                name       : subject.name,
-                description: subject.description,
-                course     : course
-        ]).save(flush: true)
-        subject.visibleVideos.forEach { copyVideoToSubject(it, newSubject) }
-    }
-
-    private void copyVideoToSubject(Video video, Subject subject) {
-        if (video == null) return
-        new Video([
-                name        : video.name,
-                youtubeId   : video.youtubeId,
-                timelineJson: video.timelineJson,
-                description : video.description,
-                videoTyupe  : video.videoType,
-                subject     : subject
-        ]).save(flush: true)
-    }
-
+    /**
+     * Checks if the authenticated user is the owner of the given course.
+     *
+     * @param course    The course
+     * @return true if the authenticated user owns the course
+     */
     boolean canAccess(Course course) {
         return course.teacher == userService.authenticatedTeacher
     }
 
+    /**
+     *
+     *
+     * @param course
+     * @param status
+     * @return
+     */
     ServiceResult<Void> changeCourseStatus(Course course, NodeStatus status) {
         def teacher = userService.authenticatedTeacher
         if (teacher && course.teacher == teacher) {
@@ -264,4 +338,27 @@ class CourseManagementService {
             fail message: "Ugyldigt kursus", suggestedHttpStatus: HttpStatus.SC_NOT_FOUND
         }
     }
+
+    private void copySubjectToCourse(Subject subject, Course course) {
+        if (subject == null) return
+        def newSubject = new Subject([
+                name       : subject.name,
+                description: subject.description,
+                course     : course
+        ]).save(flush: true)
+        subject.visibleVideos.forEach { copyVideoToSubject(it, newSubject) }
+    }
+
+    private void copyVideoToSubject(Video video, Subject subject) {
+        if (video == null) return
+        new Video([
+                name        : video.name,
+                youtubeId   : video.youtubeId,
+                timelineJson: video.timelineJson,
+                description : video.description,
+                videoTyupe  : video.videoType,
+                subject     : subject
+        ]).save(flush: true)
+    }
+
 }
