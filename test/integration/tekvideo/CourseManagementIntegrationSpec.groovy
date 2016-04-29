@@ -28,7 +28,7 @@ class CourseManagementIntegrationSpec extends Specification {
         and: "some different local statuses"
         (0..2).collect { courses[it] }.forEach { it.localStatus = NodeStatus.VISIBLE }
         (3..5).collect { courses[it] }.forEach { it.localStatus = NodeStatus.INVISIBLE }
-        (6..9).collect { courses[it] }.forEach { it.localStatus = NodeStatus.TRASH  }
+        (6..9).collect { courses[it] }.forEach { it.localStatus = NodeStatus.TRASH }
         courses.each { it.save(failOnError: true, flush: true) }
 
         when: "there is no user authenticated"
@@ -78,7 +78,7 @@ class CourseManagementIntegrationSpec extends Specification {
         and: "some different local statuses"
         (0..2).collect { subjects[it] }.forEach { it.localStatus = NodeStatus.VISIBLE }
         (3..5).collect { subjects[it] }.forEach { it.localStatus = NodeStatus.INVISIBLE }
-        (6..9).collect { subjects[it] }.forEach { it.localStatus = NodeStatus.TRASH  }
+        (6..9).collect { subjects[it] }.forEach { it.localStatus = NodeStatus.TRASH }
         subjects.each { it.save(failOnError: true, flush: true) }
 
         when: "there is no user authenticated"
@@ -129,7 +129,7 @@ class CourseManagementIntegrationSpec extends Specification {
         and: "some different local statuses"
         (0..2).collect { videos[it] }.forEach { it.localStatus = NodeStatus.VISIBLE }
         (3..5).collect { videos[it] }.forEach { it.localStatus = NodeStatus.INVISIBLE }
-        (6..9).collect { videos[it] }.forEach { it.localStatus = NodeStatus.TRASH  }
+        (6..9).collect { videos[it] }.forEach { it.localStatus = NodeStatus.TRASH }
         videos.each { it.save(failOnError: true, flush: true) }
 
         when: "there is no user authenticated"
@@ -160,6 +160,47 @@ class CourseManagementIntegrationSpec extends Specification {
         "teacher2"     | false   | []        | []          | []
         "student"      | false   | null      | null        | null
         null           | false   | null      | null        | null
+    }
+
+    @Unroll("test retrieving active courses owned by teacher as = '#authenticateAs'")
+    def "test retrieving active courses"() {
+        given: "a teacher"
+        def users = [:]
+        users.teacher = UserData.buildTestTeacher("Teacher")
+        users.teacher2 = UserData.buildTestTeacher("Teacher2")
+
+        and: "a student"
+        users.student = UserData.buildStudent()
+
+        and: "some courses"
+        List<Course> courses = (1..10).collect { CourseData.buildTestCourse("Course", users.teacher, true) }
+
+        and: "some different local statuses"
+        (0..2).collect { courses[it] }.forEach { it.localStatus = NodeStatus.VISIBLE }
+        (3..5).collect { courses[it] }.forEach { it.localStatus = NodeStatus.INVISIBLE }
+        (6..9).collect { courses[it] }.forEach { it.localStatus = NodeStatus.TRASH }
+        courses.each { it.save(failOnError: true, flush: true) }
+
+        when: "there is no user authenticated"
+        if (authenticateAs) {
+            UserData.authenticateAsUser(users[authenticateAs].user)
+        }
+
+        and: "we attempt to retrieve the courses"
+        def active = courseManagementService.getActiveCourses()
+
+        then: "we retrieve nothing"
+        active.success == success
+
+        and: "the data is returned correctly"
+        !success || active.result.collect { it.name }.toSet() == activeResults.collect { "Course$it".toString() }.toSet()
+
+        where:
+        authenticateAs | success | activeResults
+        "teacher"      | true    | [0, 1, 2, 3, 4, 5]
+        "teacher2"     | true    | []
+        "student"      | false   | null
+        null           | false   | null
     }
 
 }
