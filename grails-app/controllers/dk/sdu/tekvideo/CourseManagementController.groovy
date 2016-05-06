@@ -165,7 +165,7 @@ class CourseManagementController {
         }
     }
 
-    def postVideo(CreateVideoCommand command) {
+    def postVideo(CreateOrUpdateVideoCommand command) {
         def result = courseManagementService.createOrEditVideo(command)
         response.status = result.suggestedHttpStatus
         render result as JSON

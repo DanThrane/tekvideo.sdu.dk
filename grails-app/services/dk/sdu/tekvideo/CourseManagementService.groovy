@@ -139,10 +139,10 @@ class CourseManagementService {
      * @param command    The CRUD command
      * @return If successful the newly created/existing video
      */
-    ServiceResult<Video> createOrEditVideo(CreateVideoCommand command) {
+    ServiceResult<Video> createOrEditVideo(CreateOrUpdateVideoCommand command) {
         def teacher = userService.authenticatedTeacher
         if (teacher) {
-            if (!command.isEditing && !canAccess(command.subject.course)) {
+            if (!canAccess(command.subject.course)) {
                 fail "teacherservice.not_allowed"
             } else {
                 def video = (command.isEditing) ? command.editing : new Video()

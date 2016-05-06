@@ -3,8 +3,10 @@ package dk.sdu.tekvideo
 import java.util.stream.Collectors
 
 class Subject implements Node {
+    static final String DEFAULT_DESCRIPTION = "Ingen beskrivelse"
+
     String name
-    String description = "Ingen beskrivelse"
+    String description = DEFAULT_DESCRIPTION
     NodeStatus localStatus = NodeStatus.VISIBLE
 
     List<Video> videos // The subject will order its own videos
@@ -31,7 +33,7 @@ class Subject implements Node {
     }
 
     String getDescription() {
-        if (description == null) return "Ingen beskrivelse"
+        if (description == null) return DEFAULT_DESCRIPTION
         return description
     }
 

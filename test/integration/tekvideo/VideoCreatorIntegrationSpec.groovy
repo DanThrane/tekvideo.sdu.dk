@@ -1,6 +1,6 @@
 package tekvideo
 
-import dk.sdu.tekvideo.CreateVideoCommand
+import dk.sdu.tekvideo.CreateOrUpdateVideoCommand
 import dk.sdu.tekvideo.Subject
 import dk.sdu.tekvideo.data.SubjectData
 import dk.sdu.tekvideo.data.UserData
@@ -27,7 +27,7 @@ class VideoCreatorIntegrationSpec extends IntegrationSpec {
         when: "we authenticate and send the update command"
         UserData.authenticateAsTestTeacher(video.subject.course.teacher)
 
-        def command = new CreateVideoCommand([
+        def command = new CreateOrUpdateVideoCommand([
                 isEditing   : true,
                 subject     : newSubject,
                 editing     : video,
@@ -55,7 +55,7 @@ class VideoCreatorIntegrationSpec extends IntegrationSpec {
         UserData.authenticateAsTestTeacher(subject.course.teacher)
 
         and: "we create and send the update command"
-        def command = new CreateVideoCommand([
+        def command = new CreateOrUpdateVideoCommand([
                 isEditing   : false,
                 subject     : subject,
                 editing     : null,
