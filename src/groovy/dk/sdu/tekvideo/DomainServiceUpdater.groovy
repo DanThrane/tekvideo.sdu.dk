@@ -6,15 +6,10 @@ import static dk.sdu.tekvideo.ServiceResult.ok
  * @author Dan Thrane
  */
 class DomainServiceUpdater<C extends CRUDCommand, D> {
-    private Closure<ServiceResult<Void>> domainValidationClosure = { GormUtil.validateDomain(it.domain) }
-    private Closure<ServiceResult<Void>> postValidationClosure = { ok() }
-    private saveClosure = { C command -> GormUtil.saveDomain(command.domain) }
-    private Closure<ServiceResult<Void>> initClosure = { ok() }
+    final C command
 
-    DomainServiceUpdater(@DelegatesTo(DomainServiceUpdater) Closure init = {}) {
-        init.delegate = this
-        init.resolveStrategy = Closure.DELEGATE_FIRST
-        init()
+    DomainServiceUpdater(C command) {
+        this.command = command
     }
 
     /**
@@ -30,8 +25,8 @@ class DomainServiceUpdater<C extends CRUDCommand, D> {
      * @return  "ok" with any value if execution can continue, otherwise a
      *          failure
      */
-    void init(Closure<ServiceResult<Void>> initClosure) {
-        this.initClosure = initClosure
+    protected ServiceResult<Void> init() {
+        ok null
     }
 
     /**
@@ -41,8 +36,8 @@ class DomainServiceUpdater<C extends CRUDCommand, D> {
      *
      * @return  "ok" if the domain validates, otherwise a failure
      */
-    void domainValidation(Closure<ServiceResult<Void>> domainValidationClosure) {
-        this.domainValidationClosure = domainValidationClosure
+    protected ServiceResult<Void> domainValidation() {
+        GormUtil.validateDomain(command.domain)
     }
 
     /**
@@ -50,26 +45,22 @@ class DomainServiceUpdater<C extends CRUDCommand, D> {
      *
      * @return  "ok" if the validation passes, otherwise a failure
      */
-    void postValidation(Closure<ServiceResult<Void>> postValidationClosure) {
-        this.postValidationClosure = postValidationClosure
+    protected ServiceResult<Void> postValidation() {
+        ok null
     }
 
-    void save(Closure saveClosure) {
-        this.saveClosure = saveClosure
+    protected void save() {
+        GormUtil.saveDomain(command.domain)
     }
 
-    ServiceResult<Void> doDomainValidation(C command) {
-        return domainValidationClosure(command)
-    }
-
-    ServiceResult<D> dispatch(C command) {
-        def initResult = initClosure(command)
+    ServiceResult<D> dispatch() {
+        def initResult = init()
         if (initResult.success) {
-            def validation = domainValidationClosure(command)
+            def validation = domainValidation()
             if (validation.success) {
-                def postValidation = postValidationClosure(command)
+                def postValidation = postValidation()
                 if (postValidation.success) {
-                    saveClosure(command)
+                    save()
                     return ok(command.domain as D)
                 } else {
                     return postValidation as ServiceResult<D>
