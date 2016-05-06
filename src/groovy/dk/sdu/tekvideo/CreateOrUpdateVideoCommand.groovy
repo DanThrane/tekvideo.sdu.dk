@@ -6,7 +6,7 @@ import grails.validation.Validateable
  * @author Dan Thrane
  */
 @Validateable
-class CreateVideoCommand {
+class CreateOrUpdateVideoCommand {
     Subject subject
     String name
     String youtubeId

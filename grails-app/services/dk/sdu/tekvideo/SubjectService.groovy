@@ -1,13 +1,13 @@
 package dk.sdu.tekvideo
 
 class SubjectService {
-    def teachingService
+    def userService
 
     boolean canAccess(Subject subject) {
         def status = subject?.status
 
         subject != null &&
                 (status == NodeStatus.VISIBLE ||
-                    (status == NodeStatus.INVISIBLE && teachingService.authenticatedTeacher == subject.course.teacher))
+                    (status == NodeStatus.INVISIBLE && userService.authenticatedTeacher == subject.course.teacher))
     }
 }

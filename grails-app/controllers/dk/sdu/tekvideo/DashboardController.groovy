@@ -1,6 +1,5 @@
 package dk.sdu.tekvideo
 
-import dk.sdu.tekvideo.events.AnswerQuestionEvent
 import grails.converters.JSON
 import org.springframework.security.access.annotation.Secured
 

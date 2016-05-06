@@ -51,9 +51,10 @@ databaseChangeLog = {
 	changeSet(author: "Dan", id: "set default values for answer events") {
 		grailsChange {
             change {
-				boolean hasEvent = false
-				sql.eachRow("SELECT COUNT(*) FROM event;") { if (it.count > 0) hasEvent = true }
-				if (hasEvent) {
+				int count = 0
+				sql.eachRow("SELECT COUNT(*) FROM event;") { count = it.count }
+
+				if (count > 0) {
 					AnswerQuestionEvent.list().each { event ->
 						event.field = 0
 						event.subject = 0

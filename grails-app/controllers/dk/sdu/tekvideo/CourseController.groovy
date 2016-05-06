@@ -5,7 +5,8 @@ import org.springframework.security.access.annotation.Secured
 class CourseController {
     static defaultAction = "list"
 
-    TeachingService teachingService
+    UserService userService
+    UrlMappingService urlMappingService
     StudentService studentService
     CourseService courseService
     VideoStatisticsService videoStatisticsService
@@ -19,9 +20,9 @@ class CourseController {
 
     @Secured("permitAll")
     def viewByTeacher(String teacherName, String courseName, Integer year, Boolean spring) {
-        Course course = teachingService.getCourse(teacherName, courseName, year, spring)
+        Course course = urlMappingService.getCourse(teacherName, courseName, year, spring)
         if (courseService.canAccess(course)) {
-            boolean isTeacher = teachingService.authenticatedTeacher == course.teacher
+            boolean isTeacher = userService.authenticatedTeacher == course.teacher
             Map<Long, Integer> views = videoStatisticsService.findVideoVisitCountInCourse(
                     (User) springSecurityService.currentUser, course)
             render(view: "view", model: [course: course,

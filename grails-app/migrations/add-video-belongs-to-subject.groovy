@@ -129,9 +129,12 @@ databaseChangeLog = {
     changeSet(author: "Dan", id: "set default values for videos belonging to subjects") {
         grailsChange {
             change {
-                boolean hasVideos = false
-                sql.eachRow("SELECT COUNT(*) FROM video;") { if (it.count > 0) hasVideos = true }
-                if (hasVideos) {
+                int count = 0
+                sql.eachRow("SELECT COUNT(*) FROM video;") {
+                    count = it.count
+                }
+
+                if (count > 0) {
                     def defaultSubject = Subject.list()[0]
                     Video.list().each { video ->
                         Long id = null

@@ -4,12 +4,12 @@ import grails.converters.JSON
 import org.springframework.security.access.annotation.Secured
 
 class VideoController {
-    TeachingService teachingService
+    UrlMappingService urlMappingService
     VideoService videoService
 
     @Secured("permitAll")
     def view(String teacherName, String courseName, String subjectName, Integer videoId, Integer year, Boolean spring) {
-        Video video = teachingService.getVideo(teacherName, courseName, subjectName, videoId, year, spring)
+        Video video = urlMappingService.getVideo(teacherName, courseName, subjectName, videoId, year, spring)
         if (videoService.canAccess(video)) {
             [video: video]
         } else {

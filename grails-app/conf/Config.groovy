@@ -144,7 +144,7 @@ grails.plugin.springsecurity.controllerAnnotations.staticRules = [
 
 grails.assets.minifyJs = false // Temporary to fix an issue on the server
 
-grails.plugin.springsecurity.ui.password.validationRegex='^([a-zA-Z0-9@*#_%])*$'
+grails.plugin.springsecurity.ui.password.validationRegex='^([a-zA-Z0-9@*#_%!])*$'
 grails.plugin.springsecurity.ui.password.minLength=4
 grails.plugin.springsecurity.ui.password.maxLength=64
 
