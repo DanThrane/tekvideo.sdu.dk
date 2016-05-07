@@ -19,7 +19,7 @@
                 <ol class="breadcrumb">
                     <li><g:link action="index" controller="courseManagement">Mine Kurser</g:link></li>
                     <li>
-                        <g:link action="manage" controller="courseManagement" id="${subject.courseId}">
+                        <g:link action="manage" controller="courseManagement" id="${subject.course.id}">
                             ${subject.course.fullName} (${subject.course.name})
                         </g:link>
                     </li>
@@ -118,7 +118,7 @@
     <twbs:linkButton action="editSubject" id="${subject.id}" style="${ButtonStyle.LINK}" block="true">
         <fa:icon icon="${FaIcon.EDIT}"/> Rediger emne detaljer
     </twbs:linkButton>
-    <twbs:linkButton action="createVideo" id="${subject.courseId}" params="${[subject: subject.id]}"
+    <twbs:linkButton action="createVideo" id="${subject.course.id}" params="${[subject: subject.id]}"
                      style="${ButtonStyle.LINK}" block="true">
         <fa:icon icon="${FaIcon.PLUS}"/> Tilføj video
     </twbs:linkButton>
@@ -134,6 +134,8 @@
 </g:content>
 
 <script>
+    var baseUrl = "${createLink(absolute:true, uri:'/')}";
+
     $(function () {
         var list = new ListManipulator(".video", ".video-up", ".video-down");
         list.init();

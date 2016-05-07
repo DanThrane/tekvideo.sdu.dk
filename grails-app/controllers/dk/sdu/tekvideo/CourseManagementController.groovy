@@ -63,7 +63,7 @@ class CourseManagementController {
         } else {
             def res = courseManagementService.changeSubjectStatus(subject, statusS)
             if (res.success) {
-                redirect(action: "manage", params: [status: current, id: subject.courseId])
+                redirect(action: "manage", params: [status: current, id: subject.course.id])
             } else {
                 flash.error = res.message
                 redirect(action: "index")
@@ -80,7 +80,7 @@ class CourseManagementController {
         } else {
             def res = courseManagementService.changeVideoStatus(video, statusS)
             if (res.success) {
-                redirect(action: "manageSubject", params: [status: current, id: video.subjectId])
+                redirect(action: "manageSubject", params: [status: current, id: video.subject.id])
             } else {
                 flash.error = res.message
                 redirect(action: "index")

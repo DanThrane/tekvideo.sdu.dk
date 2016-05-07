@@ -14,6 +14,57 @@ class CourseManagementService {
     def userService
 
     /**
+     * Returns the courses owned by the current teacher in a format jsTree will understand.
+     */
+    List<Map> getJsTreeCourses() {
+        def courses = getCourses(NodeStatus.VISIBLE)
+        if (courses.success) {
+            return courses.result.collect {
+                [
+                        id      : it.id,
+                        text    : it.fullName,
+                        children: it.activeSubjects.size() > 0, // TODO Not efficient
+                        type    : "course"
+                ]
+            }
+        } else {
+            return Collections.emptyList()
+        }
+    }
+
+    List<Map> getJsTreeSubjects(Course course) {
+        def subjects = getSubjects(NodeStatus.VISIBLE, course)
+        if (subjects.success) {
+            return subjects.result.collect {
+                [
+                        id      : it.id,
+                        text    : it.name,
+                        children: it.activeVideos.size() > 0, // TODO Not efficient
+                        type    : "subject"
+                ]
+            }
+        } else {
+            return Collections.emptyList()
+        }
+    }
+
+    List<Map> getJsTreeVideos(Subject subject) {
+        def videos = getVideos(NodeStatus.VISIBLE, subject)
+        if (videos.success) {
+            return videos.result.collect {
+                [
+                        id      : it.id,
+                        text    : it.name,
+                        children: false,
+                        type    : "video"
+                ]
+            }
+        } else {
+            return Collections.emptyList()
+        }
+    }
+
+    /**
      * Finds courses belonging to the authenticated teacher of the given status. If there is no authenticated teacher,
      * then this method will fail.
      *

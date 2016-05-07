@@ -133,6 +133,8 @@
 </g:content>
 
 <script>
+    var baseUrl = "${createLink(absolute:true, uri:'/')}";
+
     $(function () {
         var courseToDelete = null;
 

@@ -42,7 +42,7 @@
                         </twbs:column>
                         <twbs:column cols="6" class="align-right">
                             <twbs:linkButton style="${ButtonStyle.SUCCESS}" action="createVideo"
-                                             controller="courseManagement" id="${subject.courseId}"
+                                             controller="courseManagement" id="${subject.course.id}"
                                              params="${[subject: subject.id]}">
                                 <fa:icon icon="${FaIcon.PLUS_CIRCLE}"/> Tilføj video
                             </twbs:linkButton>
@@ -148,6 +148,8 @@
 </g:content>
 
 <script>
+    var baseUrl = "${createLink(absolute:true, uri:'/')}";
+
     $(function () {
         var listManipulator = new ListManipulator(".subject", ".subject-up", ".subject-down");
         listManipulator.init();

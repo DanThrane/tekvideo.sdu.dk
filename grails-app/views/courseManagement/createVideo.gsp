@@ -96,7 +96,7 @@
                     </li>
                     <g:if test="${isEditing}">
                         <li>
-                            <g:link action="manageSubject" controller="courseManagement" id="${video.subjectId}">
+                            <g:link action="manageSubject" controller="courseManagement" id="${video.subject.id}">
                                 ${video.subject.name}
                             </g:link>
                         </li>
@@ -346,6 +346,8 @@
 <g:content key="layout-script">
     <asset:javascript src="video-creator.js"/>
     <script>
+        var baseUrl = "${createLink(absolute:true, uri:'/')}";
+
         $(document).ready(function () {
             Editor.init();
 
