@@ -49,6 +49,10 @@ class DomainServiceUpdater<C extends CRUDCommand, D> {
         ok null
     }
 
+    protected ServiceResult<D> postSave() {
+        ok(command.domain as D)
+    }
+
     protected void save() {
         GormUtil.saveDomain(command.domain)
     }
@@ -61,7 +65,7 @@ class DomainServiceUpdater<C extends CRUDCommand, D> {
                 def postValidation = postValidation()
                 if (postValidation.success) {
                     save()
-                    return ok(command.domain as D)
+                    return postSave()
                 } else {
                     return postValidation as ServiceResult<D>
                 }

@@ -30,8 +30,7 @@ class Course implements Node {
     }
 
     List<Subject> getSubjects() {
-        def join = CourseSubject.findSubjectIds(this)
-        Subject.findAllByIdInList(join) // TODO Is order preserved?
+        Collections.unmodifiableList(CourseSubject.findAllByCourse(this, [sort: 'weight']).subject)
     }
 
     @Override

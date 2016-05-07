@@ -52,7 +52,7 @@ class Video implements Node {
 
     @Override
     Node getParent() {
-        SubjectVideo.findByVideo(this)subject
+        SubjectVideo.findByVideo(this).subject
     }
 
 }

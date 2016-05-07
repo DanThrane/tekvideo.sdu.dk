@@ -62,7 +62,8 @@ class VideoStatisticsService {
             WITH
                 events_by_user AS (
                   SELECT
-                    event.video_id, COUNT(*) AS visit_count
+                    event.video_id,
+                    COUNT(*) AS visit_count
                   FROM
                     event
                   WHERE
@@ -72,17 +73,20 @@ class VideoStatisticsService {
                     event.video_id
               ),
                 selected_videos AS (
-                  SELECT
-                    video.id AS selected_video_id
+                  SELECT video.id AS selected_video_id
                   FROM
-                    course, subject, video
+                    course_subject, subject_video, video
                   WHERE
-                    course_id = course.id AND subject_id = subject.id AND course.id = :course_id
+                    course_subject.course_id = :course_id AND
+                    course_subject.subject_id = subject_video.subject_id AND
+                    subject_video.video_id = video.id
               )
             SELECT
-              selected_video_id, visit_count
+              selected_video_id,
+              visit_count
             FROM
-              selected_videos LEFT OUTER JOIN events_by_user ON (video_id = selected_video_id);
+              selected_videos
+              LEFT OUTER JOIN events_by_user ON (video_id = selected_video_id);
         /$
 
         long userId = (user != null) ? user.id : -1

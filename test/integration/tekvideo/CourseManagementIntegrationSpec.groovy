@@ -181,6 +181,10 @@ class CourseManagementIntegrationSpec extends Specification {
 
         and: "some courses"
         List<Course> courses = (1..10).collect { CourseData.buildTestCourse("Course", users.teacher, true) }
+        List<Course> expectedActive = []
+        for (int i : activeResults) {
+            expectedActive += courses[i]
+        }
 
         and: "some different local statuses"
         (0..2).collect { courses[it] }.forEach { it.localStatus = NodeStatus.VISIBLE }
@@ -200,10 +204,7 @@ class CourseManagementIntegrationSpec extends Specification {
         active.success == success
 
         and: "the data is returned correctly"
-        !success || active.result.collect { it.name }.toSet() == activeResults.collect {
-            "Course$it".toString()
-        }.toSet()
-
+        !success || active.result.collect { it.name }.toSet() == expectedActive.collect { it.name }.toSet()
         where:
         authenticateAs | success | activeResults
         "teacher"      | true    | [0, 1, 2, 3, 4, 5]
@@ -379,7 +380,7 @@ class CourseManagementIntegrationSpec extends Specification {
         def subject2 = SubjectData.buildTestSubject("Subject2", course)
 
         and: "a video"
-        def video = VideoData.buildTestVideo("Video", subject1, false, !isEditing)
+        def video = VideoData.buildTestVideo("Video", subject1, false, isEditing)
 
         and: "apply changes to course"
         video.name = newName
@@ -434,8 +435,8 @@ class CourseManagementIntegrationSpec extends Specification {
         and: "the visibility matches"
         !success || (success && result.result.localStatus == (visible ? NodeStatus.VISIBLE : NodeStatus.INVISIBLE))
 
-        and: "the video has no comments attached after a move"
-        !success || (success && !move) || (success && move && (result.result.comments == null || result.result.comments.empty))
+        and: "the video still has comments attached"
+        !success || !addComments || (success && addComments && video.comments?.size() == 10)
 
         where:
         authenticateAs | isEditing | newName | newDescription | visible | addComments | move  | success
@@ -443,6 +444,8 @@ class CourseManagementIntegrationSpec extends Specification {
         "teacher"      | true      | "T"     | "T2"           | false   | false       | false | true
         "teacher"      | true      | "T"     | "T2"           | false   | true        | false | true
         "teacher"      | true      | "T"     | "T2"           | true    | false       | false | true
+        "teacher"      | true      | "T"     | "T2"           | true    | true        | true  | true
+        "teacher"      | true      | "T"     | "T2"           | true    | false       | true  | true
         "teacher"      | true      | "T"     | "T2"           | true    | true        | false | true
         "student"      | false     | "T"     | "T2"           | false   | false       | false | false
         "student"      | true      | "T"     | "T2"           | false   | false       | false | false

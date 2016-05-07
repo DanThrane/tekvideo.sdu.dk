@@ -25,8 +25,7 @@ class Subject implements Node {
     }
 
     List<Video> getVideos() {
-        def join = SubjectVideo.findAllVideoIds(this)
-        Video.findAllByIdInList(join)
+        Collections.unmodifiableList(SubjectVideo.findAllBySubject(this, [sort: 'weight']).video)
     }
 
     Course getCourse() {

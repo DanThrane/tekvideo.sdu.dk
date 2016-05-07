@@ -17,7 +17,7 @@ class CourseManagementService {
      * Finds courses belonging to the authenticated teacher of the given status. If there is no authenticated teacher,
      * then this method will fail.
      *
-     * @param status    The node status to look for
+     * @param status The node status to look for
      * @return A list of courses or failure
      */
     ServiceResult<List<Course>> getCourses(NodeStatus status) {
@@ -33,7 +33,7 @@ class CourseManagementService {
      * Finds subjects belonging to the authenticated teacher of the given status. If there is no authenticated teacher,
      * then this method will fail.
      *
-     * @param status    The node status to look for
+     * @param status The node status to look for
      * @return A list of subjects or failure
      */
     ServiceResult<List<Subject>> getSubjects(NodeStatus status, Course course) {
@@ -48,7 +48,7 @@ class CourseManagementService {
      * Finds videos belonging to the authenticated teacher of the given status. If there is no authenticated teacher,
      * then this method will fail.
      *
-     * @param status    The node status to look for
+     * @param status The node status to look for
      * @return A list of videos or failure
      */
     ServiceResult<List<Video>> getVideos(NodeStatus status, Subject subject) {
@@ -78,8 +78,8 @@ class CourseManagementService {
      * Creates, or edits an existing, subject belonging to a course. This is only possible to do if the authenticated
      * user is the teacher of the supplied course (and subject, if given), if not this method will fail.
      *
-     * @param course     The course to add the subject to
-     * @param command    The CRUD command for the subject
+     * @param course The course to add the subject to
+     * @param command The CRUD command for the subject
      * @return If successful the newly created/existing subject
      */
     ServiceResult<Subject> createOrEditSubject(Course course, SubjectCRUDCommand command) {
@@ -87,12 +87,18 @@ class CourseManagementService {
             ServiceResult init() {
                 def teacher = userService.authenticatedTeacher
                 if (teacher && canAccess(course)) {
-                    if (!command.isEditing) course.addToSubjects(command.domain)
                     command.domain.localStatus = command.visible ? NodeStatus.VISIBLE : NodeStatus.INVISIBLE
                     ok null
                 } else {
                     fail "teacherservice.not_allowed"
                 }
+            }
+
+            ServiceResult<Subject> postSave() {
+                if (!command.isEditing) {
+                    CourseSubject.create(course, command.domain, [save: true])
+                }
+                return ok(command.domain)
             }
         }.dispatch()
     }
@@ -101,7 +107,7 @@ class CourseManagementService {
      * Creates, or edits an existing, course. This is only possible to do if the authenticated user is a teacher.
      * If not this method will fail.
      *
-     * @param command    The CRUD command
+     * @param command The CRUD command
      * @return If successful the newly created/existing course
      */
     ServiceResult<Course> createOrEditCourse(CourseCRUDCommand command) {
@@ -127,16 +133,13 @@ class CourseManagementService {
         }.dispatch()
     }
 
-    // TODO Might want to copy over comments and statistics (when moving)
     /**
      * Creates, or edits an existing, video. This is only possible to do if the authenticated user is a teacher of the
      * associated course, and if relevant the supplied video.
      *
-     * This method also allows for an existing video to be moved to a new subject. In this case the video will be
-     * re-created and added to the new subject. The video on the old subject will be removed from the database. This
-     * will cause any comments associated with the video to be deleted!
+     * This method also allows for an existing video to be moved to a new subject.
      *
-     * @param command    The CRUD command
+     * @param command The CRUD command
      * @return If successful the newly created/existing video
      */
     ServiceResult<Video> createOrEditVideo(CreateOrUpdateVideoCommand command) {
@@ -146,23 +149,21 @@ class CourseManagementService {
                 fail "teacherservice.not_allowed"
             } else {
                 def video = (command.isEditing) ? command.editing : new Video()
-                if (command.isEditing && video.subject != command.subject) {
-                    video.subject.removeFromVideos(video)
-                    command.isEditing = false
-                    video = new Video()
-                }
+
                 video.name = command.name
                 video.youtubeId = command.youtubeId
                 video.timelineJson = command.timelineJson
                 video.description = command.description
                 video.videoType = command.videoType
-                video.subject = command.subject
                 video.localStatus = command.visible ? NodeStatus.VISIBLE : NodeStatus.INVISIBLE
                 if (video.validate()) {
-                    if (command.isEditing) {
-                        video.save()
-                    } else {
-                        command.subject.addToVideos(video).save(flush: true)
+                    video.save()
+
+                    if (!command.isEditing) {
+                        SubjectVideo.create(command.subject, video, [save: true])
+                    } else if (command.isEditing && video.subject != command.subject) {
+                        SubjectVideo.findByVideo(video).delete()
+                        SubjectVideo.create(command.subject, video, [save: true])
                     }
                     ok video
                 } else {
@@ -178,7 +179,7 @@ class CourseManagementService {
      * Updates the video list of a subject. This allows for videos to be moved up and down in the list, as well as
      * removing videos entirely from the list. Any video deleted will be marked as TRASH.
      *
-     * @param command    The update command
+     * @param command The update command
      * @return The subject being edited
      */
     ServiceResult<Subject> updateVideos(UpdateVideosCommand command) {
@@ -191,10 +192,21 @@ class CourseManagementService {
                     it.localStatus = NodeStatus.TRASH
                     it.save()
                 }
-                command.subject.videos.clear()
-                command.subject.videos.addAll(command.order)
-                command.subject.videos.addAll(diff)
-                command.subject.save()
+                def mappings = SubjectVideo.findAllBySubject(command.subject)
+                command.order.eachWithIndex { entry, i ->
+                    def mapping = mappings.find { it.videoId == entry.id }
+                    mapping.weight = i
+                    mapping.save()
+                }
+
+                int index = command.order.size()
+                for (def t : diff) {
+                    def mapping = mappings.find { it.videoId == t.id }
+                    mapping.weight = index
+                    mapping.save()
+
+                    index++
+                }
                 ok command.subject
             } else {
                 fail("teacherservice.not_allowed", false, [:], 403)
@@ -206,7 +218,7 @@ class CourseManagementService {
      * Updates the subject list of a course. This allows for subjects to be moved up and down in the list, as well as
      * removing subjects entirely from the list. Any subject deleted will be marked as TRASH.
      *
-     * @param command    The update command
+     * @param command The update command
      * @return The course being edited
      */
     ServiceResult<Course> updateSubjects(UpdateSubjectsCommand command) {
@@ -219,10 +231,21 @@ class CourseManagementService {
                     it.localStatus = NodeStatus.TRASH
                     it.save()
                 }
-                command.course.subjects.clear()
-                command.course.subjects.addAll(command.order)
-                command.course.subjects.addAll(diff)
-                command.course.save()
+                def mappings = CourseSubject.findAllByCourse(command.course)
+                command.order.eachWithIndex { entry, i ->
+                    def mapping = mappings.find { it.subjectId == entry.id }
+                    mapping.weight = i
+                    mapping.save()
+                }
+
+                int index = command.order.size()
+                for (def t : diff) {
+                    def mapping = mappings.find { it.subjectId == t.id }
+                    mapping.weight = index
+                    mapping.save()
+
+                    index++
+                }
                 ok command.course
             } else {
                 fail("teacherservice.not_allowed", false, [:], 403)
@@ -233,7 +256,7 @@ class CourseManagementService {
     /**
      * Deletes a course, essentially marking it as TRASH.
      *
-     * @param command    The delete command.
+     * @param command The delete command.
      * @return The course in question.
      */
     ServiceResult<Course> deleteCourse(DeleteCourseCommand command) {
@@ -252,7 +275,7 @@ class CourseManagementService {
     /**
      * Creates a copy of the course given in the command with the new attributes as specified.
      *
-     * @param command    The import command
+     * @param command The import command
      * @return The new course
      */
     ServiceResult<Course> importCourse(ImportCourseCommand command) {
@@ -282,7 +305,7 @@ class CourseManagementService {
     /**
      * Checks if the authenticated user is the owner of the given course.
      *
-     * @param course    The course
+     * @param course The course
      * @return true if the authenticated user owns the course
      */
     boolean canAccess(Course course) {
@@ -292,8 +315,8 @@ class CourseManagementService {
     /**
      * Changes the status of a single course. This can only be done if the teacher owns the associated course.
      *
-     * @param course    The node to change status on
-     * @param status    The status to update to
+     * @param course The node to change status on
+     * @param status The status to update to
      * @return failure if the authenticated user is not the teacher of the course, otherwise OK
      */
     ServiceResult<Void> changeCourseStatus(Course course, NodeStatus status) {
@@ -314,8 +337,8 @@ class CourseManagementService {
     /**
      * Changes the status of a single subject. This can only be done if the teacher owns the associated course.
      *
-     * @param course    The node to change status on
-     * @param status    The status to update to
+     * @param course The node to change status on
+     * @param status The status to update to
      * @return failure if the authenticated user is not the teacher of the course, otherwise OK
      */
     ServiceResult<Void> changeSubjectStatus(Subject subject, NodeStatus status) {
@@ -335,8 +358,8 @@ class CourseManagementService {
     /**
      * Changes the status of a single video. This can only be done if the teacher owns the associated course.
      *
-     * @param course    The node to change status on
-     * @param status    The status to update to
+     * @param course The node to change status on
+     * @param status The status to update to
      * @return failure if the authenticated user is not the teacher of the course, otherwise OK
      */
     ServiceResult<Void> changeVideoStatus(Video video, NodeStatus status) {
@@ -356,8 +379,8 @@ class CourseManagementService {
     /**
      * Utility method for copying a subject to a course.
      *
-     * @param subject    The subject to copy
-     * @param course     The destination course
+     * @param subject The subject to copy
+     * @param course The destination course
      */
     private void copySubjectToCourse(Subject subject, Course course) {
         if (subject == null) return
@@ -372,8 +395,8 @@ class CourseManagementService {
     /**
      * Utility method for copying a video to a subject.
      *
-     * @param video      The video
-     * @param subject    The destination subject
+     * @param video The video
+     * @param subject The destination subject
      */
     private void copyVideoToSubject(Video video, Subject subject) {
         if (video == null) return

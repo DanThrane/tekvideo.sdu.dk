@@ -15,10 +15,10 @@ class DomainServiceUpdaterSpec extends Specification {
         def course = getValidCourse()
 
         and: "A domain service updater"
-        def updater = new DomainServiceUpdater<CRUDCommand, Course>()
+        def updater = new DomainServiceUpdater<CRUDCommand, Course>(new Command(domain: course, isEditing: false))
 
         when: "Validation is performed"
-        def result = updater.doDomainValidation(new Command(domain: course, isEditing: false))
+        def result = updater.domainValidation()
 
         then: "The validation succeeds"
         course.validate() // Sanity check to ensure that the models actually validate
