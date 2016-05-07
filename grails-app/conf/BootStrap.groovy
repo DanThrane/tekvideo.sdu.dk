@@ -5,7 +5,6 @@ import dk.sdu.tekvideo.data.SubjectData
 import dk.sdu.tekvideo.data.VideoData
 import dk.sdu.tekvideo.events.*
 import dk.sdu.tekvideo.events.AnswerQuestionEvent
-import dk.sdu.tekvideo.events.VisitVideoEvent
 import grails.converters.JSON
 
 class BootStrap {

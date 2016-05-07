@@ -8,25 +8,20 @@ class Video implements Node {
     Boolean videoType = true
     Date dateCreated
     NodeStatus localStatus = NodeStatus.VISIBLE
-    Long videos_idx
 
     static constraints = {
         name            nullable: false, blank: false, maxSize: 255
         youtubeId       nullable: false, blank: false
         timelineJson    nullable: true
         description     nullable: true
-        videos_idx      nullable: true
     }
 
-    static belongsTo = [subject: Subject]
     static hasMany = [comments: Comment]
 
     static mapping = {
         timelineJson type: "text"
         description type: "text"
         videoType defaultValue: true
-        subject nullable: true
-        videos_idx updateable: false, insertable: false
     }
 
     static jsonMarshaller = { Video it ->
@@ -53,7 +48,7 @@ class Video implements Node {
 
     @Override
     Node getParent() {
-        subject
+        SubjectVideo.findByVideo(this)subject
     }
 
 }

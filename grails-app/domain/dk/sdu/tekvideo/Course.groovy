@@ -29,11 +29,9 @@ class Course implements Node {
         subjects.findAll { it != null && it.localStatus == NodeStatus.VISIBLE }
     }
 
-    // TODO get subjects
-
     List<Subject> getSubjects() {
         def join = CourseSubject.findAllByCourse(this)
-        Subject.findAllByIdInList(join.subject.i)
+        Subject.findAllByIdInList(join.subject.id, [sort: 'weight']) // TODO a bit worried this might cause load of all subjects
     }
 
     @Override
