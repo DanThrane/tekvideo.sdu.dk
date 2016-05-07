@@ -54,7 +54,8 @@ class UrlMappingService {
      */
     Subject getSubject(String teacherName, String courseName, String subject, Integer year = null,
                        Boolean spring = null) {
-        Subject.findByNameAndCourse(subject, getCourse(teacherName, courseName, year, spring))
+        def course = getCourse(teacherName, courseName, year, spring)
+        course.subjects.find { it.name == subject } // TODO Performance
     }
 
     /**

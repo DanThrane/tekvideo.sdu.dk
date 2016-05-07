@@ -46,6 +46,10 @@ class Video implements Node {
         return timelineJson
     }
 
+    Subject getSubject() {
+        return getParent() as Subject
+    }
+
     @Override
     Node getParent() {
         SubjectVideo.findByVideo(this)subject

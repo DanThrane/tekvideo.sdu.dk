@@ -82,8 +82,10 @@ class VideoService {
             // TODO Not easy to show current information (See issue #45)
             courses = Course.findAllByLocalStatus(NodeStatus.VISIBLE, [max: 25])
         }
-        def subjects = Subject.findAllByCourseInListAndLocalStatus(courses, NodeStatus.VISIBLE, [max: 25])
+        def subjectIds = CourseSubject.findAllByCourseInList(courses).subject.id // TODO Performance
+        def subjects = Subject.findAllByIdInListAndLocalStatus(subjectIds, NodeStatus.VISIBLE, [max: 25])
 
-        Video.findAllBySubjectInListAndLocalStatus(subjects, NodeStatus.VISIBLE, [max: 25, sort: "dateCreated", order: "desc"])
+        def videoIds = SubjectVideo.findAllBySubjectInList(subjects).video.id
+        Video.findAllByIdInListAndLocalStatus(videoIds, NodeStatus.VISIBLE, [max: 25, sort: "dateCreated", order: "desc"])
     }
 }

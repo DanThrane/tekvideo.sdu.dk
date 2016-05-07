@@ -38,7 +38,7 @@ class CourseManagementService {
      */
     ServiceResult<List<Subject>> getSubjects(NodeStatus status, Course course) {
         if (canAccess(course)) {
-            ok Subject.findAllByCourseAndLocalStatus(course, status)
+            ok Subject.findAllByIdInListAndLocalStatus(CourseSubject.findSubjectIds(course), status)
         } else {
             fail "teacherservice.no_teacher"
         }
@@ -53,7 +53,7 @@ class CourseManagementService {
      */
     ServiceResult<List<Video>> getVideos(NodeStatus status, Subject subject) {
         if (canAccess(subject.course)) {
-            ok Video.findAllBySubjectAndLocalStatus(subject, status)
+            ok Video.findAllByIdInListAndLocalStatus(SubjectVideo.findAllVideoIds(subject), status)
         } else {
             fail "teacherservice.no_teacher"
         }

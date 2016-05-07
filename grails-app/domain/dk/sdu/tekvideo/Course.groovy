@@ -30,8 +30,8 @@ class Course implements Node {
     }
 
     List<Subject> getSubjects() {
-        def join = CourseSubject.findAllByCourse(this)
-        Subject.findAllByIdInList(join.subject.id, [sort: 'weight']) // TODO a bit worried this might cause load of all subjects
+        def join = CourseSubject.findSubjectIds(this)
+        Subject.findAllByIdInList(join) // TODO Is order preserved?
     }
 
     @Override

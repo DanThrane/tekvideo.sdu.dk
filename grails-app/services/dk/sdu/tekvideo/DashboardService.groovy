@@ -61,10 +61,10 @@ class DashboardService {
         def course = findCourse(node)
         if (course != null && courseManagementService.canAccess(course)) {
             if (node instanceof Course) {
-                def subjects = Subject.findAllByCourse(course)
-                ok item: Video.findAllBySubjectInList(subjects)
+                def subjects = course.subjects
+                ok item: SubjectVideo.findAllBySubjectInList(subjects).video
             } else if (node instanceof Subject) {
-                ok item: Video.findAllBySubject(node)
+                ok item: node.videos
             } else if (node instanceof Video) {
                 ok item: [node]
             } else {
