@@ -438,8 +438,8 @@ class CourseManagementService {
         def newSubject = new Subject([
                 name       : subject.name,
                 description: subject.description,
-                course     : course
         ]).save(flush: true)
+        CourseSubject.create(course, newSubject, [save: true])
         subject.visibleVideos.forEach { copyVideoToSubject(it, newSubject) }
     }
 
@@ -451,14 +451,14 @@ class CourseManagementService {
      */
     private void copyVideoToSubject(Video video, Subject subject) {
         if (video == null) return
-        new Video([
+        def newVideo = new Video([
                 name        : video.name,
                 youtubeId   : video.youtubeId,
                 timelineJson: video.timelineJson,
                 description : video.description,
                 videoTyupe  : video.videoType,
-                subject     : subject
         ]).save(flush: true)
+        SubjectVideo.create(subject, newVideo, [save: true])
     }
 
 }

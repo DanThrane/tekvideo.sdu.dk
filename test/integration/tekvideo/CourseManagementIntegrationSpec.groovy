@@ -4,6 +4,7 @@ import dk.sdu.tekvideo.Comment
 import dk.sdu.tekvideo.Course
 import dk.sdu.tekvideo.CourseCRUDCommand
 import dk.sdu.tekvideo.CreateOrUpdateVideoCommand
+import dk.sdu.tekvideo.ImportCourseCommand
 import dk.sdu.tekvideo.NodeStatus
 import dk.sdu.tekvideo.Subject
 import dk.sdu.tekvideo.SubjectCRUDCommand
@@ -455,4 +456,100 @@ class CourseManagementIntegrationSpec extends Specification {
         "teacher2"     | false     | "T"     | "T2"           | true    | false       | false | false
     }
 
+
+    @Unroll("test importing a course (#authenticateAs, #newCourseName, #newCourseFullName, #newSemester, #newSemesterSpring, #newDescription, #visible, #success)")
+    def "test importing a course"() {
+        given: "some users"
+        def users = [:]
+        users.teacher = UserData.buildTestTeacher("Teacher")
+        users.teacher2 = UserData.buildTestTeacher("Teacher2")
+        users.student = UserData.buildStudent()
+
+        and: "a course to import"
+        def course = CourseData.buildTestCourse("Course", users.teacher)
+
+        and: "some subjects"
+        def subjects = (0..<3).collect { SubjectData.buildTestSubject("Subject", course, true) }
+
+        and: "some videos"
+        List<List<Video>> videos = []
+        subjects.each { subject ->
+            List<Video> current = []
+            (0..<3).each {
+                current.add(VideoData.buildTestVideo("Video", subject, true))
+            }
+            videos.add(current)
+        }
+
+        when: "we authenticate"
+        if (authenticateAs) {
+            UserData.authenticateAsUser(users[authenticateAs].user)
+        }
+
+        and: "we call the update"
+        def command = new ImportCourseCommand(
+                newCourseName: newCourseName,
+                newCourseFullName: newCourseFullName,
+                newSemester: newSemester,
+                newSemesterSpring: newSemesterSpring,
+                newDescription: newDescription,
+                course: course,
+                visible: visible
+        )
+        def call = courseManagementService.importCourse(command)
+
+        then: "the call might succeed"
+        call.success == success
+
+        and: "if successful, the new course has the right description"
+        !success || call.result.name == newCourseName
+        !success || call.result.fullName == newCourseFullName
+        !success || call.result.year == newSemester
+        !success || call.result.spring == newSemesterSpring
+        !success || call.result.description == newDescription
+        !success || call.result.localStatus == (visible ? NodeStatus.VISIBLE : NodeStatus.INVISIBLE)
+
+        and: "the subjects are properly copied over with a preserved order"
+        !success || call.result.subjects.size() == 3
+        !success || call.result.subjects.name == subjects.name
+
+        and: "are not the same subjects as the previous"
+        !success || call.result.subjects.id.intersect(subjects.id).empty
+
+        and: "the videos are properly copied over with a preserved order"
+        !success || call.result.subjects[0].videos.size() == 3
+        !success || call.result.subjects[0].videos.name == videos[0].name
+
+        !success || call.result.subjects[1].videos.size() == 3
+        !success || call.result.subjects[1].videos.name == videos[1].name
+
+        !success || call.result.subjects[2].videos.size() == 3
+        !success || call.result.subjects[2].videos.name == videos[2].name
+
+        and: "are not the same videos as the previous"
+        !success || call.result.subjects[0].videos.id.intersect(videos[0].id).empty
+        !success || call.result.subjects[1].videos.id.intersect(videos[1].id).empty
+        !success || call.result.subjects[2].videos.id.intersect(videos[2].id).empty
+
+        where:
+        authenticateAs | newCourseName | newCourseFullName | newSemester | newSemesterSpring | newDescription | visible | success
+        "teacher"      | "T"           | "T"               | 2000        | false             | "T"            | true    | true
+        "teacher"      | "T"           | "T"               | 2000        | false             | "T"            | false   | true
+        "teacher2"     | "T"           | "T"               | 2000        | false             | "T"            | true    | true
+        "teacher2"     | "T"           | "T"               | 2000        | false             | "T"            | false   | true
+        "student"      | "T"           | "T"               | 2000        | false             | "T"            | true    | false
+        "student"      | "T"           | "T"               | 2000        | false             | "T"            | false   | false
+        "teacher"      | "T"           | "T"               | 0           | false             | "T"            | true    | false
+        "teacher"      | "T"           | "T"               | 0           | false             | "T"            | false   | false
+        "teacher2"     | "T"           | "T"               | 0           | false             | "T"            | true    | false
+        "teacher2"     | "T"           | "T"               | 0           | false             | "T"            | false   | false
+        "student"      | "T"           | "T"               | 0           | false             | "T"            | true    | false
+        "student"      | "T"           | "T"               | 0           | false             | "T"            | false   | false
+        "teacher"      | null          | "T"               | 2000        | false             | "T"            | true    | false
+        "teacher"      | null          | "T"               | 2000        | false             | "T"            | false   | false
+        "teacher2"     | null          | "T"               | 2000        | false             | "T"            | true    | false
+        "teacher2"     | null          | "T"               | 2000        | false             | "T"            | false   | false
+        "student"      | null          | "T"               | 2000        | false             | "T"            | true    | false
+        "student"      | null          | "T"               | 2000        | false             | "T"            | false   | false
+    }
 }
