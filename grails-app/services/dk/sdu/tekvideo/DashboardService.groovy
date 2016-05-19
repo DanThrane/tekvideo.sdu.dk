@@ -27,6 +27,24 @@ class DashboardService {
         return (node instanceof Course) ? node : null
     }
 
+    /**
+     * Returns a node from its identifier.
+     *
+     * The identifier is of the form "<type>/<id>". The type represents the type of node, these can be
+     * ("course", "subject", or "video"). The identifier corresponds to the database, i.e. Course#id, Subject#id, and
+     * Video#id.
+     *
+     * This method will fail if any of the following conditions are met:
+     *
+     * <ul>
+     *   <li>The identifier is not of the correct format</li>
+     *   <li>The identifier is of the correct format, but the identifier doesn't point to a valid entry</li>
+     *   <li>The identifier is not a valid number</li>
+     * </ul>
+     *
+     * @param identifier    The identifier
+     * @return The corresponding node, if successful. Otherwise an appropriate error will be returned
+     */
     ServiceResult<Node> nodeFromIdentifier(String identifier) {
         def split = identifier.split("/")
         if (split.length != 2) {
@@ -57,6 +75,16 @@ class DashboardService {
         }
     }
 
+    /**
+     * Finds the leaves (i.e. videos) starting at a particular node.
+     *
+     * This method will fail if the node is of an unknown type, or if the authenticated user doesn't own the course.
+     *
+     * No ordering of the videos are preserved.
+     *
+     * @param node    The node to start searching at
+     * @return A list of videos (unordered).
+     */
     ServiceResult<List<Video>> findLeaves(Node node) {
         def course = findCourse(node)
         if (course != null && courseManagementService.canAccess(course)) {
