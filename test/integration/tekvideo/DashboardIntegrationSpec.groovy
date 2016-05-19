@@ -7,6 +7,7 @@ import dk.sdu.tekvideo.data.CourseData
 import dk.sdu.tekvideo.data.SubjectData
 import dk.sdu.tekvideo.data.UserData
 import dk.sdu.tekvideo.data.VideoData
+import dk.sdu.tekvideo.events.VisitVideoEvent
 import spock.lang.Specification
 import spock.lang.Unroll
 
@@ -111,5 +112,64 @@ class DashboardIntegrationSpec extends Specification {
         "student"      | "video1b"  | ["video1b"]                                                        | false
         "student"      | "video2b"  | ["video2b"]                                                        | false
         "student"      | "video3b"  | ["video3b"]                                                        | false
+    }
+
+    @Unroll("test viewing statistics (#authenticateAs, #nodes, #views, #since, #expectedViews, #success)")
+    def "test viewing statistics"() {
+        given: "some users"
+        def users = [:]
+        users.teacher1 = UserData.buildTestTeacher("teacher1")
+        users.teacher2 = UserData.buildTestTeacher("teacher2")
+        users.student = UserData.buildStudent("student")
+
+        and: "a tree"
+        def tree = [:]
+        tree.course = CourseData.buildTestCourse("Course", users.teacher1)
+        tree.subject1 = SubjectData.buildTestSubject("Subject1", tree.course)
+        tree.subject2 = SubjectData.buildTestSubject("Subject2", tree.course)
+        tree.video1a = VideoData.buildTestVideo("Video1a", tree.subject1)
+        tree.video2a = VideoData.buildTestVideo("Video2a", tree.subject1)
+        tree.video3a = VideoData.buildTestVideo("Video3a", tree.subject1)
+        tree.video1b = VideoData.buildTestVideo("Video1b", tree.subject2)
+        tree.video2b = VideoData.buildTestVideo("Video2b", tree.subject2)
+        tree.video3b = VideoData.buildTestVideo("Video3b", tree.subject2)
+        tree.course2 = CourseData.buildTestCourse("Course2", users.teacher2)
+        tree.subject3 = SubjectData.buildTestSubject("Subject3", tree.course2)
+        tree.video1c = VideoData.buildTestVideo("Video1c", tree.subject3)
+
+        and: "some events"
+        views.each { it ->
+            (1..it[2]).each { i ->
+                new VisitVideoEvent(
+                        user: users.student.user,
+                        timestamp: System.currentTimeMillis() - it[0],
+                        videoId: tree[it[1]].id
+                ).save(failOnError: true, flush: true)
+            }
+        }
+
+        when: "we authenticate"
+        if (authenticateAs) {
+            UserData.authenticateAsUser(users[authenticateAs].user)
+        }
+
+        and: "we make the call"
+        def call = dashboardService.findViewingStatistics(nodes.collect { tree[it] },
+                since)
+
+        then: "the call might succeed"
+        call.success == success
+
+        and: "the number of data points are correct"
+        !success || call.result.labels.size() == 24
+        !success || call.result.data.size() == 24
+
+        and: "the number of views are correct"
+        !success || call.result.data.sum() == views.findAll { it[1] in nodes && it[0] < since }.collect { it[2] }.sum()
+
+        where:
+        authenticateAs | nodes                  | views                                           | since | success
+        "teacher1"     | ["video1a"]            | [[10000, "video1a", 10], [10000, "video2a", 5]] | 20000 | true
+        "teacher1"     | ["video1a", "video2a"] | [[10000, "video1a", 10], [10000, "video2a", 5]] | 20000 | true
     }
 }

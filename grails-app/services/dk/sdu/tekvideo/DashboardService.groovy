@@ -103,9 +103,34 @@ class DashboardService {
         }
     }
 
-    Map findViewingStatistics(List<Video> leaves, Long period) {
+    /**
+     * Returns viewing statistics for a list of videos over some period of time.
+     *
+     * The views are additive in the way that, the output will count the total number of views for all of the videos,
+     * it will return the individual views for each video.
+     *
+     * All videos must be owned by the authenticated user, otherwise this method will fail.
+     *
+     * The number of data points will always be 24.
+     *
+     * @param leaves    The leaves to gather data from
+     * @param period    How long in the past the data should be gathered (in days)
+     * @return A map containing 'labels' which is a list of strings, and 'data' which is a list of integers containing
+     * the number of views.
+     */
+    ServiceResult<ViewingStatistics> findViewingStatistics(List<Video> leaves, Long period) {
         if (leaves == null) leaves = []
         def videoIds = leaves.stream().map { it.id }.collect(Collectors.toList())
+
+        def ownsAllVideos = leaves
+                .collect { findCourse(it) }
+                .toSet()
+                .stream()
+                .allMatch { courseManagementService.canAccess(it) }
+
+        if (!ownsAllVideos) {
+            return fail(message: "Du har ikke rettigheder til at tilgå dette kursus", suggestedHttpStatus: 403)
+        }
 
         long from = System.currentTimeMillis() - period * 24 * 60 * 60 * 1000
         long to = System.currentTimeMillis()
@@ -120,11 +145,11 @@ class DashboardService {
         }
         long periodInMs = (to - from) / 24
 
-        List labels = []
-        List data = []
+        List<String> labels = []
+        List<Integer> data = []
         // Generate some labels (X-axis)
         long counter = from
-        while (counter < to) {
+        (0..23).each {
             labels.add(TIME_PATTERN.format(new Date(counter).toInstant().atZone(ZoneId.systemDefault())))
             data.add(0)
             counter += periodInMs
@@ -137,7 +162,7 @@ class DashboardService {
             }
         }
 
-        return [labels: labels, data: data]
+        return ok(new ViewingStatistics(labels: labels, data: data))
     }
 
     List<Map> findPopularVideos(List<Video> leaves, Long period) {
