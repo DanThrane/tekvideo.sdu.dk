@@ -195,34 +195,38 @@ class CourseManagementService {
      */
     ServiceResult<Video> createOrEditVideo(CreateOrUpdateVideoCommand command) {
         def teacher = userService.authenticatedTeacher
-        if (teacher) {
-            if (!canAccess(command.subject.course)) {
-                fail "teacherservice.not_allowed"
-            } else {
-                def video = (command.isEditing) ? command.editing : new Video()
-
-                video.name = command.name
-                video.youtubeId = command.youtubeId
-                video.timelineJson = command.timelineJson
-                video.description = command.description
-                video.videoType = command.videoType
-                video.localStatus = command.visible ? NodeStatus.VISIBLE : NodeStatus.INVISIBLE
-                if (video.validate()) {
-                    video.save()
-
-                    if (!command.isEditing) {
-                        SubjectVideo.create(command.subject, video, [save: true])
-                    } else if (command.isEditing && video.subject != command.subject) {
-                        SubjectVideo.findByVideo(video).delete()
-                        SubjectVideo.create(command.subject, video, [save: true])
-                    }
-                    ok video
+        if (command.validate()) {
+            if (teacher) {
+                if (!canAccess(command.subject.course)) {
+                    fail "teacherservice.not_allowed"
                 } else {
-                    fail "teacherservice.field_errors"
+                    def video = (command.isEditing) ? command.editing : new Video()
+
+                    video.name = command.name
+                    video.youtubeId = command.youtubeId
+                    video.timelineJson = command.timelineJson
+                    video.description = command.description
+                    video.videoType = command.videoType
+                    video.localStatus = command.visible ? NodeStatus.VISIBLE : NodeStatus.INVISIBLE
+                    if (video.validate()) {
+                        video.save()
+
+                        if (!command.isEditing) {
+                            SubjectVideo.create(command.subject, video, [save: true])
+                        } else if (command.isEditing && video.subject != command.subject) {
+                            SubjectVideo.findByVideo(video).delete()
+                            SubjectVideo.create(command.subject, video, [save: true])
+                        }
+                        ok video
+                    } else {
+                        fail "teacherservice.field_errors"
+                    }
                 }
+            } else {
+                fail "teacherservice.not_allowed"
             }
         } else {
-            fail "teacherservice.not_allowed"
+            fail "invalid request"
         }
     }
 
