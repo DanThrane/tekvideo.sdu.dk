@@ -22,10 +22,6 @@ class SubjectVideo {
         return result
     }
 
-    static List<Long> findAllVideoIds(Subject subject) {
-        findAllBySubject(subject, [sort: 'weight']).video.id
-    }
-
     static constraints = {
         subject nullable: false
         video nullable: false

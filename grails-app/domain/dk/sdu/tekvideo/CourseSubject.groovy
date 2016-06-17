@@ -20,10 +20,6 @@ class CourseSubject {
         return result
     }
 
-    static List<Long> findSubjectIds(Course course) { // TODO Change for performance
-        findAllByCourse(course, [sourt: 'weight']).subject.id
-    }
-
     static constraints = {
         course nullable: false
         subject nullable: false

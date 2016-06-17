@@ -89,7 +89,12 @@ class CourseManagementService {
      */
     ServiceResult<List<Subject>> getSubjects(NodeStatus status, Course course) {
         if (canAccess(course)) {
-            ok Subject.findAllByIdInListAndLocalStatus(CourseSubject.findSubjectIds(course), status)
+            ok Subject.executeQuery("""
+                SELECT s
+                FROM CourseSubject cs INNER JOIN cs.subject s
+                WHERE cs.course = :course AND s.localStatus = :status
+                ORDER BY cs.weight
+            """, [course: course, status: status])
         } else {
             fail "teacherservice.no_teacher"
         }
@@ -104,7 +109,12 @@ class CourseManagementService {
      */
     ServiceResult<List<Video>> getVideos(NodeStatus status, Subject subject) {
         if (canAccess(subject.course)) {
-            ok Video.findAllByIdInListAndLocalStatus(SubjectVideo.findAllVideoIds(subject), status)
+            ok Video.executeQuery("""
+                SELECT v
+                FROM SubjectVideo sv INNER JOIN sv.video v
+                WHERE sv.subject = :subject AND v.localStatus = :status
+                ORDER BY sv.weight
+            """, [subject: subject, status: status])
         } else {
             fail "teacherservice.no_teacher"
         }
