@@ -220,7 +220,7 @@ var Editor = {};
             $("#addQuestion").click(function () {
                 editingSubject.questions.push({
                     title: "Unavngivet spørgsmål",
-                    timecode: editingSubject.timecode,
+                    timecode: parseInt(player.currentTime()),
                     fields: []
                 });
                 Timeline.render();
