@@ -125,7 +125,6 @@ var InteractiveVideoPlayer = (function () {
         // Workaround for "seeked" event always being fired (see issue #65)
         if (timestamp < this.lastTime) {
             this.lastTime = timestamp; // Without this we get infinite recursion back and forth between this function
-            this.lastTime = timestamp; // Without this we get infinite recursion back and forth between this function
             this.handleSeeked();       // and handleSeeked()
             return;
         }

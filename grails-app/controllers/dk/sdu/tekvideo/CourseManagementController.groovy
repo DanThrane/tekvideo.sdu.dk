@@ -11,6 +11,7 @@ class CourseManagementController {
     UserService userService
     CourseService courseService
     CourseManagementService courseManagementService
+    VideoService videoService
 
     def index() {
         String statusStr = params.status ?: "VISIBLE"
@@ -106,7 +107,9 @@ class CourseManagementController {
         def videos = courseManagementService.getVideos(status, subject)
 
         if (courseManagementService.canAccess(subject.course) && videos.success) {
-            [subject: subject, videos: videos.result, status: status]
+            def meta = videos.result.collect { videoService.getVideoMetaDataSafe(it) }
+
+            [subject: subject, videos: videos.result, meta: meta, status: status]
         } else {
             notAllowedCourse()
         }

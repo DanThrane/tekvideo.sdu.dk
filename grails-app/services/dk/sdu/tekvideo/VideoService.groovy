@@ -1,13 +1,16 @@
 package dk.sdu.tekvideo
 
+import grails.converters.JSON
 import grails.plugin.springsecurity.SpringSecurityUtils
 
-import static dk.sdu.tekvideo.ServiceResult.*
+import static dk.sdu.tekvideo.ServiceResult.fail
+import static dk.sdu.tekvideo.ServiceResult.ok
 
 class VideoService {
     def springSecurityService
     def videoStatisticsService
     def userService
+    def externalVideoHostService
 
     boolean canAccess(Video video) {
         def status = video?.status
@@ -64,6 +67,44 @@ class VideoService {
                     viewCount: videoStatisticsService.retrieveViewBreakdown(it).result?.visits
             )
         }
+    }
+
+    VideoMetaData getVideoMetaDataSafe(Video video) {
+        int subjectCount = 0
+        int questionCount = 0
+        int fieldCount = 0
+        try {
+            List parse = JSON.parse(video.timelineJson)
+
+            subjectCount = parse.size()
+
+            def collectedQuestions = parse.collect { it.questions.size() }
+            questionCount = collectedQuestions ? collectedQuestions.sum() : 0
+
+            def collectedFields = parse.collect {
+                def collectedFields = it.questions.collect { it.fields.size() }
+                return collectedFields ? collectedFields.sum() : 0
+            }
+            fieldCount = collectedFields ? collectedFields.sum() : 0
+        } catch (Exception ignored) {
+            // The timeline may be corrupted in many ways. Better to be safe than sorry in this case.
+            ignored.printStackTrace()
+        }
+
+        def duration = "00:00"
+        try {
+            def info = externalVideoHostService.getVideoInformation(video.youtubeId, video.videoType)
+
+            if (info.success) duration = info.result.duration
+        } catch (Exception ignored) {
+            ignored.printStackTrace()
+        }
+        return new VideoMetaData([
+                subjectCount : subjectCount,
+                questionCount: questionCount,
+                fieldCount   : fieldCount,
+                duration     : duration
+        ])
     }
 
     List<Video> findFeaturedVideos() {

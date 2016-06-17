@@ -80,8 +80,16 @@
                                 </twbs:column>
                             </twbs:row>
                             <twbs:row>
-                                <twbs:column>
+                                <twbs:column md="6">
                                     <markdown:renderHtml><sdu:abbreviate>${video.description}</sdu:abbreviate></markdown:renderHtml>
+                                </twbs:column>
+                                <twbs:column md="6">
+                                    <ul>
+                                        <li><b>Video længde:</b> ${meta[idx].duration}</li>
+                                        <li><b>Antal emner:</b> ${meta[idx].subjectCount}</li>
+                                        <li><b>Antal spørgsmål:</b> ${meta[idx].questionCount}</li>
+                                        <li><b>Antal felter:</b> ${meta[idx].fieldCount}</li>
+                                    </ul>
                                 </twbs:column>
                             </twbs:row>
                             <hr>

@@ -10,6 +10,7 @@ import com.google.api.services.youtube.YouTube
 import grails.converters.JSON
 
 import javax.annotation.PostConstruct
+import java.time.Duration
 
 import static dk.sdu.tekvideo.ServiceResult.*
 
@@ -41,11 +42,28 @@ class ExternalVideoHostService {
         }
     }
 
+    String getFormattedDurationString(long dur) {
+        def durationString = new StringBuilder()
+        int days = dur / (60 * 60 * 24)
+        dur = dur % (60 * 60 * 24)
+        int hours = dur / (60 * 60)
+        dur = dur % (60 * 60)
+        int minutes = dur / 60
+        dur = dur % 60
+        int seconds = dur
+
+        if (days > 0) durationString.append(days.toString().padLeft(2, '0')).append(":")
+        if (days > 0 || hours > 0) durationString.append(hours.toString().padLeft(2, '0')).append(":")
+        durationString.append(minutes.toString().padLeft(2, '0')).append(":")
+        durationString.append(seconds.toString().padLeft(2, '0'))
+        return durationString.toString()
+    }
+
     ServiceResult<Map> getYouTubeVideoInformation(String videoId) {
         try {
-            List videos = youtube.videos().list("snippet")
+            List videos = youtube.videos().list("snippet,contentDetails")
                     .setId(videoId)
-                    .setFields("items(id,snippet/title,snippet/description)")
+                    .setFields("items(id,snippet/title,snippet/description,contentDetails/duration)")
                     .setKey(youtubeApiKey)
                     .execute()
                     .getItems()
@@ -54,9 +72,12 @@ class ExternalVideoHostService {
                 fail "Kunne ikke hente information om denne video!"
             } else {
                 def video = videos[0]
+                def duration = Duration.parse(video.getContentDetails().getDuration())
+
                 ok item: [id         : video.getId(),
                           title      : video.getSnippet().getTitle(),
-                          description: video.getSnippet().getDescription()]
+                          description: video.getSnippet().getDescription(),
+                          duration   : getFormattedDurationString(duration.seconds)]
             }
         } catch (Exception e) {
             e.printStackTrace()
@@ -72,7 +93,8 @@ class ExternalVideoHostService {
             ))
             ok item: [id         : videoId,
                       title      : content.name,
-                      description: content.description]
+                      description: content.description,
+                      duration   : getFormattedDurationString(content.duration as long)]
         } catch (Exception e) {
             e.printStackTrace()
             fail message: "Kunne ikke hente information om denne video!", exception: e
