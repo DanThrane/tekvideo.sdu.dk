@@ -362,8 +362,8 @@
             <g:else>
             Editor.setPublishEndpoint("<g:createLink action="postVideo" />");
             </g:else>
-            <g:if test="${subject != null && !isEditing}">
-            $("#subject").val(${subject});
+            <g:if test="${subject != null}">
+            $("#subject").val(${subject.id});
             </g:if>
             Editor.setVideoInfoEndpoint("<g:createLink controller="videoHost" action="info" />");
 
