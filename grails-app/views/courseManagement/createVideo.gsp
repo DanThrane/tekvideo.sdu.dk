@@ -312,7 +312,7 @@
 
 <div id="fieldTemplate" class="hide">
     <div class="draggableField" data-id="{0}">
-        <strong>{1}</strong>
+        <span></span>
     </div>
 </div>
 

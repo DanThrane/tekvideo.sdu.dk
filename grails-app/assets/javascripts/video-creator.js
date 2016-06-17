@@ -420,15 +420,47 @@ var Editor = {};
         }
 
         function createField(id, fieldObject) {
-            var rawTemplate = $("#fieldTemplate").html().format(id, fieldObject.name);
+            var rawTemplate = $("#fieldTemplate").html().format(id);
             var field = $(rawTemplate);
+            renderField(field, fieldObject);
+            $("#fields").append(field);
+            startEditing();
+            return field;
+        }
+
+        function renderField(field, fieldObject) {
             field.css({
                 minWidth: 90 * (1 / scaleWidth),
                 minHeight: 20 * (1 / scaleHeight)
             });
-            $("#fields").append(field);
-            startEditing();
-            return field;
+
+            var span = field.find("span");
+            span.html("<span></span>");
+
+            var type = "none";
+            if (fieldObject.answer) {
+                type = fieldObject.answer.type;
+            }
+
+            switch (type) {
+                case "equal":
+                    span.text(fieldObject.answer.value);
+                    break;
+                case "between":
+                    span.text(fieldObject.answer.min + " - " + fieldObject.answer.max);
+                    break;
+                case "custom":
+                    span.html('<code>"JS"</code>');
+                    break;
+                case "expression":
+                    span.text(fieldObject.answer.value);
+                    span.mathquill();
+                    break;
+                case "none":
+                    span.addClass("missing");
+                    span.text("Mangler");
+                    break;
+            }
         }
 
         function clearEditingField() {
