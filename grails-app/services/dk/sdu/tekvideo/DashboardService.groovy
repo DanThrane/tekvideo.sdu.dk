@@ -42,7 +42,7 @@ class DashboardService {
      *   <li>The identifier is not a valid number</li>
      * </ul>
      *
-     * @param identifier    The identifier
+     * @param identifier The identifier
      * @return The corresponding node, if successful. Otherwise an appropriate error will be returned
      */
     ServiceResult<Node> nodeFromIdentifier(String identifier) {
@@ -82,7 +82,7 @@ class DashboardService {
      *
      * No ordering of the videos are preserved.
      *
-     * @param node    The node to start searching at
+     * @param node The node to start searching at
      * @return A list of videos (unordered).
      */
     ServiceResult<List<Video>> findLeaves(Node node) {
@@ -113,10 +113,9 @@ class DashboardService {
      *
      * The number of data points will always be 24.
      *
-     * @param leaves    The leaves to gather data from
-     * @param period    How long in the past the data should be gathered (in days)
-     * @return A map containing 'labels' which is a list of strings, and 'data' which is a list of integers containing
-     * the number of views.
+     * @param leaves The leaves to gather data from
+     * @param period How long in the past the data should be gathered (in days)
+     * @return Viewing statistics for the relevant nodes
      */
     ServiceResult<ViewingStatistics> findViewingStatistics(List<Video> leaves, Long period) {
         if (leaves == null) leaves = []
@@ -165,13 +164,36 @@ class DashboardService {
         return ok(new ViewingStatistics(labels: labels, data: data))
     }
 
-    List<Map> findPopularVideos(List<Video> leaves, Long period) {
+    /**
+     * Finds the most popular videos for a given list of videos.
+     *
+     * The most popular videos are determined from the absolute number of hits a video gets. They will be returned
+     * from in order from most popular to least popluar.
+     *
+     * The currently authenticated user must own all the videos, otherwise this method will fail.
+     *
+     * @param leaves The videos to retrieve statistics for
+     * @param period How long ago to look for data (in days). If the period is <= 0, then since the beginning of
+     *                  time will be used.
+     * @return
+     */
+    ServiceResult<List<PopularVideoStatistic>> findPopularVideos(List<Video> leaves, Long period) {
         if (leaves == null) leaves = []
         def videoIds = leaves.stream().map { it.id }.collect(Collectors.toList())
         long from = (period > 0) ? System.currentTimeMillis() - period * 24 * 60 * 60 * 1000 : 0
         long to = System.currentTimeMillis()
 
-        if (!videoIds) return []
+        if (!videoIds) return fail("no videos")
+
+        def ownsAllVideos = leaves
+                .collect { findCourse(it) }
+                .toSet()
+                .stream()
+                .allMatch { courseManagementService.canAccess(it) }
+
+        if (!ownsAllVideos) {
+            return fail(message: "Du har ikke rettigheder til at tilgå dette kursus", suggestedHttpStatus: 403)
+        }
 
         String query = $/
             SELECT
@@ -204,8 +226,7 @@ class DashboardService {
                 event.timestamp <= :to_timestamp
             GROUP BY
                 event.video_id, answers.answerCount, answers.correctAnswers
-            ORDER BY
-                COUNT(*) DESC
+            ORDER BY COUNT(*) DESC
             LIMIT 5;
             /$
 
@@ -216,10 +237,10 @@ class DashboardService {
                 .setLong("to_timestamp", to)
                 .list()
 
-        return resultList.collect {
+        return ok(resultList.collect {
             def video = Video.get(it[0] as Long)
 
-            [
+            new PopularVideoStatistic([
                     "videoId"       : it[0],
                     "videoName"     : video.name,
                     "subjectName"   : video.subject.name,
@@ -227,8 +248,8 @@ class DashboardService {
                     "answerCount"   : it[1] ?: 0,
                     "correctAnswers": it[2] ?: 0,
                     "visits"        : it[3] ?: 0,
-            ]
-        }
+            ])
+        })
     }
 
     List<Map> findRecentComments(List<Video> leaves, Long period) {

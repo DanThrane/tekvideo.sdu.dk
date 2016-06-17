@@ -171,5 +171,85 @@ class DashboardIntegrationSpec extends Specification {
         authenticateAs | nodes                  | views                                           | since | success
         "teacher1"     | ["video1a"]            | [[10000, "video1a", 10], [10000, "video2a", 5]] | 20000 | true
         "teacher1"     | ["video1a", "video2a"] | [[10000, "video1a", 10], [10000, "video2a", 5]] | 20000 | true
+        "teacher2"     | ["video1a", "video2a"] | [[10000, "video1a", 10], [10000, "video2a", 5]] | 20000 | false
+        "teacher2"     | ["video1c", "video2a"] | [[10000, "video1a", 10], [10000, "video2a", 5]] | 20000 | false
+        "teacher2"     | ["video1c"]            | [[10000, "video1c", 10], [10000, "video2a", 5]] | 20000 | true
+        "student"      | ["video1c"]            | [[10000, "video1c", 10], [10000, "video2a", 5]] | 20000 | false
+        "student"      | ["video1a", "video2a"] | [[10000, "video1a", 10], [10000, "video2a", 5]] | 20000 | false
     }
+
+    @Unroll("test finding popular videos (#authenticateAs, #nodes, #views, #since, #success)")
+    def "test finding popular videos"() {
+        given: "some users"
+        def users = [:]
+        users.teacher1 = UserData.buildTestTeacher("teacher1")
+        users.teacher2 = UserData.buildTestTeacher("teacher2")
+        users.student = UserData.buildStudent("student")
+
+        and: "a tree"
+        def tree = [:]
+        tree.course = CourseData.buildTestCourse("Course", users.teacher1)
+        tree.subject1 = SubjectData.buildTestSubject("Subject1", tree.course)
+        tree.subject2 = SubjectData.buildTestSubject("Subject2", tree.course)
+        tree.video1a = VideoData.buildTestVideo("Video1a", tree.subject1)
+        tree.video2a = VideoData.buildTestVideo("Video2a", tree.subject1)
+        tree.video3a = VideoData.buildTestVideo("Video3a", tree.subject1)
+        tree.video1b = VideoData.buildTestVideo("Video1b", tree.subject2)
+        tree.video2b = VideoData.buildTestVideo("Video2b", tree.subject2)
+        tree.video3b = VideoData.buildTestVideo("Video3b", tree.subject2)
+        tree.course2 = CourseData.buildTestCourse("Course2", users.teacher2)
+        tree.subject3 = SubjectData.buildTestSubject("Subject3", tree.course2)
+        tree.video1c = VideoData.buildTestVideo("Video1c", tree.subject3)
+
+        and: "some events"
+        views.each { it ->
+            (1..it[2]).each { i ->
+                new VisitVideoEvent(
+                        user: users.student.user,
+                        timestamp: System.currentTimeMillis() - (24 * 60 * 60 * 1000 * (it[0] as long)) as long,
+                        videoId: tree[it[1]].id
+                ).save(failOnError: true, flush: true)
+
+            }
+        }
+
+        when: "we authenticate"
+        if (authenticateAs) {
+            UserData.authenticateAsUser(users[authenticateAs].user)
+        }
+
+        and: "we make the call"
+        def call = dashboardService.findPopularVideos(nodes.collect { tree[it] } as List<Video>,
+                since as long)
+
+        then: "the call might succeed"
+        call.success == success
+
+        and: "we do not get too many results"
+        !success || call.result.size() <= 5
+
+        and: "we get them out in the correct order"
+        !success || call.result.collect { it.videoId } == nodes.subList(0, result).collect { tree[it].id }
+
+        where:
+        authenticateAs | result | nodes                             | views                                                            | since | success
+        "teacher1"     | 2      | ["video1a", "video2a"]            | [[10, "video1a", 10], [10, "video2a", 5]]                        | 20    | true
+        "teacher1"     | 2      | ["video1a", "video2a"]            | [[10, "video1a", 10], [10, "video2a", 5]]                        | 20    | true
+        "teacher2"     | 2      | ["video1a", "video2a"]            | [[10, "video1a", 10], [10, "video2a", 5]]                        | 20    | false
+        "student"      | 2      | ["video1a", "video2a"]            | [[10, "video1a", 10], [10, "video2a", 5]]                        | 20    | false
+        null           | 2      | ["video1a", "video2a"]            | [[10, "video1a", 10], [10, "video2a", 5]]                        | 20    | false
+        "teacher1"     | 2      | ["video1a", "video2a"]            | [[10, "video1a", 10], [10, "video2a", 5], [10, "video3b", 2]]    | 20    | true
+        "teacher1"     | 3      | ["video1a", "video2a", "video3b"] | [[10, "video1a", 10], [10, "video2a", 5], [10, "video3b", 2]]    | 20    | true
+        "teacher1"     | 2      | ["video1a", "video2a", "video3b"] | [[10, "video1a", 10], [10, "video2a", 5], [100, "video3b", 100]] | 20    | true
+    }
+
+    // find recent comments
+
+    // find students
+
+    // get answers
+
+    // find student activity
+
+
 }
