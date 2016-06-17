@@ -15,9 +15,9 @@ var ViewsPage = (function () {
                     datasets: [
                         {
                             label: "Visninger",
-                            fillColor: "rgba(220,220,220,0.2)",
-                            strokeColor: "rgba(220,220,220,1)",
-                            pointColor: "rgba(220,220,220,1)",
+                            fillColor: "rgba(100,100,100,0.2)",
+                            strokeColor: "rgba(100, 100, 100, 1)",
+                            pointColor: "rgba(100, 100, 100, 1)",
                             pointStrokeColor: "#fff",
                             pointHighlightFill: "#fff",
                             pointHighlightStroke: "rgba(220,220,220,1)",
