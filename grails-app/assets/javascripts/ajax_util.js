@@ -26,6 +26,8 @@ var AjaxUtil = {};
                     if (hasCallbacks && callbacks.complete !== undefined) {
                         callbacks.complete();
                     }
+
+                    setTimeout(function() { button.setDefaultState(); }, 2000);
                 }
             });
         });
