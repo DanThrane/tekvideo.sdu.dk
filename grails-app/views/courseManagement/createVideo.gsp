@@ -353,7 +353,7 @@
 
             <g:if test="${isEditing}">
             $("#videoName").val("${video.name}");
-            $("#description").val("${video.description}");
+            $("#description").val("${video.description.replace("\n", "\\n")}");
             Editor.displayVideo(${video.videoType}, "${video.youtubeId}");
             Editor.Timeline.setTimeline(${raw(video.timelineJson)});
             Editor.setPublishEndpoint("<g:createLink action="postVideo" params="[edit: video.id]" />");
@@ -362,8 +362,11 @@
             <g:else>
             Editor.setPublishEndpoint("<g:createLink action="postVideo" />");
             </g:else>
-            <g:if test="${subject != null}">
+            <g:if test="${subject != null && isEditing}">
             $("#subject").val(${subject.id});
+            </g:if>
+            <g:if test="${subject != null && !isEditing}">
+            $("#subject").val(${subject});
             </g:if>
             Editor.setVideoInfoEndpoint("<g:createLink controller="videoHost" action="info" />");
 
