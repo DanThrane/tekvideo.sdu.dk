@@ -14,4 +14,9 @@ class ServiceError {
      * Indicates if this error was a result of an internal error or a user error
      */
     boolean internal
+
+    @Override
+    String toString() {
+        return "ServiceError($internal, $information, $exception)"
+    }
 }

@@ -86,4 +86,13 @@ class ServiceResult<E> {
         }
     }
 
+    @Override
+    String toString() {
+        if (success) {
+            return "ok($message, $result)"
+        } else {
+            return "fail($message, $error)"
+        }
+    }
+
 }

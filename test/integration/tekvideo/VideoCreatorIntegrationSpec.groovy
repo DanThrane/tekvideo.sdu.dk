@@ -2,6 +2,7 @@ package tekvideo
 
 import dk.sdu.tekvideo.CreateOrUpdateVideoCommand
 import dk.sdu.tekvideo.Subject
+import dk.sdu.tekvideo.Video
 import dk.sdu.tekvideo.data.SubjectData
 import dk.sdu.tekvideo.data.UserData
 import dk.sdu.tekvideo.data.VideoData
@@ -35,16 +36,16 @@ class VideoCreatorIntegrationSpec extends IntegrationSpec {
                 name        : video.name,
                 timelineJson: video.timelineJson,
                 description : video.description,
-                videoType   : video.videoType
+                videoType   : video.videoType,
+                visible     : true
         ])
 
         def result = courseManagementService.createOrEditVideo(command)
 
         then:
         result.success
-        !Subject.get(oldSubject.id).videos
-        Subject.get(newSubject.id).videos.size() == 1
-        Subject.get(newSubject.id).videos[0].name == "The real video name"
+        Video.get(video.id).subject.id == newSubject.id
+        Video.get(video.id).name == "The real video name"
     }
 
     void "test creating a new video"() {
@@ -63,7 +64,8 @@ class VideoCreatorIntegrationSpec extends IntegrationSpec {
                 name        : "Video name",
                 timelineJson: "[]",
                 description : "A video description",
-                videoType   : true
+                videoType   : true,
+                visible     : true
         ])
 
         def result = courseManagementService.createOrEditVideo(command)
