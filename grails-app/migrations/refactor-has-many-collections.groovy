@@ -1,3 +1,9 @@
+import dk.sdu.tekvideo.CourseSubject
+import dk.sdu.tekvideo.Subject
+import dk.sdu.tekvideo.SubjectVideo
+import dk.sdu.tekvideo.Video
+import dk.sdu.tekvideo.Course
+
 databaseChangeLog = {
 	changeSet(author: "Admin (generated)", id: "1462606941717-1") {
 		createTable(tableName: "course_subject") {
@@ -23,6 +29,29 @@ databaseChangeLog = {
 		}
 	}
 
+	changeSet(author: "Dan", id: "migrate course subject relation") {
+        grailsChange {
+            change {
+                int count = 0
+                sql.eachRow("SELECT COUNT(*) FROM subject;") { count = it.count }
+
+                if (count > 0) {
+                    Subject.list().each { Subject subject ->
+                        Long id = null
+                        Integer weight = null
+                        sql.eachRow("SELECT course_id, subjects_idx FROM subject WHERE id = ${subject.id};") {
+                            id = it.course_id
+                            weight = it.subjects_idx
+                        }
+
+                        Course course = Course.get(id)
+                        CourseSubject.create(course, subject, [weight: weight, save: true])
+                    }
+                }
+            }
+        }
+    }
+
 	changeSet(author: "Admin (generated)", id: "1462606941717-2") {
 		createTable(tableName: "subject_video") {
 			column(name: "id", type: "int8") {
@@ -47,7 +76,31 @@ databaseChangeLog = {
 		}
 	}
 
-	changeSet(author: "Admin (generated)", id: "1462606941717-10") {
+    changeSet(author: "Dan", id: "migrate subject video relation") {
+        grailsChange {
+            change {
+                int count = 0
+                sql.eachRow("SELECT COUNT(*) FROM video;") { count = it.count }
+
+                if (count > 0) {
+                    Video.list().each { Video video ->
+                        Long id = null
+                        Integer weight = null
+                        sql.eachRow("SELECT subject_id, videos_idx FROM video WHERE id = ${video.id};") {
+                            id = it.subject_id
+                            weight = it.videos_idx
+                        }
+
+                        Subject subject = Subject.get(id)
+                        SubjectVideo.create(subject, video, [weight: weight, flush: true, save: true])
+                    }
+                }
+            }
+        }
+    }
+
+
+    changeSet(author: "Admin (generated)", id: "1462606941717-10") {
 		dropForeignKeyConstraint(baseTableName: "subject", baseTableSchemaName: "public", constraintName: "fk_sap4lbm82mrwih3wjsymu9l3w")
 	}
 
