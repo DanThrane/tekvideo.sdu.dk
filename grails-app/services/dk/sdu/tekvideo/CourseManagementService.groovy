@@ -475,4 +475,28 @@ class CourseManagementService {
         SubjectVideo.create(subject, newVideo, [save: true])
     }
 
+    ServiceResult<Subject> moveSubject(MoveSubjectCommand command) {
+        if (command.validate()) {
+            def mapping = CourseSubject.findBySubject(command.subject)
+            mapping.course = command.newCourse
+            mapping.weight = command.position
+            mapping.save(flush: true, failOnError: true)
+            ok()
+        } else {
+            fail("Something went wrong")
+        }
+    }
+
+    ServiceResult<Video> moveVideo(MoveVideoCommand command) {
+        if (command.validate()) {
+            def mapping = SubjectVideo.findByVideo(command.video)
+            mapping.subject = command.newSubject
+            mapping.weight = command.position
+            mapping.save(flush: true, failOnError: true)
+            ok()
+        } else {
+            fail("Something went wrong")
+        }
+    }
+
 }
