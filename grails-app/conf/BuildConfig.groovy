@@ -8,6 +8,7 @@ grails.project.source.level = 1.6
 //grails.project.war.file = "target/${appName}-${appVersion}.war"
 
 grails.plugin.location.'grails-twbs-taglibs' = "./grails-twbs-taglibs"
+grails.plugin.location.'grails-spring-security-cas' = "./grails-spring-security-cas"
 
 grails.project.fork = [
     // configure settings for compilation JVM, note that if you alter the Groovy version forked compilation is required

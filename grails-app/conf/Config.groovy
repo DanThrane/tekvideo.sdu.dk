@@ -149,3 +149,11 @@ grails.plugin.springsecurity.ui.password.minLength=4
 grails.plugin.springsecurity.ui.password.maxLength=64
 
 markdown.autoLinks = true
+
+// SDU SSO
+grails.plugin.springsecurity.cas.loginUri = '/login'
+grails.plugin.springsecurity.cas.serviceUrl = 'http://localhost:8080/tekvideo/j_spring_cas_security_check'
+grails.plugin.springsecurity.cas.serverUrlPrefix = 'https://sso.sdu.dk/'
+grails.plugin.springsecurity.cas.casServerUrlPrefix = 'https://sso.sdu.dk/'
+grails.plugin.springsecurity.cas.proxyCallbackUrl = 'http://localhost:8080/tekvideo/secure/receptor'
+grails.plugin.springsecurity.cas.proxyReceptorUrl = '/secure/receptor'
