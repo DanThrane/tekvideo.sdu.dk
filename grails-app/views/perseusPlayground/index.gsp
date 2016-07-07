@@ -338,7 +338,7 @@
             console.log(data);
             $(".video-editor").addClass("hide");
             $("#perseus-editor").removeClass("hide");
-                        var cleanedData = {
+            var cleanedData = {
                 timelineJson: data.timelineJson,
                 youtubeId: data.youtubeId,
                 videoType: data.videoType
