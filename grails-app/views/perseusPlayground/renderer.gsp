@@ -201,8 +201,15 @@
 };
 </script>
 
-<asset:javascript src="perseus/perseus-deps.js" />
+<asset:javascript src="perseus/lib/babel-polyfills.min.js" />
+<asset:javascript src="perseus/lib/underscore.js" />
+<asset:javascript src="perseus/lib/react-with-addons.js" />
 <asset:javascript src="perseus/lib/mathjax/2.1/MathJax.js?config=KAthJax-f3c5d145ec6d4e408f74f28e1aad49db&amp;delayStartupUntil=configured" />
+<asset:javascript src="perseus/lib/katex/katex.js" />
+<asset:javascript src="perseus/lib/mathquill/mathquill-basic.js" />
+<asset:javascript src="perseus/lib/kas.js" />
+<asset:javascript src="perseus/lib/i18n.js" />
+<asset:javascript src="perseus/lib/jquery.qtip.js" />
 
 <asset:javascript src="perseus/test-renderer.js" />
 
