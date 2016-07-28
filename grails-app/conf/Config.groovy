@@ -85,10 +85,11 @@ grails.hibernate.osiv.readonly = false
 environments {
     development {
         grails.logging.jul.usebridge = true
+        grails.serverURL = "http://localhost:8080/tekvideo"
     }
     production {
         grails.logging.jul.usebridge = false
-        grails.serverURL = "http://tekvideo.sdu.dk/"
+        grails.serverURL = "http://tekvideo.sdu.dk"
     }
 }
 
@@ -152,8 +153,8 @@ markdown.autoLinks = true
 
 // SDU SSO
 grails.plugin.springsecurity.cas.loginUri = '/login'
-grails.plugin.springsecurity.cas.serviceUrl = 'http://localhost:8080/tekvideo/j_spring_cas_security_check'
+grails.plugin.springsecurity.cas.serviceUrl = "${grails.serverURL}/j_spring_cas_security_check"
+grails.plugin.springsecurity.cas.proxyCallbackUrl = "${grails.serverURL}/secure/receptor"
 grails.plugin.springsecurity.cas.serverUrlPrefix = 'https://sso.sdu.dk/'
 grails.plugin.springsecurity.cas.casServerUrlPrefix = 'https://sso.sdu.dk/'
-grails.plugin.springsecurity.cas.proxyCallbackUrl = 'http://localhost:8080/tekvideo/secure/receptor'
 grails.plugin.springsecurity.cas.proxyReceptorUrl = '/secure/receptor'
