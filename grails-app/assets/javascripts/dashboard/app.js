@@ -65,6 +65,10 @@ $(function () {
             $spinner.addClass("hide");
         };
 
+        exports.refresh = function() {
+            onDataChange();
+        };
+
         function onDataChange() {
             pages[exports.activePage].onSelect(exports.root, $dataRange.val());
         }

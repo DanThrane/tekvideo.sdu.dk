@@ -117,7 +117,7 @@ class DashboardService {
      * @param period How long in the past the data should be gathered (in days)
      * @return Viewing statistics for the relevant nodes
      */
-    ServiceResult<ViewingStatistics> findViewingStatistics(List<Video> leaves, Long period) {
+    ServiceResult<ViewingStatistics> findViewingStatistics(List<Video> leaves, Long period, Boolean cumulative) {
         if (leaves == null) leaves = []
         def videoIds = leaves.stream().map { it.id }.collect(Collectors.toList())
 
@@ -161,6 +161,11 @@ class DashboardService {
             }
         }
 
+        if (cumulative) {
+            (1..23).each { index ->
+                data[index] += data[index - 1]
+            }
+        }
         return ok(new ViewingStatistics(labels: labels, data: data))
     }
 

@@ -12,12 +12,12 @@ class DashboardController {
         [courses: courseManagementService.activeCourses.result]
     }
 
-    def visits(String identifier, Integer period) {
+    def visits(String identifier, Integer period, Boolean cumulative) {
         def node = dashboardService.nodeFromIdentifier(identifier)
         if (node.success) {
             def leaves = dashboardService.findLeaves(node.result)
             if (leaves.success) {
-                def stats = dashboardService.findViewingStatistics(leaves.result, period)
+                def stats = dashboardService.findViewingStatistics(leaves.result, period, cumulative)
                 if (stats.success) {
                     render stats.result as JSON
                 } else {

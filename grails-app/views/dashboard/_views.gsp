@@ -5,6 +5,7 @@
             <twbs:column md="6">
                 <twbs:pageHeader><h3>Visninger</h3></twbs:pageHeader>
                 <canvas id="my-chart" style="width: 100%; height: 500px"></canvas>
+                <twbs:checkbox labelText="Cumulative stats" name="cumulative" />
                 <div id="views-no-data" class="hide">
                     Der er ingen kommentarer til dette emne.
                 </div>

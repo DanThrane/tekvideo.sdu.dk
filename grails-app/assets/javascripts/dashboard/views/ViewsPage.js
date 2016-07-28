@@ -1,14 +1,23 @@
 var ViewsPage = (function () {
+    var cumulativeCheckbox;
+
     function ViewsPage(app) {
         this.app = app;
         this.viewsChart = null;
+
+        cumulativeCheckbox = $("#cumulative");
+        cumulativeCheckbox.click(function() {
+            app.refresh();
+        });
     }
 
     ViewsPage.prototype.onSelect = function (root, period) {
         var self = this;
         this.app.displaySpinner();
         $("#error-message").removeClass("hide").hide();
-        var chartPromise = $.getJSON(baseUrl + "dashboard/visits?identifier=" + root + "&period=" + period,
+        var cumulative = cumulativeCheckbox.is(":checked");
+        var chartPromise = $.getJSON(baseUrl + "dashboard/visits?identifier=" + root + "&period=" + period +
+            "&cumulative=" + cumulative,
             function (data) {
                 var chartData = {
                     labels: data.labels,
