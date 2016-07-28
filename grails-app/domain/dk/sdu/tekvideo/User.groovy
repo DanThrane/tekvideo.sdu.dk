@@ -6,10 +6,11 @@ class User {
     String username
     String password
     String email
-    boolean enabled = true
-    boolean accountExpired
-    boolean accountLocked
-    boolean passwordExpired
+    Boolean enabled = true
+    Boolean accountExpired = false
+    Boolean accountLocked = false
+    Boolean passwordExpired = false
+    Boolean isCas = false
 
     String elearnId
     String realName
@@ -17,7 +18,7 @@ class User {
     static transients = ['springSecurityService']
 
     static constraints = {
-        username    blank: false, unique: true
+        username    blank: false, unique: ["isCas"]
         password    blank: false
         email       nullable: true, blank: false
         elearnId    nullable: true, blank: false

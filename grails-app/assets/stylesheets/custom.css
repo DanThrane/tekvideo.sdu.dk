@@ -545,3 +545,8 @@ body {
 #tree-container {
     overflow-y: hidden;
 }
+
+.sdu-logo-button {
+    height: 20px;
+    margin-top: -4px;
+}
