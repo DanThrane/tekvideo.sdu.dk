@@ -41,13 +41,13 @@
             </twbs:row>
         </twbs:form>
     </twbs:column>
-    %{--<twbs:column md="4">--}%
-        %{--<i>Eller ved hjælp af:</i>--}%
-        %{--<twbs:linkButton controller="sso" action="index" style="${ButtonStyle.DEFAULT}" block="true">--}%
-            %{--<asset:image src="sdu_branch.png" class="sdu-logo-button" /> SDU SSO--}%
-        %{--</twbs:linkButton>--}%
-        %{--<div style="height: 20px;"></div>--}%
-    %{--</twbs:column>--}%
+    <twbs:column md="4">
+        <i>Eller ved hjælp af:</i>
+        <twbs:linkButton controller="sso" action="index" style="${ButtonStyle.DEFAULT}" block="true">
+            <asset:image src="sdu_branch.png" class="sdu-logo-button" /> SDU SSO
+        </twbs:linkButton>
+        <div style="height: 20px;"></div>
+    </twbs:column>
 </twbs:row>
 
 </body>
