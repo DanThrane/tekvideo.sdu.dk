@@ -14,14 +14,14 @@ var Editor = {};
     var isEditing = false;
     var editingId = null;
     var isYouTube = false;
+    var attributesStack;
 
     var scaleHeight;
     var scaleWidth;
 
     var BASELINE_WIDTH = 640; // Wide 360p (Standard on YouTube)
     var BASELINE_HEIGHT = 360;
-
-    var attributesStack = new CardStack("#attributes-stack");
+    var onPublish = function() { return true; };
 
     function initSize() {
         var maxWidth = -1;
@@ -38,6 +38,9 @@ var Editor = {};
         scaleWidth = 1 / (maxWidth / BASELINE_WIDTH);
     }
 
+    function setOnPublish(callback) {
+        onPublish = callback;
+    }
 
     function setPublishEndpoint(endpoint) {
         publishEndpoint = endpoint;
@@ -109,7 +112,6 @@ var Editor = {};
     }
 
     function publishVideo() {
-        MainPanel.showPublishing();
         var name = $("#videoName").val();
         var description = $("#description").val();
         var youtubeId = videoId;
@@ -128,6 +130,11 @@ var Editor = {};
             subject: $("#subject").val(),
             visible: $("#visible").is(":checked")
         };
+
+        var continuePublishing = onPublish(data);
+        if (!continuePublishing) return;
+
+        MainPanel.showPublishing();
 
         if (isEditing) {
             data.editing = editingId;
@@ -151,6 +158,8 @@ var Editor = {};
     }
 
     function init() {
+        attributesStack = new CardStack("#attributes-stack");
+        MainPanel.init();
         Fields.init();
         Questions.init();
         Preview.init();
@@ -252,11 +261,9 @@ var Editor = {};
         var FIELD_NAME = "#fieldName";
         var FIELD_TYPE = "#fieldType";
 
-        var questionStack = new CardStack("#field-type-stack");
         var editor = null;
         var defaultEditorText = null;
-
-
+        var questionStack;
 
         /**
          * Displays the card item which holds attribute for the currently selected field type
@@ -479,6 +486,8 @@ var Editor = {};
         }
 
         function init() {
+            questionStack = new CardStack("#field-type-stack");
+
             showSelectedFieldTypeAttributes();
 
             $("#fieldType").change(function () {
@@ -617,8 +626,13 @@ var Editor = {};
 
     var MainPanel = {};
     (function (exports) {
-        var mainStack = new CardStack("#main-panel-stack");
-        var sidebarStack = new CardStack("#sidebar-stack");
+        var mainStack, sidebarStack;
+
+        function init() {
+            console.log("init");
+            mainStack = new CardStack("#main-panel-stack");
+            sidebarStack = new CardStack("#sidebar-stack");
+        }
 
         function showEditor() {
             mainStack.select(".creator-card");
@@ -634,6 +648,7 @@ var Editor = {};
             mainStack.select(".publish-card");
         }
 
+        exports.init = init;
         exports.showEditor = showEditor;
         exports.showPreview = showPreview;
         exports.showPublishing = showPublishing;
@@ -768,6 +783,7 @@ var Editor = {};
     })(Timeline);
 
     exports.init = init;
+    exports.setOnPublish = setOnPublish;
     exports.Fields = Fields;
     exports.Questions = Questions;
     exports.Preview = Preview;

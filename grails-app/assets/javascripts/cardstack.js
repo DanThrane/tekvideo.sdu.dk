@@ -1,5 +1,6 @@
 var CardStack = function(selector, useTransition) {
     this.element = $(selector);
+    console.log("Element: ", this.element);
 
     // Adds the relevant transition class. The "no-transition" class is always added, to avoid an initial "hiding"
     // animation
