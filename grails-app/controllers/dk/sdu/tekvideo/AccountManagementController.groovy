@@ -1,5 +1,6 @@
 package dk.sdu.tekvideo
 
+import grails.converters.JSON
 import org.springframework.security.access.annotation.Secured
 
 /**
@@ -11,7 +12,7 @@ class AccountManagementController {
     def accountManagementService
     def springSecurityService
 
-    static allowedMethods = [updatePassword: "POST", updateElearn: "POST"]
+    static allowedMethods = [updatePassword: "POST", updateElearn: "POST", updateUser: "POST"]
 
     @Secured(["ROLE_TEACHER", "ROLE_STUDENT"])
     def index() {
@@ -61,6 +62,20 @@ class AccountManagementController {
      */
     @Secured("ROLE_TEACHER")
     def manage() {
-        [users: User.list()]
+        []
+    }
+
+    @Secured("ROLE_TEACHER")
+    def users() {
+        def result = accountManagementService.retrieveUserData()
+        response.status = result.suggestedHttpStatus
+        render result as JSON
+    }
+
+    @Secured("ROLE_TEACHER")
+    def updateUser(UpdateUserCommand command) {
+        def result = accountManagementService.updateUser(command)
+        response.status = result.suggestedHttpStatus
+        render result as JSON
     }
 }

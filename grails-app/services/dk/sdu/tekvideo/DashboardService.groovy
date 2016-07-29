@@ -136,7 +136,9 @@ class DashboardService {
         List<VisitVideoEvent> events
         if (period <= 0) {
             events = VisitVideoEvent.findAllByVideoIdInList(videoIds).findAll { it != null }
-            from = events.min { it.timestamp }.timestamp
+            if (!(events == null || events.isEmpty())) {
+                from = events.min { it.timestamp }.timestamp
+            }
         } else {
             events = VisitVideoEvent.findAllByVideoIdInListAndTimestampBetween(videoIds, from, to).findAll {
                 it != null

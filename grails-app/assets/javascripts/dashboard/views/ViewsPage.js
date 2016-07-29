@@ -7,6 +7,7 @@ var ViewsPage = (function () {
 
         cumulativeCheckbox = $("#cumulative");
         cumulativeCheckbox.click(function() {
+            console.log("Refreshing");
             app.refresh();
         });
     }

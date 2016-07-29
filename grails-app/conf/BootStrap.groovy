@@ -14,6 +14,7 @@ class BootStrap {
         JSON.registerObjectMarshaller(AnswerQuestionEvent, AnswerQuestionEvent.jsonMarshaller)
         JSON.registerObjectMarshaller(Video, Video.jsonMarshaller)
         JSON.registerObjectMarshaller(Student, Student.jsonMarshaller)
+        JSON.registerObjectMarshaller(User, User.jsonMarshaller)
 
         environments {
             development {

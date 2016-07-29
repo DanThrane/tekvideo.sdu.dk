@@ -1,5 +1,7 @@
 package dk.sdu.tekvideo
 
+import org.apache.http.HttpStatus
+
 import static dk.sdu.tekvideo.ServiceResult.ok
 import static dk.sdu.tekvideo.ServiceResult.fail
 
@@ -8,6 +10,7 @@ import static dk.sdu.tekvideo.ServiceResult.fail
  */
 class AccountManagementService {
     def springSecurityService
+    def userService
 
     /**
      * Updates the user's e-learn ID.
@@ -65,5 +68,59 @@ class AccountManagementService {
 
     private boolean checkPassword(String current, String newPassword) {
         springSecurityService.passwordEncoder.isPasswordValid(current, newPassword, null)
+    }
+
+    ServiceResult<List<User>> retrieveUserData() {
+        def teacher = userService.authenticatedTeacher
+        if (teacher) {
+            return ok(User.list())
+        } else {
+            return fail(message: "Not allowed", suggestedHttpStatus: HttpStatus.SC_FORBIDDEN)
+        }
+    }
+
+    ServiceResult<Void> updateUser(UpdateUserCommand command) {
+        def teacher = userService.authenticatedTeacher
+        if (teacher) {
+            if (command.validate()) {
+                User user = User.findByUsernameAndIsCas(command.username, command.isCas)
+                user.realName = command.realName
+                user.email = command.email
+                user.elearnId = command.elearnId
+
+                Set<Role> mappedRoles = command.roles.collect { Role.findByAuthority(it) }.toSet()
+                boolean hasBadRoles = mappedRoles.any { it == null }
+                if (hasBadRoles) {
+                    return fail(message: "Bad request (Some roles does not exist)", suggestedHttpStatus: HttpStatus.SC_BAD_REQUEST)
+                } else {
+                    Set<Role> existingRoles = UserRole.findAllByUser(user).role.toSet()
+                    Set<Role> toBeRemoved = new HashSet(existingRoles)
+                    Set<Role> toBeAdded = new HashSet()
+
+                    for (def role : mappedRoles) {
+                        toBeRemoved.remove(role)
+                        if (!existingRoles.contains(role)) {
+                            toBeAdded.add(role)
+                        }
+                    }
+
+                    for (def role : toBeRemoved) {
+                        UserRole.remove(user, role)
+                    }
+
+                    for (def role : toBeAdded) {
+                        UserRole.create(user, role)
+                    }
+                }
+
+                user.save(flush: true)
+                return ok()
+            } else {
+                println command.errors
+                return fail(message: "Bad request (Invalid)", suggestedHttpStatus: HttpStatus.SC_BAD_REQUEST)
+            }
+        } else {
+            return fail(message: "Forbidden", suggestedHttpStatus: HttpStatus.SC_FORBIDDEN)
+        }
     }
 }

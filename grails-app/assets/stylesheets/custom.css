@@ -550,3 +550,7 @@ body {
     height: 20px;
     margin-top: -4px;
 }
+
+label {
+    font-weight: bold;
+}
