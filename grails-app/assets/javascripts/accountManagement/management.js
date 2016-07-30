@@ -239,7 +239,6 @@ $(function () {
         }
         for (var i = 0; i < user.roles.length; i++) {
             var checkbox = $editRoleCheckboxes[user.roles[i]];
-            console.log(checkbox);
             if (checkbox) {
                 checkbox.prop("checked", true);
             }
@@ -256,7 +255,6 @@ $(function () {
     }
 
     function onEditSave() {
-        console.log("Saving user. Was editing: " + editingUser.username);
         var roles = [];
         for (var i = 0; i < ROLES.length; i++) {
             var role = ROLES[i];
@@ -277,12 +275,7 @@ $(function () {
 
         updateEditingUser(request);
 
-        Util.postJson(saveEndpoint, request, {
-            success: function() {
-                console.log("Yay!");
-            }
-        });
-
+        Util.postJson(saveEndpoint, request, {});
         displayUsers();
     }
 

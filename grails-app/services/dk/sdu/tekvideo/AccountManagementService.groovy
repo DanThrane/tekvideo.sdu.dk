@@ -15,7 +15,7 @@ class AccountManagementService {
     /**
      * Updates the user's e-learn ID.
      *
-     * @param command    The update command
+     * @param command The update command
      * @return A service result, indicating success or failure along with an appreciate message.
      */
     ServiceResult<Void> updateElearn(UpdateElearnCommand command) {
@@ -37,7 +37,7 @@ class AccountManagementService {
      * Updates the user's password. This will validate the command, to require that the password is correctly
      * listed twice, and that the new password is valid according to the security module's constraints.
      *
-     * @param command    The update command
+     * @param command The update command
      * @return A service result, indicating success or failure along with an appreciate message.
      */
     ServiceResult<Void> updatePassword(UpdatePasswordCommand command) {
@@ -91,7 +91,8 @@ class AccountManagementService {
                 Set<Role> mappedRoles = command.roles.collect { Role.findByAuthority(it) }.toSet()
                 boolean hasBadRoles = mappedRoles.any { it == null }
                 if (hasBadRoles) {
-                    return fail(message: "Bad request (Some roles does not exist)", suggestedHttpStatus: HttpStatus.SC_BAD_REQUEST)
+                    return fail(message: "Bad request (Some roles does not exist)",
+                            suggestedHttpStatus: HttpStatus.SC_BAD_REQUEST)
                 } else {
                     Set<Role> existingRoles = UserRole.findAllByUser(user).role.toSet()
                     Set<Role> toBeRemoved = new HashSet(existingRoles)
@@ -105,11 +106,11 @@ class AccountManagementService {
                     }
 
                     for (def role : toBeRemoved) {
-                        UserRole.remove(user, role)
+                        removeRoleFromUser(user, role)
                     }
 
                     for (def role : toBeAdded) {
-                        UserRole.create(user, role)
+                        addRoleToUser(user, role)
                     }
                 }
 
@@ -121,6 +122,39 @@ class AccountManagementService {
             }
         } else {
             return fail(message: "Forbidden", suggestedHttpStatus: HttpStatus.SC_FORBIDDEN)
+        }
+    }
+
+
+    private void addRoleToUser(User user, Role role) {
+        // TODO This user creation logic might be needed elsewhere. Might want to consider refactoring these into a
+        // more general area, such that these rules are properly enforced.
+        UserRole.create(user, role)
+
+        switch (role.authority) {
+            case "ROLE_STUDENT":
+                def student = new Student(user: user)
+                student.save(flush: true)
+                break
+            case "ROLE_TEACHER":
+                def teacher = new Teacher(user: user, alias: user.username)
+                teacher.save(flush: true)
+                break
+        }
+    }
+
+    private void removeRoleFromUser(User user, Role role) {
+        UserRole.remove(user, role)
+
+        switch (role.authority) {
+            case "ROLE_STUDENT":
+                def student = Student.findByUser(user)
+                student?.delete()
+                break
+            case "ROLE_TEACHER":
+                def teacher = Teacher.findByUser(user)
+                teacher?.delete()
+                break
         }
     }
 }

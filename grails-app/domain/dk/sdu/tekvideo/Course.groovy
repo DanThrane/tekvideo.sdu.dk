@@ -42,4 +42,11 @@ class Course implements Node {
     Node getParent() {
         null
     }
+
+    def beforeDelete() {
+        CourseStudent.withNewSession {
+            def join = CourseStudent.findAllByCourse(this)
+            join.each { it.delete(flush: true) }
+        }
+    }
 }

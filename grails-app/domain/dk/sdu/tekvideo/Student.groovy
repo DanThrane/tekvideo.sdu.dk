@@ -12,4 +12,12 @@ class Student {
                 username: it.user.username
         ]
     }
+
+    def beforeDelete() {
+        CourseStudent.withNewSession {
+            def join = CourseStudent.findAllByStudent(this)
+            join.each { it.delete(flush: true) }
+        }
+    }
+
 }

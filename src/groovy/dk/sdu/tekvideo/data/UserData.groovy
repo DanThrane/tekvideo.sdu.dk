@@ -30,7 +30,14 @@ class UserData {
         SpringSecurityUtils.reauthenticate(teacher.user.username, null)
     }
 
-    static User buildUser(Map attrs) {
+    static void buildRoles() {
+        def teacherRole = Role.findByAuthority("ROLE_TEACHER") ?: new Role(authority: "ROLE_TEACHER")
+                .save(flush: true, failOnError: true)
+        def studentRole = Role.findByAuthority("ROLE_STUDENT") ?: new Role(authority: "ROLE_STUDENT")
+                .save(flush: true, failOnError: true)
+    }
+
+    static User buildUser(Map attrs = [:]) {
         new User(
                 username: attrs.username ?: (attrs.prefix ?: "User") + "_" + idx.incrementAndGet(),
                 password: attrs.password ?: "password",
@@ -41,8 +48,11 @@ class UserData {
     }
 
     static Student buildStudent(String prefix = "Student") {
-        new Student(
-                user: buildUser(prefix: prefix)
-        ).save(flush: true, failOnError: true)
+        def user = buildUser(prefix: prefix)
+        def studentRole = Role.findByAuthority("ROLE_STUDENT") ?: new Role(authority: "ROLE_STUDENT")
+                .save(flush: true, failOnError: true)
+        UserRole.create(user, studentRole, true)
+
+        return new Student(user: user).save(flush: true, failOnError: true)
     }
 }
