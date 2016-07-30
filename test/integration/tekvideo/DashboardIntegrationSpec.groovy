@@ -155,7 +155,7 @@ class DashboardIntegrationSpec extends Specification {
 
         and: "we make the call"
         def call = dashboardService.findViewingStatistics(nodes.collect { tree[it] },
-                since)
+                since, false)
 
         then: "the call might succeed"
         call.success == success
