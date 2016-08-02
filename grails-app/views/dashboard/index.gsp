@@ -5,7 +5,7 @@
 <head>
     <title>Mine kurser</title>
     <meta name="layout" content="main_fluid"/>
-    <script src="//cdnjs.cloudflare.com/ajax/libs/Chart.js/1.0.2/Chart.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.2.1/Chart.bundle.min.js"></script>
     <sdu:requireAjaxAssets/>
 </head>
 

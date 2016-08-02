@@ -6,7 +6,6 @@ var AnswersPage = (function () {
     }
 
     AnswersPage.prototype.onSelect = function (root, period) {
-        console.log("hello");
         var self = this;
         self.app.displaySpinner();
 

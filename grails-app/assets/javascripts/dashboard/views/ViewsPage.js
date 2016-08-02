@@ -20,26 +20,27 @@ var ViewsPage = (function () {
         var chartPromise = $.getJSON(baseUrl + "dashboard/visits?identifier=" + root + "&period=" + period +
             "&cumulative=" + cumulative,
             function (data) {
-                var chartData = {
-                    labels: data.labels,
-                    datasets: [
-                        {
+                var config = {
+                    type: "line",
+                    data: {
+                        labels: data.labels,
+                        datasets: [{
                             label: "Visninger",
-                            fillColor: "rgba(100,100,100,0.2)",
-                            strokeColor: "rgba(100, 100, 100, 1)",
-                            pointColor: "rgba(100, 100, 100, 1)",
-                            pointStrokeColor: "#fff",
-                            pointHighlightFill: "#fff",
-                            pointHighlightStroke: "rgba(220,220,220,1)",
-                            data: data.data
-                        }
-                    ]
+                            data: data.data,
+                            fill: true,
+                            borderDash: [1]
+                        }]
+                    },
+                    options: {
+                        responsive: true
+                    }
                 };
+
                 var ctx = $("#my-chart").get(0).getContext("2d");
                 if (self.viewsChart !== null) {
                     self.viewsChart.destroy();
                 }
-                self.viewsChart = new Chart(ctx).Line(chartData);
+                self.viewsChart = new Chart(ctx, config);
 
                 if (!data.data) {
                     $("#views-no-data").removeClass("hide");

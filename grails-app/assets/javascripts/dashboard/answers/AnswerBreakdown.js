@@ -3,10 +3,6 @@ var AnswerBreakdown = (function () {
         "#009688", "#4CAF50", "#8BC34A", "#CDDC39", "#FFEB3B", "#FFC107", "#FF9800", "#FF5722", "#795548",
         "#9E9E9E", "#607D8B"];
 
-    var HIGHLIGHT_COLORS = ["#EF5350", "#EC407A", "#AB47BC", "#7E57C2", "#5C6BC0", "#42A5F5", "#29B6F6",
-        "#26C6DA", "#26A69A", "#66BB6A", "#9CCC65", "#D4E157", "#FFEE58", "#FFCA28", "#FFA726", "#FF7043",
-        "#8D6E63", "#BDBDBD", "#78909C"];
-
     function AnswerBreakdown(answerPage, app, video, students, period) {
         this.answerPage = answerPage;
         this.video = video;
@@ -17,6 +13,7 @@ var AnswerBreakdown = (function () {
         this.period = period;
         this.app = app;
         this.player = null;
+        this.chart = null;
     }
 
     AnswerBreakdown.prototype.init = function () {
@@ -122,15 +119,32 @@ var AnswerBreakdown = (function () {
         var ctx = this.element.find(".histogram").get(0).getContext("2d");
         var prep = prepareAnswerAnalysis(ourAnswers);
         var data = [];
+        var backgroundColor = [];
+        var labels = [];
+        var config = {
+            type: "pie",
+            data: {
+                datasets: [{
+                    data: data,
+                    backgroundColor: backgroundColor
+                }],
+                labels: labels
+            },
+            options: {
+                responsive: true
+            }
+        };
+
         for (var i = 0; i < prep.labels.length; i++) {
-            data.push({
-                value: prep.count[i],
-                color: COLORS[i],
-                highlight: HIGHLIGHT_COLORS[i],
-                label: "Svar '" + prep.labels[i] + "'"
-            });
+            data.push(prep.count[i]);
+            labels.push("Svar '" + prep.labels[i] + "'");
+            backgroundColor.push(COLORS[i]);
         }
-        var chart = new Chart(ctx).Pie(data);
+
+        if (this.chart !== null) {
+            this.chart.destroy();
+        }
+        this.chart = new Chart(ctx, config);
 
         var fields = "";
         for (var i = 0; i < question.fields.length; i++) {
