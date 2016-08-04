@@ -114,10 +114,12 @@ class DashboardService {
      * The number of data points will always be 24.
      *
      * @param leaves The leaves to gather data from
-     * @param period How long in the past the data should be gathered (in days)
+     * @param periodFrom From when data should be gathered (timestamp [is milliseconds])
+     * @param periodTo Until when data should be gathered (timestamp [is milliseconds])
      * @return Viewing statistics for the relevant nodes
      */
-    ServiceResult<ViewingStatistics> findViewingStatistics(List<Video> leaves, Long period, Boolean cumulative) {
+    ServiceResult<ViewingStatistics> findViewingStatistics(List<Video> leaves, Long periodFrom, Long periodTo,
+                                                           Boolean cumulative) {
         if (leaves == null) leaves = []
         def videoIds = leaves.stream().map { it.id }.collect(Collectors.toList())
 
@@ -131,25 +133,16 @@ class DashboardService {
             return fail(message: "Du har ikke rettigheder til at tilgå dette kursus", suggestedHttpStatus: 403)
         }
 
-        long from = System.currentTimeMillis() - period * 24 * 60 * 60 * 1000
-        long to = System.currentTimeMillis()
         List<VisitVideoEvent> events
-        if (period <= 0) {
-            events = VisitVideoEvent.findAllByVideoIdInList(videoIds).findAll { it != null }
-            if (!(events == null || events.isEmpty())) {
-                from = events.min { it.timestamp }.timestamp
-            }
-        } else {
-            events = VisitVideoEvent.findAllByVideoIdInListAndTimestampBetween(videoIds, from, to).findAll {
-                it != null
-            }
+        events = VisitVideoEvent.findAllByVideoIdInListAndTimestampBetween(videoIds, periodFrom, periodTo).findAll {
+            it != null
         }
-        long periodInMs = (to - from) / 24
+        long periodInMs = (periodTo - periodFrom) / 24
 
         List<String> labels = []
         List<Integer> data = []
         // Generate some labels (X-axis)
-        long counter = from
+        long counter = periodFrom
         (0..23).each {
             labels.add(TIME_PATTERN.format(new Date(counter).toInstant().atZone(ZoneId.systemDefault())))
             data.add(0)
@@ -157,7 +150,7 @@ class DashboardService {
         }
         events.each {
             long time = it.timestamp
-            int index = (time - from) / periodInMs
+            int index = (time - periodFrom) / periodInMs
             if (index > 0) {
                 data[index]++
             }
@@ -180,15 +173,13 @@ class DashboardService {
      * The currently authenticated user must own all the videos, otherwise this method will fail.
      *
      * @param leaves The videos to retrieve statistics for
-     * @param period How long ago to look for data (in days). If the period is <= 0, then since the beginning of
-     *                  time will be used.
+     * @param periodFrom From when data should be gathered (timestamp [is milliseconds])
+     * @param periodTo Until when data should be gathered (timestamp [is milliseconds])
      * @return
      */
-    ServiceResult<List<PopularVideoStatistic>> findPopularVideos(List<Video> leaves, Long period) {
+    ServiceResult<List<PopularVideoStatistic>> findPopularVideos(List<Video> leaves, Long periodFrom, Long periodTo) {
         if (leaves == null) leaves = []
         def videoIds = leaves.stream().map { it.id }.collect(Collectors.toList())
-        long from = (period > 0) ? System.currentTimeMillis() - period * 24 * 60 * 60 * 1000 : 0
-        long to = System.currentTimeMillis()
 
         if (!videoIds) return fail("no videos")
 
@@ -240,8 +231,8 @@ class DashboardService {
         def resultList = sessionFactory.currentSession
                 .createSQLQuery(query)
                 .setParameterList("video_ids", videoIds)
-                .setLong("from_timestamp", from)
-                .setLong("to_timestamp", to)
+                .setLong("from_timestamp", periodFrom)
+                .setLong("to_timestamp", periodTo)
                 .list()
 
         return ok(resultList.collect {
@@ -259,11 +250,9 @@ class DashboardService {
         })
     }
 
-    List<Map> findRecentComments(List<Video> leaves, Long period) {
+    List<Map> findRecentComments(List<Video> leaves, Long periodFrom, Long periodTo) {
         if (leaves == null) leaves = []
         def videoIds = leaves.stream().map { it.id }.collect(Collectors.toList())
-        long from = (period > 0) ? System.currentTimeMillis() - period * 24 * 60 * 60 * 1000 : 0
-        long to = System.currentTimeMillis()
 
         String query = $/
             SELECT
@@ -293,8 +282,8 @@ class DashboardService {
         def resultList = sessionFactory.currentSession
                 .createSQLQuery(query)
                 .setParameterList("video_ids", videoIds)
-                .setLong("from_timestamp", (long) (from / 1000))
-                .setLong("to_timestamp", (long) (to / 1000))
+                .setLong("from_timestamp", (long) (periodFrom / 1000))
+                .setLong("to_timestamp", (long) (periodTo / 1000))
                 .list()
 
         return resultList.collect {
@@ -315,12 +304,10 @@ class DashboardService {
         return CourseStudent.findAllByCourse(findCourse(node)).student // TODO Don't think this is efficient
     }
 
-    ServiceResult<List<AnswerQuestionEvent>> getAnswers(Video video, Long period) {
+    ServiceResult<List<AnswerQuestionEvent>> getAnswers(Video video, Long periodFrom, Long periodTo) {
         if (video) {
             if (courseManagementService.canAccess(video.subject.course)) {
-                long from = (period > 0) ? System.currentTimeMillis() - period * 24 * 60 * 60 * 1000 : 0
-                long to = System.currentTimeMillis()
-                ok item: AnswerQuestionEvent.findAllByVideoIdAndTimestampBetween(video.id, from, to)
+                ok item: AnswerQuestionEvent.findAllByVideoIdAndTimestampBetween(video.id, periodFrom, periodTo)
             } else {
                 fail message: "You are not authorized to access this video!", suggestedHttpStatus: 403
             }
@@ -329,14 +316,11 @@ class DashboardService {
         }
     }
 
-    ServiceResult<List<Map>> findStudentActivity(Node node, List<Video> leaves, Long period) {
+    ServiceResult<List<Map>> findStudentActivity(Node node, List<Video> leaves, Long periodFrom, Long periodTo) {
         def course = findCourse(node)
         if (leaves == null) leaves = []
         def videoIds = leaves.stream().map { it.id }.collect(Collectors.toList())
         if (course) {
-            long from = (period > 0) ? System.currentTimeMillis() - period * 24 * 60 * 60 * 1000 : 0
-            long to = System.currentTimeMillis()
-
             String query = $/
                 SELECT
                     course_students.username,
@@ -400,8 +384,8 @@ class DashboardService {
                     .createSQLQuery(query)
                     .setParameterList("video_ids", videoIds)
                     .setLong("course_id", course.id)
-                    .setLong("from_timestamp", from)
-                    .setLong("to_timestamp", to)
+                    .setLong("from_timestamp", periodFrom)
+                    .setLong("to_timestamp", periodTo)
                     .list()
 
             ok item: resultList.collect {

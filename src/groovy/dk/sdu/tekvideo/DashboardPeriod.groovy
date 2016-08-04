@@ -6,7 +6,8 @@ enum DashboardPeriod {
     MONTH(30, "Over den sidste måned"),
     SIX_MONTH(182, "Over de sidste 6 måneder"),
     YEAR(365, "Over det sidste år"),
-    SINCE_START(0, "Siden start")
+    SINCE_START(0, "Siden start"),
+    CUSTOM(-1, "Brugerdefinerede")
 
     final int id
     final String name

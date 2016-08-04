@@ -12,12 +12,12 @@ class DashboardController {
         [courses: courseManagementService.activeCourses.result]
     }
 
-    def visits(String identifier, Integer period, Boolean cumulative) {
+    def visits(String identifier, Long periodFrom, Long periodTo, Boolean cumulative) {
         def node = dashboardService.nodeFromIdentifier(identifier)
         if (node.success) {
             def leaves = dashboardService.findLeaves(node.result)
             if (leaves.success) {
-                def stats = dashboardService.findViewingStatistics(leaves.result, period, cumulative)
+                def stats = dashboardService.findViewingStatistics(leaves.result, periodFrom, periodTo, cumulative)
                 if (stats.success) {
                     render stats.result as JSON
                 } else {
@@ -32,12 +32,12 @@ class DashboardController {
         }
     }
 
-    def popularVideos(String identifier, Integer period) {
+    def popularVideos(String identifier, Long periodFrom, Long periodTo) {
         def node = dashboardService.nodeFromIdentifier(identifier)
         if (node.success) {
             def leaves = dashboardService.findLeaves(node.result)
             if (leaves.success) {
-                def stats = dashboardService.findPopularVideos(leaves.result, period)
+                def stats = dashboardService.findPopularVideos(leaves.result, periodFrom, periodTo)
                 if (stats.success) {
                     render stats.result as JSON
                 } else {
@@ -52,12 +52,12 @@ class DashboardController {
         }
     }
 
-    def comments(String identifier, Integer period) {
+    def comments(String identifier, Long periodFrom, Long periodTo) {
         def node = dashboardService.nodeFromIdentifier(identifier)
         if (node.success) {
             def leaves = dashboardService.findLeaves(node.result)
             if (leaves.success) {
-                def stats = dashboardService.findRecentComments(leaves.result, period)
+                def stats = dashboardService.findRecentComments(leaves.result, periodFrom, periodTo)
                 render stats as JSON
             } else {
                 render leaves as JSON
@@ -90,18 +90,18 @@ class DashboardController {
         }
     }
 
-    def answers(Video id, Long period) {
-        def answers = dashboardService.getAnswers(id, period)
+    def answers(Video id, Long periodFrom, Long periodTo) {
+        def answers = dashboardService.getAnswers(id, periodFrom, periodTo)
         response.status = answers.suggestedHttpStatus
         render answers as JSON
     }
 
-    def studentActivity(String identifier, Long period) {
+    def studentActivity(String identifier, Long periodFrom, Long periodTo) {
         def node = dashboardService.nodeFromIdentifier(identifier)
         if (node.success) {
             def leaves = dashboardService.findLeaves(node.result)
             if (leaves.success) {
-                render dashboardService.findStudentActivity(node.result, leaves.result, period) as JSON
+                render dashboardService.findStudentActivity(node.result, leaves.result, periodFrom, periodTo) as JSON
             } else {
                 render leaves as JSON
             }

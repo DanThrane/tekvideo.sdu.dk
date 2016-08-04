@@ -5,7 +5,7 @@ var AnswersPage = (function () {
         this.app = app;
     }
 
-    AnswersPage.prototype.onSelect = function (root, period) {
+    AnswersPage.prototype.onSelect = function (root, periodFrom, periodTo) {
         var self = this;
         self.app.displaySpinner();
 
@@ -37,7 +37,7 @@ var AnswersPage = (function () {
                 ));
 
                 currentRow.append(template);
-                $(template).click(thumbnailHandler(self, self.app, video, students, period));
+                $(template).click(thumbnailHandler(self, self.app, video, students, periodFrom, periodTo));
             }
 
             if (currentRow !== null) {
@@ -59,8 +59,8 @@ var AnswersPage = (function () {
         $("#answer-thumbnail-container").show();
     };
 
-    function thumbnailHandler(answerPage, app, video, students, period) {
-        var answerBreakdown = new AnswerBreakdown(answerPage, app, video, students, period);
+    function thumbnailHandler(answerPage, app, video, students, periodFrom, periodTo) {
+        var answerBreakdown = new AnswerBreakdown(answerPage, app, video, students, periodFrom, periodTo);
         return function(e) {
             e.preventDefault();
             answerPage.hide();

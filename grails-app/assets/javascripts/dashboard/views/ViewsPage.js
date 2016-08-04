@@ -12,13 +12,13 @@ var ViewsPage = (function () {
         });
     }
 
-    ViewsPage.prototype.onSelect = function (root, period) {
+    ViewsPage.prototype.onSelect = function (root, periodFrom, periodTo) {
         var self = this;
         this.app.displaySpinner();
         $("#error-message").removeClass("hide").hide();
         var cumulative = cumulativeCheckbox.is(":checked");
-        var chartPromise = $.getJSON(baseUrl + "dashboard/visits?identifier=" + root + "&period=" + period +
-            "&cumulative=" + cumulative,
+        var chartPromise = $.getJSON(baseUrl + "dashboard/visits?identifier=" + root + "&periodFrom=" + periodFrom
+            + "&periodTo=" + periodTo + "&cumulative=" + cumulative,
             function (data) {
                 var config = {
                     type: "line",
@@ -49,8 +49,8 @@ var ViewsPage = (function () {
                 }
             });
 
-        var popularVideosPromise = $.getJSON(baseUrl + "dashboard/popularVideos?identifier=" + root + "&period=" +
-            period, function (data) {
+        var popularVideosPromise = $.getJSON(baseUrl + "dashboard/popularVideos?identifier=" + root + "&periodFrom=" +
+            periodFrom + "&periodTo=" + periodTo, function (data) {
             console.log(data);
             var $popular = $("#popular-video-container");
             $popular.empty();

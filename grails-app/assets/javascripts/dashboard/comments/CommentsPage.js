@@ -5,38 +5,40 @@ var CommentsPage = (function () {
         this.app = app;
     }
 
-    CommentsPage.prototype.onSelect = function (root, period) {
+    CommentsPage.prototype.onSelect = function (root, periodFrom, periodTo) {
         var self = this;
         self.app.displaySpinner();
         $("#error-message").removeClass("hide").hide();
 
-        $.getJSON(baseUrl + "dashboard/comments?identifier=" + root + "&period=" + period, function (data) {
-            console.log(data);
-            self.app.removeSpinner();
-            var $comments = $("#comment-container");
-            $comments.empty();
-            var rawTemplate = $("#comment-template").html();
+        $.getJSON(baseUrl + "dashboard/comments?identifier=" + root + "&periodFrom=" + periodFrom +
+            "&periodTo=" + periodTo,
+            function (data) {
+                console.log(data);
+                self.app.removeSpinner();
+                var $comments = $("#comment-container");
+                $comments.empty();
+                var rawTemplate = $("#comment-template").html();
 
-            for (var i = 0; i < data.length; i++) {
-                var comment = data[i];
-                var template = $(rawTemplate.format(
-                    comment.username,
-                    comment.videoTitle,
-                    comment.dateCreated,
-                    comment.comment,
-                    comment.videoUrl
-                ));
-                $comments.append(template);
-                var component = new NotificationCommentComponent(template);
-                component.init();
-            }
+                for (var i = 0; i < data.length; i++) {
+                    var comment = data[i];
+                    var template = $(rawTemplate.format(
+                        comment.username,
+                        comment.videoTitle,
+                        comment.dateCreated,
+                        comment.comment,
+                        comment.videoUrl
+                    ));
+                    $comments.append(template);
+                    var component = new NotificationCommentComponent(template);
+                    component.init();
+                }
 
-            if (!data.length) {
-                $("#comment-no-data").removeClass("hide");
-            } else {
-                $("#comment-no-data").addClass("hide");
-            }
-        });
+                if (!data.length) {
+                    $("#comment-no-data").removeClass("hide");
+                } else {
+                    $("#comment-no-data").addClass("hide");
+                }
+            });
     };
     return CommentsPage;
 }());

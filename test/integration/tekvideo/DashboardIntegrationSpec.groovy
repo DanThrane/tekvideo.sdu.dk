@@ -122,6 +122,10 @@ class DashboardIntegrationSpec extends Specification {
         users.teacher2 = UserData.buildTestTeacher("teacher2")
         users.student = UserData.buildStudent("student")
 
+        and: "adapted periods"
+        long periodFrom = (since == 0) ? 0 : System.currentTimeMillis() - 1000 * 60 * 60 * 24 * since
+        long periodTo = System.currentTimeMillis()
+
         and: "a tree"
         def tree = [:]
         tree.course = CourseData.buildTestCourse("Course", users.teacher1)
@@ -154,8 +158,8 @@ class DashboardIntegrationSpec extends Specification {
         }
 
         and: "we make the call"
-        def call = dashboardService.findViewingStatistics(nodes.collect { tree[it] },
-                since, false)
+        def call = dashboardService.findViewingStatistics(nodes.collect { tree[it] } as List<Video>,
+                periodFrom, periodTo, false)
 
         then: "the call might succeed"
         call.success == success
@@ -185,6 +189,10 @@ class DashboardIntegrationSpec extends Specification {
         users.teacher1 = UserData.buildTestTeacher("teacher1")
         users.teacher2 = UserData.buildTestTeacher("teacher2")
         users.student = UserData.buildStudent("student")
+
+        and: "adapted periods"
+        long periodFrom = (since == 0) ? 0 : System.currentTimeMillis() - 1000 * 60 * 60 * 24 * since
+        long periodTo = System.currentTimeMillis()
 
         and: "a tree"
         def tree = [:]
@@ -220,7 +228,7 @@ class DashboardIntegrationSpec extends Specification {
 
         and: "we make the call"
         def call = dashboardService.findPopularVideos(nodes.collect { tree[it] } as List<Video>,
-                since as long)
+                periodFrom, periodTo)
 
         then: "the call might succeed"
         call.success == success

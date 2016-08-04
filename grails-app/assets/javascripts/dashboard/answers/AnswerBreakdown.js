@@ -3,7 +3,7 @@ var AnswerBreakdown = (function () {
         "#009688", "#4CAF50", "#8BC34A", "#CDDC39", "#FFEB3B", "#FFC107", "#FF9800", "#FF5722", "#795548",
         "#9E9E9E", "#607D8B"];
 
-    function AnswerBreakdown(answerPage, app, video, students, period) {
+    function AnswerBreakdown(answerPage, app, video, students, periodFrom, periodTo) {
         this.answerPage = answerPage;
         this.video = video;
         try {
@@ -14,7 +14,8 @@ var AnswerBreakdown = (function () {
         this.students = students.map(function (e) {
             return e.username;
         });
-        this.period = period;
+        this.periodFrom = periodFrom;
+        this.periodTo = periodTo;
         this.app = app;
         this.player = null;
         this.chart = null;
@@ -56,11 +57,13 @@ var AnswerBreakdown = (function () {
     AnswerBreakdown.prototype.findAnswers = function () {
         var self = this;
         self.app.displaySpinner();
-        $.getJSON(baseUrl + "dashboard/answers/" + self.video.id + "?period=" + self.period, function (data) {
-            console.log(data);
-            self.answers = data.result;
-            self.initializePlayer();
-        }).always(function () {
+        $.getJSON(baseUrl + "dashboard/answers/" + self.video.id + "?periodFrom=" + self.periodFrom +
+            "&periodTo=" + self.periodTo,
+            function (data) {
+                console.log(data);
+                self.answers = data.result;
+                self.initializePlayer();
+            }).always(function () {
             self.app.removeSpinner();
         });
     };

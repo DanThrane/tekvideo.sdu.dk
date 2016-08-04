@@ -7,12 +7,18 @@
     <meta name="layout" content="main_fluid"/>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.2.1/Chart.bundle.min.js"></script>
     <sdu:requireAjaxAssets/>
+    <asset:stylesheet src="bootstrap-datetimepicker.min.css"/>
 </head>
 
 <body>
 
 <g:content key="sidebar-left">
-    <twbs:select list="${DashboardPeriod.values()}" name="dataRange" labelText="Vis data" value="${DashboardPeriod.MONTH}"/>
+    <twbs:select list="${DashboardPeriod.values()}" name="dataRange" labelText="Vis data"
+                 value="${DashboardPeriod.MONTH}"/>
+    <div id="custom-range-selector">
+        <twbs:input name="from" labelText="Fra"/>
+        <twbs:input name="to" labelText="Til" />
+    </div>
     <ul class="fa-ul tree">
         <g:each in="${courses.findAll { it != null }}" var="course">
             <li>
@@ -90,8 +96,10 @@
 <script>
     var baseUrl = "${createLink(absolute:true, uri:'/')}";
 </script>
-<asset:javascript src="dashboard/app.js"/>
 
+<g:content key="layout-script">
+    <asset:javascript src="dashboard/app.js"/>
+</g:content>
 </body>
 
 </html>
