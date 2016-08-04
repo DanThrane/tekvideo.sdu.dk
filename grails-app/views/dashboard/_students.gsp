@@ -6,7 +6,6 @@
             <th>Navn</th>
             <th>Antal unikke videoer</th>
             <th>Antal svar</th>
-            <th>Detaljer</th>
             </thead>
             <tbody>
             </tbody>
@@ -23,8 +22,6 @@
             ({3} <span class="text-success"><fa:icon icon="${FaIcon.CHECK}"/></span>
             /{4} <span class="text-danger"><fa:icon icon="${FaIcon.TIMES}"/></span>)
         </td>
-
-        <td><twbs:button style="${ButtonStyle.INFO}" class="student-more-info">&raquo;</twbs:button></td>
     </tr>
     </script>
 </div>
