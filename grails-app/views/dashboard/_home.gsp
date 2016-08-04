@@ -1,4 +1,4 @@
-<div id="home" class="card-item active">
+<div id="home" class="card-item active dashboard-content-no-margin">
     <twbs:column>
         <twbs:row>
             <twbs:column md="6">

@@ -81,7 +81,7 @@
                 </twbs:nav>
             </twbs:column>
         </twbs:row>
-        <twbs:row>
+        <twbs:row class="dashboard-content">
             <div id="stack" class="card-stack">
                 <g:render template="home"/>
                 <g:render template="views"/>

@@ -1,5 +1,5 @@
 <%@ page import="dk.sdu.tekvideo.DashboardPeriod; dk.danthrane.twbs.NavStyle; dk.sdu.tekvideo.NodeStatus; dk.danthrane.twbs.ButtonSize; dk.danthrane.twbs.ButtonStyle; dk.sdu.tekvideo.FaIcon" contentType="text/html;charset=UTF-8" %>
-<div id="views" class="card-item">
+<div id="views" class="card-item dashboard-content-no-margin">
     <twbs:column md="12">
         <twbs:row>
             <twbs:column md="6">

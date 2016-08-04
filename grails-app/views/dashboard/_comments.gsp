@@ -20,8 +20,8 @@
                             <twbs:column md="2">
                                 <twbs:button block="true" size="${ButtonSize.XTRA_SMALL}"
                                              style="${ButtonStyle.PRIMARY}" class="expand-button">
-                                    <fa:icon
-                                            icon="${FaIcon.COMMENT}"/> Læs resten eller svar</twbs:button>
+                                    <fa:icon icon="${FaIcon.COMMENT}"/> Læs resten eller svar
+                                </twbs:button>
                             </twbs:column>
                         </twbs:row>
                     </div>
