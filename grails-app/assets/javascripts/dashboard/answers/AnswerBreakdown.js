@@ -6,7 +6,11 @@ var AnswerBreakdown = (function () {
     function AnswerBreakdown(answerPage, app, video, students, period) {
         this.answerPage = answerPage;
         this.video = video;
-        this.timeline = JSON.parse(video.timelineJson);
+        try {
+            this.timeline = JSON.parse(video.timelineJson);
+        } catch (e) {
+            this.timeline = [];
+        }
         this.students = students.map(function (e) {
             return e.username;
         });
