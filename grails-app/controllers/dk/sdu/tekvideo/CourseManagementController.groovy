@@ -6,7 +6,7 @@ import org.springframework.security.access.annotation.Secured
 /**
  * @author Dan Thrane
  */
-@Secured("ROLE_TEACHER")
+@Secured(["ROLE_TEACHER"])
 class CourseManagementController {
     UserService userService
     CourseService courseService

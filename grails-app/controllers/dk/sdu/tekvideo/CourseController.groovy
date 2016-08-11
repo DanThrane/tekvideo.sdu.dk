@@ -33,7 +33,7 @@ class CourseController {
         }
     }
 
-    @Secured("ROLE_STUDENT")
+    @Secured(["ROLE_STUDENT"])
     def signup(Course course) {
         Student student = studentService.authenticatedStudent
         [course      : course,
@@ -42,7 +42,7 @@ class CourseController {
          student     : student] // TODO Check if inCourse loads in all students
     }
 
-    @Secured("ROLE_STUDENT")
+    @Secured(["ROLE_STUDENT"])
     def completeSignup(Course course) {
         if (course) {
             def result = studentService.signupForCourse(studentService.authenticatedStudent, course)
@@ -53,7 +53,7 @@ class CourseController {
         }
     }
 
-    @Secured("ROLE_STUDENT")
+    @Secured(["ROLE_STUDENT"])
     def completeSignoff(Course course) {
         if (course) {
             def result = studentService.signoffForCourse(studentService.authenticatedStudent, course)

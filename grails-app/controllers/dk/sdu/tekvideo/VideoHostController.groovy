@@ -3,7 +3,7 @@ package dk.sdu.tekvideo
 import grails.converters.JSON
 import grails.plugin.springsecurity.annotation.Secured
 
-@Secured("ROLE_TEACHER")
+@Secured(["ROLE_TEACHER"])
 class VideoHostController {
     def externalVideoHostService
 

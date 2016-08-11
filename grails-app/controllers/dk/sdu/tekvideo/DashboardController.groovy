@@ -3,7 +3,7 @@ package dk.sdu.tekvideo
 import grails.converters.JSON
 import org.springframework.security.access.annotation.Secured
 
-@Secured("ROLE_TEACHER")
+@Secured(["ROLE_TEACHER"])
 class DashboardController {
     DashboardService dashboardService
     CourseManagementService courseManagementService
