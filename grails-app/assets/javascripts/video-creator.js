@@ -226,13 +226,15 @@ var Editor = {};
                 Timeline.render();
             });
 
-            $("#addQuestion").click(function () {
-                editingSubject.questions.push({
+            $(".addQuestion").click(function () {
+                var question = {
                     title: "Unavngivet spørgsmål",
                     timecode: parseInt(player.currentTime()),
                     fields: []
-                });
+                };
+                editingSubject.questions.push(question);
                 Timeline.render();
+                editQuestion(editingSubject, question);
             });
 
             $("#deleteQuestion").click(function () {
@@ -766,6 +768,10 @@ var Editor = {};
                 editingSubject.timecode = parseTimecode($("#subjectTimecode").val());
                 editingSubject.title = $("#subjectName").val();
                 render();
+            });
+
+            $("#backToSubject").click(function () {
+                editSubject(editingSubject);
             });
 
             $("#backToQuestion").click(function () {

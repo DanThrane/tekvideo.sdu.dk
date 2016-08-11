@@ -125,7 +125,7 @@
         <div id="subject-form-card" class="card-item">
             <h4><fa:icon icon="${FaIcon.BOOK}"/> Redigér emne</h4>
             <twbs:buttonGroup justified="true">
-                <twbs:button id="addQuestion">
+                <twbs:button class="addQuestion">
                     <fa:icon icon="${FaIcon.PLUS}"/> Tilføj spørgsmål
                 </twbs:button>
                 <twbs:button style="${ButtonStyle.DANGER}" id="deleteSubject">
@@ -148,7 +148,13 @@
         <div id="question-form-card" class="card-item">
             <h4><fa:icon icon="${FaIcon.QUESTION}"/> Redigér spørgsmål</h4>
             <twbs:buttonGroup justified="true">
-                <twbs:button class="addField">
+                <twbs:button id="backToSubject">
+                    <fa:icon icon="${FaIcon.BACKWARD}"/> Tilbage til emne
+                </twbs:button>
+                <twbs:button class="addQuestion" style="${ButtonStyle.INFO}">
+                    <fa:icon icon="${FaIcon.PLUS}"/> Tilføj spørgsmål
+                </twbs:button>
+                <twbs:button class="addField" style="${ButtonStyle.SUCCESS}">
                     <fa:icon icon="${FaIcon.PLUS}"/> Tilføj felt
                 </twbs:button>
                 <twbs:button style="${ButtonStyle.DANGER}" id="deleteQuestion">
