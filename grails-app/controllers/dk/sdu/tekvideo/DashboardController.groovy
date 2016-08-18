@@ -115,4 +115,14 @@ class DashboardController {
         }
     }
 
+    def participationNew(String identifier, Long periodFrom, Long periodTo) {
+        def node = dashboardService.nodeFromIdentifier(identifier)
+        if (node.success) {
+            def result = dashboardService.findParticipation(node.result, periodFrom, periodTo)
+            render result as JSON
+        } else {
+            render node as JSON
+        }
+    }
+
 }

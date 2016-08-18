@@ -2,6 +2,7 @@ package dk.sdu.tekvideo
 
 import dk.sdu.tekvideo.events.AnswerQuestionEvent
 import dk.sdu.tekvideo.events.VisitVideoEvent
+import grails.util.Triple
 import org.apache.http.HttpStatus
 import org.hibernate.SessionFactory
 
@@ -19,6 +20,7 @@ class DashboardService {
     private static final DateTimeFormatter TIME_PATTERN = DateTimeFormatter.ofPattern("dd/MM HH:mm")
 
     def urlMappingService
+    def videoService
     CourseManagementService courseManagementService
     SessionFactory sessionFactory
 
@@ -419,4 +421,144 @@ class DashboardService {
             fail message: "Course not found!"
         }
     }
+
+    ServiceResult<Map> findParticipation(Node node, Long periodFrom, Long periodTo) {
+        if (node instanceof Course) {
+            return findCourseParticipation(node, periodFrom, periodTo)
+        } else if (node instanceof Subject) {
+            return findSubjectParticipation(node, periodFrom, periodTo)
+        } else if (node instanceof Video) {
+            return findVideoParticipation(node, periodFrom, periodTo)
+        }
+        return fail()
+    }
+
+    ServiceResult<Map> findCourseParticipation(Course course, Long periodFrom, Long periodTo) {
+        def start = System.currentTimeMillis()
+        def allVideos = course.activeSubjects.collect { it.activeVideos }.flatten() as List<Video>
+        def videoIds = allVideos.collect { it.id }
+
+        def columns = allVideos.collect {
+            [
+                    name: it.name,
+                    node: "video/${it.id}",
+                    nodeType: "video",
+                    nodeId: it.id,
+                    fieldCount: videoService.getVideoMetaDataSafe(it).fieldCount
+            ]
+        }
+
+        def students = Student.findAllByIdInList(CourseStudent.findAllByCourse(course).collect { it.studentId })
+        def studentUserIds = students.collect { it.userId }.toSet()
+        def allParticipatingUserIds = AnswerQuestionEvent.findAllByVideoIdInList(videoIds).collect { it.userId }.toSet()
+        def allUserIds = (studentUserIds + allParticipatingUserIds).toList()
+        def allUsers = User.findAllByIdInList(allUserIds).toSet()
+        def seenEvents = VisitVideoEvent.findAllByVideoIdInList(videoIds).groupBy { it?.userId }
+
+        def participation = allUsers.collect { user ->
+            def relevantAnswers = AnswerQuestionEvent.findAllByCorrectAndUserAndTimestampBetweenAndVideoIdInList(true,
+                    user, periodFrom, periodTo, videoIds)
+
+            def answersGrouped = relevantAnswers.groupBy { it.videoId }
+
+            def summary = allVideos.collectEntries { video ->
+                def answersForVideo = answersGrouped[video.id]
+                def correctAnswers = 0
+                if (answersForVideo != null) {
+                    correctAnswers = answersGrouped[video.id].groupBy { new Triple(it.question, it.subject, it.field) }.size()
+                }
+                def seen = seenEvents[user.id]?.find { it.videoId == video.id } != null
+
+                [
+                        (video.id): [
+                                correctAnswers: correctAnswers,
+                                seen: seen
+                        ]
+                ]
+            }
+
+            [
+                    username: (user) ? user.username : "Gæst",
+                    answers: summary,
+                    isStudent: (user) ? user.id in studentUserIds : false,
+            ]
+        }
+        def end = System.currentTimeMillis() - start
+        return ok(item: [columns: columns, participation: participation, tookTime: end])
+    }
+
+    ServiceResult<Map> findSubjectParticipation(Subject subject, Long periodFrom, Long periodTo) {
+
+        return ok([:])
+    }
+
+    ServiceResult<Map> findVideoParticipation(Video video, Long periodFrom, Long periodTo) {
+
+        return ok([:])
+    }
+
+    /*
+    ServiceResult<Void> findCourseParticipation(Course course, Long periodFrom, Long periodTo) {
+        String query = $/
+            SELECT
+              students.*,
+              course_video.*,
+              CASE WHEN EXISTS(SELECT *
+                              FROM event e
+                              WHERE e.class = 'dk.sdu.tekvideo.events.VisitVideoEvent' AND
+                                    e.user_id = students.user_id AND
+                                    e.video_id = course_video.video_id AND
+                                    e.timestamp >= :periodFrom AND e.timestamp <= :periodTo)
+                THEN TRUE
+                ELSE FALSE
+              END AS seen,
+              (
+                SELECT COUNT(*) AS correct_answers
+                FROM (
+                  SELECT e.subject, e.field, e.question
+                  FROM event e
+                  WHERE
+                    e.class = 'dk.sdu.tekvideo.events.AnswerQuestionEvent' AND
+                    e.user_id = students.user_id AND
+                    e.correct = TRUE AND
+                    e.video_id = course_video.video_id AND
+                    e.timestamp >= :periodFrom AND e.timestamp <= :periodTo
+                  GROUP BY e.video_id, e.subject, e.field, e.question
+                ) AS correct_unique
+              )
+            FROM
+              (
+                SELECT
+                  myusers.username,
+                  myusers.id AS user_id
+                FROM course_student, student, myusers
+                WHERE
+                  course_student.course_id = :course_id AND
+                  course_student.student_id = student.id AND
+                  student.user_id = myusers.id
+              ) AS students,
+              (
+                SELECT
+                  video.name   AS video_name,
+                  video.id     AS video_id,
+                  subject.id   AS subject_id,
+                  subject.name AS subject_name
+                FROM video, course, subject, subject_video, course_subject
+                WHERE
+                  course.id = :course_id AND
+                  course_subject.course_id = course.id AND
+                  course_subject.subject_id = subject.id AND
+                  subject_video.subject_id = subject.id AND
+                  subject_video.video_id = video.id
+              ) AS course_video;
+        /$
+
+        def resultList = sessionFactory.currentSession
+                .createSQLQuery(query)
+                .setLong("course_id", course.id)
+                .list()
+
+        return ok()
+    }
+    */
 }

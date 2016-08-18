@@ -1,6 +1,7 @@
 package tekvideo
 
 import dk.sdu.tekvideo.Comment
+import dk.sdu.tekvideo.Course
 import dk.sdu.tekvideo.ImportCourseCommand
 import dk.sdu.tekvideo.ServiceResult
 import dk.sdu.tekvideo.User
@@ -323,4 +324,58 @@ class DashboardIntegrationSpec extends Specification {
     // find student activity
 
 
+    def "test course participation"() {
+        given: "some users"
+        def users = [:]
+        users.teacher1 = UserData.buildTestTeacher("teacher1")
+        users.teacher2 = UserData.buildTestTeacher("teacher2")
+        users.student = UserData.buildStudent("student")
+
+        and: "a tree"
+        def tree = [:]
+        tree.course = CourseData.buildTestCourse("Course", users.teacher1)
+        tree.subject1 = SubjectData.buildTestSubject("Subject1", tree.course)
+        tree.subject2 = SubjectData.buildTestSubject("Subject2", tree.course)
+        tree.video1a = VideoData.buildTestVideoWithTimeline(prefix: "Video1a", subject: tree.subject1, fieldsPerQuestion: 5)
+        tree.video2a = VideoData.buildTestVideoWithTimeline(prefix: "Video2a", subject: tree.subject1, fieldsPerQuestion: 5)
+        tree.video3a = VideoData.buildTestVideoWithTimeline(prefix: "Video3a", subject: tree.subject1, fieldsPerQuestion: 5)
+        tree.video1b = VideoData.buildTestVideoWithTimeline(prefix: "Video1b", subject: tree.subject2, fieldsPerQuestion: 5)
+        tree.video2b = VideoData.buildTestVideoWithTimeline(prefix: "Video2b", subject: tree.subject2, fieldsPerQuestion: 5)
+        tree.video3b = VideoData.buildTestVideoWithTimeline(prefix: "Video3b", subject: tree.subject2, fieldsPerQuestion: 5)
+        tree.course2 = CourseData.buildTestCourse("Course2", users.teacher2)
+        tree.subject3 = SubjectData.buildTestSubject("Subject3", tree.course2)
+        tree.video1c = VideoData.buildTestVideo("Video1c", tree.subject3)
+
+        and: "some comments"
+        (comments as List<List>).eachWithIndex { commentData, index ->
+            def video = tree[commentData[0] as String] as Video
+            def when = new Date((commentData[1] as long) * 1000)
+            def commenter = users[commentData[2] as String].user
+
+            def comment = new Comment(
+                    user: commenter,
+                    contents: "${index}"
+            )
+            video.addToComments(comment).save(failOnError: true, flush: true)
+            comment.dateCreated = when // Working around the automatic time-stamping
+            comment.save(failOnError: true, flush: true)
+        }
+
+        when: "we authenticate"
+        if (authenticateAs) {
+            UserData.authenticateAsUser(users[authenticateAs].user)
+        }
+
+        and: "we make the call"
+        def call = dashboardService.findCourseParticipation(tree.course as Course,
+                periodFrom * 1000, periodTo * 1000)
+        println(call)
+
+        then: "the call might succeed"
+        call.success == success
+
+        where:
+        authenticateAs | result | nodes                             | comments                                                 | periodFrom | periodTo | success
+        "teacher1"     | [0, 1] | ["video1b", "video2b", "video3b"] | [["video1b", 0, "teacher1"], ["video3b", 1, "teacher1"]] | 0          | 10       | true
+    }
 }
