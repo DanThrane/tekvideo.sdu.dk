@@ -1,7 +1,7 @@
 <%@ page import="dk.danthrane.twbs.NavStyle; dk.sdu.tekvideo.NodeStatus; dk.sdu.tekvideo.FaIcon; dk.danthrane.twbs.ButtonStyle" contentType="text/html;charset=UTF-8" %>
 <html>
 <head>
-    <title>Administreing af emne ${subject.name}</title>
+    <title>Administrering af emne ${subject.name}</title>
     <meta name="layout" content="main_fluid"/>
     <asset:javascript src="list.js"/>
     <sdu:requireAjaxAssets/>
@@ -11,7 +11,7 @@
 <twbs:row>
     <twbs:column>
         <twbs:pageHeader>
-            <h3>Administreing af emne <small>${subject.name}</small></h3>
+            <h3>Administrering af emne <small>${subject.name}</small></h3>
         </twbs:pageHeader>
 
         <twbs:row>
