@@ -2,6 +2,7 @@ package dk.sdu.tekvideo
 
 import dk.sdu.tekvideo.events.AnswerQuestionEvent
 import dk.sdu.tekvideo.events.VisitVideoEvent
+import grails.util.Pair
 import grails.util.Triple
 import org.apache.http.HttpStatus
 import org.hibernate.SessionFactory
@@ -351,10 +352,10 @@ class DashboardService {
                 FROM
                   (
                     SELECT
-                        myusers.username as username,
-                        myusers.elearn_id as elearn_id,
-                        myusers.id as user_id,
-                        student.id as student_id
+                        myusers.username AS username,
+                        myusers.elearn_id AS elearn_id,
+                        myusers.id AS user_id,
+                        student.id AS student_id
                     FROM
                         course,
                         course_student,
@@ -434,17 +435,31 @@ class DashboardService {
     }
 
     ServiceResult<Map> findCourseParticipation(Course course, Long periodFrom, Long periodTo) {
+        /*
         def start = System.currentTimeMillis()
-        def allVideos = course.activeSubjects.collect { it.activeVideos }.flatten() as List<Video>
+        def subjects = course.activeSubjects
+        def allVideos = subjects.collect { it.activeVideos }.flatten() as List<Video>
         def videoIds = allVideos.collect { it.id }
+
+        def categories = subjects.collectEntries {
+            [(it.id):
+                     [
+                             name    : it.name,
+                             node    : "subject/${it.id}",
+                             nodeType: "subject",
+                             nodeId  : it.id
+                     ]
+            ]
+        }
 
         def columns = allVideos.collect {
             [
-                    name: it.name,
-                    node: "video/${it.id}",
-                    nodeType: "video",
-                    nodeId: it.id,
-                    fieldCount: videoService.getVideoMetaDataSafe(it).fieldCount
+                    name      : it.name,
+                    node      : "video/${it.id}",
+                    nodeType  : "video",
+                    nodeId    : it.id,
+                    fieldCount: videoService.getVideoMetaDataSafe(it).fieldCount,
+                    belongsTo : it.subject.id
             ]
         }
 
@@ -465,26 +480,41 @@ class DashboardService {
                 def answersForVideo = answersGrouped[video.id]
                 def correctAnswers = 0
                 if (answersForVideo != null) {
-                    correctAnswers = answersGrouped[video.id].groupBy { new Triple(it.question, it.subject, it.field) }.size()
+                    correctAnswers = answersGrouped[video.id].groupBy {
+                        new Triple(it.question, it.subject, it.field)
+                    }.size()
                 }
                 def seen = seenEvents[user.id]?.find { it.videoId == video.id } != null
 
                 [
                         (video.id): [
                                 correctAnswers: correctAnswers,
-                                seen: seen
+                                seen          : seen
                         ]
                 ]
             }
 
             [
-                    username: (user) ? user.username : "Gæst",
-                    answers: summary,
+                    username : (user) ? user.username : "Gæst",
+                    answers  : summary,
                     isStudent: (user) ? user.id in studentUserIds : false,
             ]
         }
         def end = System.currentTimeMillis() - start
-        return ok(item: [columns: columns, participation: participation, tookTime: end])
+        return ok(item: [
+                categories   : categories,
+                columns      : columns,
+                participation: participation,
+                tookTime     : end
+        ])
+        */
+        println findCourseLevelParticipation(course, periodFrom, periodTo)
+        return ok(item: [
+                categories   : [],
+                columns      : [],
+                participation: [],
+                tookTime     : 0
+        ])
     }
 
     ServiceResult<Map> findSubjectParticipation(Subject subject, Long periodFrom, Long periodTo) {
@@ -495,6 +525,158 @@ class DashboardService {
     ServiceResult<Map> findVideoParticipation(Video video, Long periodFrom, Long periodTo) {
 
         return ok([:])
+    }
+
+    ServiceResult<Map> findCourseLevelParticipation(Course course, Long periodFrom, Long periodTo) {
+        if (courseManagementService.canAccess(course)) {
+            def dbStart = System.currentTimeMillis()
+            List<Long> studentUserIdList = Student.findAllByIdInList(
+                    CourseStudent.findAllByCourse(course).collect { it.studentId }
+            ).collect { it.userId }
+
+            def subjects = course.activeSubjects
+            def subjectVideoList = SubjectVideo.findAllBySubjectInList(subjects)
+            def videoIds = subjectVideoList.collect { it.videoId }
+            def videos = Video.findAllByIdInList(videoIds).groupBy { it.id }
+            def answerEvents = AnswerQuestionEvent.findAllByVideoIdInListAndCorrectAndTimestampBetween(videoIds, true, periodFrom, periodTo).findAll {
+                it.userId != null
+            }
+            def visitEvents = VisitVideoEvent.findAllByVideoIdInListAndTimestampBetween(videoIds, periodFrom, periodTo).findAll {
+                it.userId != null
+            }
+            def dbEnd = System.currentTimeMillis()
+            Set<Long> studentUserIds = studentUserIdList.toSet()
+            Map<Long, List<Long>> videoIdsBySubject = subjectVideoList
+                    .groupBy { it.subjectId }
+                    .collectEntries { [(it.key): it.value.collect { it.videoId }] }
+
+
+            def answerEventsByVideo = answerEvents.groupBy { it.videoId }
+            def visitEventsByVideo = visitEvents.groupBy { it.videoId }
+            def usersWithAnswers = answerEvents.collect { it.collect { it.userId } }.flatten() as List<Long>
+            def usersWithVisits = visitEvents.collect { it.collect { it.userId } }.flatten() as List<Long>
+            def allUsers = User.findAllByIdInList(usersWithAnswers + usersWithVisits + studentUserIds)
+            def groupEnd = System.currentTimeMillis()
+
+            def timeVideoCollect = 0
+            def answerCollect = 0
+            def visitCollect = 0
+
+            subjects.collect {
+                def myVideoIdList = videoIdsBySubject[it.id] ?: []
+                def myVideoIds = myVideoIdList.toSet()
+
+                def videoCollectStart = System.currentTimeMillis()
+                def myVideos = myVideoIds.collect { videos[it] }.flatten() as List<Video>
+                def videoCollectEnd = System.currentTimeMillis()
+                def myAnswers = answerEventsByVideo.findAll { it.key in myVideoIds }
+                def answerCollectEnd = System.currentTimeMillis()
+                def myVisits = visitEventsByVideo.findAll { it.key in myVideoIds }
+                def visitCollectEnd = System.currentTimeMillis()
+                timeVideoCollect += videoCollectEnd - videoCollectStart
+                answerCollect += answerCollectEnd - videoCollectEnd
+                visitCollect += visitCollectEnd - answerCollectEnd
+
+                return findSubjectLevelParticipation(it,
+                        studentUserIds,
+                        allUsers,
+                        myVideos,
+                        myAnswers,
+                        myVisits,
+                        true
+                )
+            }
+            def subjectsEnd = System.currentTimeMillis()
+
+            println("Database calls took: ${dbEnd - dbStart}")
+            println("Local grouping took: ${groupEnd - dbEnd}")
+            println("Collecting information on sub-nodes took: ${subjectsEnd - groupEnd}")
+            println("Video collect took: $timeVideoCollect")
+            println("Answer collect took: $answerCollect")
+            println("Visit collect took: $visitCollect")
+            return ok(item: [:])
+        } else {
+            return fail()
+        }
+    }
+
+    private ServiceResult<Map> findSubjectLevelParticipation(Subject subject, Set<Long> studentUsers,
+                                                             List<User> allUsers, List<Video> videos,
+                                                             Map<Long, List<AnswerQuestionEvent>> answerEventsByVideo,
+                                                             Map<Long, List<VisitVideoEvent>> visitEventsByVideo,
+                                                             boolean bypassSecurityCheck = false) {
+        if (bypassSecurityCheck || courseManagementService.canAccess(subject.course)) {
+            videos.collect {
+                return findVideoLevelParticipation(
+                        it,
+                        studentUsers,
+                        allUsers,
+                        answerEventsByVideo[it.id] ?: [],
+                        visitEventsByVideo[it.id] ?: [],
+                        true
+                )
+            }
+            return ok()
+        } else {
+            return fail()
+        }
+    }
+
+    private ServiceResult<Map> findVideoLevelParticipation(Video video, Set<Long> studentUsers, List<User> allUsers,
+                                                           List<AnswerQuestionEvent> correctAnswerEvents,
+                                                           List<VisitVideoEvent> visitEvents,
+                                                           boolean bypassSecurityCheck = false) {
+        if (bypassSecurityCheck || courseManagementService.canAccess(video.subject.course)) {
+            // TODO This JSON parsing takes _a lot_ of time. This must be re-factored away.
+            def timeline = videoService.getTimeline(video)
+//            def metadata = videoService.getVideoMetaDataSafe(video)
+
+            if (timeline.size() > 0) {
+                List<VideoQuestion> allQuestions = timeline.collect { it.questions }.flatten()
+
+                println(allQuestions)
+            }
+
+            def participationByUser = allUsers.collectEntries {
+                [
+                        (it.id): [
+                                seen          : false,
+                                answers: [:]
+                        ]
+                ]
+            }
+
+            for (def event in visitEvents) {
+                participationByUser[event.userId].seen = true
+            }
+
+            def answersByUser = correctAnswerEvents.groupBy { it.userId }
+            /*
+            Format of answersByUsersAndField will be:
+
+            [
+                userId: [
+                    (subject, question, field): [ANSWER_EVENTS],
+                    ...
+                ]
+            ]
+
+             */
+            Map<Long, Map<Triple, List>> answersByUsersAndField = answersByUser.collectEntries {
+                [
+                        (it.key): it.value.groupBy { new Triple(it.subject, it.question, it.field) }
+                ]
+            }
+            def numberOfCorrectAnswersByUserAndQuestion = answersByUsersAndField.collectEntries {
+                [
+                        (it.key): it.value.groupBy { new Pair(it.key.aValue, it.key.bValue) }
+                ]
+            }
+            println numberOfCorrectAnswersByUserAndQuestion
+            return ok()
+        } else {
+            return fail()
+        }
     }
 
     /*

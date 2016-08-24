@@ -86,10 +86,7 @@ class VideoService {
                 return collectedFields ? collectedFields.sum() : 0
             }
             fieldCount = collectedFields ? collectedFields.sum() : 0
-        } catch (Exception ignored) {
-            // The timeline may be corrupted in many ways. Better to be safe than sorry in this case.
-            ignored.printStackTrace()
-        }
+        } catch (Exception ignored) { }
 
         def duration = "00:00"
         try {
@@ -105,6 +102,24 @@ class VideoService {
                 fieldCount   : fieldCount,
                 duration     : duration
         ])
+    }
+
+    List<VideoSubject> getTimeline(Video video) {
+        List<VideoSubject> result = []
+        try {
+            List<Map> parsed = JSON.parse(video.timelineJson)
+
+            for (def subject : parsed) {
+                try {
+                    result.add(VideoSubject.fromMap(subject))
+                } catch (Exception e) {
+                    System.err.println("Caught exception for $subject")
+                    e.printStackTrace()
+                }
+            }
+
+        } catch (Exception ignored) {}
+        return result
     }
 
     List<Video> findFeaturedVideos() {
