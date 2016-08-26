@@ -1,5 +1,7 @@
 package dk.sdu.tekvideo
 
+import dk.sdu.tekvideo.events.AnswerQuestionEvent
+
 class Subject implements Node {
     static final String DEFAULT_DESCRIPTION = "Ingen beskrivelse"
 
@@ -46,4 +48,10 @@ class Subject implements Node {
     Node getParent() {
         CourseSubject.findBySubject(this).course
     }
+
+    @Override
+    NodeIdentifier getIdentifier() {
+        return new NodeIdentifier("subject", id)
+    }
+
 }

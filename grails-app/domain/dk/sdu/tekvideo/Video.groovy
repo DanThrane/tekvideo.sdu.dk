@@ -1,5 +1,7 @@
 package dk.sdu.tekvideo
 
+import dk.sdu.tekvideo.events.AnswerQuestionEvent
+
 class Video implements Node {
     String name
     String youtubeId
@@ -53,6 +55,11 @@ class Video implements Node {
     @Override
     Node getParent() {
         SubjectVideo.findByVideo(this).subject
+    }
+
+    @Override
+    NodeIdentifier getIdentifier() {
+        return new NodeIdentifier("video", id)
     }
 
 }

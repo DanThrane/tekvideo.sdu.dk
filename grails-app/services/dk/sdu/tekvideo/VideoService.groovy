@@ -104,22 +104,8 @@ class VideoService {
         ])
     }
 
-    List<VideoSubject> getTimeline(Video video) {
-        List<VideoSubject> result = []
-        try {
-            List<Map> parsed = JSON.parse(video.timelineJson)
-
-            for (def subject : parsed) {
-                try {
-                    result.add(VideoSubject.fromMap(subject))
-                } catch (Exception e) {
-                    System.err.println("Caught exception for $subject")
-                    e.printStackTrace()
-                }
-            }
-
-        } catch (Exception ignored) {}
-        return result
+    VideoTimeline getTimeline(Video video) {
+        return VideoTimeline.fromVideo(video)
     }
 
     List<Video> findFeaturedVideos() {

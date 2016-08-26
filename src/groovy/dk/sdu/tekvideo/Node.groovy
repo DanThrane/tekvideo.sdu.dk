@@ -3,6 +3,7 @@ package dk.sdu.tekvideo
 trait Node {
     abstract Node getParent()
     abstract NodeStatus getLocalStatus()
+    abstract NodeIdentifier getIdentifier()
 
     NodeStatus getStatus() {
         def node = this

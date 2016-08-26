@@ -9,21 +9,23 @@ class VideoQuestion {
     String title
     VideoSubject parent
 
-    Map<VideoField, Boolean> grade(List<AnswerQuestionEvent> answerEvents) {
-        Map<VideoField, Boolean> result = [:]
-        fields.each { result[it] = false }
-        answerEvents.each {
-            assert(it.question == timelineId)
-            assert(it.subject == parent.timelineId)
+    GradingStats grade(List<AnswerQuestionEvent> answerEvents) {
+        assert answerEvents.every { it.question == timelineId && it.subject == parent.timelineId }
 
-            if (it.field < fields.size()) {
-                def field = fields[it.field]
-                if (it.correct) {
-                    result[field] = true
-                }
-            }
+        def stats = new GradingStats()
+        stats.identifier = identifier
+        def eventsGroupedBySubject = answerEvents.groupBy { it.field }
+        stats.children = fields.collectEntries {
+            def events = eventsGroupedBySubject[it.timelineId] ?: []
+
+            [(it.identifier): it.grade(events)]
         }
-        return result
+        stats.updateStatsFromChildren()
+        return stats
+    }
+
+    NodeIdentifier getIdentifier() {
+        parent.identifier.child(timelineId)
     }
 
     static VideoQuestion fromMap(Integer timelineId, VideoSubject parent, Map<String, Object> map) {

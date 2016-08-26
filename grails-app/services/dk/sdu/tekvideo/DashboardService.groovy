@@ -508,13 +508,7 @@ class DashboardService {
                 tookTime     : end
         ])
         */
-        println findCourseLevelParticipation(course, periodFrom, periodTo)
-        return ok(item: [
-                categories   : [],
-                columns      : [],
-                participation: [],
-                tookTime     : 0
-        ])
+        return findCourseLevelParticipation(course, periodFrom, periodTo)
     }
 
     ServiceResult<Map> findSubjectParticipation(Subject subject, Long periodFrom, Long periodTo) {
@@ -562,7 +556,7 @@ class DashboardService {
             def answerCollect = 0
             def visitCollect = 0
 
-            subjects.collect {
+            def subjectParticipation = subjects.collect {
                 def myVideoIdList = videoIdsBySubject[it.id] ?: []
                 def myVideoIds = myVideoIdList.toSet()
 
@@ -584,7 +578,7 @@ class DashboardService {
                         myAnswers,
                         myVisits,
                         true
-                )
+                ).result
             }
             def subjectsEnd = System.currentTimeMillis()
 
@@ -594,7 +588,14 @@ class DashboardService {
             println("Video collect took: $timeVideoCollect")
             println("Answer collect took: $answerCollect")
             println("Visit collect took: $visitCollect")
-            return ok(item: [:])
+
+            return ok(item: [
+                    name: course.name,
+                    node: "course/${course.id}",
+                    nodeType: "course",
+                    nodeId: course.id,
+                    subjects: subjectParticipation
+            ])
         } else {
             return fail()
         }
@@ -606,7 +607,7 @@ class DashboardService {
                                                              Map<Long, List<VisitVideoEvent>> visitEventsByVideo,
                                                              boolean bypassSecurityCheck = false) {
         if (bypassSecurityCheck || courseManagementService.canAccess(subject.course)) {
-            videos.collect {
+            def videoParticipation = videos.collect {
                 return findVideoLevelParticipation(
                         it,
                         studentUsers,
@@ -614,9 +615,15 @@ class DashboardService {
                         answerEventsByVideo[it.id] ?: [],
                         visitEventsByVideo[it.id] ?: [],
                         true
-                )
+                ).result
             }
-            return ok()
+            return ok(item: [
+                    name: subject.name,
+                    node: "subject/${subject.id}",
+                    nodeType: "subject",
+                    nodeId: subject.id,
+                    videos: videoParticipation
+            ])
         } else {
             return fail()
         }
@@ -629,51 +636,30 @@ class DashboardService {
         if (bypassSecurityCheck || courseManagementService.canAccess(video.subject.course)) {
             // TODO This JSON parsing takes _a lot_ of time. This must be re-factored away.
             def timeline = videoService.getTimeline(video)
-//            def metadata = videoService.getVideoMetaDataSafe(video)
-
-            if (timeline.size() > 0) {
-                List<VideoQuestion> allQuestions = timeline.collect { it.questions }.flatten()
-
-                println(allQuestions)
-            }
-
-            def participationByUser = allUsers.collectEntries {
-                [
-                        (it.id): [
-                                seen          : false,
-                                answers: [:]
-                        ]
-                ]
-            }
-
-            for (def event in visitEvents) {
-                participationByUser[event.userId].seen = true
-            }
 
             def answersByUser = correctAnswerEvents.groupBy { it.userId }
-            /*
-            Format of answersByUsersAndField will be:
 
-            [
-                userId: [
-                    (subject, question, field): [ANSWER_EVENTS],
-                    ...
-                ]
-            ]
+            def participationByUser = allUsers.collect { user ->
+                def answersFromUser = answersByUser[user.id] ?: []
 
-             */
-            Map<Long, Map<Triple, List>> answersByUsersAndField = answersByUser.collectEntries {
+                def gradedAnswers = timeline.grade(answersFromUser)
+                def isStudent = studentUsers.contains(user.id)
+                def username = user.username
+
                 [
-                        (it.key): it.value.groupBy { new Triple(it.subject, it.question, it.field) }
+                        gradedAnswers: gradedAnswers,
+                        isStudent: isStudent,
+                        username: username
                 ]
             }
-            def numberOfCorrectAnswersByUserAndQuestion = answersByUsersAndField.collectEntries {
-                [
-                        (it.key): it.value.groupBy { new Pair(it.key.aValue, it.key.bValue) }
-                ]
-            }
-            println numberOfCorrectAnswersByUserAndQuestion
-            return ok()
+            return ok(item: [
+                    name: video.name,
+                    node: "video/${video.id}",
+                    nodeType: "video",
+                    nodeId: video.id,
+                    timeline: timeline.subjects,
+                    participationByUser: participationByUser
+            ])
         } else {
             return fail()
         }
