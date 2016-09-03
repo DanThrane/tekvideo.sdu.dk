@@ -2,8 +2,6 @@ package dk.sdu.tekvideo
 
 import dk.sdu.tekvideo.events.AnswerQuestionEvent
 import dk.sdu.tekvideo.events.VisitVideoEvent
-import grails.util.Pair
-import grails.util.Triple
 import org.apache.http.HttpStatus
 import org.hibernate.SessionFactory
 
@@ -521,7 +519,7 @@ class DashboardService {
         return ok([:])
     }
 
-    ServiceResult<Map> findCourseLevelParticipation(Course course, Long periodFrom, Long periodTo) {
+    ServiceResult<UserParticipationReport> findCourseLevelParticipation(Course course, Long periodFrom, Long periodTo) {
         if (courseManagementService.canAccess(course)) {
             def dbStart = System.currentTimeMillis()
             List<Long> studentUserIdList = Student.findAllByIdInList(
@@ -556,7 +554,11 @@ class DashboardService {
             def answerCollect = 0
             def visitCollect = 0
 
-            def subjectParticipation = subjects.collect {
+            def result = new UserParticipationReport()
+            result.identifier = course.identifier
+            result.children = subjects.collect { it.identifier }
+
+            result.details = subjects.collectEntries {
                 def myVideoIdList = videoIdsBySubject[it.id] ?: []
                 def myVideoIds = myVideoIdList.toSet()
 
@@ -571,15 +573,16 @@ class DashboardService {
                 answerCollect += answerCollectEnd - videoCollectEnd
                 visitCollect += visitCollectEnd - answerCollectEnd
 
-                return findSubjectLevelParticipation(it,
+                [(it.identifier.identifier): findSubjectLevelParticipation(it,
                         studentUserIds,
                         allUsers,
                         myVideos,
                         myAnswers,
-                        myVisits,
-                        true
-                ).result
+                        myVisits
+                )]
             }
+            result.participation = result.findUserParticipationFromDetails()
+
             def subjectsEnd = System.currentTimeMillis()
 
             println("Database calls took: ${dbEnd - dbStart}")
@@ -589,80 +592,99 @@ class DashboardService {
             println("Answer collect took: $answerCollect")
             println("Visit collect took: $visitCollect")
 
-            return ok(item: [
-                    name: course.name,
-                    node: "course/${course.id}",
-                    nodeType: "course",
-                    nodeId: course.id,
-                    subjects: subjectParticipation
-            ])
+            return ok(item: result)
         } else {
             return fail()
         }
     }
 
-    private ServiceResult<Map> findSubjectLevelParticipation(Subject subject, Set<Long> studentUsers,
-                                                             List<User> allUsers, List<Video> videos,
-                                                             Map<Long, List<AnswerQuestionEvent>> answerEventsByVideo,
-                                                             Map<Long, List<VisitVideoEvent>> visitEventsByVideo,
-                                                             boolean bypassSecurityCheck = false) {
-        if (bypassSecurityCheck || courseManagementService.canAccess(subject.course)) {
-            def videoParticipation = videos.collect {
-                return findVideoLevelParticipation(
-                        it,
-                        studentUsers,
-                        allUsers,
-                        answerEventsByVideo[it.id] ?: [],
-                        visitEventsByVideo[it.id] ?: [],
-                        true
-                ).result
-            }
-            return ok(item: [
-                    name: subject.name,
-                    node: "subject/${subject.id}",
-                    nodeType: "subject",
-                    nodeId: subject.id,
-                    videos: videoParticipation
-            ])
-        } else {
-            return fail()
+    private UserParticipationReport findSubjectLevelParticipation(Subject subject, Set<Long> studentUsers,
+            List<User> allUsers, List<Video> videos, Map<Long, List<AnswerQuestionEvent>> answerEventsByVideo,
+            Map<Long, List<VisitVideoEvent>> visitEventsByVideo) {
+        def result = new UserParticipationReport()
+        result.identifier = subject.identifier
+        result.children = videos.collect { it.identifier }
+        result.details = videos.collectEntries {
+            def answers = answerEventsByVideo[it.id] ?: []
+            def visits = visitEventsByVideo[it.id] ?: []
+
+            [(it.identifier.identifier): findVideoLevelParticipationNoSecurityCheck(it, studentUsers, allUsers,
+                    answers, visits)]
         }
+        result.participation = result.findUserParticipationFromDetails()
+        return result
     }
 
-    private ServiceResult<Map> findVideoLevelParticipation(Video video, Set<Long> studentUsers, List<User> allUsers,
-                                                           List<AnswerQuestionEvent> correctAnswerEvents,
-                                                           List<VisitVideoEvent> visitEvents,
-                                                           boolean bypassSecurityCheck = false) {
-        if (bypassSecurityCheck || courseManagementService.canAccess(video.subject.course)) {
-            // TODO This JSON parsing takes _a lot_ of time. This must be re-factored away.
-            def timeline = videoService.getTimeline(video)
+    private UserParticipationReport findVideoLevelParticipationNoSecurityCheck(Video video, Set<Long> studentUsers,
+            List<User> allUsers, List<AnswerQuestionEvent> correctAnswerEvents, List<VisitVideoEvent> visitEvents) {
+        def timeline = videoService.getTimeline(video)
+        def result = new UserParticipationReport()
+        def answersBySubject = correctAnswerEvents.groupBy { it.subject }
+        result.identifier = video.identifier
+        result.children = timeline.subjects.collect { it.identifier }
+        result.details = timeline.subjects.collectEntries {
+            def answers = answersBySubject[it.timelineId] ?: []
 
-            def answersByUser = correctAnswerEvents.groupBy { it.userId }
-
-            def participationByUser = allUsers.collect { user ->
-                def answersFromUser = answersByUser[user.id] ?: []
-
-                def gradedAnswers = timeline.grade(answersFromUser)
-                def isStudent = studentUsers.contains(user.id)
-                def username = user.username
-
-                [
-                        gradedAnswers: gradedAnswers,
-                        isStudent: isStudent,
-                        username: username
-                ]
-            }
-            return ok(item: [
-                    name: video.name,
-                    node: "video/${video.id}",
-                    nodeType: "video",
-                    nodeId: video.id,
-                    timeline: timeline.subjects,
-                    participationByUser: participationByUser
-            ])
-        } else {
-            return fail()
+            [(it.identifier.identifier): findVideoSubjectParticipationNoSecurityCheck(it, studentUsers, allUsers,
+                    answers)]
         }
+        result.participation = result.findUserParticipationFromDetails()
+        return result
+    }
+
+    private UserParticipationReport findVideoSubjectParticipationNoSecurityCheck(VideoSubject subject,
+            Set<Long> studentUsers, List<User> allUsers, List<AnswerQuestionEvent> correctAnswerEvents) {
+        def result = new UserParticipationReport()
+        def answersByQuestion = correctAnswerEvents.groupBy { it.question }
+        result.identifier = subject.identifier
+        result.children = subject.questions.collect { it.identifier }
+        result.details = subject.questions.collectEntries {
+            def answers = answersByQuestion[it.timelineId] ?: []
+
+            [(it.identifier.identifier): findVideoQuestionParticipationNoSecurityCheck(it, studentUsers, allUsers,
+                    answers)]
+        }
+        result.participation = result.findUserParticipationFromDetails()
+        return result
+    }
+
+    private UserParticipationReport findVideoQuestionParticipationNoSecurityCheck(VideoQuestion question, Set<Long> studentUsers,
+            List<User> allUsers, List<AnswerQuestionEvent> correctAnswerEvents) {
+        def result = new UserParticipationReport()
+        def answersByField = correctAnswerEvents.groupBy { it.field }
+        result.identifier = question.identifier
+        result.children = question.fields.collect { it.identifier }
+        result.details = question.fields.collectEntries {
+            def answers = answersByField[it.timelineId] ?: []
+
+            [(it.identifier.identifier): findVideoFieldParticipationNoSecurityCheck(it, studentUsers, allUsers,
+                    answers)]
+        }
+        result.participation = result.findUserParticipationFromDetails()
+        return result
+    }
+
+    private UserParticipationReport findVideoFieldParticipationNoSecurityCheck(VideoField field, Set<Long> studentUsers,
+            List<User> allUsers, List<AnswerQuestionEvent> correctAnswerEvents) {
+        def result = new UserParticipationReport()
+        result.identifier = field.identifier
+        result.children = []
+        result.details = [:]
+        def answersByUser = correctAnswerEvents.groupBy { it.userId }
+        result.participation = allUsers.collect { user ->
+            boolean hasAnswer = answersByUser[user.id] ? !answersByUser[user.id].empty : false
+
+            new UserParticipation(
+                    user: user,
+                    isStudent: user.id in studentUsers,
+                    stats: new GradingStats(
+                            maxScore: 1,
+                            score: hasAnswer ? 1 : 0,
+                            seen: true
+                    )
+            )
+        }
+        return result
     }
 
     /*

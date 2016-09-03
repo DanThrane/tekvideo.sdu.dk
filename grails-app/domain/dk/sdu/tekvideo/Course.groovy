@@ -1,7 +1,5 @@
 package dk.sdu.tekvideo
 
-import org.yaml.snakeyaml.nodes.NodeId
-
 class Course implements Node {
     String name
     String fullName
@@ -47,7 +45,7 @@ class Course implements Node {
 
     @Override
     NodeIdentifier getIdentifier() {
-        return new NodeIdentifier("course", id)
+        return new NodeIdentifier("course", id, name)
     }
 
     def beforeDelete() {

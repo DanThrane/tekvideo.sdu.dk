@@ -9,23 +9,8 @@ class VideoQuestion {
     String title
     VideoSubject parent
 
-    GradingStats grade(List<AnswerQuestionEvent> answerEvents) {
-        assert answerEvents.every { it.question == timelineId && it.subject == parent.timelineId }
-
-        def stats = new GradingStats()
-        stats.identifier = identifier
-        def eventsGroupedBySubject = answerEvents.groupBy { it.field }
-        stats.children = fields.collectEntries {
-            def events = eventsGroupedBySubject[it.timelineId] ?: []
-
-            [(it.identifier): it.grade(events)]
-        }
-        stats.updateStatsFromChildren()
-        return stats
-    }
-
     NodeIdentifier getIdentifier() {
-        parent.identifier.child(timelineId)
+        parent.identifier.child("videoquestion", timelineId)
     }
 
     static VideoQuestion fromMap(Integer timelineId, VideoSubject parent, Map<String, Object> map) {

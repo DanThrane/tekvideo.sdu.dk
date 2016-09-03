@@ -38,7 +38,8 @@ class User {
                 isCas   : it.isCas,
                 elearnId: it.elearnId,
                 realName: it.realName,
-                roles   : roles
+                roles   : roles,
+                id      : it.id
         ]
     }
 

@@ -59,7 +59,7 @@ class Video implements Node {
 
     @Override
     NodeIdentifier getIdentifier() {
-        return new NodeIdentifier("video", id)
+        return new NodeIdentifier("video", id, name)
     }
 
 }

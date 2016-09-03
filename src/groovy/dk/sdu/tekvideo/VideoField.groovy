@@ -17,21 +17,8 @@ class VideoField {
         return event.field == timelineId && event.subject == subjectId && questionId == event.question
     }
 
-    GradingStats grade(List<AnswerQuestionEvent> answerEvents) {
-        assert answerEvents.every {
-            it.field == timelineId && it.question == parent.timelineId && it.subject == parent.parent.timelineId
-        }
-
-        def result = new GradingStats()
-        result.identifier = identifier
-        result.maxScore = 1
-        result.score = answerEvents.any { it.correct } ? 1 : 0
-        result.seen = answerEvents.size() > 0
-        return result
-    }
-
     NodeIdentifier getIdentifier() {
-        parent.identifier.child(timelineId)
+        parent.identifier.child("videofield", timelineId)
     }
 
     static VideoField fromMap(Integer timelineId, VideoQuestion parent, Map<String, Object> map) {

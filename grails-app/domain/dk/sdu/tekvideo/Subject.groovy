@@ -51,7 +51,7 @@ class Subject implements Node {
 
     @Override
     NodeIdentifier getIdentifier() {
-        return new NodeIdentifier("subject", id)
+        return new NodeIdentifier("subject", id, name)
     }
 
 }
