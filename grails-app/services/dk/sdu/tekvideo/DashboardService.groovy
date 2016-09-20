@@ -2,6 +2,7 @@ package dk.sdu.tekvideo
 
 import dk.sdu.tekvideo.events.AnswerQuestionEvent
 import dk.sdu.tekvideo.events.VisitVideoEvent
+import grails.util.Triple
 import org.apache.http.HttpStatus
 import org.hibernate.SessionFactory
 
@@ -333,94 +334,6 @@ class DashboardService {
         }
     }
 
-    ServiceResult<List<Map>> findStudentActivity(Node node, List<Video> leaves, Long periodFrom, Long periodTo) {
-        def course = findCourse(node)
-        if (leaves == null) leaves = []
-        def videoIds = leaves.stream().map { it.id }.collect(Collectors.toList())
-        if (course) {
-            String query = $/
-                SELECT
-                    course_students.username,
-                    course_students.user_id,
-                    course_students.elearn_id,
-                    course_students.student_id,
-                    answers.answer_count,
-                    answers.correct_answers,
-                    views.unique_views
-                FROM
-                  (
-                    SELECT
-                        myusers.username AS username,
-                        myusers.elearn_id AS elearn_id,
-                        myusers.id AS user_id,
-                        student.id AS student_id
-                    FROM
-                        course,
-                        course_student,
-                        myusers,
-                        student
-                    WHERE
-                        course.id = :course_id AND
-                        course.id = course_student.course_id AND
-                        student.id = course_student.student_id AND
-                        myusers.id = student.user_id
-                  ) AS course_students
-                  LEFT OUTER JOIN
-                  (
-                    SELECT
-                        user_id,
-                        COUNT(*) AS answer_count,
-                        SUM(CASE correct WHEN TRUE THEN 1 ELSE 0 END) AS correct_answers
-                    FROM
-                        event
-                    WHERE
-                        event.class = 'dk.sdu.tekvideo.events.AnswerQuestionEvent' AND
-                        event.timestamp >= :from_timestamp AND
-                        event.timestamp <= :to_timestamp AND
-                        event.video_id IN :video_ids
-                    GROUP BY
-                        user_id
-                  ) AS answers ON (answers.user_id = course_students.user_id)
-                  LEFT OUTER JOIN
-                  (
-                    SELECT
-                        user_id,
-                        COUNT(DISTINCT video_id) AS unique_views
-                    FROM
-                        event
-                    WHERE
-                        event.class = 'dk.sdu.tekvideo.events.VisitVideoEvent' AND
-                        event.timestamp >= :from_timestamp AND
-                        event.timestamp <= :to_timestamp AND
-                        event.video_id IN :video_ids
-                    GROUP BY
-                        user_id
-                  ) AS views ON(answers.user_id = views.user_id);
-            /$
-            def resultList = sessionFactory.currentSession
-                    .createSQLQuery(query)
-                    .setParameterList("video_ids", videoIds)
-                    .setLong("course_id", course.id)
-                    .setLong("from_timestamp", periodFrom)
-                    .setLong("to_timestamp", periodTo)
-                    .list()
-
-            ok item: resultList.collect {
-                [
-                        username      : it[0],
-                        userId        : it[1],
-                        elearnId      : it[2],
-                        studentId     : it[3],
-                        answerCount   : it[4] ?: 0,
-                        correctAnswers: it[5] ?: 0,
-                        uniqueViews   : it[6] ?: 0
-                ]
-            }
-        } else {
-            fail message: "Course not found!"
-        }
-    }
-
     ServiceResult<Map> findParticipation(Node node, Long periodFrom, Long periodTo) {
         if (node instanceof Course) {
             return findCourseParticipation(node, periodFrom, periodTo)
@@ -429,326 +342,134 @@ class DashboardService {
         } else if (node instanceof Video) {
             return findVideoParticipation(node, periodFrom, periodTo)
         }
-        return fail()
+        return fail([:])
     }
 
-    ServiceResult<Map> findCourseParticipation(Course course, Long periodFrom, Long periodTo) {
-        /*
-        def start = System.currentTimeMillis()
-        def subjects = course.activeSubjects
-        def allVideos = subjects.collect { it.activeVideos }.flatten() as List<Video>
-        def videoIds = allVideos.collect { it.id }
+    ServiceResult<UserParticipationReport> findSubjectParticipation(Subject subject, Long periodFrom, Long periodTo) {
+        if (courseManagementService.canAccess(subject.course)) {
+            def videoIds = SubjectVideo.findAllBySubject(subject).collect { it.videoId }
+            def videos = Video.findAllByIdInList(videoIds)
 
-        def categories = subjects.collectEntries {
-            [(it.id):
-                     [
-                             name    : it.name,
-                             node    : "subject/${it.id}",
-                             nodeType: "subject",
-                             nodeId  : it.id
-                     ]
-            ]
+            def answerEvents = AnswerQuestionEvent.findAllByVideoIdInListAndTimestampBetween(videoIds,
+                    periodFrom, periodTo)
+            def visitEvents = VisitVideoEvent.findAllByVideoIdInListAndTimestampBetween(videoIds, periodFrom, periodTo)
+
+            def studentUserIds = Student.findAllByIdInList(
+                    CourseStudent.findAllByCourse(subject.course).collect { it.studentId }
+            ).collect { it.userId }
+            def userIdsWithAnswers = answerEvents.collect { it.userId }
+            def userIdsWithVisits = visitEvents.collect { it.userId }
+            List<User> allUsers = User.findAllByIdInList(studentUserIds + userIdsWithAnswers + userIdsWithVisits)
+
+            return ok(item: findParticipation2(answerEvents, visitEvents, allUsers, studentUserIds.toSet(), videos))
+        } else {
+            return fail([:])
         }
-
-        def columns = allVideos.collect {
-            [
-                    name      : it.name,
-                    node      : "video/${it.id}",
-                    nodeType  : "video",
-                    nodeId    : it.id,
-                    fieldCount: videoService.getVideoMetaDataSafe(it).fieldCount,
-                    belongsTo : it.subject.id
-            ]
-        }
-
-        def students = Student.findAllByIdInList(CourseStudent.findAllByCourse(course).collect { it.studentId })
-        def studentUserIds = students.collect { it.userId }.toSet()
-        def allParticipatingUserIds = AnswerQuestionEvent.findAllByVideoIdInList(videoIds).collect { it.userId }.toSet()
-        def allUserIds = (studentUserIds + allParticipatingUserIds).toList()
-        def allUsers = User.findAllByIdInList(allUserIds).toSet()
-        def seenEvents = VisitVideoEvent.findAllByVideoIdInList(videoIds).groupBy { it?.userId }
-
-        def participation = allUsers.collect { user ->
-            def relevantAnswers = AnswerQuestionEvent.findAllByCorrectAndUserAndTimestampBetweenAndVideoIdInList(true,
-                    user, periodFrom, periodTo, videoIds)
-
-            def answersGrouped = relevantAnswers.groupBy { it.videoId }
-
-            def summary = allVideos.collectEntries { video ->
-                def answersForVideo = answersGrouped[video.id]
-                def correctAnswers = 0
-                if (answersForVideo != null) {
-                    correctAnswers = answersGrouped[video.id].groupBy {
-                        new Triple(it.question, it.subject, it.field)
-                    }.size()
-                }
-                def seen = seenEvents[user.id]?.find { it.videoId == video.id } != null
-
-                [
-                        (video.id): [
-                                correctAnswers: correctAnswers,
-                                seen          : seen
-                        ]
-                ]
-            }
-
-            [
-                    username : (user) ? user.username : "Gæst",
-                    answers  : summary,
-                    isStudent: (user) ? user.id in studentUserIds : false,
-            ]
-        }
-        def end = System.currentTimeMillis() - start
-        return ok(item: [
-                categories   : categories,
-                columns      : columns,
-                participation: participation,
-                tookTime     : end
-        ])
-        */
-        return findCourseLevelParticipation(course, periodFrom, periodTo)
-    }
-
-    ServiceResult<Map> findSubjectParticipation(Subject subject, Long periodFrom, Long periodTo) {
-
-        return ok([:])
     }
 
     ServiceResult<Map> findVideoParticipation(Video video, Long periodFrom, Long periodTo) {
+        if (courseManagementService.canAccess(video.subject.course)) {
+            def answerEvents = AnswerQuestionEvent.findAllByVideoIdAndTimestampBetween(video.id,
+                    periodFrom, periodTo)
+            def visitEvents = VisitVideoEvent.findAllByVideoIdAndTimestampBetween(video.id, periodFrom, periodTo)
 
-        return ok([:])
+            def studentUserIds = Student.findAllByIdInList(
+                    CourseStudent.findAllByCourse(video.subject.course).collect { it.studentId }
+            ).collect { it.userId }
+            def userIdsWithAnswers = answerEvents.collect { it.userId }
+            def userIdsWithVisits = visitEvents.collect { it.userId }
+            List<User> allUsers = User.findAllByIdInList(studentUserIds + userIdsWithAnswers + userIdsWithVisits)
+
+            return ok(item: findParticipation2(answerEvents, visitEvents, allUsers, studentUserIds.toSet(), [video]))
+        } else {
+            fail([:])
+        }
     }
 
-    ServiceResult<UserParticipationReport> findCourseLevelParticipation(Course course, Long periodFrom, Long periodTo) {
+    ServiceResult<Map> findCourseParticipation(Course course, Long periodFrom, Long periodTo) {
         if (courseManagementService.canAccess(course)) {
-            def dbStart = System.currentTimeMillis()
-            List<Long> studentUserIdList = Student.findAllByIdInList(
+            def videoIds = SubjectVideo.findAllBySubjectInList(course.activeSubjects).collect { it.videoId }
+            def videos = Video.findAllByIdInList(videoIds)
+
+            def answerEvents = AnswerQuestionEvent.findAllByVideoIdInListAndTimestampBetween(videoIds,
+                    periodFrom, periodTo)
+            def visitEvents = VisitVideoEvent.findAllByVideoIdInListAndTimestampBetween(videoIds, periodFrom, periodTo)
+
+            def studentUserIds = Student.findAllByIdInList(
                     CourseStudent.findAllByCourse(course).collect { it.studentId }
             ).collect { it.userId }
+            def userIdsWithAnswers = answerEvents.collect { it.userId }
+            def userIdsWithVisits = visitEvents.collect { it.userId }
+            List<User> allUsers = User.findAllByIdInList(studentUserIds + userIdsWithAnswers + userIdsWithVisits)
 
-            def subjects = course.activeSubjects
-            def subjectVideoList = SubjectVideo.findAllBySubjectInList(subjects)
-            def videoIds = subjectVideoList.collect { it.videoId }
-            def videos = Video.findAllByIdInList(videoIds).groupBy { it.id }
-            def answerEvents = AnswerQuestionEvent.findAllByVideoIdInListAndCorrectAndTimestampBetween(videoIds, true, periodFrom, periodTo).findAll {
-                it.userId != null
-            }
-            def visitEvents = VisitVideoEvent.findAllByVideoIdInListAndTimestampBetween(videoIds, periodFrom, periodTo).findAll {
-                it.userId != null
-            }
-            def dbEnd = System.currentTimeMillis()
-            Set<Long> studentUserIds = studentUserIdList.toSet()
-            Map<Long, List<Long>> videoIdsBySubject = subjectVideoList
-                    .groupBy { it.subjectId }
-                    .collectEntries { [(it.key): it.value.collect { it.videoId }] }
-
-
-            def answerEventsByVideo = answerEvents.groupBy { it.videoId }
-            def visitEventsByVideo = visitEvents.groupBy { it.videoId }
-            def usersWithAnswers = answerEvents.collect { it.collect { it.userId } }.flatten() as List<Long>
-            def usersWithVisits = visitEvents.collect { it.collect { it.userId } }.flatten() as List<Long>
-            def allUsers = User.findAllByIdInList(usersWithAnswers + usersWithVisits + studentUserIds)
-            def groupEnd = System.currentTimeMillis()
-
-            def timeVideoCollect = 0
-            def answerCollect = 0
-            def visitCollect = 0
-
-            def result = new UserParticipationReport()
-            result.identifier = course.identifier
-            result.children = subjects.collect { it.identifier }
-
-            result.details = subjects.collectEntries {
-                def myVideoIdList = videoIdsBySubject[it.id] ?: []
-                def myVideoIds = myVideoIdList.toSet()
-
-                def videoCollectStart = System.currentTimeMillis()
-                def myVideos = myVideoIds.collect { videos[it] }.flatten() as List<Video>
-                def videoCollectEnd = System.currentTimeMillis()
-                def myAnswers = answerEventsByVideo.findAll { it.key in myVideoIds }
-                def answerCollectEnd = System.currentTimeMillis()
-                def myVisits = visitEventsByVideo.findAll { it.key in myVideoIds }
-                def visitCollectEnd = System.currentTimeMillis()
-                timeVideoCollect += videoCollectEnd - videoCollectStart
-                answerCollect += answerCollectEnd - videoCollectEnd
-                visitCollect += visitCollectEnd - answerCollectEnd
-
-                [(it.identifier.identifier): findSubjectLevelParticipation(it,
-                        studentUserIds,
-                        allUsers,
-                        myVideos,
-                        myAnswers,
-                        myVisits
-                )]
-            }
-            result.participation = result.findUserParticipationFromDetails()
-
-            def subjectsEnd = System.currentTimeMillis()
-
-            println("Database calls took: ${dbEnd - dbStart}")
-            println("Local grouping took: ${groupEnd - dbEnd}")
-            println("Collecting information on sub-nodes took: ${subjectsEnd - groupEnd}")
-            println("Video collect took: $timeVideoCollect")
-            println("Answer collect took: $answerCollect")
-            println("Visit collect took: $visitCollect")
-
-            return ok(item: result)
+            return ok(item: findParticipation2(answerEvents, visitEvents, allUsers, studentUserIds.toSet(), videos))
         } else {
-            return fail()
+            return fail([:])
         }
     }
 
-    private UserParticipationReport findSubjectLevelParticipation(Subject subject, Set<Long> studentUsers,
-            List<User> allUsers, List<Video> videos, Map<Long, List<AnswerQuestionEvent>> answerEventsByVideo,
-            Map<Long, List<VisitVideoEvent>> visitEventsByVideo) {
-        def result = new UserParticipationReport()
-        result.identifier = subject.identifier
-        result.children = videos.collect { it.identifier }
-        result.details = videos.collectEntries {
-            def answers = answerEventsByVideo[it.id] ?: []
-            def visits = visitEventsByVideo[it.id] ?: []
+    private Map findParticipation2(List<AnswerQuestionEvent> answerEvents, List<VisitVideoEvent> visitEvents,
+                                   List<User> allUsers, Set<Long> studentUserIds, List<ExerciseNode> exercises) {
+        Map result = [
+                users    : [],
+                exercises: [:]
+        ]
 
-            [(it.identifier.identifier): findVideoLevelParticipationNoSecurityCheck(it, studentUsers, allUsers,
-                    answers, visits)]
+        exercises.each {
+            def description = [
+                    type  : it.identifier.type,
+                    id    : it.identifier.id,
+                    nodeId: it.identifier.toString()
+            ]
+            def name = it instanceof Video ? it.name : "?"
+            description.name = name
+
+            if (it instanceof Video) {
+                def timeline = videoService.getTimeline(it)
+                def sizes = timeline.subjects.collect {
+                    it.questions.collect { it.fields.size() }
+                }.flatten()
+
+                description.maxPoints = (sizes.sum() ?: 0)
+            }
+
+            result.exercises[it.identifier.toString()] = description
         }
-        result.participation = result.findUserParticipationFromDetails()
+
+        def answersByUser = answerEvents.groupBy { it.userId }
+        def visitsByUser = visitEvents.groupBy { it.userId }
+
+        allUsers.each { user ->
+            def answers = answersByUser[user.id] ?: []
+            def visits = visitsByUser[user.id] ?: []
+            def visitsByExercise = visits.groupBy { it.videoId }
+
+            def description = [
+                    id       : user.id,
+                    username : user.username,
+                    isStudent: user.id in studentUserIds,
+                    isCas    : user.isCas,
+                    answers  : [:]
+            ]
+
+            exercises.each { exercise ->
+                if (exercise instanceof Video) {
+                    def grading = [:]
+                    grading.points = answers
+                            .findAll { it.correct }
+                            .groupBy { new Triple(it.subject, it.question, it.field) }
+                            .size()
+
+                    def visitsToExercise = visitsByExercise[exercise.id] ?: []
+                    grading.seen = visitsToExercise.size() > 0
+                    description.answers[exercise.identifier.toString()] = grading
+                }
+            }
+
+            result.users += description
+        }
+
         return result
     }
 
-    private UserParticipationReport findVideoLevelParticipationNoSecurityCheck(Video video, Set<Long> studentUsers,
-            List<User> allUsers, List<AnswerQuestionEvent> correctAnswerEvents, List<VisitVideoEvent> visitEvents) {
-        def timeline = videoService.getTimeline(video)
-        def result = new UserParticipationReport()
-        def answersBySubject = correctAnswerEvents.groupBy { it.subject }
-        result.identifier = video.identifier
-        result.children = timeline.subjects.collect { it.identifier }
-        result.details = timeline.subjects.collectEntries {
-            def answers = answersBySubject[it.timelineId] ?: []
-
-            [(it.identifier.identifier): findVideoSubjectParticipationNoSecurityCheck(it, studentUsers, allUsers,
-                    answers)]
-        }
-        result.participation = result.findUserParticipationFromDetails()
-        return result
-    }
-
-    private UserParticipationReport findVideoSubjectParticipationNoSecurityCheck(VideoSubject subject,
-            Set<Long> studentUsers, List<User> allUsers, List<AnswerQuestionEvent> correctAnswerEvents) {
-        def result = new UserParticipationReport()
-        def answersByQuestion = correctAnswerEvents.groupBy { it.question }
-        result.identifier = subject.identifier
-        result.children = subject.questions.collect { it.identifier }
-        result.details = subject.questions.collectEntries {
-            def answers = answersByQuestion[it.timelineId] ?: []
-
-            [(it.identifier.identifier): findVideoQuestionParticipationNoSecurityCheck(it, studentUsers, allUsers,
-                    answers)]
-        }
-        result.participation = result.findUserParticipationFromDetails()
-        return result
-    }
-
-    private UserParticipationReport findVideoQuestionParticipationNoSecurityCheck(VideoQuestion question, Set<Long> studentUsers,
-            List<User> allUsers, List<AnswerQuestionEvent> correctAnswerEvents) {
-        def result = new UserParticipationReport()
-        def answersByField = correctAnswerEvents.groupBy { it.field }
-        result.identifier = question.identifier
-        result.children = question.fields.collect { it.identifier }
-        result.details = question.fields.collectEntries {
-            def answers = answersByField[it.timelineId] ?: []
-
-            [(it.identifier.identifier): findVideoFieldParticipationNoSecurityCheck(it, studentUsers, allUsers,
-                    answers)]
-        }
-        result.participation = result.findUserParticipationFromDetails()
-        return result
-    }
-
-    private UserParticipationReport findVideoFieldParticipationNoSecurityCheck(VideoField field, Set<Long> studentUsers,
-            List<User> allUsers, List<AnswerQuestionEvent> correctAnswerEvents) {
-        def result = new UserParticipationReport()
-        result.identifier = field.identifier
-        result.children = []
-        result.details = [:]
-        def answersByUser = correctAnswerEvents.groupBy { it.userId }
-        result.participation = allUsers.collect { user ->
-            boolean hasAnswer = answersByUser[user.id] ? !answersByUser[user.id].empty : false
-
-            new UserParticipation(
-                    user: user,
-                    isStudent: user.id in studentUsers,
-                    stats: new GradingStats(
-                            maxScore: 1,
-                            score: hasAnswer ? 1 : 0,
-                            seen: true
-                    )
-            )
-        }
-        return result
-    }
-
-    /*
-    ServiceResult<Void> findCourseParticipation(Course course, Long periodFrom, Long periodTo) {
-        String query = $/
-            SELECT
-              students.*,
-              course_video.*,
-              CASE WHEN EXISTS(SELECT *
-                              FROM event e
-                              WHERE e.class = 'dk.sdu.tekvideo.events.VisitVideoEvent' AND
-                                    e.user_id = students.user_id AND
-                                    e.video_id = course_video.video_id AND
-                                    e.timestamp >= :periodFrom AND e.timestamp <= :periodTo)
-                THEN TRUE
-                ELSE FALSE
-              END AS seen,
-              (
-                SELECT COUNT(*) AS correct_answers
-                FROM (
-                  SELECT e.subject, e.field, e.question
-                  FROM event e
-                  WHERE
-                    e.class = 'dk.sdu.tekvideo.events.AnswerQuestionEvent' AND
-                    e.user_id = students.user_id AND
-                    e.correct = TRUE AND
-                    e.video_id = course_video.video_id AND
-                    e.timestamp >= :periodFrom AND e.timestamp <= :periodTo
-                  GROUP BY e.video_id, e.subject, e.field, e.question
-                ) AS correct_unique
-              )
-            FROM
-              (
-                SELECT
-                  myusers.username,
-                  myusers.id AS user_id
-                FROM course_student, student, myusers
-                WHERE
-                  course_student.course_id = :course_id AND
-                  course_student.student_id = student.id AND
-                  student.user_id = myusers.id
-              ) AS students,
-              (
-                SELECT
-                  video.name   AS video_name,
-                  video.id     AS video_id,
-                  subject.id   AS subject_id,
-                  subject.name AS subject_name
-                FROM video, course, subject, subject_video, course_subject
-                WHERE
-                  course.id = :course_id AND
-                  course_subject.course_id = course.id AND
-                  course_subject.subject_id = subject.id AND
-                  subject_video.subject_id = subject.id AND
-                  subject_video.video_id = video.id
-              ) AS course_video;
-        /$
-
-        def resultList = sessionFactory.currentSession
-                .createSQLQuery(query)
-                .setLong("course_id", course.id)
-                .list()
-
-        return ok()
-    }
-    */
 }

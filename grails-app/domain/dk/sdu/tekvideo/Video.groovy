@@ -1,8 +1,9 @@
 package dk.sdu.tekvideo
 
 import dk.sdu.tekvideo.events.AnswerQuestionEvent
+import dk.sdu.tekvideo.events.VisitVideoEvent
 
-class Video implements Node {
+class Video implements ExerciseNode {
     String name
     String youtubeId
     String timelineJson

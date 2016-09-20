@@ -6,6 +6,10 @@ package dk.sdu.tekvideo
 class UserService {
     def springSecurityService
 
+    User getAuthenticatedUser() {
+        return (User) springSecurityService.currentUser
+    }
+
     Teacher getAuthenticatedTeacher() {
         def user = (User) springSecurityService.currentUser
         return Teacher.findByUser(user)

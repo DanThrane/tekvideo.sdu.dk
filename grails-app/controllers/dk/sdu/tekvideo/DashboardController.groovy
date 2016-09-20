@@ -101,21 +101,7 @@ class DashboardController {
         render answers as JSON
     }
 
-    def studentActivity(String identifier, Long periodFrom, Long periodTo) {
-        def node = dashboardService.nodeFromIdentifier(identifier)
-        if (node.success) {
-            def leaves = dashboardService.findLeaves(node.result)
-            if (leaves.success) {
-                render dashboardService.findStudentActivity(node.result, leaves.result, periodFrom, periodTo) as JSON
-            } else {
-                render leaves as JSON
-            }
-        } else {
-            render node as JSON
-        }
-    }
-
-    def participationNew(String identifier, Long periodFrom, Long periodTo) {
+    def participation(String identifier, Long periodFrom, Long periodTo) {
         def node = dashboardService.nodeFromIdentifier(identifier)
         if (node.success) {
             def result = dashboardService.findParticipation(node.result, periodFrom, periodTo)

@@ -1,5 +1,8 @@
 package dk.sdu.tekvideo
 
+import dk.sdu.tekvideo.events.AnswerQuestionEvent
+import dk.sdu.tekvideo.events.VisitVideoEvent
+
 trait Node {
     abstract Node getParent()
     abstract NodeStatus getLocalStatus()
@@ -13,3 +16,5 @@ trait Node {
         return (node == null) ? NodeStatus.VISIBLE : node.localStatus
     }
 }
+
+trait ExerciseNode extends Node {}
