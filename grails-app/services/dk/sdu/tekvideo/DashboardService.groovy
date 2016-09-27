@@ -345,7 +345,7 @@ class DashboardService {
         return fail([:])
     }
 
-    ServiceResult<UserParticipationReport> findSubjectParticipation(Subject subject, Long periodFrom, Long periodTo) {
+    ServiceResult<Map> findSubjectParticipation(Subject subject, Long periodFrom, Long periodTo) {
         if (courseManagementService.canAccess(subject.course)) {
             def videoIds = SubjectVideo.findAllBySubject(subject).collect { it.videoId }
             def videos = Video.findAllByIdInList(videoIds)
@@ -470,6 +470,69 @@ class DashboardService {
         }
 
         return result
+    }
+
+    ServiceResult<DashboardHeroInformation> findHeroInformation(Node node, Long periodFrom, Long periodTo) {
+        if (courseManagementService.canAccess(node)) {
+            def info = new DashboardHeroInformation()
+            info.stats = []
+
+            if (node instanceof Course) {
+                info.title = node.name
+
+                if (node.activeSubjects.size() > 0) {
+                    def subject = node.activeSubjects[0]
+
+                    if (subject.activeVideos.size() > 0) {
+                        def video = subject.activeVideos[0]
+                        if (video.videoType) {
+                            info.image = "http://img.youtube.com/vi/${video.youtubeId}/hqdefault.jpg"
+                        }
+                    }
+                }
+
+                info.mainStatAmount = "${CourseStudent.countByCourse(node)}"
+                info.mainStatUnit = "Studerende"
+            } else if (node instanceof Subject) {
+                info.title = node.name
+
+                if (node.activeVideos.size() > 0) {
+                    def video = node.activeVideos[0]
+                    if (video.videoType) {
+                        info.image = "http://img.youtube.com/vi/${video.youtubeId}/hqdefault.jpg"
+                    }
+                }
+
+                info.mainStatUnit = "Videoer"
+                info.mainStatAmount = "${node.activeVideos}"
+            } else if (node instanceof Video) {
+                def viewCount = findNumberOfViews(node, periodFrom, periodTo)
+                if (!viewCount.success) return viewCount as ServiceResult<DashboardHeroInformation>
+
+                info.title = node.name
+
+                if (node.videoType) {
+                    info.image = "http://img.youtube.com/vi/${node.youtubeId}/hqdefault.jpg"
+                }
+
+                info.mainStatUnit = "Visninger"
+                info.mainStatAmount = "${viewCount.result}"
+            } else {
+                return fail(message: "Ukendt type", internal: true)
+            }
+
+            return ok(item: info)
+        } else {
+            return fail(message: "Du har ikke rettigheder til at tilgå dette emne")
+        }
+    }
+
+    ServiceResult<Integer> findNumberOfViews(Video video, Long periodFrom, Long periodTo) {
+        if (courseManagementService.canAccess(video)) {
+            return ok(item: VisitVideoEvent.countByVideoIdAndTimestampBetween(video.id, periodFrom, periodTo))
+        } else {
+            return fail(message: "Du har ikke rettigheder til at tilgå dette emner")
+        }
     }
 
 }

@@ -377,6 +377,18 @@ class CourseManagementService {
         return course.teacher == userService.authenticatedTeacher
     }
 
+    boolean canAccess(Node node) {
+        if (node instanceof Course) {
+            return canAccess((Course) node)
+        } else if (node instanceof Subject) {
+            return canAccess(node.course)
+        } else if (node instanceof Video) {
+            return canAccess(node.subject.course)
+        } else {
+            throw UnsupportedOperationException("Unsupported node type")
+        }
+    }
+
     /**
      * Changes the status of a single course. This can only be done if the teacher owns the associated course.
      *

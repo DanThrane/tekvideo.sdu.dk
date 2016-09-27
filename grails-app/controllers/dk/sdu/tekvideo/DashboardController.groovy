@@ -12,6 +12,10 @@ class DashboardController {
         [courses: courseManagementService.activeCourses.result]
     }
 
+    def index2() {
+        [courses: courseManagementService.activeCourses.result]
+    }
+
     def visits(String identifier, Long periodFrom, Long periodTo, Boolean cumulative) {
         def node = dashboardService.nodeFromIdentifier(identifier)
         if (node.success) {
@@ -105,6 +109,16 @@ class DashboardController {
         def node = dashboardService.nodeFromIdentifier(identifier)
         if (node.success) {
             def result = dashboardService.findParticipation(node.result, periodFrom, periodTo)
+            render result as JSON
+        } else {
+            render node as JSON
+        }
+    }
+
+    def hero(String identifier, Long periodFrom, Long periodTo) {
+        def node = dashboardService.nodeFromIdentifier(identifier)
+        if (node.success) {
+            def result = dashboardService.findHeroInformation(node.result, periodFrom, periodTo)
             render result as JSON
         } else {
             render node as JSON
