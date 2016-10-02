@@ -92,7 +92,7 @@ class DashboardService {
         if (course != null && courseManagementService.canAccess(course)) {
             if (node instanceof Course) {
                 def subjects = course.subjects
-                ok item: SubjectVideo.findAllBySubjectInList(subjects).video
+                ok item: SubjectExercise.findAllBySubjectInList(subjects).exercise
             } else if (node instanceof Subject) {
                 ok item: node.videos
             } else if (node instanceof Video) {
@@ -274,25 +274,25 @@ class DashboardService {
             SELECT
                 myusers.username,
                 user_id AS user_id,
-                video.id AS video_id,
-                video.name AS video_title,
+                exercise.id AS video_id,
+                exercise.name AS video_title,
                 comment.date_created,
                 contents,
                 comment_id
             FROM
                 comment,
-                video_comment,
+                exercise_comment,
                 myusers,
-                video
+                exercise
             WHERE
-                video_comment.comment_id = comment.id AND
-                video_comment.video_comments_id IN :video_ids AND
+                exercise_comment.comment_id = comment.id AND
+                exercise_comment.exercise_comments_id IN :video_ids AND
                 comment.date_created >= to_timestamp(:from_timestamp) AND
                 comment.date_created <= to_timestamp(:to_timestamp) AND
                 myusers.id = comment.user_id AND
-                video.id = video_comment.video_comments_id
+                exercise.id = exercise_comment.exercise_comments_id
             ORDER BY
-                video_comment.video_comments_id;
+                exercise_comment.exercise_comments_id;
         /$
 
         def resultList = sessionFactory.currentSession

@@ -1,13 +1,9 @@
 package dk.sdu.tekvideo
 
-class Video implements Node {
-    String name
+class Video extends Exercise {
     String youtubeId
     String timelineJson
-    String description = "Ingen beskrivelse"
     Boolean videoType = true
-    Date dateCreated
-    NodeStatus localStatus = NodeStatus.VISIBLE
 
     static constraints = {
         name            nullable: false, blank: false, maxSize: 255
@@ -16,11 +12,8 @@ class Video implements Node {
         description     nullable: true
     }
 
-    static hasMany = [comments: Comment]
-
     static mapping = {
         timelineJson type: "text"
-        description type: "text"
         videoType defaultValue: true
     }
 
@@ -36,11 +29,6 @@ class Video implements Node {
         ]
     }
 
-    String getDescription() {
-        if (description == null) return "Ingen beskrivelse"
-        return description
-    }
-
     String getTimelineJson() {
         if (timelineJson == null) return "[]"
         return timelineJson
@@ -52,7 +40,7 @@ class Video implements Node {
 
     @Override
     Node getParent() {
-        SubjectVideo.findByVideo(this).subject
+        SubjectExercise.findByExercise(this).subject
     }
 
 }

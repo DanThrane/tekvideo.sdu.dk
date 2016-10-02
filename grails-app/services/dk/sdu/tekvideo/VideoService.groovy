@@ -126,7 +126,7 @@ class VideoService {
         def subjectIds = CourseSubject.findAllByCourseInList(courses).subject.id // TODO Performance
         def subjects = Subject.findAllByIdInListAndLocalStatus(subjectIds, NodeStatus.VISIBLE, [max: 25])
 
-        def videoIds = SubjectVideo.findAllBySubjectInList(subjects).video.id
+        def videoIds = SubjectExercise.findAllBySubjectInList(subjects).exercise.id
         Video.findAllByIdInListAndLocalStatus(videoIds, NodeStatus.VISIBLE, [max: 25, sort: "dateCreated", order: "desc"])
     }
 }

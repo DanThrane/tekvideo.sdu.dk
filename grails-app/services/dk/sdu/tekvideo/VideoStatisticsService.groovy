@@ -57,7 +57,7 @@ class VideoStatisticsService {
      * @param course    The course to limit the search to
      * @return          A mapping between every video in a course to the number of visits to said video.
      */
-    Map<Long, Integer> findVideoVisitCountInCourse(User user, Course course) {
+    Map<Long, Integer> findExerciseVisitCountInCourse(User user, Course course) {
         String query = $/
             WITH
                 events_by_user AS (
@@ -72,21 +72,21 @@ class VideoStatisticsService {
                   GROUP BY
                     event.video_id
               ),
-                selected_videos AS (
-                  SELECT video.id AS selected_video_id
+                selected_exercises AS (
+                  SELECT exercise.id AS selected_exercise_id
                   FROM
-                    course_subject, subject_video, video
+                    course_subject, subject_exercise, exercise
                   WHERE
                     course_subject.course_id = :course_id AND
-                    course_subject.subject_id = subject_video.subject_id AND
-                    subject_video.video_id = video.id
+                    course_subject.subject_id = subject_exercise.subject_id AND
+                    subject_exercise.exercise_id = exercise.id
               )
             SELECT
-              selected_video_id,
+              selected_exercise_id,
               visit_count
             FROM
-              selected_videos
-              LEFT OUTER JOIN events_by_user ON (video_id = selected_video_id);
+              selected_exercises
+              LEFT OUTER JOIN events_by_user ON (video_id = selected_exercise_id);
         /$
 
         long userId = (user != null) ? user.id : -1

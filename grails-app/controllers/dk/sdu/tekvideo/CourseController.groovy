@@ -23,7 +23,7 @@ class CourseController {
         Course course = urlMappingService.getCourse(teacherName, courseName, year, spring)
         if (courseService.canAccess(course)) {
             boolean isTeacher = userService.authenticatedTeacher == course.teacher
-            Map<Long, Integer> views = videoStatisticsService.findVideoVisitCountInCourse(
+            Map<Long, Integer> views = videoStatisticsService.findExerciseVisitCountInCourse(
                     (User) springSecurityService.currentUser, course)
             render(view: "view", model: [course: course,
                                          isTeacher: isTeacher,

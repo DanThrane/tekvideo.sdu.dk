@@ -111,7 +111,7 @@ class CourseManagementService {
         if (canAccess(subject.course)) {
             ok Video.executeQuery("""
                 SELECT v
-                FROM SubjectVideo sv INNER JOIN sv.video v
+                FROM SubjectExercise sv INNER JOIN sv.exercise v
                 WHERE sv.subject = :subject AND v.localStatus = :status
                 ORDER BY sv.weight
             """, [subject: subject, status: status])
@@ -222,10 +222,10 @@ class CourseManagementService {
                         video.save()
 
                         if (!command.isEditing) {
-                            SubjectVideo.create(command.subject, video, [save: true])
+                            SubjectExercise.create(command.subject, video, [save: true])
                         } else if (command.isEditing && video.subject != command.subject) {
-                            SubjectVideo.findByVideo(video).delete()
-                            SubjectVideo.create(command.subject, video, [save: true])
+                            SubjectExercise.findByExercise(video).delete()
+                            SubjectExercise.create(command.subject, video, [save: true])
                         }
                         ok video
                     } else {
@@ -257,16 +257,16 @@ class CourseManagementService {
                     it.localStatus = NodeStatus.TRASH
                     it.save()
                 }
-                def mappings = SubjectVideo.findAllBySubject(command.subject)
+                def mappings = SubjectExercise.findAllBySubject(command.subject)
                 command.order.eachWithIndex { entry, i ->
-                    def mapping = mappings.find { it.videoId == entry.id }
+                    def mapping = mappings.find { it.exercise.id == entry.id }
                     mapping.weight = i
                     mapping.save()
                 }
 
                 int index = command.order.size()
                 for (def t : diff) {
-                    def mapping = mappings.find { it.videoId == t.id }
+                    def mapping = mappings.find { it.exercise.id == t.id }
                     mapping.weight = index
                     mapping.save()
 
@@ -472,7 +472,7 @@ class CourseManagementService {
                 description : video.description,
                 videoTyupe  : video.videoType,
         ]).save(flush: true)
-        SubjectVideo.create(subject, newVideo, [save: true])
+        SubjectExercise.create(subject, newVideo, [save: true])
     }
 
     ServiceResult<Subject> moveSubject(MoveSubjectCommand command) {
@@ -489,7 +489,7 @@ class CourseManagementService {
 
     ServiceResult<Video> moveVideo(MoveVideoCommand command) {
         if (command.validate()) {
-            def mapping = SubjectVideo.findByVideo(command.video)
+            def mapping = SubjectExercise.findByExercise(command.video)
             mapping.subject = command.newSubject
             mapping.weight = command.position
             mapping.save(flush: true, failOnError: true)

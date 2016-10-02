@@ -1,11 +1,11 @@
 package dk.sdu.tekvideo
 
-class SubjectVideo {
+class SubjectExercise {
     Subject subject
-    Video video
+    Exercise exercise
     Integer weight
 
-    static SubjectVideo create(Subject subject, Video video, Map params) {
+    static SubjectExercise create(Subject subject, Exercise exercise, Map params) {
         Integer weight = params.weight
         Boolean save = params.save ?: false
         Boolean flush = params.flush ?: true
@@ -15,7 +15,7 @@ class SubjectVideo {
             weight = countBySubject(subject)
         }
 
-        def result = new SubjectVideo(subject: subject, video: video, weight: weight)
+        def result = new SubjectExercise(subject: subject, exercise: exercise, weight: weight)
         if (save) {
             result.save(flush: flush, failOnError: failOnError)
         }
@@ -24,7 +24,7 @@ class SubjectVideo {
 
     static constraints = {
         subject nullable: false
-        video nullable: false
+        exercise nullable: false
         weight nullable: false, min: 0
     }
 }

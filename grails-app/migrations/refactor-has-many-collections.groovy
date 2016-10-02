@@ -1,6 +1,6 @@
 import dk.sdu.tekvideo.CourseSubject
 import dk.sdu.tekvideo.Subject
-import dk.sdu.tekvideo.SubjectVideo
+import dk.sdu.tekvideo.SubjectExercise
 import dk.sdu.tekvideo.Video
 import dk.sdu.tekvideo.Course
 
@@ -92,7 +92,7 @@ databaseChangeLog = {
                         }
 
                         Subject subject = Subject.get(id)
-                        SubjectVideo.create(subject, video, [weight: weight, flush: true, save: true])
+                        SubjectExercise.create(subject, video, [weight: weight, flush: true, save: true])
                     }
                 }
             }
