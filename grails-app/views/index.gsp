@@ -5,9 +5,42 @@
 <head>
     <meta name="layout" content="main_fluid"/>
     <title>Hjem</title>
+
+    <script>
+        // setup Polymer options
+        window.Polymer = {lazyRegister: true, dom: 'shadow'};
+
+        // load webcomponents polyfills
+        (function() {
+            if ('registerElement' in document
+                    && 'import' in document.createElement('link')
+                    && 'content' in document.createElement('template')) {
+                // browser has web components
+            } else {
+                // polyfill web components
+                var e = document.createElement('script');
+                e.src = '${createLink(absolute:true, uri:'/assets/')}/bower_components/webcomponentsjs/webcomponents-lite.min.js';
+                document.head.appendChild(e);
+            }
+        })();
+
+    </script>
+
+
+    <link rel="import" href="${createLink(absolute:true, uri:'/assets/')}/components/tekvideo-exercise-card.html">
+    <style>
+        .polymer {
+            font-family: 'Roboto', 'Noto', sans-serif;
+            line-height: 1.5;
+        }
+
+        tekvideo-exercise-card {
+            margin: 15px 15px 15px 0px;
+        }
+    </style>
 </head>
 
-<body>
+<body class="polymer">
 
 <g:if test="${student}">
     <twbs:pageHeader>
@@ -36,24 +69,21 @@
     <h3>Fremhævede videoer</h3>
 </twbs:pageHeader>
 
-<g:each in="${featuredVideos}" var="breakdown">
-    <sdu:card>
-        <twbs:column sm="1">
-            <img src="http://img.youtube.com/vi/${breakdown.video.youtubeId}/hqdefault.jpg"
-                 class="img-responsive"
-                 alt="Video thumbnail">
-            <fa:icon icon="${FaIcon.EYE}"/> ${breakdown.viewCount} &nbsp;
-            <fa:icon icon="${FaIcon.COMMENTS}"/> ${breakdown.commentCount}
-        </twbs:column>
-        <twbs:column sm="11">
-            <sdu:linkToVideo video="${breakdown.video}">
-                ${breakdown.video.name}
-            </sdu:linkToVideo>
-
-            <markdown:renderHtml>${breakdown.video.description}</markdown:renderHtml>
-        </twbs:column>
-    </sdu:card>
+<div style="display: flex; flex-wrap: wrap;">
+<g:each in="${featuredVideos}" var="breakdown" status="index">
+    <tekvideo-exercise-card
+            href="${sdu.createLinkToVideo(video: breakdown.video)}"
+            title="${breakdown.video.name}"
+            comment-count=${breakdown.commentCount}
+            view-count=${breakdown.viewCount}
+            author="${breakdown.video.subject.course.teacher.toString()}"
+            course="${breakdown.video.subject.course.name}"
+            subject="${breakdown.video.subject.name}"
+            video-id="${breakdown.video.youtubeId}"
+            time="--:--">
+        <sdu:abbreviate>${breakdown.video.description}</sdu:abbreviate>
+    </tekvideo-exercise-card>
 </g:each>
-
+</div>
 </body>
 </html>
