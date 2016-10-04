@@ -71,6 +71,9 @@
                                 <twbs:dropdownItem action="createVideo" id="${course.id}">
                                     <fa:icon icon="${FaIcon.PLAY}"/> Video
                                 </twbs:dropdownItem>
+                                <twbs:dropdownItem action="createPerseus" id="${course.id}">
+                                    <fa:icon icon="${FaIcon.FILE_TEXT}"/> Perseus Opgave
+                                </twbs:dropdownItem>
                             </twbs:dropdownMenu>
                         </twbs:dropdownToggle>
                     </twbs:buttonGroup>

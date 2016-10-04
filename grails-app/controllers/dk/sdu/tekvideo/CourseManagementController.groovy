@@ -166,6 +166,15 @@ class CourseManagementController {
         }
     }
 
+    def createPerseus(Course course) {
+        def teacher = userService.authenticatedTeacher
+        if (courseManagementService.canAccess(course)) {
+            render view: "createOrEditPerseus", model: [course: course, teacher: teacher, isEditing: false]
+        } else {
+            notAllowedCourse()
+        }
+    }
+
     def editVideo(Video video) {
         if (userService.authenticatedTeacher) {
             render view: "createVideo", model: [

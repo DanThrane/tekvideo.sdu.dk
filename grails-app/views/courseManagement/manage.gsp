@@ -41,11 +41,25 @@
                             </div>
                         </twbs:column>
                         <twbs:column cols="6" class="align-right">
-                            <twbs:linkButton style="${ButtonStyle.SUCCESS}" action="createVideo"
-                                             controller="courseManagement" id="${subject.course.id}"
-                                             params="${[subject: subject.id]}">
-                                <fa:icon icon="${FaIcon.PLUS_CIRCLE}"/> Tilføj video
-                            </twbs:linkButton>
+                            <twbs:buttonGroup>
+                                <twbs:dropdownToggle style="${ButtonStyle.SUCCESS}">
+                                    <fa:icon icon="${FaIcon.PLUS_CIRCLE}"/> Tilføj ny
+
+                                    <twbs:dropdownMenu>
+                                        <twbs:dropdownItem action="createVideo" controller="courseManagement"
+                                                           id="${subject.course.id}" params="${[subject: subject.id]}">
+                                            <fa:icon icon="${FaIcon.PLAY}"/> Video
+                                        </twbs:dropdownItem>
+                                        <twbs:dropdownItem action="createPerseus" controller="courseManagement"
+                                                           id="${subject.course.id}" params="${[subject: subject.id]}">
+                                            <fa:icon icon="${FaIcon.FILE_TEXT}"/> Perseus Opgave
+                                        </twbs:dropdownItem>
+                                    </twbs:dropdownMenu>
+                                </twbs:dropdownToggle>
+                            </twbs:buttonGroup>
+
+
+
                             <twbs:buttonGroup>
                                 <twbs:dropdownToggle style="${ButtonStyle.WARNING}">
                                     <fa:icon icon="${FaIcon.ARROW_CIRCLE_RIGHT}"/> Flyt til
