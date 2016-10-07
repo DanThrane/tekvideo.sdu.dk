@@ -11,6 +11,30 @@
     <h3>${video.name}</h3>
 </twbs:pageHeader>
 
+<twbs:row>
+    <twbs:column>
+        <ol class="breadcrumb">
+            <li><g:link uri="/">Hjem</g:link></li>
+            <li>
+                <sdu:linkToTeacher teacher="${video.subject.course.teacher}">
+                    ${video.subject.course.teacher}
+                </sdu:linkToTeacher>
+            </li>
+            <li>
+                <sdu:linkToCourse course="${video.subject.course}">
+                    ${video.subject.course.fullName} (${video.subject.course.name})
+                </sdu:linkToCourse>
+            </li>
+            <li>
+                <sdu:linkToSubject subject="${video.subject}">
+                    ${video.subject.name}
+                </sdu:linkToSubject>
+            </li>
+            <li class="active">${video.name}</li>
+        </ol>
+    </twbs:column>
+</twbs:row>
+
 <div class="embed-responsive embed-responsive-16by9">
     <div class="wrapper" id="wrapper" style="z-index: 20"></div>
     <div id="player"></div>
