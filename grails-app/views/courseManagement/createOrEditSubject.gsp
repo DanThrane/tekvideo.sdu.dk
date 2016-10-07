@@ -13,7 +13,7 @@
         <twbs:pageHeader>
             <h3>
                 <g:if test="${isEditing}">
-                    Administreing af emne
+                    Administrering af emne
                     <small>${command.domain.name}</small>
                 </g:if>
                 <g:else>
