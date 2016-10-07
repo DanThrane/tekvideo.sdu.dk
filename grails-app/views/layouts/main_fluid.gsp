@@ -86,6 +86,11 @@
     <g:if test="${flash.message}">
         <twbs:alert type="info">${flash.message}</twbs:alert>
     </g:if>
+    <sec:ifNotLoggedIn>
+        <twbs:alert type="info" dismissible="false">
+            Klik <g:link controller="cas" action="index">her</g:link> for at logge ind via SDU SSO
+        </twbs:alert>
+    </sec:ifNotLoggedIn>
     <twbs:row class="content">
         <g:ifContentNotAvailable key="sidebar-right">
             <twbs:column sm="10" push-sm="2">
