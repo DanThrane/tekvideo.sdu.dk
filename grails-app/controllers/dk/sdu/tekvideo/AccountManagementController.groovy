@@ -60,19 +60,19 @@ class AccountManagementController {
      *
      * TODO More fine-grained permission management
      */
-    @Secured("ROLE_TEACHER")
+    @Secured(["ROLE_TEACHER"])
     def manage() {
         []
     }
 
-    @Secured("ROLE_TEACHER")
+    @Secured(["ROLE_TEACHER"])
     def users() {
         def result = accountManagementService.retrieveUserData()
         response.status = result.suggestedHttpStatus
         render result as JSON
     }
 
-    @Secured("ROLE_TEACHER")
+    @Secured(["ROLE_TEACHER"])
     def updateUser(UpdateUserCommand command) {
         def result = accountManagementService.updateUser(command)
         response.status = result.suggestedHttpStatus

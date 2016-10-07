@@ -151,7 +151,7 @@ class UrlMappingService {
         // TODO FIXME This is going to blow up at some point, since the video list is no longer guaranteed to be
         // well-formed (not sure it even was before)
         def res = prepareSubjectAttributes(video.subject, attrs)
-        res.params.vidid = SubjectVideo.findByVideo(video).weight
+        res.params.vidid = SubjectExercise.findByExercise(video).weight
         return res
     }
 

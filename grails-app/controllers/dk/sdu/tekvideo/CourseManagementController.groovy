@@ -6,7 +6,7 @@ import org.springframework.security.access.annotation.Secured
 /**
  * @author Dan Thrane
  */
-@Secured("ROLE_TEACHER")
+@Secured(["ROLE_TEACHER"])
 class CourseManagementController {
     UserService userService
     CourseService courseService
@@ -161,6 +161,15 @@ class CourseManagementController {
     def createVideo(Course course) {
         if (courseManagementService.canAccess(course)) {
             [course: course, subjects: course.subjects, isEditing: false, subject: params.subject]
+        } else {
+            notAllowedCourse()
+        }
+    }
+
+    def createPerseus(Course course) {
+        def teacher = userService.authenticatedTeacher
+        if (courseManagementService.canAccess(course)) {
+            render view: "createOrEditPerseus", model: [course: course, teacher: teacher, isEditing: false]
         } else {
             notAllowedCourse()
         }

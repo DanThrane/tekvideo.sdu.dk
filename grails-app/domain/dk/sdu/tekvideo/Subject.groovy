@@ -16,16 +16,16 @@ class Subject implements Node {
         description type: "text"
     }
 
-    List<Video> getActiveVideos() {
+    List<Exercise> getActiveVideos() {
         videos.findAll { it != null && it.localStatus != NodeStatus.TRASH }
     }
 
-    List<Video> getVisibleVideos() {
+    List<Exercise> getVisibleVideos() {
         videos.findAll { it != null && it.localStatus == NodeStatus.VISIBLE }
     }
 
-    List<Video> getVideos() {
-        Collections.unmodifiableList(SubjectVideo.findAllBySubject(this, [sort: 'weight']).video)
+    List<Exercise> getVideos() {
+        Collections.unmodifiableList(SubjectExercise.findAllBySubject(this, [sort: 'weight']).exercise)
     }
 
     Course getCourse() {

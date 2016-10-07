@@ -2,8 +2,10 @@ package dk.sdu.tekvideo
 
 import dk.sdu.tekvideo.events.AnswerQuestionEvent
 import dk.sdu.tekvideo.events.VisitVideoEvent
+import org.apache.http.HttpStatus
 import org.hibernate.SessionFactory
 
+import java.sql.Timestamp
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 import java.util.stream.Collectors
@@ -90,7 +92,7 @@ class DashboardService {
         if (course != null && courseManagementService.canAccess(course)) {
             if (node instanceof Course) {
                 def subjects = course.subjects
-                ok item: SubjectVideo.findAllBySubjectInList(subjects).video
+                ok item: SubjectExercise.findAllBySubjectInList(subjects).exercise
             } else if (node instanceof Subject) {
                 ok item: node.videos
             } else if (node instanceof Video) {
@@ -250,33 +252,47 @@ class DashboardService {
         })
     }
 
-    List<Map> findRecentComments(List<Video> leaves, Long periodFrom, Long periodTo) {
+    ServiceResult<List<DetailedComment>> findRecentComments(List<Video> leaves, Long periodFrom, Long periodTo) {
         if (leaves == null) leaves = []
         def videoIds = leaves.stream().map { it.id }.collect(Collectors.toList())
+
+        if (!videoIds) return fail("no videos")
+        if (periodFrom == null || periodTo == null || periodTo < periodFrom || periodFrom < 0 || periodTo < 0)
+            return fail(message: "bad request", suggestedHttpStatus: HttpStatus.SC_BAD_REQUEST)
+
+        def ownsAllVideos = leaves
+                .collect { findCourse(it) }
+                .toSet()
+                .stream()
+                .allMatch { courseManagementService.canAccess(it) }
+
+        if (!ownsAllVideos) {
+            return fail(message: "Du har ikke rettigheder til at tilgå dette kursus", suggestedHttpStatus: 403)
+        }
 
         String query = $/
             SELECT
                 myusers.username,
                 user_id AS user_id,
-                video.id AS video_id,
-                video.name AS video_title,
+                exercise.id AS video_id,
+                exercise.name AS video_title,
                 comment.date_created,
                 contents,
                 comment_id
             FROM
                 comment,
-                video_comment,
+                exercise_comment,
                 myusers,
-                video
+                exercise
             WHERE
-                video_comment.comment_id = comment.id AND
-                video_comment.video_comments_id IN :video_ids AND
+                exercise_comment.comment_id = comment.id AND
+                exercise_comment.exercise_comments_id IN :video_ids AND
                 comment.date_created >= to_timestamp(:from_timestamp) AND
                 comment.date_created <= to_timestamp(:to_timestamp) AND
                 myusers.id = comment.user_id AND
-                video.id = video_comment.video_comments_id
+                exercise.id = exercise_comment.exercise_comments_id
             ORDER BY
-                video_comment.video_comments_id;
+                exercise_comment.exercise_comments_id;
         /$
 
         def resultList = sessionFactory.currentSession
@@ -286,18 +302,18 @@ class DashboardService {
                 .setLong("to_timestamp", (long) (periodTo / 1000))
                 .list()
 
-        return resultList.collect {
-            [
+        return ok(resultList.collect {
+            new DetailedComment([
                     "username"   : it[0],
                     "userId"     : it[1],
                     "videoId"    : it[2],
                     "videoTitle" : it[3],
-                    "dateCreated": it[4],
+                    "dateCreated": (it[4] as Timestamp).toInstant().epochSecond * 1000,
                     "comment"    : it[5],
                     "commentId"  : it[6],
                     "videoUrl"   : urlMappingService.generateLinkToVideo(Video.get(it[2]), [absolute: true])
-            ]
-        }
+            ])
+        })
     }
 
     Set<Student> findStudents(Node node) {

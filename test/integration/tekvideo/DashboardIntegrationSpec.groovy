@@ -1,7 +1,9 @@
 package tekvideo
 
+import dk.sdu.tekvideo.Comment
 import dk.sdu.tekvideo.ImportCourseCommand
 import dk.sdu.tekvideo.ServiceResult
+import dk.sdu.tekvideo.User
 import dk.sdu.tekvideo.Video
 import dk.sdu.tekvideo.data.CourseData
 import dk.sdu.tekvideo.data.SubjectData
@@ -252,6 +254,67 @@ class DashboardIntegrationSpec extends Specification {
     }
 
     // find recent comments
+    @Unroll("test finding recent comments (#authenticateAs, #nodes, #comments, #periodFrom, #periodTo, #success)")
+    def "test finding recent comments"() {
+        given: "some users"
+        def users = [:]
+        users.teacher1 = UserData.buildTestTeacher("teacher1")
+        users.teacher2 = UserData.buildTestTeacher("teacher2")
+        users.student = UserData.buildStudent("student")
+
+        and: "a tree"
+        def tree = [:]
+        tree.course = CourseData.buildTestCourse("Course", users.teacher1)
+        tree.subject1 = SubjectData.buildTestSubject("Subject1", tree.course)
+        tree.subject2 = SubjectData.buildTestSubject("Subject2", tree.course)
+        tree.video1a = VideoData.buildTestVideo("Video1a", tree.subject1)
+        tree.video2a = VideoData.buildTestVideo("Video2a", tree.subject1)
+        tree.video3a = VideoData.buildTestVideo("Video3a", tree.subject1)
+        tree.video1b = VideoData.buildTestVideo("Video1b", tree.subject2)
+        tree.video2b = VideoData.buildTestVideo("Video2b", tree.subject2)
+        tree.video3b = VideoData.buildTestVideo("Video3b", tree.subject2)
+        tree.course2 = CourseData.buildTestCourse("Course2", users.teacher2)
+        tree.subject3 = SubjectData.buildTestSubject("Subject3", tree.course2)
+        tree.video1c = VideoData.buildTestVideo("Video1c", tree.subject3)
+
+        and: "some comments"
+        (comments as List<List>).eachWithIndex { commentData, index ->
+            def video = tree[commentData[0] as String] as Video
+            def when = new Date((commentData[1] as long) * 1000)
+            def commenter = users[commentData[2] as String].user
+
+            def comment = new Comment(
+                    user: commenter,
+                    contents: "${index}"
+            )
+            video.addToComments(comment).save(failOnError: true, flush: true)
+            comment.dateCreated = when // Working around the automatic time-stamping
+            comment.save(failOnError: true, flush: true)
+        }
+
+        when: "we authenticate"
+        if (authenticateAs) {
+            UserData.authenticateAsUser(users[authenticateAs].user)
+        }
+
+        and: "we make the call"
+        def call = dashboardService.findRecentComments(nodes.collect { tree[it] } as List<Video>,
+                periodFrom * 1000, periodTo * 1000)
+
+        then: "the call might succeed"
+        call.success == success
+
+        and: "we get the correct comments back"
+        !success || call.result.collect { it.comment } == result.collect { "${it}".toString() }
+
+        where:
+        authenticateAs | result | nodes                             | comments                                                 | periodFrom | periodTo | success
+        "teacher1"     | [0, 1] | ["video1b", "video2b", "video3b"] | [["video1b", 0, "teacher1"], ["video3b", 1, "teacher1"]] | 0          | 10       | true
+        "teacher1"     | [0, 1] | ["video1b", "video2b", "video3b"] | [["video1b", 0, "student"], ["video3b", 1, "student"]]   | 0          | 10       | true
+        "teacher1"     | [0]    | ["video1b", "video2b", "video3b"] | [["video1b", 0, "student"], ["video3b", 20, "student"]]  | 0          | 10       | true
+        "student"      | []     | ["video1b", "video2b", "video3b"] | [["video1b", 0, "teacher1"], ["video3b", 1, "teacher1"]] | 0          | 10       | false
+
+    }
 
     // find students
 

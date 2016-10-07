@@ -37,7 +37,7 @@ class VideoController {
         redirect action: "viewV", id: video.id
     }
 
-    @Secured("ROLE_TEACHER")
+    @Secured(["ROLE_TEACHER"])
     def deleteComment(Video video, Long comment) {
         def result = videoService.deleteComment(video, Comment.get(comment))
         render result as JSON

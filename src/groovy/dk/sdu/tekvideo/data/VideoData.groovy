@@ -1,7 +1,7 @@
 package dk.sdu.tekvideo.data
 
 import dk.sdu.tekvideo.Subject
-import dk.sdu.tekvideo.SubjectVideo
+import dk.sdu.tekvideo.SubjectExercise
 import dk.sdu.tekvideo.Video
 
 import java.util.concurrent.atomic.AtomicInteger
@@ -24,7 +24,7 @@ class VideoData {
 
         if (save) {
             video.save(failOnError: true, flush: true)
-            SubjectVideo.create(subject, video, [save: true, failOnError: true, flush: true])
+            SubjectExercise.create(subject, video, [save: true, failOnError: true, flush: true])
         }
 
         return video

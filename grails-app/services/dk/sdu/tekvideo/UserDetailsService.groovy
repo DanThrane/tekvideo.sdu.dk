@@ -46,6 +46,8 @@ class UserDetailsService extends GormUserDetailsService {
                     isCas: true
             )
             user.save(flush: true, failOnError: true)
+            def student = new Student(user: user)
+            student.save(flush: true)
             def defaultRole = Role.findByAuthority("ROLE_STUDENT")
             UserRole.create(user, defaultRole, true)
         }

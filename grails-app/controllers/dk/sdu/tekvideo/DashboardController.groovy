@@ -3,7 +3,7 @@ package dk.sdu.tekvideo
 import grails.converters.JSON
 import org.springframework.security.access.annotation.Secured
 
-@Secured("ROLE_TEACHER")
+@Secured(["ROLE_TEACHER"])
 class DashboardController {
     DashboardService dashboardService
     CourseManagementService courseManagementService
@@ -58,7 +58,12 @@ class DashboardController {
             def leaves = dashboardService.findLeaves(node.result)
             if (leaves.success) {
                 def stats = dashboardService.findRecentComments(leaves.result, periodFrom, periodTo)
-                render stats as JSON
+                if (stats.success) {
+                    render stats.result as JSON
+                } else {
+                    response.status = stats.suggestedHttpStatus
+                    render stats as JSON
+                }
             } else {
                 render leaves as JSON
             }
