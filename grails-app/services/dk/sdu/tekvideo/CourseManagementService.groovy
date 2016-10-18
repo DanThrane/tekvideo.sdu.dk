@@ -1,5 +1,6 @@
 package dk.sdu.tekvideo
 
+import grails.plugin.springsecurity.SpringSecurityUtils
 import org.apache.http.HttpStatus
 
 import static dk.sdu.tekvideo.ServiceResult.*
@@ -240,6 +241,44 @@ class CourseManagementService {
         }
     }
 
+    ServiceResult<SimilarResources> createSimilarResource(CreateSimilarResourceCommand command) {
+        def user  = userService.authenticatedTeacher
+        if (!command.exercise) {
+            fail "Ukendt opgave"
+        } else if (!user) {
+            fail "Ukendt bruger"
+        } else if (!canAccessNode(command.exercise)) {
+            fail "Ikke tilladt"
+        } else {
+            def comment = new SimilarResources(link: command.link, title: command.title)
+            if (!comment.validate()) {
+                fail "Ikke gyldig"
+            } else {
+                if (command.exercise.addToSimilarResources(comment)) {
+                    ok comment
+                } else {
+                    fail "Kunne ikke gemme"
+                }
+            }
+        }
+    }
+
+    ServiceResult<Void> deleteSimilarResource(Exercise exercise, SimilarResources similarResources) {
+        if (!exercise) {
+            fail "Ukendt video"
+        } else if (!similarResources) {
+            fail "Ukendt kommentar"
+        } else if (!canAccessNode(exercise)) {
+            fail "Ikke tilladt"
+        } else {
+            if (!exercise.removeFromSimilarResources(similarResources)) {
+                fail("Kunne ikke fjerne", true)
+            } else {
+                ok null
+            }
+        }
+    }
+
     /**
      * Updates the video list of a subject. This allows for videos to be moved up and down in the list, as well as
      * removing videos entirely from the list. Any video deleted will be marked as TRASH.
@@ -375,6 +414,16 @@ class CourseManagementService {
      */
     boolean canAccess(Course course) {
         return course.teacher == userService.authenticatedTeacher
+    }
+
+    boolean canAccessNode(Node node) {
+        if (node == null) {
+            return false
+        } else if (node instanceof Course) {
+            return canAccess(node)
+        } else {
+            return canAccessNode(node.parent)
+        }
     }
 
     /**

@@ -594,4 +594,5 @@ databaseChangeLog = {
 	include file: 'add-cas-support.groovy'
 
 	include file: 'add-exercise-super-type.groovy'
+	include file: 'add-similar-resources-to-exercises.groovy'
 }

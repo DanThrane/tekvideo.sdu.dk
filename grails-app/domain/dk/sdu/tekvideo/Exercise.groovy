@@ -11,7 +11,7 @@ abstract class Exercise implements Node {
         version false
     }
 
-    static hasMany = [comments: Comment]
+    static hasMany = [comments: Comment, similarResources: SimilarResources]
 
     static constraints = {
         name            nullable: false, blank: false, maxSize: 255

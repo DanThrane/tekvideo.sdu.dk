@@ -5,8 +5,8 @@ var AjaxUtil = {};
     // TODO documentation
     function registerJSONForm(buttonSelector, endpoint, dataSupplier, callbacks) {
         var button = new AjaxSubmitButton(buttonSelector);
-        $(buttonSelector).click(function () {
-            var data = dataSupplier();
+        $(buttonSelector).click(function (e) {
+            var data = dataSupplier(e);
             var hasCallbacks = callbacks !== undefined;
             button.setLoadingState();
             Util.postJson(endpoint, data, {

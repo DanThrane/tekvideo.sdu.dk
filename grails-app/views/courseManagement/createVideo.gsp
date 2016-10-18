@@ -10,6 +10,7 @@
     <meta name="layout" content="main_fluid"/>
     <asset:javascript src="interact.js"/>
     <asset:stylesheet src="create_video.css"/>
+    <sdu:requireAjaxAssets />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.1.9/ace.js"></script>
 </head>
 
@@ -296,6 +297,22 @@
                 <p class="help-block">
                     Dette vil gemme videoen og gøre den synlig for alle brugere
                 </p>
+                <g:if test="${isEditing}">
+                    <hr>
+                    <twbs:pageHeader><h4>Se også afsnit</h4></twbs:pageHeader>
+                    <ul id="similar-resources">
+                        <g:each in="${video.similarResources}">
+                            <div>
+                                <b>Title: ${it.title}</b> <br/>
+                                <b>Link: ${it.link}</b>
+                                <sdu:ajaxSubmitButton style="${ButtonStyle.DANGER}" class="similar-resource-delete" data-id="${it.id}">
+                                    <fa:icon icon="${FaIcon.TRASH}"/>
+                                    Slet
+                                </sdu:ajaxSubmitButton>
+                            </div>
+                        </g:each>
+                    </ul>
+                </g:if>
             </div>
         </div>
     </div>
@@ -378,6 +395,19 @@
 
             var tree = new ManagementTreeView("#tree-container", "${createLink(absolute:true, uri:'/')}");
             tree.init();
+
+            AjaxUtil.registerJSONForm(
+                    ".subject-delete-button",
+                    "${createLink(action: "deleteSimilarResource")}",
+                    function (e) {
+                        console.log(e);
+                        return {
+
+                        };
+                    },
+                    {}
+            );
+
         });
     </script>
     <asset:javascript src="./courseManagement/app.js"/>

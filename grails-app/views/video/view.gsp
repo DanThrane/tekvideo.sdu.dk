@@ -100,6 +100,17 @@
     <ul id="videoNavigation" class="video-navigation">
     </ul>
 
+    <div id="similar-resources">
+        <g:if test="${!video.similarResources.empty}">
+            <twbs:pageHeader><h4>Se også</h4></twbs:pageHeader>
+            <ul>
+                <g:each in="${video.similarResources}">
+                    <li><a href="${it.link}">${it.title}</a></li>
+                </g:each>
+            </ul>
+        </g:if>
+    </div>
+
     <div class="sidebar-pull-bottom">
         <twbs:button style="${ButtonStyle.PRIMARY}" block="true" id="checkAnswers">
             <fa:icon icon="${FaIcon.CHECK}"/>
