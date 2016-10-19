@@ -5,29 +5,24 @@ import org.springframework.security.access.annotation.Secured
 class CourseController {
     static defaultAction = "list"
 
-    UserService userService
     UrlMappingService urlMappingService
     StudentService studentService
     CourseService courseService
-    VideoStatisticsService videoStatisticsService
     def springSecurityService
 
     @Secured("permitAll")
     def list() {
-        List<Course> courses = courseService.listVisibleCourses()
-        [courses: courses]
+        [data: courseService.visibleCoursesForBrowser()]
     }
 
     @Secured("permitAll")
     def viewByTeacher(String teacherName, String courseName, Integer year, Boolean spring) {
         Course course = urlMappingService.getCourse(teacherName, courseName, year, spring)
         if (courseService.canAccess(course)) {
-            boolean isTeacher = userService.authenticatedTeacher == course.teacher
-            Map<Long, Integer> views = videoStatisticsService.findExerciseVisitCountInCourse(
-                    (User) springSecurityService.currentUser, course)
-            render(view: "view", model: [course: course,
-                                         isTeacher: isTeacher,
-                                         views: views])
+            render(view: "view", model: [
+                    course   : course,
+                    data     : courseService.visibleSubjectsForBrowser(course)
+            ])
         } else {
             render status: "404", text: "Course not found!"
         }

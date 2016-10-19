@@ -1,0 +1,31 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
+<link rel="import" href="../../bower_components/marked-element/marked-element.html">
+
+<dom-module id="tv-exercise-markdown">
+
+<template>
+<style include="iron-flex"></style>
+
+<style>
+:host {
+    display: block;
+}
+</style>
+
+<marked-element markdown="{{content}}"></marked-element>
+
+</template>
+
+<script>
+Polymer({
+    is: 'tv-exercise-markdown',
+    properties: {
+        content: {
+        	type: String,
+        	value: ""
+        }
+    }
+});
+</script>
+</dom-module>

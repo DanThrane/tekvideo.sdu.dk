@@ -1,4 +1,4 @@
-<%@ page import="dk.sdu.tekvideo.FaIcon; dk.danthrane.twbs.GridSize; dk.danthrane.twbs.ButtonStyle; dk.danthrane.twbs.ButtonSize" %>
+<%@ page import="grails.converters.JSON; dk.sdu.tekvideo.FaIcon; dk.danthrane.twbs.GridSize; dk.danthrane.twbs.ButtonStyle; dk.danthrane.twbs.ButtonSize" %>
 
 <!DOCTYPE html>
 <html>
@@ -6,26 +6,7 @@
     <meta name="layout" content="main_fluid"/>
     <title>Hjem</title>
 
-    <script>
-        // setup Polymer options
-        window.Polymer = {lazyRegister: true, dom: 'shadow'};
-
-        // load webcomponents polyfills
-        (function() {
-            if ('registerElement' in document
-                    && 'import' in document.createElement('link')
-                    && 'content' in document.createElement('template')) {
-                // browser has web components
-            } else {
-                // polyfill web components
-                var e = document.createElement('script');
-                e.src = '${createLink(absolute:true, uri:'/assets/')}/bower_components/webcomponentsjs/webcomponents-lite.min.js';
-                document.head.appendChild(e);
-            }
-        })();
-
-    </script>
-
+    <g:render template="/polymer/includePolymer" />
 
     <link rel="import" href="${createLink(absolute:true, uri:'/assets/')}/components/tekvideo-exercise-card.html">
     <style>
@@ -35,6 +16,7 @@
         }
 
         tekvideo-exercise-card {
+            width: 30%;
             margin: 15px 15px 15px 0px;
         }
     </style>
@@ -71,17 +53,21 @@
 
 <div style="display: flex; flex-wrap: wrap;">
 <g:each in="${featuredVideos}" var="breakdown" status="index">
+    %{-- TODO This needs to be fixed ASAP --}%
     <tekvideo-exercise-card
-            href="${sdu.createLinkToVideo(video: breakdown.video)}"
+            url="${sdu.createLinkToVideo(video: breakdown.video)}"
             title="${breakdown.video.name}"
-            comment-count=${breakdown.commentCount}
-            view-count=${breakdown.viewCount}
-            author="${breakdown.video.subject.course.teacher.toString()}"
-            course="${breakdown.video.subject.course.name}"
-            subject="${breakdown.video.subject.name}"
-            video-id="${breakdown.video.youtubeId}"
-            time="--:--">
-        <sdu:abbreviate>${breakdown.video.description}</sdu:abbreviate>
+            stats="${[
+                    [icon: "communication:comment", content: breakdown.commentCount],
+                    [icon: "visibility", content: breakdown.viewCount]
+            ] as JSON}"
+            breadcrumbs="${[
+                    [title: breakdown.video.subject.course.teacher.toString(), url: sdu.createLinkToTeacher(teacher: breakdown.video.subject.course.teacher)],
+                    [title: breakdown.video.subject.course.name, url: sdu.createLinkToCourse(course: breakdown.video.subject.course)],
+                    [title: breakdown.video.subject.name, url: sdu.createLinkToSubject(subject: breakdown.video.subject)]
+            ] as JSON}"
+            description="${breakdown.video.description}"
+            thumbnail="${sdu.thumbnail(node: breakdown.video)}">
     </tekvideo-exercise-card>
 </g:each>
 </div>

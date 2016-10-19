@@ -1,0 +1,39 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
+<link rel="import" href="../../bower_components/marked-element/marked-element.html">
+<link rel="import" href="../../bower_components/paper-button/paper-button.html">
+
+<dom-module id="tve-explanation">
+
+<template>
+<style include="iron-flex"></style>
+
+<style>
+:host {
+    display: block;
+}
+</style>
+
+<paper-button on-click="showExplanation">Toggle forklaring</paper-button>
+
+<iron-collapse id="collapse">
+    <marked-element markdown="{{content}}"></marked-element>
+</iron-collapse>
+
+</template>
+
+<script>
+Polymer({
+    is: 'tve-explanation',
+    properties: {
+        content: {
+            type: String,
+            value: ""
+        }
+    },
+    showExplanation: function() {
+        this.$.collapse.toggle();
+    }
+});
+</script>
+</dom-module>

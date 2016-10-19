@@ -3,6 +3,11 @@
 <head>
     <meta name="layout" content="main_fluid">
     <title>Videoer for ${subject.name}</title>
+
+    <g:render template="/polymer/includePolymer" />
+
+    <link rel="import" href="${createLink(absolute:true, uri:'/assets/')}/components/tv-browser.html">
+
 </head>
 
 <body>
@@ -30,23 +35,8 @@
     </twbs:column>
 </twbs:row>
 
-<g:each status="i" in="${subject.visibleVideos}" var="video">
-    <sdu:card>
-        <twbs:column cols="2">
-            <img src="http://img.youtube.com/vi/${video.youtubeId}/hqdefault.jpg" class="img-responsive"
-                 alt="Video thumbnail">
-        </twbs:column>
-        <twbs:column cols="10">
-            <h5>
-                <sdu:linkToVideo video="${video}">
-                    ${video.name}
-                </sdu:linkToVideo>
-            </h5>
+<tv-browser items='${data as grails.converters.JSON}'></tv-browser>
 
-            <p><markdown:renderHtml>${video.description}</markdown:renderHtml></p>
-        </twbs:column>
-    </sdu:card>
-</g:each>
 
 <g:render template="/course/sidebar" model="${[course: subject.course]}"/>
 

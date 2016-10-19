@@ -129,4 +129,11 @@ class VideoService {
         def videoIds = SubjectExercise.findAllBySubjectInList(subjects).exercise.id
         Video.findAllByIdInListAndLocalStatus(videoIds, NodeStatus.VISIBLE, [max: 25, sort: "dateCreated", order: "desc"])
     }
+
+    String getThumbnail(Video video) {
+        if (video != null && video.videoType) {
+            return "http://img.youtube.com/vi/${video.youtubeId}/hqdefault.jpg"
+        }
+        return null
+    }
 }

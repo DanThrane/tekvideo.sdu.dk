@@ -1,0 +1,33 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
+<link rel="import" href="../../bower_components/paper-input/paper-textarea.html">
+
+<dom-module id="tv-exercise-equation-editor">
+
+<template>
+<style include="iron-flex"></style>
+
+<style>
+:host {
+    display: block;
+}
+</style>
+
+<paper-textarea label="LaTeX" value="{{content}}"></paper-textarea>
+
+</template>
+
+<script>
+Polymer({
+    is: 'tv-exercise-equation-editor',
+    properties: {
+        content: {
+        	type: String,
+        	value: "",
+        	notify: true
+        }
+    },
+    
+});
+</script>
+</dom-module>

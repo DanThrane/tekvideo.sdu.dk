@@ -1,0 +1,112 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
+
+<link rel="import" href="../../bower_components/paper-checkbox/paper-checkbox.html">
+<link rel="import" href="../../bower_components/paper-radio-group/paper-radio-group.html">
+<link rel="import" href="../../bower_components/paper-radio-button/paper-radio-button.html">
+
+<link rel="import" href="../../bower_components/paper-listbox/paper-listbox.html">
+<link rel="import" href="../../bower_components/paper-item/paper-item.html">
+
+<dom-module id="tv-exercise-multiple-choice">
+
+<template>
+<style include="iron-flex"></style>
+
+<style>
+:host {
+    display: block;
+}
+
+li {
+    list-style: none;
+}
+</style>
+
+<h3>{{_computeHeader(selectmultiple)}}</h3>
+
+<paper-listbox id="box">
+    <template is="dom-repeat" items="{{_computeChoices(choices.*, randomizeorder)}}">
+        <paper-item data-index$="{{index}}">{{item.title}}</paper-item>
+    </template>
+</paper-listbox>
+
+<button on-click="grade">Grade</button>
+    
+</template>
+
+<script>
+Polymer({
+    is: 'tv-exercise-multiple-choice',
+    properties: {
+        selectmultiple: {
+            type: Boolean,
+            value: false
+        },
+        randomizeorder: {
+            type: Boolean,
+            value: false
+        },
+        choices: {
+            type: Array,
+            value: []
+        }
+    },
+    observers: ["_observeMultiple(selectmultiple)"],
+    _observeMultiple: function(selectmultiple) {
+        this.$.box.multi = selectmultiple;
+    },
+    _computeChoices: function(choices, randomizeOrder) {
+        if (randomizeOrder) {
+            return this._shuffle(this.choices);
+        } else {
+            return this.choices;
+        }
+    },
+    _shuffle: function(originalArray) {
+        var array = originalArray.slice();
+        var counter = array.length;
+
+        // While there are elements in the array
+        while (counter > 0) {
+            // Pick a random index
+            var index = Math.floor(Math.random() * counter);
+
+            // Decrease counter by 1
+            counter--;
+
+            // And swap the last element with it
+            var temp = array[counter];
+            array[counter] = array[index];
+            array[index] = temp;
+        }
+        return array;
+    },
+    _computeHeader: function(selectMultiple) {
+        return selectMultiple ? "Vælg alle" : "Vælg én";
+    },
+    grade: function() {
+        var maxPoints = 0;
+        var points = 0;
+        var selectedDomElements = this.$.box.selectedItems || [];
+        var selected = selectedDomElements.map(function (e) { 
+            return parseInt(e.getAttribute("data-index")); 
+        });
+
+        for (var i = 0; i < this.choices.length; i++) {
+            if (this.choices[i].correct) {
+                maxPoints++;
+                if (selected.indexOf(i) !== -1) {
+                    points++;
+                }
+            }
+        }
+
+        return {
+            points: points,
+            maxPoints: maxPoints
+        };
+    }
+});
+</script>
+</dom-module>

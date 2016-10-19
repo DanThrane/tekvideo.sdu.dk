@@ -1,0 +1,95 @@
+<link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="../bower_components/paper-card/paper-card.html">
+<link rel="import" href="../bower_components/paper-toggle-button/paper-toggle-button.html">
+<link rel="import" href="../bower_components/iron-ajax/iron-ajax.html">
+<script src="../bower_components/chart.js/dist/Chart.bundle.min.js"></script>
+
+<dom-module id="tekvideo-dash-s-views-graph">
+  <template>
+
+    <style>
+      :host {
+        display: block;
+      }
+
+      paper-card {
+          width: 100%;
+          height: 100%;
+      }
+    </style>
+
+    <paper-card heading="Antal visninger">
+      <div class="card-content">
+        Dette kort viser udviklen af visninger på EMNE over tid.
+
+        <paper-toggle-button checked="{{cumulative}}">Cumulative stats</paper-toggle-button>
+
+        <iron-ajax
+            auto
+            url="[[baseUrl]]dashboard/visits?identifier=[[node]]&periodFrom=[[periodFrom]]&periodTo=[[periodTo]]&cumulative=[[cumulative]]"
+            handle-as="json"
+            on-response="_handleViews"
+            debounce-duration="300"></iron-ajax>
+
+        <div style="width: 95%">
+          <canvas id="chart"></canvas>
+        </div>
+      </div>
+    </paper-card>
+
+  </template>
+
+  <script>
+
+    Polymer({
+
+      is: 'tekvideo-dash-s-views-graph',
+      properties: {
+        node: {
+          type: String
+        },
+        periodFrom: {
+          type: Number
+        },
+        periodTo: {
+          type: Number
+        },
+        baseUrl: {
+          type: String
+        },
+        cumulative: {
+          type: Boolean,
+          value: false
+        }
+      },
+
+      _viewsChart: null,
+      _handleViews: function(event) {
+        var data = event.target.lastResponse;
+        var config = {
+          type: "line",
+          data: {
+            labels: data.labels,
+            datasets: [{
+              label: "Visninger",
+              data: data.data,
+              fill: true,
+              borderDash: [1]
+            }]
+          },
+          options: {
+            responsive: true
+          }
+        };
+
+        var ctx = this.$.chart.getContext("2d");
+        if (this._viewsChart !== null) {
+          this._viewsChart.destroy();
+        }
+        this._viewsChart = new Chart(ctx, config);
+      }
+    });
+
+  </script>
+
+</dom-module>

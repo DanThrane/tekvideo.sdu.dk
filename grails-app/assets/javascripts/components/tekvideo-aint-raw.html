@@ -1,0 +1,233 @@
+<link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="../bower_components/paper-card/paper-card.html">
+<link rel="import" href="../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../bower_components/paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../bower_components/iron-collapse/iron-collapse.html">
+<link rel="import" href="../bower_components/iron-icons/iron-icons.html">
+<link rel="import" href="../bower_components/iron-icons/hardware-icons.html">
+<link rel="import" href="../bower_components/iron-icon/iron-icon.html">
+<link rel="import" href="../bower_components/paper-dropdown-menu/paper-dropdown-menu.html">
+<link rel="import" href="../bower_components/paper-listbox/paper-listbox.html">
+<link rel="import" href="../bower_components/paper-item/paper-item.html">
+<link rel="import" href="../bower_components/paper-item/paper-icon-item.html">
+<link rel="import" href="../bower_components/paper-item/paper-item-body.html">
+<link rel="import" href="../bower_components/paper-input/paper-input.html">
+<link rel="import" href="../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
+
+<dom-module id="tekvideo-aint-raw">
+
+<template>
+<style include="iron-flex"></style>
+
+<style>
+:host {
+    display: block;
+}
+
+paper-card {
+    width: 100%;
+    height: 100%;
+}
+
+.search-container * {
+    padding-right: 20px;
+}
+
+.avatar {
+  display: inline-block;
+  box-sizing: border-box;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: var(--paper-amber-500);
+}
+
+.correct {
+    color: var(--paper-green-500);
+}
+
+.error {
+    color: var(--paper-red-500);
+}
+</style>
+
+<paper-card heading="Rå data" elevation="2">
+    <!-- TODO Sort data -->
+    <div class="card-content">
+        Viser {{selectedQuestion.question.title}}
+        
+    </div>
+    <div class="card-actions">
+        <paper-button title="Vis data" on-click="_toggle">
+            <iron-icon id="toggleIcon" icon="expand-more"></iron-icon>
+            Vis data
+        </paper-button>
+
+        <iron-collapse id="moreInfo" style="width:100%;">
+            <div class="layout horizontal search-container">
+                <paper-input label="Fritekst søgning" value="{{searchQuery}}" class="flex">
+                    <iron-icon icon="search" prefix></iron-icon>
+                </paper-input>
+
+                <paper-dropdown-menu label="Sorter efter">
+                    <paper-listbox class="dropdown-content" selected="{{sortBy}}" attr-for-selected="value">
+                        <paper-item value="user">Bruger</paper-item>
+                        <paper-item value="correct">Korrekthed</paper-item>
+                        <paper-item value="answer">Svar</paper-item>
+                        <paper-item value="timestamp">Tid</paper-item>
+                    </paper-listbox>
+                </paper-dropdown-menu>
+            </div>
+        
+            <template is="dom-repeat" items="{{answers.result}}" 
+                filter="{{computeFilter(searchQuery)}}"
+                sort="{{computeSort(sortBy)}}">
+                <paper-icon-item>
+                    <div class="avatar" item-icon></div>
+                    <paper-item-body two-line>
+                        <div>
+                            {{_sanitizeUser(item.user)}}
+                        </div>
+                        <div secondary>
+                            Felt: {{_getFieldName(timeline, item)}}
+                            &mdash;
+                            Svar: {{item.answer}}
+                            &mdash;
+                            Tidspunkt: {{item.timestamp}}
+                        </div>
+                    </paper-item-body>
+                    <div hidden$="{{!item.correct}}" class="correct"><iron-icon icon="check"></iron-icon></div>
+                    <div hidden$="{{item.correct}}" class="error"><iron-icon icon="clear"></iron-icon></div>
+                </paper-icon-item>  
+            </template>
+        </iron-collapse>
+    </div>
+</paper-card>
+
+</template>
+
+<script>
+Polymer({
+    is: 'tekvideo-aint-raw',
+    properties: {
+        node: {
+            type: String
+        },
+        periodFrom: {
+            type: Number
+        },
+        periodTo: {
+            type: Number
+        },
+        baseUrl: {
+            type: String
+        },
+        timeline: {
+            type: Array,
+            value: []
+        },
+        answers: {
+            type: Array,
+            value: []
+        },
+        selectedQuestion: {
+            type: Object,
+            value: {}
+        },
+        sortBy: {
+            type: String,
+            value: "correct"
+        },
+        searchQuery: {
+            type: String, 
+            value: ""
+        }
+    },
+    computeFilter: function(searchQuery) {
+        var self = this;
+        if (!searchQuery) {
+            return null;
+        } else {
+            var normalizedQuery = searchQuery.toLowerCase();
+            return function(entry) {
+                var username = self._sanitizeUser(entry.user).toLowerCase();
+                var answer = entry.answer.toLowerCase();
+                var field = self._getFieldName(self.timeline, entry).toLowerCase();
+
+                return username.indexOf(normalizedQuery) !== -1 ||
+                    answer.indexOf(normalizedQuery) !== -1 ||
+                    field.indexOf(normalizedQuery) !== -1;
+            }
+        }
+    },
+    computeSort: function(sortBy) {
+        var self = this;
+
+        return function(a, b) {
+            var aVal = a[sortBy];
+            var bVal = b[sortBy];
+
+            if (aVal == null) {
+                return -1;
+            } else if (bVal == null) {
+                return 1;
+            }
+
+            var typeA = typeof aVal;
+            var typeB = typeof bVal;
+            if (typeA !== typeB) {
+                // Inconsistent types, we can't compare those. Data is most 
+                // likely corrupt
+                return 0; 
+            } else {
+                switch (typeA) {
+                    case "number":
+                        return aVal - bVal;
+                    case "string":
+                        return aVal.localeCompare(bVal);
+                    case "boolean":
+                        if (aVal === bVal) {
+                            return 0;
+                        } else {
+                            if (aVal) {
+                                return -1;
+                            } else {
+                                return 1;
+                            }
+                        }
+                        break;
+                    default:
+                        // Can't compare objects
+                        return 0;
+                }
+            }
+        }
+    },
+    _sanitizeUser: function(user) {
+        if (user == null) {
+            return "Gæst";
+        } else {
+            return user;
+        }
+    },
+    _getFieldName: function(timeline, item) {
+        if (timeline.length > item.subject) {
+            var subject = this.timeline[item.subject];
+            if (subject.questions.length > item.question) {
+                var question = subject.questions[question]
+                if (question.fields.length > item.field) {
+                    return question.fields[item.field].name;
+                }
+            }
+        }
+        return "Ukendt felt";
+    },
+    _toggle: function () {
+        var moreInfo = this.$.moreInfo;
+        var icon = this.$.toggleIcon;
+        icon.icon = moreInfo.opened ? 'expand-more' : 'expand-less';
+        moreInfo.toggle();
+    }
+});
+</script>
+</dom-module>

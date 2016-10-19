@@ -1,0 +1,51 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
+<link rel="import" href="../../bower_components/paper-input/paper-textarea.html">
+<link rel="import" href="../../bower_components/paper-input/paper-textarea.html">
+<link rel="import" href="../../bower_components/paper-button/paper-button.html">
+
+<link rel="import" href="../tekvideo-math-field.html">
+
+<dom-module id="tve-input-expression-editor">
+
+<template>
+<style include="iron-flex"></style>
+
+<style>
+:host {
+    display: block;
+}
+</style>
+
+<div class="layout vertical">
+    <div><b>Spørgsmål:</b></div>
+    <paper-textarea value="{{question}}"></paper-textarea>
+
+    <div><b>Svar:</b></div>
+    <paper-input value="{{expression}}" hidden></paper-input>
+    <div><tekvideo-math-field id="expressionField"></tekvideo-math-field></div>
+    <paper-button on-click="_saveExpression">Gem udtryk</paper-button>
+</div>
+</template>
+
+<script>
+Polymer({
+    is: 'tve-input-expression-editor',
+    properties: {
+        question: {
+            type: String,
+            value: "",
+            notify: true
+        },
+        expression: {
+            type: String,
+            value: "",
+            notify: true
+        }
+    },
+    _saveExpression: function() {
+        this.expression = this.$.expressionField.value;
+    }
+});
+</script>
+</dom-module>

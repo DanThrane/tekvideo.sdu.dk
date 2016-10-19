@@ -7,6 +7,9 @@ class TeachingTagLib {
     static namespace = "sdu"
 
     def urlMappingService
+    def courseService
+    def videoService
+    def subjectService
 
     def createLinkToTeacher = { attrs, body ->
         Teacher teacher = attrs.remove("teacher") ?: fail("teacher", "sdu:createLinkToTeacher")
@@ -64,4 +67,14 @@ class TeachingTagLib {
         out << "</a>"
     }
 
+    def thumbnail = { attrs, body ->
+        def node = attrs.remove("node") as Node
+        if (node instanceof Course) {
+            out << (courseService.getThumbnailForCourse(node) ?: "")
+        } else if (node instanceof Subject) {
+            out << (subjectService.getThumbnail(node) ?: "")
+        } else if (node instanceof Video) {
+            out << (videoService.getThumbnail(node) ?: "")
+        }
+    }
 }

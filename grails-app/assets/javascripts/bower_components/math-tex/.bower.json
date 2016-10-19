@@ -1,0 +1,27 @@
+{
+  "name": "math-tex",
+  "version": "0.3.1",
+  "description": "Custom Element for typesetting TeX expressions using MathJax",
+  "license": "ISC",
+  "main": "math-tex.js",
+  "keywords": [
+    "web-components",
+    "mathjax",
+    "math"
+  ],
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components"
+  ],
+  "homepage": "https://github.com/janmarthedal/math-tex",
+  "_release": "0.3.1",
+  "_resolution": {
+    "type": "version",
+    "tag": "v0.3.1",
+    "commit": "c572c184a7b80f150920bc0b5e34f73cf3faa867"
+  },
+  "_source": "git://github.com/janmarthedal/math-tex.git",
+  "_target": "^0.3.1",
+  "_originalSource": "janmarthedal/math-tex"
+}

@@ -1,0 +1,226 @@
+<link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="../bower_components/paper-card/paper-card.html">
+<link rel="import" href="../bower_components/paper-datatable/paper-datatable.html">
+<link rel="import" href="../bower_components/paper-datatable/paper-datatable-column.html">
+<link rel="import" href="../bower_components/paper-checkbox/paper-checkbox.html">
+<link rel="import" href="../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
+<link rel="import" href="../bower_components/iron-collapse/iron-collapse.html">
+<link rel="import" href="../bower_components/iron-icon/iron-icon.html">
+<link rel="import" href="../bower_components/iron-ajax/iron-ajax.html">
+<link rel="import" href="../bower_components/iron-icons/iron-icons.html">
+<link rel="import" href="../bower_components/paper-progress/paper-progress.html">
+
+
+<dom-module id="tekvideo-dash-s-students">
+
+<template>
+<style include="iron-flex"></style>
+<style>
+:host {
+    display: block;
+}
+
+paper-card {
+    width: 100%;
+    height: 100%;
+}
+
+.field-container paper-checkbox {
+    padding-right: 16px;
+}
+
+.free-text-search > paper-input {
+    margin-right: 30px;
+}
+
+.free-text-search > h4 {
+    margin-bottom: 0;
+}
+
+</style>
+
+<paper-card heading="Bruger deltagelse">
+    <iron-ajax
+        auto
+        id="participationEndpoint"
+        url="[[baseUrl]]dashboard/participation?identifier=[[node]]&periodFrom=[[periodFrom]]&periodTo=[[periodTo]]"
+        handle-as="json"
+        last-response="{{participation}}"
+        debounce-duration="300"
+        loading="{{_isLoading}}"></iron-ajax>
+
+    <div class="card-content">
+        <div class="horizontal layout">
+            <paper-progress indeterminate hidden$="{{!_isLoading}}" class="flex">
+            </paper-progress>
+        </div>
+
+        <div class="horizontal layout">
+            <div class="flex-3 free-text-search">
+                <h4>Fri-tekst søgning</h4>
+                <paper-input value="{{searchUser}}" label="Bruger">
+                    <iron-icon icon="search" prefix></iron-icon>
+                </paper-input>
+                <paper-input value="{{searchExercise}}" label="Opgave navn">
+                    <iron-icon icon="search" prefix></iron-icon>
+                </paper-input>
+            </div>
+            <div class="flex">
+                <h4>Bruger attributter</h4>
+                <paper-checkbox checked="{{keepStudents}}">Tilmeldt</paper-checkbox> <br />
+                <paper-checkbox checked="{{keepGuests}}">Gæst</paper-checkbox> <br />
+            </div>
+        </div>
+        <paper-datatable id="datatable" data="{{computeData(participation, keepGuests, keepStudents, searchUser)}}" style="padding-bottom: 20px">
+            <div no-results>
+                Ingen data tilgængelig
+            </div>
+            <paper-datatable-column header="Bruger" property="username" type="String" sortable sorted></paper-datatable-column>
+            <paper-datatable-column 
+                    header="Tilmeldt kurset" 
+                    property="isStudent" 
+                    type="Boolean" 
+                    sortable>
+                    <template>
+                        <div hidden$="{{!value}}" style="color: green"><iron-icon icon="check"></iron-icon></div>
+                        <div hidden$="{{value}}" style="color: red"><iron-icon icon="clear"></iron-icon></div>
+                    </template>
+                </paper-datatable-column>
+            <template is="dom-repeat" items="{{computeColumns(participation)}}">
+                <paper-datatable-column 
+                    header="{{item.name}}" 
+                    property="{{item.nodeId}}"
+                    inactive="{{_computeIsColumnActive(item, searchExercise)}}"
+                    type="Number" 
+                    sortable>
+                    <template>
+                        <div hidden$="{{!_computeIsGreen(value)}}" style="color: green"><iron-icon icon="check"></iron-icon></div>
+                        <div hidden$="{{!_computeIsYellow(value)}}" style="color: #FFC107"><iron-icon icon="remove"></iron-icon></div>
+                        <div hidden$="{{!_computeIsRed(value)}}" style="color: red"><iron-icon icon="clear"></iron-icon></div>
+                    </template>
+                </paper-datatable-column>
+            </template>
+        </paper-datatable>
+
+        <div>
+            <b>Forklaring</b>
+            <table>
+                <tbody>
+                    <tr>
+                        <td>
+                            <span style="color: green"><iron-icon icon="check"></iron-icon></span> Set og bestået
+                        </td>
+                        <td>
+                            <span style="color: #FFC107"><iron-icon icon="remove"></iron-icon></span> Set og ikke bestået 
+                        </td>
+                        <td>
+                            <span style="color: red"><iron-icon icon="clear"></iron-icon></span> Ikke set
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+    </div>
+</paper-card>
+
+</template>
+
+<script>
+Polymer({
+    is: 'tekvideo-dash-s-students',
+    properties: {
+        node: {
+            type: String
+        },
+        periodFrom: {
+            type: Number
+        },
+        periodTo: {
+            type: Number
+        },
+        baseUrl: {
+            type: String
+        },
+        enabledQuestions: {
+            type: Object,
+            value: {},
+        },
+        keepGuests: {
+            type: Boolean,
+            value: true
+        },
+        keepStudents: {
+            type: Boolean,
+            value: true
+        },
+    },
+    computeData: function(participation, keepGuests, keepStudents, searchUser) {
+        var userData = participation.result.users;
+        return userData
+            .filter(function (user) {
+                if (searchUser.length > 0) {
+                    if (user.username.toLowerCase().indexOf(searchUser.toLowerCase()) === -1) {
+                        return false;
+                    }
+                }
+                if (user.isStudent && keepStudents) return true;
+                if (!user.isStudent && keepGuests) return true;
+                return false;
+            })
+            .map(function(user) {
+                var result = {
+                    username: user.username,
+                    id: user.id,
+                    isStudent: user.isStudent,
+                    isCas: user.isCas
+                };
+
+                for (key in user.answers) {
+                    var data = user.answers[key];
+                    var state;
+
+                    if (!data.seen) {
+                        state = 0;
+                    } else {
+                        if (data.points < participation.result.exercises[key].maxPoints) {
+                            state = 1;
+                        } else {
+                            state = 2;
+                        }
+                    }
+                    result[key] = state;
+                }
+                return result;
+            });
+    },
+    computeColumns: function(participation, searchExercise) {
+        var exercisesObject = participation.result.exercises;
+        var result = [];
+        for (key in exercisesObject) {
+            var exercise = exercisesObject[key];
+            result.push(exercise);
+        }
+        console.log(result);
+        return result;
+    },
+    _computeIsColumnActive: function(item, searchExercise) {
+        if (searchExercise.length > 0) {
+            if (item.name.toLowerCase().indexOf(searchExercise.toLowerCase()) === -1) {
+                return true;
+            }
+        }
+        return false;
+    },
+    _computeIsRed: function(value) {
+        return value === 0;
+    },
+    _computeIsYellow: function(value) {
+        return value === 1;
+    },
+    _computeIsGreen: function(value) {
+        return value === 2;
+    }
+});
+</script>
+</dom-module>

@@ -1,0 +1,160 @@
+<link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="../bower_components/paper-card/paper-card.html">
+<link rel="import" href="tekvideo-player.html">
+<link rel="import" href="tekvideo-aint-raw.html">
+<link rel="import" href="tekvideo-aint-participation.html">
+<link rel="import" href="../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
+
+<dom-module id="tekvideo-dash-d-answers-interactive">
+
+<template>
+<style include="iron-flex"></style>
+<style is="custom-style">
+:host {
+    display: block;
+}
+
+paper-card {
+    width: 100%;
+    height: 100%;
+}
+
+#analysis-container {
+    @apply(--layout-vertical);
+    @apply(--layout-center);
+}
+
+#analysis-container {
+    margin-top: 20px;
+}
+
+#analysis-container * {
+    width: 100%;
+}
+</style>
+
+<div hidden$="{{shouldRender}}">
+    Kan kun vise data for videoer
+</div>
+
+<div hidden$="{{!shouldRender}}">
+    <iron-ajax
+        auto="{{shouldRender}}"
+        id="videoEndpoint"
+        url="[[baseUrl]]dashboard/videos?identifier=[[node]]"
+        handle-as="json"
+        on-response="_handleVideo"
+        debounce-duration="300"></iron-ajax>
+
+    <iron-ajax
+        auto="{{shouldRender}}"
+        id="studentsEndpoint"
+        url="[[baseUrl]]dashboard/students?identifier=[[node]]"
+        handle-as="json"
+        last-response="{{students}}"
+        debounce-duration="300"></iron-ajax>
+    
+    <iron-ajax
+        auto="{{shouldRender}}"
+        id="answersEndpoint"
+        url="[[baseUrl]]dashboard/answers/{{_computeVideoId(node)}}/?periodFrom=[[periodFrom]]&periodTo=[[periodTo]]"
+        handle-as="json"
+        last-response="{{answers}}"
+        debounce-duration="300"></iron-ajax>
+
+    <iron-ajax
+        auto="{{shouldRender}}"
+        id="answersEndpoint"
+        url="[[baseUrl]]dashboard/students?identifier=[[node]]"
+        handle-as="json"
+        last-response="{{students}}"
+        debounce-duration="300"></iron-ajax>
+
+
+    <h1>Interaktiv svar analyse</h1>
+
+    <tekvideo-player id="player" disable-check-button></tekvideo-player>
+    
+    <div id="analysis-container">
+        <tekvideo-aint-raw 
+            answers="{{answers}}" 
+            timeline="{{timeline}}" 
+            selected-question="{{_selectedQuestion}}">
+        </tekvideo-aint-raw>
+    </div>
+</div>
+
+</template>
+
+<script>
+Polymer({
+    is: 'tekvideo-dash-d-answers-interactive',
+    properties: {
+        node: {
+            type: String
+        },
+        periodFrom: {
+            type: Number
+        },
+        periodTo: {
+            type: Number
+        },
+        baseUrl: {
+            type: String
+        },
+        shouldRender: {
+            type: Boolean,
+            computed: "_computeShouldRender(node)"
+        },
+        _videoId: {
+            type: String,
+            computed: "_computeVideoId(node)"
+        },
+        _selectedQuestion: {
+            type: Object,
+            value: {}
+        }
+    },
+
+    attached: function() {
+        var self = this;
+        var player = this.$.player;
+        player.addEventListener("questionShown", function(event) {
+            var question = event.detail;
+            self._selectedQuestion = question;
+            console.log(self._selectedQuestion);
+            var values = question.question.fields.map(function(element) {
+                return "\\text{"+element.name+"}";
+            });
+            player.setFieldValues(question.subjectId, question.questionId, values);
+        });
+    },
+
+    _computeVideoId: function(node) {
+        console.log("calling: ", node.split("/")[1]);
+        return node.split("/")[1];
+    },
+
+    _computeShouldRender: function(node) {
+        return node !== undefined && node.indexOf("video") === 0;
+    },
+
+    _handleVideo: function(event) {
+        var response = event.target.lastResponse[0];
+        var player = this.$.player;
+        
+        var timeline;
+        try {
+            timeline = JSON.parse(response.timelineJson);
+        } catch (e) {
+            timeline = [];
+        }
+        player.timeline = timeline;
+        player.videoId = response.youtubeId;
+        player.isYouTube = response.videoType;
+
+        console.log("Got a response: ", response);
+    }
+});
+</script>
+</dom-module>

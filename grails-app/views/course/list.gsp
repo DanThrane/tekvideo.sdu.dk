@@ -4,6 +4,11 @@
 <head>
     <meta name="layout" content="main_fluid">
     <title>Kurser</title>
+
+    <g:render template="/polymer/includePolymer" />
+
+    <link rel="import" href="${createLink(absolute:true, uri:'/assets/')}/components/tv-browser.html">
+
 </head>
 
 <body>
@@ -13,7 +18,7 @@
 </twbs:pageHeader>
 
 <twbs:row>
-    <twbs:column md="8">
+    <twbs:column md="12">
         <twbs:row>
             <twbs:column>
                 <ol class="breadcrumb">
@@ -23,15 +28,7 @@
             </twbs:column>
         </twbs:row>
 
-        <g:each in="${courses}" var="course">
-            <sdu:card>
-                <h5>
-                    <sdu:linkToCourse course="${course}">${course.name} &mdash; ${course.fullName}</sdu:linkToCourse>
-                    <sdu:signupButton course="${course}" />
-                </h5>
-                <markdown:renderHtml>${course.description}</markdown:renderHtml>
-            </sdu:card>
-        </g:each>
+        <tv-browser items='${data as grails.converters.JSON}'></tv-browser>
     </twbs:column>
 </twbs:row>
 

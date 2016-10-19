@@ -1,0 +1,114 @@
+<link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="../bower_components/paper-card/paper-card.html">
+<link rel="import" href="../bower_components/app-route/app-location.html">
+<link rel="import" href="../bower_components/app-route/app-route.html">
+<link rel="import" href="../bower_components/iron-pages/iron-pages.html">
+<link rel="import" href="tekvideo-dash-s-views-graph.html">
+<link rel="import" href="tekvideo-dash-s-views-popular.html">
+<link rel="import" href="tekvideo-dash-s-answers-interactive.html">
+<link rel="import" href="tekvideo-dash-d-answers-interactive.html">
+<link rel="import" href="../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
+<link rel="import" href="tekvideo-math-field.html">
+<link rel="import" href="tekvideo-player.html">
+<link rel="import" href="tekvideo-dash-s-students.html">
+<link rel="import" href="tekvideo-dash-hero.html">
+<link rel="import" href="tekvideo-dash-filter.html">
+
+<dom-module id="tekvideo-dashboard">
+<template>
+    <style include="iron-flex"></style>
+    <style is="custom-style">
+    :host {
+        display: block;
+        --app-primary-color: #4285f4;
+        --app-secondary-color: black;
+    }
+
+    #container > * {
+        margin: 10px;
+        width: 960px;
+    }
+    </style>
+
+    <app-location route="{{route}}" use-hash-as-path></app-location>
+    <app-route
+        route="{{route}}"
+        pattern="/:page"
+        data="{{routeData}}"
+        tail="{{subroute}}">
+    </app-route>
+
+    <div id="container" fullbleed class="layout vertical center">
+        <tekvideo-dash-hero
+            node="{{node}}" period-from="{{periodFrom}}" period-to="{{periodTo}}"
+            base-url="{{baseUrl}}">
+        </tekvideo-dash-hero>
+        
+        <iron-pages attr-for-selected="id" selected="{{routeData.page}}">
+            <div id="search">
+                <tekvideo-dash-filter></tekvideo-dash-filter>
+            </div>
+            <tekvideo-dash-s-views-graph
+                id="viewGraph" node="{{node}}" period-from="{{periodFrom}}"
+                period-to="{{periodTo}}" base-url="{{baseUrl}}">
+            </tekvideo-dash-s-views-graph>
+
+            <tekvideo-dash-s-views-popular
+                id="viewsPopular" node="{{node}}" period-from="{{periodFrom}}"
+                period-to="{{periodTo}}" base-url="{{baseUrl}}">
+            </tekvideo-dash-s-views-popular>
+
+            <tekvideo-dash-d-answers-interactive
+                id="answers" node="{{node}}" period-from="{{periodFrom}}"
+                period-to="{{periodTo}}" base-url="{{baseUrl}}">
+            </tekvideo-dash-d-answers-interactive>
+
+            <tekvideo-dash-s-students 
+                id="studentParticipation" node="{{node}}" period-from="{{periodFrom}}" 
+                period-to="{{periodTo}}" base-url="{{baseUrl}}">
+            </tekvideo-dash-s-students>
+        </iron-pages>
+    </div>
+
+</template>
+
+<script>
+    Polymer({
+        is: 'tekvideo-dashboard',
+        properties: {
+            node: {
+                type: String
+            },
+            periodFrom: {
+                type: Number
+            },
+            periodTo: {
+                type: Number
+            },
+            baseUrl: {
+                type: String
+            },
+            routeData: {
+                type: Object,
+                value: function()  {
+                    return { page: "search" };
+                }
+            }
+        },
+
+        observers: [
+            '_onRoutePathChanged(route.path)'
+        ],
+
+        _onRoutePathChanged: function(path) {
+            if (!path) {
+                this.set('route.path', '/search/');
+            }
+        },
+
+        atatched: function() {
+            var self = this;
+        }
+    });
+</script>
+</dom-module>

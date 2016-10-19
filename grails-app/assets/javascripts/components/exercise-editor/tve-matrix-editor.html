@@ -1,0 +1,35 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
+
+<dom-module id="tve-matrix-editor">
+
+<template>
+<style include="iron-flex"></style>
+
+<style>
+:host {
+    display: block;
+}
+</style>
+
+
+</template>
+
+<script>
+Polymer({
+    is: 'tve-matrix-editor',
+    properties: {
+        height: {
+            type: Number,
+            value: 1,
+            notify: true
+        },
+        width: {
+            type: Number,
+            value: 1,
+            notify: true
+        }
+    }
+});
+</script>
+</dom-module>

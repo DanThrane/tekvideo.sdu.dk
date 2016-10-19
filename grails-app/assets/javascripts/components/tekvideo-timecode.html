@@ -1,0 +1,52 @@
+<link rel="import" href="../bower_components/polymer/polymer.html">
+<script src="popcorn.js"></script>
+
+<dom-module id="tekvideo-timecode">
+
+<template>
+<style>
+:host {
+    display: inline;
+}
+</style>
+
+<span id="target"></span>
+</template>
+
+<script>
+Polymer({
+    is: 'tekvideo-timecode',
+    properties: {
+        timecode: {
+            type: Number,
+            value: 42,
+            observer: "_timecodeChanged"
+        }
+    },
+    _formatTimeUnit: function(unit) {
+        if (unit < 10) return "0" + Math.floor(unit);
+        return Math.floor(unit);
+    },
+    _formatTime: function(time) {
+        var totalSecs = time;
+        var totalMins = totalSecs / 60;
+        var totalHours = totalMins / 60;
+        var totalDays = totalHours / 24;
+
+        var secs = totalSecs % 60;
+        var mins = totalMins % 60;
+        var hours = totalHours % 24;
+        var result = "";
+
+        if (totalDays >= 1) result += this._formatTimeUnit(totalDays) + ":";
+        if (hours >= 1) result += this._formatTimeUnit(hours) + ":";
+        result += this._formatTimeUnit(mins) + ":";
+        result += this._formatTimeUnit(secs);
+        return result;
+    },
+    _timecodeChanged: function() {
+        this.$.target.textContent = this._formatTime(this.timecode);
+    }
+});
+</script>
+</dom-module>

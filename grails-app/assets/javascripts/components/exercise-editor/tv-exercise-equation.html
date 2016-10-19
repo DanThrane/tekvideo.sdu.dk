@@ -1,0 +1,37 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
+
+<link rel="import" href="mathjax-include.html">
+
+<dom-module id="tv-exercise-equation">
+
+<template>
+<style include="iron-flex"></style>
+
+<style>
+:host {
+    display: block;
+}
+</style>
+
+<div id="insertionPoint">
+</div>
+
+</template>
+
+<script>
+Polymer({
+    is: 'tv-exercise-equation',
+    properties: {
+        content: {
+        	type: String,
+        	value: ""
+        }
+    },
+    observers: ["_observeContent(content)"],
+    _observeContent: function(content) {
+        this.$.insertionPoint.innerHTML = "<math-tex display='block'>" + content + "</math-tex>";
+    }
+});
+</script>
+</dom-module>

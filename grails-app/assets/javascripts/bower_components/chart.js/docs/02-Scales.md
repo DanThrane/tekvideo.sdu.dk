@@ -46,6 +46,8 @@ Name | Type | Default | Description
 --- | --- | --- | ---
 display | Boolean | true |
 color | Color or Array[Color] | "rgba(0, 0, 0, 0.1)" | Color of the grid lines.
+borderDash | Array[Number] | [] | Length and spacing of dashes. See [MDN](https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/setLineDash)
+borderDashOffset | Number | 0.0 | Offset for line dashes. See [MDN](https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/lineDashOffset)
 lineWidth | Number or Array[Number] | 1 | Stroke width of grid lines
 drawBorder | Boolean | true | If true draw border on the edge of the chart
 drawOnChartArea | Boolean | true | If true, draw lines on the chart area inside the axis lines. This is useful when there are multiple axes and you need to control which grid lines are drawn
@@ -222,6 +224,7 @@ round | String | - | If defined, dates will be rounded to the start of this unit
 tooltipFormat | String | '' | The moment js format string to use for the tooltip.
 unit | String | - | If defined, will force the unit to be a certain type. See [Time Units](#scales-time-units) section below for details.
 unitStepSize | Number | 1 | The number of units between grid lines.
+minUnit | String | 'millisecond' | The minimum display format to be used for a time unit
 
 #### Date Formats
 
