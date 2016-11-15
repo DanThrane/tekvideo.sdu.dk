@@ -2,6 +2,7 @@
 <link rel="import" href="../../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
 <link rel="import" href="../../bower_components/iron-icons/iron-icons.html">
 <link rel="import" href="../../bower_components/paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../../bower_components/paper-input/paper-input.html">
 <link rel="import" href="../../bower_components/iron-collapse/iron-collapse.html">
 
 <dom-module id="tv-exercise-editor-wrapper">
@@ -15,14 +16,18 @@
 }
 </style>
 
-<div class="layout vertical wrap">
-    <div><b>{{name}}</b></div>
-    <div class="layout horizontal center-justified">
-        <paper-icon-button icon="delete" on-click="delete"></paper-icon-button>
-        <paper-icon-button icon="unfold-more" on-click="toggle"></paper-icon-button>
-        <paper-icon-button icon="arrow-upward" on-click="moveUp"></paper-icon-button>
-        <paper-icon-button icon="arrow-downward" on-click="moveDown"></paper-icon-button>
+<div class="layout horizontal">
+    <div class="flex">
+        <p hidden$="{{editMode}}"><b>{{name}}</b></p>
+        <paper-input id="nameInput" 
+                     value="{{name}}" 
+                     hidden="{{!editMode}}" 
+                     on-keydown="_onNameInput">
+        </paper-input>
     </div>
+    <paper-icon-button id="editButton" icon="create" on-click="edit"></paper-icon-button>
+    <paper-icon-button icon="delete" on-click="delete"></paper-icon-button>
+    <paper-icon-button icon="unfold-more" on-click="toggle"></paper-icon-button>
 </div>
 
 <iron-collapse id="collapse">
@@ -39,8 +44,13 @@ Polymer({
     properties: {
     	name: {
     		type: String,
-    		value: ""
-    	}
+    		value: "",
+            notify: true
+    	},
+        editMode: {
+            type: Boolean,
+            value: false
+        }
     },
     toggle: function() {
     	this.$.collapse.toggle();
@@ -48,11 +58,16 @@ Polymer({
     delete: function() {
         this.fire("delete");
     },
-    moveUp: function() {
-        this.fire("moveUp");
+    edit: function() {
+        this.editMode = !this.editMode;
+        var button = this.$.editButton;
+        button.icon = this.editMode ? "check" : "create";
+        if (this.editMode) this.$.nameInput.focus();
     },
-    moveDown: function() {
-    	this.fire("moveDown");
+    _onNameInput: function(e) {
+        if (e.keyCode === 13) {
+            this.edit();
+        }
     }
 });
 

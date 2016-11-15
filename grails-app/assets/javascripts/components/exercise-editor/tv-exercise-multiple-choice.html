@@ -7,6 +7,8 @@
 
 <link rel="import" href="../../bower_components/paper-listbox/paper-listbox.html">
 <link rel="import" href="../../bower_components/paper-item/paper-item.html">
+<link rel="import" href="tve-renderer.html">
+<link rel="import" href="tve-status-indicator.html">
 
 <dom-module id="tv-exercise-multiple-choice">
 
@@ -21,18 +23,34 @@
 li {
     list-style: none;
 }
+
+.items {
+    @apply(--layout-vertical);
+}
+
+paper-checkbox {
+    margin: 10px;
+}
 </style>
 
-<h3>{{_computeHeader(selectmultiple)}}</h3>
+<tve-status-indicator status="[[status]]"></tve-status-indicator>
 
-<paper-listbox id="box">
-    <template is="dom-repeat" items="{{_computeChoices(choices.*, randomizeorder)}}">
-        <paper-item data-index$="{{index}}">{{item.title}}</paper-item>
-    </template>
-</paper-listbox>
+<template is="dom-if" if="[[selectmultiple]]">
+    <div class="items">
+        <template is="dom-repeat" items="{{_computeChoices(choices.*, randomizeorder)}}">
+            <paper-checkbox data-index$="[[index]]">[[item.title]]</paper-checkbox>
+        </template>
+    </div>
+</template>
 
-<button on-click="grade">Grade</button>
-    
+<template is="dom-if" if="[[!selectmultiple]]">
+    <paper-radio-group class="items">
+        <template is="dom-repeat" items="{{_computeChoices(choices.*, randomizeorder)}}">
+            <paper-radio-button data-index$="[[index]]" name="{{index}}">[[item.title]]</paper-radio-button>
+        </template>
+    </paper-radio-group>
+</template>
+
 </template>
 
 <script>
@@ -50,11 +68,11 @@ Polymer({
         choices: {
             type: Array,
             value: []
+        },
+        status: {
+            type: String,
+            value: ""
         }
-    },
-    observers: ["_observeMultiple(selectmultiple)"],
-    _observeMultiple: function(selectmultiple) {
-        this.$.box.multi = selectmultiple;
     },
     _computeChoices: function(choices, randomizeOrder) {
         if (randomizeOrder) {
@@ -82,30 +100,53 @@ Polymer({
         }
         return array;
     },
-    _computeHeader: function(selectMultiple) {
-        return selectMultiple ? "Vælg alle" : "Vælg én";
+    getSelected: function() {
+        var selected = [];
+
+        var items = this.selectmultiple ? 
+            Polymer.dom(this.root).querySelectorAll("paper-checkbox") : 
+            Polymer.dom(this.root).querySelectorAll("paper-radio-button");
+
+        for (var i = 0; i < items.length; i++) {
+            var item = items[i];
+            if (item.checked) {
+                selected.push(parseInt(item.dataset.index));
+            }
+        }
+        return selected;
     },
     grade: function() {
         var maxPoints = 0;
         var points = 0;
-        var selectedDomElements = this.$.box.selectedItems || [];
-        var selected = selectedDomElements.map(function (e) { 
-            return parseInt(e.getAttribute("data-index")); 
-        });
+        var incorrect = 0;
+        var selected = this.getSelected();
 
         for (var i = 0; i < this.choices.length; i++) {
             if (this.choices[i].correct) {
                 maxPoints++;
-                if (selected.indexOf(i) !== -1) {
+            }
+
+            if (selected.indexOf(i) !== -1) {
+                if (this.choices[i].correct) {
                     points++;
+                } else {
+                    incorrect++;
                 }
             }
         }
 
-        return {
-            points: points,
-            maxPoints: maxPoints
+        return { 
+            answer: {
+                selected: selected,
+                correct: points,
+                incorrect: incorrect,
+                maxPoints: maxPoints
+            },
+            correct: points === maxPoints && incorrect === 0
         };
+    },
+    validate: function() {
+        return this.getSelected().length > 0
     }
 });
 </script>

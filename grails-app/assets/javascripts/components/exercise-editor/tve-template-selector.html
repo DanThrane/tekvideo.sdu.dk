@@ -1,0 +1,116 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
+<link rel="import" href="../../bower_components/marked-element/marked-element.html">
+<link rel="import" href="../../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../../bower_components/iron-collapse/iron-collapse.html">
+<link rel="import" href="../../bower_components/iron-image/iron-image.html">
+<link rel="import" href="../../bower_components/paper-card/paper-card.html">
+<link rel="import" href="tve-renderer.html">
+<link rel="import" href="tve-templates.html">
+
+<dom-module id="tve-template-selector">
+
+<template>
+<style include="iron-flex"></style>
+
+<style>
+:host {
+    display: block;
+}
+
+paper-card.template { 
+    @apply(--layout-horizontal); 
+}
+
+.template-image {
+    width: 150px;
+}
+
+.template-content {
+    @apply(--layout-flex);
+    float: left;
+}
+
+.template-header { 
+    @apply(--paper-font-headline); 
+}
+
+.template-name { 
+    color: var(--paper-grey-600); margin: 10px 0; 
+}
+
+paper-icon-button.template-icon {
+    --iron-icon-fill-color: white;
+    --iron-icon-stroke-color: var(--paper-grey-600);
+}
+
+.template {
+    margin: 16px 0 16px 0;
+}
+</style>
+
+<paper-button on-click="toggle">Vis templates</paper-button>
+
+<iron-collapse id="collapse">
+  <div>
+    <template is="dom-repeat" items="[[_templates]]">
+        <paper-card class="template">
+            <div class="template-content">
+                <div class="card-content">
+                    <div class="template-header">[[item.name]]</div>
+                    <div>[[item.description]]</div>
+                </div>
+                <div class="card-actions">
+                    <paper-button data-template$="[[item.name]]" on-click="_insertTemplate">Indsæt</paper-button>
+                </div>
+            </div>
+        </paper-card>
+    </template>
+  </div>
+</iron-collapse>
+
+</template>
+
+<script>
+
+
+Polymer({
+    is: 'tve-template-selector',
+    properties: {
+        _dirtyTemplates: {
+            type: Boolean,
+            value: true
+        },
+        _templates: {
+            type: Array,
+            computed: "_computeTemplates(_dirtyTemplates)"
+        }
+    },
+    insertTemplate: function(name) {
+        var template = TekVideo.Templates[name];
+        if (template) {
+            this.fire("insert", template);
+        }
+    },
+    _insertTemplate: function(e) {
+        var name = e.target.dataset.template;
+        // TODO Confirm
+        this.insertTemplate(name);
+    },
+    _computeTemplates: function() {
+        var templates = TekVideo.Templates;
+        var res = [];
+        for (var key in templates) {
+            res.push(templates[key]);
+        }
+        return res;
+    },
+    refreshTemplates: function() {
+        this._dirtyTemplates = !this._dirtyTemplates;
+    },
+    toggle: function() {
+        this.$.collapse.toggle();
+    }
+});
+</script>
+</dom-module>

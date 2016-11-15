@@ -1,6 +1,8 @@
 <link rel="import" href="../../bower_components/polymer/polymer.html">
 <link rel="import" href="../../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
 <link rel="import" href="../../bower_components/marked-element/marked-element.html">
+<link rel="import" href="tve-matrix-renderer.html">
+<link rel="import" href="tve-status-indicator.html">
 
 <dom-module id="tve-matrix">
 
@@ -20,15 +22,13 @@ input {
 }
 </style>
 
-<template is="dom-repeat" items="{{_generateRange(height)}}" index-as="row">
-    <div class="row">
-        <template is="dom-repeat" items="{{_generateRange(width)}}" index-as="col">
-            <span><input data-column$="{{col}}" data-row$="{{row}}"></span>
-        </template>
-    </div>
-</template>
+<tve-status-indicator status="[[status]]"></tve-status-indicator>
 
-<button on-click="printMatrix">Print</button>
+<tve-matrix-renderer 
+    id="matrix" 
+    height="[[height]]" 
+    width="[[width]]">
+</tve-matrix-renderer>
 
 </template>
 
@@ -43,19 +43,47 @@ Polymer({
         width: {
             type: Number,
             value: 5
+        },
+        answer: {
+            type: Array,
+            value: []
+        },
+        status: {
+            type: String,
+            value: ""
         }
     },
-    _generateRange: function(value) {
-        return Array.apply(null, Array(value)).map(function (_, i) {return i;});
-    },
-    printMatrix: function() {
-        var self = this;
-        for (var i = 0; i < this.height; i++) {
-            for (var j = 0; j < this.width; j++) {
-                var field = self.$$('[data-column*="' + j + '"][data-row*="' + i + '"]');
-                console.log(field.value);
+    grade: function() {
+        var givenAnswer = this.$.matrix.value;
+        var correct = true;
+
+        try {
+            if (this.answer.length > 0 && 
+                    this.answer.length === givenAnswer.length && 
+                    this.answer[0].length === givenAnswer[0].length) {
+                outer: for (var i = 0; i < this.answer.length; i++) {
+                    for (var j = 0; j < this.answer[0].length; j++) {
+                        if (this.answer[i][j] !== givenAnswer[i][j]) {
+                            correct = false;
+                            break outer;
+                        }
+                    }
+                }
+            } else {
+                correct = false;
             }
+        } catch (e) { 
+            console.log(e); 
+            correct = false;
         }
+
+        return {
+            answer: givenAnswer,
+            correct: correct
+        };
+    },
+    validate: function() {
+        return true;
     }
 });
 </script>

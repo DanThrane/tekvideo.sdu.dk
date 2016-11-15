@@ -595,4 +595,6 @@ databaseChangeLog = {
 
 	include file: 'add-exercise-super-type.groovy'
 	include file: 'add-similar-resources-to-exercises.groovy'
+
+	include file: 'add-temporary-exercise.groovy'
 }

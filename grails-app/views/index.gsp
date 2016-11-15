@@ -40,7 +40,7 @@
                         <sdu:linkToCourse course="${course}">
                             ${course.name} &mdash; ${course.fullName}
                         </sdu:linkToCourse>
-                    </li>
+                    </li >
                 </g:each>
             </ul>
         </g:else>

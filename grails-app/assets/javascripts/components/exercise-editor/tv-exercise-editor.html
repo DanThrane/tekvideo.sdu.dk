@@ -10,20 +10,22 @@
 <link rel="import" href="../../bower_components/iron-icons/iron-icons.html">
 <link rel="import" href="../../bower_components/iron-pages/iron-pages.html">
 <link rel="import" href="../../bower_components/paper-input/paper-textarea.html">
+<link rel="import" href="../../bower_components/paper-tabs/paper-tabs.html">
+<link rel="import" href="../../bower_components/paper-tabs/paper-tab.html">
+<link rel="import" href="../../bower_components/paper-styles/color.html">
+<link rel="import" href="../../bower_components/iron-a11y-keys/iron-a11y-keys.html">
+
+<link rel="import" href="tv-exercise-equation-editor.html">
+<link rel="import" href="tv-exercise-multiple-choice-editor.html">
+<link rel="import" href="tve-input-expression-editor.html">
+<link rel="import" href="tve-matrix-editor.html">
+<link rel="import" href="tve-markdown-editor.html">
 
 <link rel="import" href="tv-exercise-editor-wrapper.html">
+<link rel="import" href="tve-renderer.html">
+<link rel="import" href="tve-template-selector.html">
 
-<link rel="import" href="tv-exercise-markdown.html">
-<link rel="import" href="tv-exercise-markdown-editor.html">
-<link rel="import" href="tv-exercise-equation.html">
-<link rel="import" href="tv-exercise-equation-editor.html">
-<link rel="import" href="tv-exercise-multiple-choice.html">
-<link rel="import" href="tv-exercise-multiple-choice-editor.html">
-<link rel="import" href="tve-explanation.html">
-<link rel="import" href="tve-input-expression.html">
-<link rel="import" href="tve-input-expression-editor.html">
-<link rel="import" href="tve-matrix.html">
-<link rel="import" href="tve-matrix-editor.html">
+<link rel="import" href="tve-widget-config.html">
 
 <dom-module id="tv-exercise-editor">
 
@@ -37,11 +39,6 @@
     height: 100%;
 }
 
-.sidebar {
-    margin: 15px;
-    width: 300px;
-}
-
 tv-exercise-editor-wrapper {
     margin-top: 20px;
     margin-bottom: 20px;
@@ -51,51 +48,82 @@ paper-card {
     margin: 16px;
     padding: 16px;
 }
+
+paper-tabs {
+    background-color: var(--paper-indigo-500);
+    color: white;
+
+    --paper-tabs-selection-bar-color: var(--paper-pink-a200);
+    text-transform: uppercase;
+}
+
+.content {
+    max-width: 960px;
+    margin: 40px auto;
+}
 </style>
 
-<div class="layout horizontal">
-    <div class="layout vertical sidebar">
+<paper-tabs selected="{{selectedPage}}" scrollable fit-container>
+  <paper-tab>Editor</paper-tab>
+  <paper-tab>Forhåndsvisning</paper-tab>
+  <paper-tab>JSON</paper-tab>
+</paper-tabs>
+
+<iron-pages selected="{{selectedPage}}">
+    <div id="editor" class="content">
         <paper-input value="{{name}}" label="Opgave navn"></paper-input>
-        <paper-toggle-button checked="{{jsonMode}}">JSON Mode</paper-toggle-button>
-        <div id="editors">
+
+        <div class="layout horizontal">
+            <paper-dropdown-menu label="Widget" always-float-label class="flex">
+                <paper-listbox class="dropdown-content" id="widgetDropdown">
+                </paper-listbox>
+            </paper-dropdown-menu>
+            <paper-button id="addWidget" on-click="_addWidget">
+                <iron-icon icon="add"></iron-icon>
+                Tilføj
+            </paper-button>
+        </div>
+        <p><b>Syntaks:</b> <code>[[ref WIDGET-NAVN]]</code> reference til widgets. Widgets med en forkortelse kan indsættes direkte. For eksempel: <code>[[eql 2^2 = 4]]</code></p>
+        
+        <tve-template-selector id="templateSelector"></tve-template-selector>
+        <paper-button on-click="_save">Gem</paper-button>
+        
+        <paper-textarea value="{{documentContent}}" label="Dokument" rows="20"></paper-textarea>
+        
+        <div id="editors" class="layout vertical">
         </div>
     </div>
-    <div class="flex">
-        <iron-pages selected="{{_computeView(jsonMode)}}">
-            <div id="preview" class="layout vertical">
-            </div>
-            <div id="json">
-                <paper-textarea 
-                    id="jsonField"
-                    label="Eksporter JSON" 
-                    value="{{_computeJSON(widgets.*)}}">
-                </paper-textarea>
 
-                <paper-textarea
-                    id="inputJsonField"
-                    label="Importer JSON">
-                </paper-textarea>
-                <paper-button on-click="_sync">Importer</paper-button>
-            </div>
-        </iron-pages>
+    <div id="preview" class="content">
+        <tve-renderer id="renderer" is-interactive></tve-renderer>
     </div>
+    
+    <div id="json" class="content">
+        <div id="json">
+            <paper-textarea 
+                id="jsonField"
+                label="Eksporter JSON" 
+                value="{{_computeJSON(name, documentContent, widgets)}}"
+                readonly>
+            </paper-textarea>
 
-    <div id="addWidgetSection" class="layout vertical sidebar">
-        <paper-dropdown-menu label="Widget" always-float-label>
-            <paper-listbox class="dropdown-content" id="widgetDropdown">
-            </paper-listbox>
-        </paper-dropdown-menu>
-        <paper-button id="addWidget" on-click="_addWidget">
-            <iron-icon icon="add"></iron-icon>
-            Tilføj widget
-        </paper-button>
+            <paper-textarea
+                id="inputJsonField"
+                label="Importer JSON">
+            </paper-textarea>
+            <paper-button on-click="_sync">Importer</paper-button>
+        </div>
     </div>
-</div>
-
+</iron-pages>
 
 </template>
 
 <script>
+(function() {
+var PAGE_EDITOR = 0;
+var PAGE_PREVIEW = 1;
+var PAGE_JSON = 2;
+
 Polymer({
     is: 'tv-exercise-editor',
     properties: {
@@ -104,176 +132,144 @@ Polymer({
             value: ""
         },
         widgets: {
-            type: Array,
-            value: [],
+            type: Object,
+            value: {},
             notify: true
         },
         _configuration: {
             type: Object,
             value: {}
+        },
+        selectedPage: {
+            type: Number,
+            value: 0
+        },
+        documentContent: {
+            type: String,
+            value: ""
+        },
+        _counter: {
+            type: Number,
+            value: 0
         }
     },
+    observers: ["_observeSelectedPage(selectedPage)"],
+    ready: function() {
+        var self = this;
+        this.$.templateSelector.addEventListener("insert", function(e) {
+            var data = e.detail.object;
+            self.$.inputJsonField.value = JSON.stringify(data, null, 2);
+            self._sync();
+        });
+
+        this.$.templateSelector.insertTemplate("Opgaver");
+    },
     attached: function() {
-        this._registerWidgetType(
-            "Tekst", 
-            "tv-exercise-markdown", 
-            "tv-exercise-markdown-editor",
-            ["content"]
-        );
-        
-        this._registerWidgetType(
-            "Ligning", 
-            "tv-exercise-equation", 
-            "tv-exercise-equation-editor",
-            ["content"]
-        );
+        for (name in TekVideo.WidgetConfiguration) {
+            var config = TekVideo.WidgetConfiguration[name];
 
-        this._registerWidgetType(
-            "Forklaring", 
-            "tve-explanation", 
-            "tv-exercise-markdown-editor",
-            ["content"]
-        );
-
-        this._registerWidgetType(
-            "Spørgsmål (Matematisk udtryk)", 
-            "tve-input-expression", 
-            "tve-input-expression-editor",
-            ["question", "expression"]
-        );
-
-        this._registerWidgetType(
-            "Multiple choice",
-            "tv-exercise-multiple-choice",
-            "tv-exercise-multiple-choice-editor",
-            ["selectmultiple", "choices", "randomizeorder"]
-        );
-
-        this._registerWidgetType(
-            "Matrix",
-            "tve-matrix",
-            "tve-matrix-editor",
-            ["width", "height"]
-        );
-
-        this.addWidget({"type":"Matrix","properties":{"width": 5, "height": 5}});
-
+            var item = document.createElement("paper-item");
+            item.textContent = config.name;
+            if (config.properties.length === 1 && 
+                    config.properties[0] === "content") {
+                item.textContent += " [" + config.shortName + "]";
+            }
+            item.dataset.shortName = config.shortName;
+            this.$.widgetDropdown.appendChild(item);
+        }
         this.$.widgetDropdown.selected = 0;
     },
-    addWidget: function(widget) {
+    addWidget: function(widget, name) {
         var self = this;
-        this.push("widgets", widget);
 
-        var widgetConfig = this._configuration[widget.type];
+        var widgetConfig = TekVideo.WidgetConfiguration[widget.type];
         if (widgetConfig) {
             var editor = document.createElement(widgetConfig.editor);
-            editor.id = "editor-" + this.widgets.length;
 
             var wrapper = document.createElement("tv-exercise-editor-wrapper");
             wrapper.appendChild(editor);
-            wrapper.name = widget.type + "-" + this.widgets.length;
-            this.$.editors.appendChild(wrapper);
-
-            var componentWrapper = document.createElement("paper-card");
-            var component = document.createElement(widgetConfig.component);
-            component.id = "component-" + this.widgets.length;
-            componentWrapper.appendChild(component);
-            this.$.preview.appendChild(componentWrapper);
-
-            for (var i = 0; i < widgetConfig.properties.length; i++) {
-                self._setupPropertyListener(i, editor, widget, wrapper, 
-                    widgetConfig, component);
+            if (!name) {
+                wrapper.name = "ny-" + widget.type + self._counter;
+                self._counter++;
+            } else {
+                wrapper.name = name;
             }
+            widget.name = wrapper.name;
+            this.widgets[widget.name] = widget;
+            this.$.editors.appendChild(wrapper);
 
             for (var property in widget.properties) {
                 var value = widget.properties[property];
                 editor[property] = value;
             }
 
+            for (var i = 0; i < widgetConfig.properties.length; i++) {
+                self._setupPropertyListener(i, editor, widget, wrapper, 
+                    widgetConfig);
+            }
+
+            wrapper.addEventListener("name-changed", function(e) {
+                delete self.widgets[widget.name];
+                widget.name = wrapper.name;
+                self.widgets[wrapper.name] = widget;
+            });
+
             wrapper.addEventListener("delete", function() {
                 var index = Array.prototype.slice.call(self.$.editors.children).indexOf(wrapper);
                 self.$.editors.removeChild(wrapper);
-                self.$.preview.removeChild(componentWrapper);
-                self.splice("widgets", index, 1);
-            });
-
-            wrapper.addEventListener("moveUp", function() {
-                var index = Array.prototype.slice.call(self.$.editors.children).indexOf(wrapper);
-                if (index !== 0) {
-                    wrapper.parentNode.insertBefore(wrapper, wrapper.previousSibling);
-                    componentWrapper.parentNode.insertBefore(componentWrapper, componentWrapper.previousSibling);
-                    var temp = self.widgets[index];
-                    self.widgets[index] = self.widgets[index - 1];
-                    self.widgets[index - 1] = temp;
-                    self.widgets = self.widgets.slice();
-                }
-            });
-
-            wrapper.addEventListener("moveDown", function() {
-                var domNodes = Array.prototype.slice.call(self.$.editors.children);
-                var index = domNodes.indexOf(wrapper);
-                if (wrapper.nextSibling !== null) {
-                    wrapper.parentNode.insertBefore(wrapper, wrapper.nextSibling.nextSibling);
-                    componentWrapper.parentNode.insertBefore(componentWrapper, componentWrapper.nextSibling.nextSibling);
-
-                    var temp = self.widgets[index];
-                    self.widgets[index] = self.widgets[index + 1];
-                    self.widgets[index + 1] = temp;
-                    self.widgets = self.widgets.slice();
-                }
+                delete self.widgets[widget.name];
             });
         }
     },
-    _setupPropertyListener: function(i, editor, widget, wrapper, widgetConfig, 
-                                     component) {
+    _setupPropertyListener: function(i, editor, widget, wrapper, widgetConfig) {
         var self = this;
         var property = widgetConfig.properties[i];
-        window.editors = window.editors || [];
-        window.editors.push(editor);
         editor.addEventListener(property + "-changed", function(ev) {
-            component.set(property, editor[property]);
-            widget.properties[property] = editor[property];
-
-            console.log("Changing " + property + " with new value ", editor[property]);
-
-            var index = Array.prototype.slice.call(self.$.editors.children).indexOf(wrapper);
-
-            self.push("widgets", {});
-            self.splice("widgets", self.widgets.length - 1, 1)
+            self.widgets[widget.name].properties[property] = editor[property];
         });
     },
-    _registerWidgetType: function(name, component, editor, properties) {
-        this._configuration[name] = {
-            name: name,
-            component: component,
-            editor: editor,
-            properties: properties
-        };
-        var item = document.createElement("paper-item");
-        item.textContent = name;
-        this.$.widgetDropdown.appendChild(item);
-    },
     _addWidget: function() {
+        var type = this.$.widgetDropdown.selectedItem.dataset.shortName;
         this.addWidget({
-            "type": this.$.widgetDropdown.selectedItem.textContent,
+            "type": type,
             "properties": { }
         });
     },
-    _computeView: function(jsonMode) {
-        return jsonMode ? 1 : 0;
-    },
     _computeJSON: function(widgetsSplices) {
-        return JSON.stringify(this.widgets);
+        return JSON.stringify({
+            name: this.name,
+            document: this.documentContent,
+            widgets: this.widgets
+        }, null, 2);
     },
     _sync: function() {
         var value = JSON.parse(this.$.inputJsonField.value);
-        this.widgets = [];
+        this.widgets = {};
         this.$.editors.innerHTML = "";
-        this.$.preview.innerHTML = "";
-        for (var i = 0; i < value.length; i++) {
-            this.addWidget(value[i]);
+        this.documentContent = value.document;
+        for (a in value.widgets) {
+            this.addWidget(value.widgets[a], value.widgets[a].name);
         }
+        // TODO Hack
+        this._observeSelectedPage(PAGE_JSON);
+    },
+    _observeSelectedPage: function(selectedPage) {
+        switch (selectedPage) {
+            case PAGE_PREVIEW:
+                this.$.renderer.content = this.documentContent;
+                this.$.renderer.widgets = JSON.parse(JSON.stringify(this.widgets));
+                break;
+            case PAGE_JSON:
+                // TODO Hack
+                this.widgets = JSON.parse(JSON.stringify(this.widgets));
+                break;
+        }
+    },
+    _save: function() {
+        this.fire("save");
     }
 });
+})();
+
 </script>
 </dom-module>

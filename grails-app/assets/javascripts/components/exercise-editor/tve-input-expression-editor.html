@@ -18,11 +18,8 @@
 </style>
 
 <div class="layout vertical">
-    <div><b>Spørgsmål:</b></div>
-    <paper-textarea value="{{question}}"></paper-textarea>
-
     <div><b>Svar:</b></div>
-    <paper-input value="{{expression}}" hidden></paper-input>
+    <paper-input value="{{content}}" hidden></paper-input>
     <div><tekvideo-math-field id="expressionField"></tekvideo-math-field></div>
     <paper-button on-click="_saveExpression">Gem udtryk</paper-button>
 </div>
@@ -32,19 +29,14 @@
 Polymer({
     is: 'tve-input-expression-editor',
     properties: {
-        question: {
-            type: String,
-            value: "",
-            notify: true
-        },
-        expression: {
+        content: {
             type: String,
             value: "",
             notify: true
         }
     },
     _saveExpression: function() {
-        this.expression = this.$.expressionField.value;
+        this.content = this.$.expressionField.value;
     }
 });
 </script>

@@ -1,5 +1,8 @@
 <link rel="import" href="../../bower_components/polymer/polymer.html">
 <link rel="import" href="../../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
+<link rel="import" href="../../bower_components/paper-input/paper-input.html">
+
+<link rel="import" href="tve-matrix-renderer.html">
 
 <dom-module id="tve-matrix-editor">
 
@@ -10,8 +13,26 @@
 :host {
     display: block;
 }
+
+paper-input{
+    margin-right: 16px;
+}
 </style>
 
+<div class="layout vertical">
+    <h3>Dimensioner</h3>
+    <div class="layout horizontal">
+        <paper-input value="{{height}}" label="Rækker"></paper-input>
+        <paper-input value="{{width}}" label="Kolonner"></paper-input>
+    </div>
+    <h3>Svar</h3>
+    <tve-matrix-renderer 
+        id="matrix"
+        width="[[width]]" 
+        height="[[height]]" 
+        value="{{answer}}">
+    </tve-matrix-renderer>
+</div>
 
 </template>
 
@@ -21,12 +42,16 @@ Polymer({
     properties: {
         height: {
             type: Number,
-            value: 1,
+            value: 5,
             notify: true
         },
         width: {
             type: Number,
-            value: 1,
+            value: 5,
+            notify: true
+        },
+        answer: {
+            type: Array,
             notify: true
         }
     }

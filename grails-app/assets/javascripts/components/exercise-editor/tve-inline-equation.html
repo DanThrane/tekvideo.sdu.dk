@@ -1,30 +1,36 @@
 <link rel="import" href="../../bower_components/polymer/polymer.html">
 <link rel="import" href="../../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
-<link rel="import" href="../../bower_components/marked-element/marked-element.html">
 
-<dom-module id="tv-exercise-markdown">
+<link rel="import" href="mathjax-include.html">
+
+<dom-module id="tve-inline-equation">
 
 <template>
 <style include="iron-flex"></style>
 
 <style>
 :host {
-    display: block;
+    display: inline;
 }
 </style>
 
-<marked-element markdown="{{content}}"></marked-element>
+<span id="insertionPoint">
+</span>
 
 </template>
 
 <script>
 Polymer({
-    is: 'tv-exercise-markdown',
+    is: 'tve-inline-equation',
     properties: {
         content: {
         	type: String,
         	value: ""
         }
+    },
+    observers: ["_observeContent(content)"],
+    _observeContent: function(content) {
+        this.$.insertionPoint.innerHTML = "<math-tex display='inline'>" + content + "</math-tex>";
     }
 });
 </script>

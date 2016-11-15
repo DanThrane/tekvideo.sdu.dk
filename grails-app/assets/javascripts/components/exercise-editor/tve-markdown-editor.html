@@ -1,0 +1,41 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
+<link rel="import" href="../../bower_components/paper-input/paper-textarea.html">
+<link rel="import" href="../../bower_components/paper-icon-button/paper-icon-button.html">
+
+
+<dom-module id="tve-markdown-editor">
+
+<template>
+<style include="iron-flex"></style>
+
+<style>
+:host {
+    display: block;
+}
+
+paper-dialog {
+    width: 1000px;
+}
+</style>
+
+<div class="layout vertical">
+    <paper-textarea label="Indhold" rows="10" value="{{content}}">
+    </paper-textarea>
+</div>
+
+</template>
+
+<script>
+Polymer({
+    is: 'tve-markdown-editor',
+    properties: {
+        content: {
+            type: String,
+            value: "",
+            notify: true
+        }
+    }
+});
+</script>
+</dom-module>

@@ -1,9 +1,12 @@
 <link rel="import" href="../../bower_components/polymer/polymer.html">
 <link rel="import" href="../../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
 <link rel="import" href="../../bower_components/marked-element/marked-element.html">
+<link rel="import" href="../../bower_components/iron-icon/iron-icon.html">
+<link rel="import" href="../../bower_components/iron-icons/iron-icons.html">
 
 <link rel="import" href="../tekvideo-math-field.html">
 <link rel="import" href="../kas-import.html">
+<link rel="import" href="tve-status-indicator.html">
 
 <dom-module id="tve-input-expression">
 
@@ -12,13 +15,16 @@
 
 <style>
 :host {
-    display: block;
+    display: inline;
+}
+
+tekvideo-math-field {
+    --tekvideo-math-field-min-width: 100px;
 }
 </style>
 
-<marked-element markdown="{{question}}"></marked-element>
-<tekvideo-math-field id="mathInput"></tekvideo-math-field>
-<button on-click="grade">Grade</button>
+<tekvideo-math-field id="mathInput"></tekvideo-math-field> 
+<tve-status-indicator status="[[status]]"></tve-status-indicator>
 
 </template>
 
@@ -26,22 +32,27 @@
 Polymer({
     is: 'tve-input-expression',
     properties: {
-        question: {
+        content: {
             type: String,
             value: ""
         },
-        expression: {
+        status: {
             type: String,
             value: ""
         }
     },
     grade: function() {
-        var expectedValue = KAS.parse(this.expression);
+        var expectedValue = KAS.parse(this.content);
         var givenAnswer = KAS.parse(this.$.mathInput.value);
         var result = KAS.compare(expectedValue.expr, givenAnswer.expr);
-        console.log(result);
-        return result.equal;
-    }
+        return {
+            correct: result.equal,
+            answer: this.$.mathInput.value
+        };
+    },
+    validate: function() {
+        return this.$.mathInput.value.length > 0;
+    },
 });
 </script>
 </dom-module>

@@ -19,7 +19,7 @@
 </style>
 
 <template is="dom-repeat" items="{{choices}}">
-    <paper-input value="{{item.title}}" on-input="_notify">
+    <paper-input value="{{item.title}}" on-keydown="_notify" tabindex$="{{index}}">
         <paper-checkbox 
             checked="{{item.correct}}" 
             on-click="_notify" 
@@ -62,14 +62,18 @@ Polymer({
         },
         choices: {
             type: Array,
-            value: [],
+            value: [{ title: this.itemToAddValue, correct: false }],
             notify: true
         }
     },
-    _notify: function() {
-        var copy = this.choices.slice();
-        console.log(this.cohices);
-        this.choices = copy;
+    _notify: function(e) {
+        if (e.keyCode === 13) {
+            this._addItem();
+        } else {
+            var copy = this.choices.slice();
+            console.log(this.choices);
+            this.choices = copy;
+        }
     },
     _addItem: function() {
         var copy = this.choices.slice();
@@ -77,6 +81,15 @@ Polymer({
         console.log(copy);
         this.choices = copy;
         this.itemToAddValue = "";
+
+        var self = this;
+        setTimeout(function() {
+            // Nice hack.
+            var inputs = Polymer.dom(self.root).querySelectorAll('paper-input');
+            if (inputs && inputs.length > 0) {
+                inputs[inputs.length - 1].$.input.focus();
+            }
+        }, 100);
     },
     delete: function(e) {
         var index = e.target.getAttribute("data-index");
