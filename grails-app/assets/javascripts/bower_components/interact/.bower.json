@@ -53,5 +53,6 @@
   },
   "_source": "https://github.com/taye/interact.js.git",
   "_target": "^1.2.6",
-  "_originalSource": "interact"
+  "_originalSource": "interact",
+  "_direct": true
 }

@@ -92,7 +92,7 @@ Polymer({
     },
     _observeDocument: function(content) {
         var documentInsertion = this.$.documentInsertion;
-        var result = marked(content);
+        var result = content;
 
         var SEARCHING = 0,
             HAS_OPEN_BRACKET_1 = 1,
@@ -155,6 +155,7 @@ Polymer({
                     break;
             }
         }
+        result = marked(result);
         documentInsertion.innerHTML = result;
         for (var i = 0; i < output.length; i++) {
             var insertionPoint = documentInsertion.querySelector("#insertion-" + i);

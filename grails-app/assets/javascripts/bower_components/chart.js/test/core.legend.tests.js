@@ -1,5 +1,14 @@
 // Test the rectangle element
 describe('Legend block tests', function() {
+
+	beforeEach(function() {
+		window.addDefaultMatchers(jasmine);
+	});
+
+	afterEach(function() {
+		window.releaseAllCharts();
+	});
+
 	it('Should be constructed', function() {
 		var legend = new Chart.Legend({});
 		expect(legend).not.toBe(undefined);
@@ -14,7 +23,6 @@ describe('Legend block tests', function() {
 
 			// a callback that will handle
 			onClick: jasmine.any(Function),
-			onHover: null,
 
 			labels: {
 				boxWidth: 40,

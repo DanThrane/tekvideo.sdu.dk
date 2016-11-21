@@ -16,14 +16,14 @@
     "index.html",
     "package.json"
   ],
-  "homepage": "https://github.com/codemirror/bower",
+  "homepage": "https://github.com/marijnh/CodeMirror",
   "_release": "4.4.0",
   "_resolution": {
     "type": "version",
     "tag": "4.4.0",
     "commit": "485a7da897e378025268e686f4eb79377973219e"
   },
-  "_source": "https://github.com/codemirror/bower.git",
+  "_source": "https://github.com/marijnh/CodeMirror.git",
   "_target": "~4.4.0",
   "_originalSource": "codemirror"
 }
