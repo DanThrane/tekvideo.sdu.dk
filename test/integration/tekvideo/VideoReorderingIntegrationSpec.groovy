@@ -3,7 +3,7 @@ package tekvideo
 import dk.sdu.tekvideo.Course
 import dk.sdu.tekvideo.CourseManagementService
 import dk.sdu.tekvideo.UpdateSubjectsCommand
-import dk.sdu.tekvideo.UpdateVideosCommand
+import dk.sdu.tekvideo.UpdateExercisesCommand
 import dk.sdu.tekvideo.data.CourseData
 import dk.sdu.tekvideo.data.SubjectData
 import dk.sdu.tekvideo.data.UserData
@@ -41,8 +41,8 @@ class VideoReorderingIntegrationSpec extends IntegrationSpec {
         UserData.authenticateAsTestTeacher()
 
         and: "we perform a re-ordering of the videos"
-        def command = new UpdateVideosCommand(subject: subject, order: [video0, video2, video1])
-        def reply = courseManagementService.updateVideos(command)
+        def command = new UpdateExercisesCommand(subject: subject, order: [video0, video2, video1])
+        def reply = courseManagementService.updateExercises(command)
 
         then: "the list should have re-ordered itself"
         reply.success

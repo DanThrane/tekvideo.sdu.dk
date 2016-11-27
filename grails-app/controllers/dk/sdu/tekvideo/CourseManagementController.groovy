@@ -33,8 +33,8 @@ class CourseManagementController {
         render courseManagementService.getJsTreeSubjects(course) as JSON
     }
 
-    def jstVideos(Subject subject) {
-        render courseManagementService.getJsTreeVideos(subject) as JSON
+    def jstExercises(Subject subject) {
+        render courseManagementService.getJsTreeExercises(subject) as JSON
     }
 
     // TODO: This should really be refactored
@@ -72,16 +72,16 @@ class CourseManagementController {
         }
     }
 
-    def videoStatus(Video video, String status) {
-        def current = video?.localStatus
-        def statusS = NodeStatus.fromValue(status?.toUpperCase()) ?: null
+    def exerciseStatus(ExerciseStatusChangeCommand command) {
+        def current = command.id?.localStatus
+        def statusS = NodeStatus.fromValue(command.status?.toUpperCase()) ?: null
         if (statusS == null) {
             flash.error = "Ugyldig status"
             redirect(action: "index")
         } else {
-            def res = courseManagementService.changeVideoStatus(video, statusS)
+            def res = courseManagementService.changeExerciseStatus(command.id, statusS)
             if (res.success) {
-                redirect(action: "manageSubject", params: [status: current, id: video.subject.id])
+                redirect(action: "manageSubject", params: [status: current, id: command.id.subject.id])
             } else {
                 flash.error = res.message
                 redirect(action: "index")
@@ -104,12 +104,18 @@ class CourseManagementController {
     def manageSubject(Subject subject) {
         String statusStr = params.status ?: "VISIBLE"
         def status = NodeStatus.fromValue(statusStr.toUpperCase()) ?: NodeStatus.VISIBLE
-        def videos = courseManagementService.getVideos(status, subject)
+        def exercises = courseManagementService.getExercises(status, subject)
 
-        if (courseManagementService.canAccess(subject.course) && videos.success) {
-            def meta = videos.result.collect { videoService.getVideoMetaDataSafe(it) }
+        if (courseManagementService.canAccess(subject.course) && exercises.success) {
+            def meta = exercises.result.collect {
+                if (it instanceof Video) {
+                    videoService.getVideoMetaDataSafe(it)
+                } else {
+                    null
+                }
+            }
 
-            [subject: subject, videos: videos.result, meta: meta, status: status]
+            [subject: subject, excises: exercises.result, meta: meta, status: status]
         } else {
             notAllowedCourse()
         }
@@ -215,8 +221,8 @@ class CourseManagementController {
         }
     }
 
-    def updateVideos(UpdateVideosCommand command) {
-        def result = courseManagementService.updateVideos(command)
+    def updateExercises(UpdateExercisesCommand command) {
+        def result = courseManagementService.updateExercises(command)
         response.status = result.suggestedHttpStatus
         render result as JSON
     }
@@ -227,8 +233,8 @@ class CourseManagementController {
         render result as JSON
     }
 
-    def moveVideo(MoveVideoCommand command) {
-        def result = courseManagementService.moveVideo(command)
+    def moveExercise(MoveExerciseCommand command) {
+        def result = courseManagementService.moveExercise(command)
         response.status = result.suggestedHttpStatus
         render result as JSON
     }

@@ -6,9 +6,9 @@ import grails.validation.Validateable
  * @author Dan Thrane
  */
 @Validateable
-class UpdateVideosCommand {
+class UpdateExercisesCommand {
     Subject subject
-    List<Video> order
+    List<Exercise> order
 
     static constraints = {
         subject nullable: false

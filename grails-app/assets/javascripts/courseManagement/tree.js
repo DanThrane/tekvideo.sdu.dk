@@ -36,8 +36,9 @@ var ManagementTreeView = (function () {
                 case "subject":
                     location = self.baseUrl + "courseManagement/subjectStatus/" + node.id + "?status=" + status;
                     break;
+                case "writtenexercise":
                 case "video":
-                    location = self.baseUrl + "courseManagement/videoStatus/" + node.id + "?status=" + status;
+                    location = self.baseUrl + "courseManagement/exerciseStatus/" + node.id + "?status=" + status;
                     break;
             }
             if (location !== null) {
@@ -77,12 +78,13 @@ var ManagementTreeView = (function () {
                 };
                 Util.postJson(self.baseUrl + "courseManagement/updateSubjects", message, {});
                 break;
+            case "writtenexercise":
             case "video":
                 var message = {
                     subject: parent,
                     order: order
                 };
-                Util.postJson(self.baseUrl + "courseManagement/updateVideos", message, {});
+                Util.postJson(self.baseUrl + "courseManagement/updateExercises", message, {});
                 break;
         }
     };
@@ -105,7 +107,7 @@ var ManagementTreeView = (function () {
                                 case "course":
                                     return self.baseUrl + "courseManagement/jstSubjects/" + node.id;
                                 case "subject":
-                                    return self.baseUrl + "courseManagement/jstVideos/" + node.id;
+                                    return self.baseUrl + "courseManagement/jstExercises/" + node.id;
                                 default:
                                     console.log("Unknown node");
                                     console.log(node);
@@ -127,10 +129,14 @@ var ManagementTreeView = (function () {
                 },
                 "subject": {
                     "icon": "fa fa-users",
-                    "valid_children": ["video"]
+                    "valid_children": ["video", "writtenexercise"]
                 },
                 "video": {
                     "icon": "fa fa-play",
+                    "valid_children": []
+                },
+                "writtenexercise": {
+                    "icon": "fa fa-pencil-square",
                     "valid_children": []
                 }
             },
@@ -138,7 +144,7 @@ var ManagementTreeView = (function () {
             "contextmenu": {
                 "items": function (node) {
                     var options = {};
-                    if (node.type !== "video") {
+                    if (node.type !== "video" && node.type !== "writtenexercise") {
                         options.create = {
                             "label": "Tilføj element",
                             "action": self.handleCreate(node)
@@ -186,13 +192,14 @@ var ManagementTreeView = (function () {
                         };
                         Util.postJson(self.baseUrl + "courseManagement/moveSubject", message, {});
                         break;
+                    case "writtenexercise": // TODO @refactor needs to handle writtenexercises
                     case "video":
                         var message = {
-                            video: data.node.id,
+                            exercise: data.node.id,
                             newSubject: data.parent,
                             position: data.position
                         };
-                        Util.postJson(self.baseUrl + "courseManagement/moveVideo", message, {});
+                        Util.postJson(self.baseUrl + "courseManagement/moveExercise", message, {});
                         break;
                 }
             } else {

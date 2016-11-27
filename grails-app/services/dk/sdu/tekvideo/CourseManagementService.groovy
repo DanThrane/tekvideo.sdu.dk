@@ -1,6 +1,5 @@
 package dk.sdu.tekvideo
 
-import grails.plugin.springsecurity.SpringSecurityUtils
 import org.apache.http.HttpStatus
 
 import static dk.sdu.tekvideo.ServiceResult.*
@@ -40,7 +39,7 @@ class CourseManagementService {
                 [
                         id      : it.id,
                         text    : it.name,
-                        children: it.activeVideos.size() > 0, // TODO Not efficient
+                        children: it.activeExerciseCount > 0, // TODO Not efficient
                         type    : "subject"
                 ]
             }
@@ -49,15 +48,15 @@ class CourseManagementService {
         }
     }
 
-    List<Map> getJsTreeVideos(Subject subject) {
-        def videos = getVideos(NodeStatus.VISIBLE, subject)
+    List<Map> getJsTreeExercises(Subject subject) {
+        def videos = getExercises(NodeStatus.VISIBLE, subject)
         if (videos.success) {
             return videos.result.collect {
                 [
                         id      : it.id,
                         text    : it.name,
                         children: false,
-                        type    : "video"
+                        type    : it.class.simpleName.toLowerCase()
                 ]
             }
         } else {
@@ -108,14 +107,9 @@ class CourseManagementService {
      * @param status The node status to look for
      * @return A list of videos or failure
      */
-    ServiceResult<List<Video>> getVideos(NodeStatus status, Subject subject) {
-        if (canAccess(subject.course)) {
-            ok Video.executeQuery("""
-                SELECT v
-                FROM SubjectExercise sv INNER JOIN sv.exercise v
-                WHERE sv.subject = :subject AND v.localStatus = :status
-                ORDER BY sv.weight
-            """, [subject: subject, status: status])
+    ServiceResult<List<Exercise>> getExercises(NodeStatus status, Subject subject) {
+        if (canAccessNode(subject)) {
+            ok subject.getAllExercisesByStatus(status)
         } else {
             fail "teacherservice.no_teacher"
         }
@@ -242,7 +236,7 @@ class CourseManagementService {
     }
 
     ServiceResult<SimilarResources> createSimilarResource(CreateSimilarResourceCommand command) {
-        def user  = userService.authenticatedTeacher
+        def user = userService.authenticatedTeacher
         if (!command.exercise) {
             fail "Ukendt opgave"
         } else if (!user) {
@@ -280,18 +274,18 @@ class CourseManagementService {
     }
 
     /**
-     * Updates the video list of a subject. This allows for videos to be moved up and down in the list, as well as
-     * removing videos entirely from the list. Any video deleted will be marked as TRASH.
+     * Updates the exercise list of a subject. This allows for exercise to be moved up and down in the list, as well as
+     * removing exercises entirely from the list. Any exercise deleted will be marked as TRASH.
      *
      * @param command The update command
      * @return The subject being edited
      */
-    ServiceResult<Subject> updateVideos(UpdateVideosCommand command) { // TODO @refactor Needs to work on exercises
+    ServiceResult<Subject> updateExercises(UpdateExercisesCommand command) {
         if (!command.validate()) {
             fail("teacherservice.invalid_request", false, [:], 400)
         } else {
-            if (canAccess(command.subject.course)) {
-                def diff = command.subject.videos.minus(command.order)
+            if (canAccessNode(command.subject)) {
+                def diff = command.subject.allExercises.minus(command.order)
                 diff.each {
                     it.localStatus = NodeStatus.TRASH
                     it.save()
@@ -476,11 +470,11 @@ class CourseManagementService {
      * @param status The status to update to
      * @return failure if the authenticated user is not the teacher of the course, otherwise OK
      */
-    ServiceResult<Void> changeVideoStatus(Video video, NodeStatus status) {
-        if (canAccess(video.subject.course)) {
+    ServiceResult<Void> changeExerciseStatus(Exercise exercise, NodeStatus status) {
+        if (canAccessNode(exercise)) {
             if (status != null) {
-                video.localStatus = status
-                video.save()
+                exercise.localStatus = status
+                exercise.save()
                 ok()
             } else {
                 fail message: "Ugyldig forspørgsel", suggestedHttpStatus: HttpStatus.SC_BAD_REQUEST
@@ -503,7 +497,13 @@ class CourseManagementService {
                 description: subject.description,
         ]).save(flush: true)
         CourseSubject.create(course, newSubject, [save: true])
-        subject.visibleVideos.forEach { copyVideoToSubject(it, newSubject) }
+        subject.allVisibleExercises.forEach {
+            if (it instanceof Video) {
+                copyVideoToSubject(it, newSubject)
+            } else if (it instanceof WrittenExercise) {
+                copyWrittenExerciseToSubject(it, newSubject)
+            }
+        }
     }
 
     /**
@@ -519,9 +519,20 @@ class CourseManagementService {
                 youtubeId   : video.youtubeId,
                 timelineJson: video.timelineJson,
                 description : video.description,
-                videoTyupe  : video.videoType,
+                videoType   : video.videoType,
         ]).save(flush: true)
         SubjectExercise.create(subject, newVideo, [save: true])
+    }
+
+    private void copyWrittenExerciseToSubject(WrittenExercise exercise, Subject subject) {
+        if (exercise == null) return
+
+        def newExercise = new WrittenExercise([
+                name       : exercise.name,
+                description: exercise.description,
+                exercise   : exercise.exercise
+        ]).save(flush: true)
+        SubjectExercise.create(subject, newExercise, [save: true])
     }
 
     ServiceResult<Subject> moveSubject(MoveSubjectCommand command) {
@@ -536,9 +547,9 @@ class CourseManagementService {
         }
     }
 
-    ServiceResult<Video> moveVideo(MoveVideoCommand command) {
+    ServiceResult<Exercise> moveExercise(MoveExerciseCommand command) {
         if (command.validate()) {
-            def mapping = SubjectExercise.findByExercise(command.video)
+            def mapping = SubjectExercise.findByExercise(command.exercise)
             mapping.subject = command.newSubject
             mapping.weight = command.position
             mapping.save(flush: true, failOnError: true)

@@ -3,13 +3,13 @@ package dk.sdu.tekvideo
 import grails.validation.Validateable
 
 @Validateable
-class MoveVideoCommand {
-    Video video
+class MoveExerciseCommand {
+    Exercise exercise
     Subject newSubject
     Integer position
 
     static constraints = {
-        video nullable: false
+        exercise nullable: false
         newSubject nullable: false
         position nullable: false, min: 0
     }

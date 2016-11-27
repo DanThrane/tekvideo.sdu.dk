@@ -29,19 +29,19 @@
         </twbs:row>
 
         <sdu:card>
-            <g:if test="${videos.isEmpty()}">
+            <g:if test="${excises.isEmpty()}">
                 Ingen videoer her.
             </g:if>
             <g:else>
                 <div id="video-container">
-                    <g:each in="${videos}" var="video" status="idx">
+                    <g:each in="${excises}" var="exercise" status="idx">
                         <div class="video">
-                            <div data-video-id="${video.id}" class="hide"></div>
+                            <div data-video-id="${exercise.id}" class="hide"></div>
                             <twbs:row>
                                 <twbs:column cols="8">
                                     <div class="node-header">
-                                        <g:link action="editVideo" id="${video.id}">
-                                            ${video.name}
+                                        <g:link action="editVideo" id="${exercise.id}">
+                                            ${exercise.name}
                                         </g:link>
                                     </div>
                                 </twbs:column>
@@ -52,17 +52,17 @@
 
                                             <twbs:dropdownMenu>
                                                 <twbs:dropdownItem disabled="${status == NodeStatus.VISIBLE}"
-                                                                   action="videoStatus" id="${video.id}"
+                                                                   action="exerciseStatus" id="${exercise.id}"
                                                                    params="${[status: NodeStatus.VISIBLE]}">
                                                     <fa:icon icon="${FaIcon.EYE}"/> Synlige
                                                 </twbs:dropdownItem>
                                                 <twbs:dropdownItem disabled="${status == NodeStatus.INVISIBLE}"
-                                                                   action="videoStatus" id="${video.id}"
+                                                                   action="exerciseStatus" id="${exercise.id}"
                                                                    params="${[status: NodeStatus.INVISIBLE]}">
                                                     <fa:icon icon="${FaIcon.EYE_SLASH}"/> Usynlige
                                                 </twbs:dropdownItem>
                                                 <twbs:dropdownItem disabled="${status == NodeStatus.TRASH}"
-                                                                   action="videoStatus" id="${video.id}"
+                                                                   action="exerciseStatus" id="${exercise.id}"
                                                                    params="${[status: NodeStatus.TRASH]}">
                                                     <fa:icon icon="${FaIcon.TRASH}"/> Papirkurv
                                                 </twbs:dropdownItem>
@@ -80,17 +80,24 @@
                                 </twbs:column>
                             </twbs:row>
                             <twbs:row>
-                                <twbs:column md="6">
-                                    <markdown:renderHtml><sdu:abbreviate>${video.description}</sdu:abbreviate></markdown:renderHtml>
-                                </twbs:column>
-                                <twbs:column md="6">
-                                    <ul>
-                                        <li><b>Video længde:</b> ${meta[idx].duration}</li>
-                                        <li><b>Antal emner:</b> ${meta[idx].subjectCount}</li>
-                                        <li><b>Antal spørgsmål:</b> ${meta[idx].questionCount}</li>
-                                        <li><b>Antal felter:</b> ${meta[idx].fieldCount}</li>
-                                    </ul>
-                                </twbs:column>
+                                <g:if test="${meta[idx] != null}">
+                                    <twbs:column md="6">
+                                        <markdown:renderHtml><sdu:abbreviate>${exercise.description}</sdu:abbreviate></markdown:renderHtml>
+                                    </twbs:column>
+                                    <twbs:column md="6">
+                                        <ul>
+                                            <li><b>Video længde:</b> ${meta[idx].duration}</li>
+                                            <li><b>Antal emner:</b> ${meta[idx].subjectCount}</li>
+                                            <li><b>Antal spørgsmål:</b> ${meta[idx].questionCount}</li>
+                                            <li><b>Antal felter:</b> ${meta[idx].fieldCount}</li>
+                                        </ul>
+                                    </twbs:column>
+                                </g:if>
+                                <g:else>
+                                    <twbs:column md="12">
+                                        <markdown:renderHtml><sdu:abbreviate>${exercise.description}</sdu:abbreviate></markdown:renderHtml>
+                                    </twbs:column>
+                                </g:else>
                             </twbs:row>
                             <hr>
                         </div>
@@ -148,7 +155,7 @@
         var list = new ListManipulator(".video", ".video-up", ".video-down");
         list.init();
 
-        AjaxUtil.registerJSONForm("#save-video-order", "${createLink(action: "updateVideos")}", function () {
+        AjaxUtil.registerJSONForm("#save-video-order", "${createLink(action: "updateExercises")}", function () {
             var order = list.map(function (element) {
                 return parseInt(element.find("[data-video-id]").attr("data-video-id"));
             });
