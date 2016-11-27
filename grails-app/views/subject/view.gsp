@@ -1,19 +1,17 @@
-<%@ page import="dk.sdu.tekvideo.NodeStatus; dk.sdu.tekvideo.FaIcon; dk.danthrane.twbs.ButtonStyle" contentType="text/html;charset=UTF-8" %>
+<%@ page import="grails.converters.JSON; dk.sdu.tekvideo.NodeStatus; dk.sdu.tekvideo.FaIcon; dk.danthrane.twbs.ButtonStyle" contentType="text/html;charset=UTF-8" %>
 <html>
 <head>
     <meta name="layout" content="main_fluid">
-    <title>Videoer for ${subject.name}</title>
+    <title>Opgaver for ${subject.name}</title>
 
     <g:render template="/polymer/includePolymer" />
-
     <link rel="import" href="${createLink(absolute:true, uri:'/assets/')}/components/tv-browser.html">
-
 </head>
 
 <body>
 
 <twbs:pageHeader>
-    <h3>Videoer <small>${subject.name}</small></h3>
+    <h3>Opgaver <small>${subject.name}</small></h3>
 </twbs:pageHeader>
 
 <twbs:row>
@@ -35,7 +33,7 @@
     </twbs:column>
 </twbs:row>
 
-<tv-browser items='${data as grails.converters.JSON}'></tv-browser>
+<tv-browser items='${data as JSON}'></tv-browser>
 
 
 <g:render template="/course/sidebar" model="${[course: subject.course]}"/>

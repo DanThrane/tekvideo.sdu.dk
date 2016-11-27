@@ -94,7 +94,7 @@ class DashboardService {
                 def subjects = course.subjects
                 ok item: SubjectExercise.findAllBySubjectInList(subjects).exercise
             } else if (node instanceof Subject) {
-                ok item: node.videos
+                ok item: node.videos // TODO @refactor should display videos
             } else if (node instanceof Video) {
                 ok item: [node]
             } else {
@@ -311,7 +311,7 @@ class DashboardService {
                     "dateCreated": (it[4] as Timestamp).toInstant().epochSecond * 1000,
                     "comment"    : it[5],
                     "commentId"  : it[6],
-                    "videoUrl"   : urlMappingService.generateLinkToVideo(Video.get(it[2]), [absolute: true])
+                    "videoUrl"   : urlMappingService.generateLinkToExercise(Video.get(it[2]), [absolute: true])
             ])
         })
     }

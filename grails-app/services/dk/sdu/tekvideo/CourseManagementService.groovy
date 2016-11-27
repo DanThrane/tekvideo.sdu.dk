@@ -286,7 +286,7 @@ class CourseManagementService {
      * @param command The update command
      * @return The subject being edited
      */
-    ServiceResult<Subject> updateVideos(UpdateVideosCommand command) {
+    ServiceResult<Subject> updateVideos(UpdateVideosCommand command) { // TODO @refactor Needs to work on exercises
         if (!command.validate()) {
             fail("teacherservice.invalid_request", false, [:], 400)
         } else {

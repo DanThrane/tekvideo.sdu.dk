@@ -36,7 +36,7 @@
                                 </g:link>
                                 <ul class="list-inline course-list">
                                     <!-- I definitely didn't implement the bullets like this because I'm too lazy ;-) -->
-                                    <li>&raquo; ${subject.videos.size()} video(r)</li>
+                                    <li>&raquo; ${subject.activeExerciseCount} opgave(r)</li>
                                 </ul>
                             </div>
                         </twbs:column>

@@ -18,7 +18,7 @@ class SubjectService {
     }
 
     List<Map> subjectForBrowser(Subject subject) {
-        def videos = subject.visibleVideos
+        def exercises = subject.allVisibleExercises
 
         def breadcrumbs = []
         def course = subject.course
@@ -36,19 +36,18 @@ class SubjectService {
                 url: urlMappingService.generateLinkToSubject(subject)
         ])
 
-        return videos.collect {
+        return exercises.collect {
             def result = [:]
             result.title = it.name
             result.description = it.description
             result.stats = []
             result.featuredChildren = []
             result.breadcrumbs = breadcrumbs
+            result.url = urlMappingService.generateLinkToExercise(it)
 
             if (it instanceof Video) {
                 result.thumbnail = videoService.getThumbnail(it)
-                result.url = urlMappingService.generateLinkToVideo(it)
             }
-
             return result
         }
     }

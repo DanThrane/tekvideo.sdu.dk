@@ -28,7 +28,7 @@ class TeachingTagLib {
 
     def createLinkToVideo = { attrs, body ->
         Video video = attrs.remove("video") ?: fail("video", "sdu:createLinkToVideo") as Video
-        out << urlMappingService.generateLinkToVideo(video, attrs)
+        out << urlMappingService.generateLinkToExercise(video, attrs)
     }
 
     def linkToTeacher = { attrs, body ->

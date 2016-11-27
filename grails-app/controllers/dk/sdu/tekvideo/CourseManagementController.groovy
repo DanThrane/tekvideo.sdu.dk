@@ -115,14 +115,6 @@ class CourseManagementController {
         }
     }
 
-    def getVideos(Subject subject) {
-        if (courseManagementService.canAccess(subject.course)) {
-            render template: "videos", model: [videos: subject.videos]
-        } else {
-            notAllowedCourse()
-        }
-    }
-
     def createSubject(Course course) {
         def teacher = userService.authenticatedTeacher
         if (courseManagementService.canAccess(course)) {
@@ -282,7 +274,7 @@ class CourseManagementController {
     }
 
     @Secured(["ROLE_TEACHER"])
-    def deleteSimilarResource(Exercise exercise, SimilarResources similarResources) {
+    def deleteSimilarResource(Exercise exercise, SimilarResources similarResources) { // TODO @refactor doesn't work
         def result = courseManagementService.deleteSimilarResource(exercise, similarResources)
         render result as JSON
     }

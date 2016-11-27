@@ -4,22 +4,12 @@ import grails.converters.JSON
 import org.springframework.security.access.annotation.Secured
 
 class VideoController {
-    UrlMappingService urlMappingService
     VideoService videoService
-
-    @Secured("permitAll")
-    def view(String teacherName, String courseName, String subjectName, Integer videoId, Integer year, Boolean spring) {
-        Video video = urlMappingService.getVideo(teacherName, courseName, subjectName, videoId, year, spring)
-        if (videoService.canAccess(video)) {
-            [video: video]
-        } else {
-            render status: 404, text: "Unable to find video!"
-        }
-    }
+    ExerciseService exerciseService
 
     @Secured("permitAll")
     def viewV(Video video) {
-        if (videoService.canAccess(video)) {
+        if (exerciseService.canAccess(video)) {
             render view: "view", model: [video: video]
         } else {
             render status: 404, text: "Unable to find video!"
@@ -27,7 +17,7 @@ class VideoController {
     }
 
     @Secured(["ROLE_STUDENT", "ROLE_TEACHER"])
-    def postComment(Video video, String comment) {
+    def postComment(Video video, String comment) { // TODO @refactor needs to apply to exercises not just videos
         def result = videoService.createComment(new CreateVideoCommentCommand(id: video, comment: comment))
         if (result.success) {
             flash.success = "Din kommentar er blevet tilføjet til videoen"

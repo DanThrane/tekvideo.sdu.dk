@@ -34,10 +34,6 @@ class Video extends Exercise {
         return timelineJson
     }
 
-    Subject getSubject() {
-        return getParent() as Subject
-    }
-
     @Override
     Node getParent() {
         SubjectExercise.findByExercise(this).subject

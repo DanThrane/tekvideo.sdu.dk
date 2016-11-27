@@ -59,24 +59,26 @@ class UrlMappingService {
     }
 
     /**
-     * Returns a video from its textual representation.
+     * Returns a exercise from its textual representation.
      *
      * @param teacherName The teacher's name/alias
      * @param courseName The course name
      * @param subjectName The subject
-     * @param videoId The video ID (in the subject)
+     * @param index The index (in the subject)
      * @param year The year
      * @param spring true if in the spring semester, otherwise false
-     * @return The video or null
+     * @return The exercise or null
      */
-    Video getVideo(String teacherName, String courseName, String subjectName, Integer videoId,
-                   Integer year = null, Boolean spring = null) {
+    Exercise getExercise(String teacherName, String courseName, String subjectName, Integer index,
+                         Integer year = null, Boolean spring = null) {
         Subject subject = getSubject(teacherName, courseName, subjectName, year, spring)
-        if (subject && videoId < subject.videos.size()) {
-            return subject.videos[videoId]
-        } else {
-            return null
+        if (subject) {
+            def exercises = subject.allVisibleExercises
+            if (index < exercises.size()) {
+                return exercises[index]
+            }
         }
+        return null
     }
 
     /**
@@ -114,13 +116,13 @@ class UrlMappingService {
 
     /**
      * Generates a "/t/" link to the video
-     * @param video The videp
+     * @param exercise The exercise
      * @param additionalAttrs Additional attributes to pass to
      * {@link asset.pipeline.grails.LinkGenerator#link(java.util.Map)}.
      * @return The link
      */
-    String generateLinkToVideo(Video video, Map additionalAttrs = [:]) {
-        grailsLinkGenerator.link(prepareVideoAttributes(video, additionalAttrs))
+    String generateLinkToExercise(Exercise exercise, Map additionalAttrs = [:]) {
+        grailsLinkGenerator.link(prepareExerciseAttributes(exercise, additionalAttrs))
     }
 
     private Map prepareAttributes(String teacher, Map attrs) {
@@ -147,11 +149,11 @@ class UrlMappingService {
         return res
     }
 
-    private Map prepareVideoAttributes(Video video, Map attrs) {
+    private Map prepareExerciseAttributes(Exercise exercise, Map attrs) {
         // TODO FIXME This is going to blow up at some point, since the video list is no longer guaranteed to be
         // well-formed (not sure it even was before)
-        def res = prepareSubjectAttributes(video.subject, attrs)
-        res.params.vidid = SubjectExercise.findByExercise(video).weight
+        def res = prepareSubjectAttributes(exercise.subject, attrs)
+        res.params.vidid = SubjectExercise.findByExercise(exercise).weight
         return res
     }
 

@@ -16,15 +16,56 @@ class Subject implements Node {
         description type: "text"
     }
 
-    // TODO Some refactoring would be nice instead of copy & pasting
+    // TODO Some refactoring would be nice instead of copy & pasting. Should this even be in this class?
+
+    Long getActiveExerciseCount() {
+        def subject = this
+        return SubjectExercise.withCriteria {
+            eq("subject", subject)
+            exercise {
+                not {
+                    eq("localStatus", NodeStatus.TRASH)
+                }
+            }
+            projections {
+                count()
+            }
+        }[0]
+    }
+
+    Long getVisibleExerciseCount() {
+        def subject = this
+        return SubjectExercise.withCriteria {
+            eq("subject", subject)
+            exercise {
+                eq("localStatus", NodeStatus.VISIBLE)
+            }
+            projections {
+                count()
+            }
+        }[0]
+    }
 
     List<Exercise> getAllExercises() {
         def subject = this
         Collections.unmodifiableList(
                 SubjectExercise.withCriteria() {
                     eq("subject", subject)
-                    order("weight", "desc")
+                    order("weight", "asc")
                     exercise {}
+                }.exercise
+        )
+    }
+
+    List<Exercise> getAllVisibleExercises() {
+        def subject = this
+        Collections.unmodifiableList(
+                SubjectExercise.withCriteria() {
+                    eq("subject", subject)
+                    order("weight", "asc")
+                    exercise {
+                        eq("localStatus", NodeStatus.VISIBLE)
+                    }
                 }.exercise
         )
     }
@@ -34,7 +75,7 @@ class Subject implements Node {
         Collections.unmodifiableList(
                 SubjectExercise.withCriteria() {
                     eq("subject", subject)
-                    order("weight", "desc")
+                    order("weight", "asc")
                     exercise {
                         eq("class", Video)
                         not {
@@ -50,7 +91,7 @@ class Subject implements Node {
         Collections.unmodifiableList(
                 SubjectExercise.withCriteria() {
                     eq("subject", subject)
-                    order("weight", "desc")
+                    order("weight", "asc")
                     exercise {
                         eq("class", Video)
                         eq("localStatus", NodeStatus.VISIBLE)
@@ -64,7 +105,7 @@ class Subject implements Node {
         Collections.unmodifiableList(
                 SubjectExercise.withCriteria() {
                     eq("subject", subject)
-                    order("weight", "desc")
+                    order("weight", "asc")
                     exercise {
                         eq("class", Video)
                     }
@@ -77,7 +118,7 @@ class Subject implements Node {
         Collections.unmodifiableList(
                 SubjectExercise.withCriteria() {
                     eq("subject", subject)
-                    order("weight", "desc")
+                    order("weight", "asc")
                     exercise {
                         eq("class", WrittenExercise)
                     }
@@ -90,7 +131,7 @@ class Subject implements Node {
         Collections.unmodifiableList(
                 SubjectExercise.withCriteria() {
                     eq("subject", subject)
-                    order("weight", "desc")
+                    order("weight", "asc")
                     exercise {
                         eq("class", WrittenExercise)
                         eq("localStatus", NodeStatus.VISIBLE)
@@ -104,7 +145,7 @@ class Subject implements Node {
         Collections.unmodifiableList(
                 SubjectExercise.withCriteria() {
                     eq("subject", subject)
-                    order("weight", "desc")
+                    order("weight", "asc")
                     exercise {
                         eq("class", WrittenExercise)
                         not {

@@ -9,17 +9,7 @@ import static dk.sdu.tekvideo.ServiceResult.ok
 class VideoService {
     def springSecurityService
     def videoStatisticsService
-    def userService
     def externalVideoHostService
-
-    boolean canAccess(Video video) {
-        def status = video?.status
-
-        video != null &&
-                (status == NodeStatus.VISIBLE ||
-                        (status == NodeStatus.INVISIBLE &&
-                                userService.authenticatedTeacher == video.subject.course.teacher))
-    }
 
     ServiceResult<Comment> createComment(CreateVideoCommentCommand command) {
         User user = springSecurityService.currentUser as User

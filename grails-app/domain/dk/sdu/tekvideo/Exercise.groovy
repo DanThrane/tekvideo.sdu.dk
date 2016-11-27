@@ -23,4 +23,8 @@ abstract class Exercise implements Node {
         return description
     }
 
+    Subject getSubject() {
+        return parent as Subject
+    }
+
 }
