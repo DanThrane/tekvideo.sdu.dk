@@ -310,10 +310,12 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       /**
        * Returns scroll `deltaX` and `deltaY`.
        * @param {!Event} event The scroll event
-       * @return {{deltaX: number, deltaY: number}} Object containing the
-       * x-axis scroll delta (positive: scroll right, negative: scroll left,
-       * 0: no scroll), and the y-axis scroll delta (positive: scroll down,
-       * negative: scroll up, 0: no scroll).
+       * @return {{
+       *  deltaX: number The x-axis scroll delta (positive: scroll right,
+       *                 negative: scroll left, 0: no scroll),
+       *  deltaY: number The y-axis scroll delta (positive: scroll down,
+       *                 negative: scroll up, 0: no scroll)
+       * }} info
        * @private
        */
       _getScrollInfo: function(event) {

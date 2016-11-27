@@ -1,11 +1,11 @@
-'use strict';
+"use strict";
 
 module.exports = function(Chart) {
 
 	var helpers = Chart.helpers;
 
 	var defaultConfig = {
-		position: 'left',
+		position: "left",
 		ticks: {
 			callback: function(tickValue, index, ticks) {
 				// If we have lots of ticks, don't use the ones
@@ -54,6 +54,8 @@ module.exports = function(Chart) {
 
 			if (opts.stacked) {
 				var valuesPerType = {};
+				var hasPositiveValues = false;
+				var hasNegativeValues = false;
 
 				helpers.each(datasets, function(dataset, datasetIndex) {
 					var meta = chart.getDatasetMeta(datasetIndex);
@@ -80,10 +82,14 @@ module.exports = function(Chart) {
 
 							if (opts.relativePoints) {
 								positiveValues[index] = 100;
-							} else if (value < 0) {
-								negativeValues[index] += value;
 							} else {
-								positiveValues[index] += value;
+								if (value < 0) {
+									hasNegativeValues = true;
+									negativeValues[index] += value;
+								} else {
+									hasPositiveValues = true;
+									positiveValues[index] += value;
+								}
 							}
 						});
 					}
@@ -169,10 +175,11 @@ module.exports = function(Chart) {
 				innerDimension = me.width - (paddingLeft + me.paddingRight);
 				pixel = me.left + (innerDimension / range * (rightValue - start));
 				return Math.round(pixel + paddingLeft);
+			} else {
+				innerDimension = me.height - (me.paddingTop + paddingBottom);
+				pixel = (me.bottom - paddingBottom) - (innerDimension / range * (rightValue - start));
+				return Math.round(pixel);
 			}
-			innerDimension = me.height - (me.paddingTop + paddingBottom);
-			pixel = (me.bottom - paddingBottom) - (innerDimension / range * (rightValue - start));
-			return Math.round(pixel);
 		},
 		getValueForPixel: function(pixel) {
 			var me = this;
@@ -187,6 +194,6 @@ module.exports = function(Chart) {
 			return this.getPixelForValue(this.ticksAsNumbers[index]);
 		}
 	});
-	Chart.scaleService.registerScaleType('linear', LinearScale, defaultConfig);
+	Chart.scaleService.registerScaleType("linear", LinearScale, defaultConfig);
 
 };

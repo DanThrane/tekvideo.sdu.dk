@@ -45,5 +45,6 @@
   },
   "_source": "git://github.com/PolymerElements/paper-checkbox.git",
   "_target": "^1.4.1",
-  "_originalSource": "PolymerElements/paper-checkbox"
+  "_originalSource": "PolymerElements/paper-checkbox",
+  "_direct": true
 }
