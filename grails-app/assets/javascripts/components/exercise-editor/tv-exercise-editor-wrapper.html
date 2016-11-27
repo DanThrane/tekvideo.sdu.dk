@@ -31,10 +31,9 @@
 </div>
 
 <iron-collapse id="collapse">
-    <hr>
-	<div id="insertionPoint">
-		<content></content>
-	</div>
+    <div class="content" id="content">
+        <hr>
+    </div>
 </iron-collapse>
 </template>
 
@@ -51,6 +50,9 @@ Polymer({
             type: Boolean,
             value: false
         }
+    },
+    setEditor: function(editor) {
+        this.$.content.appendChild(editor);
     },
     toggle: function() {
     	this.$.collapse.toggle();

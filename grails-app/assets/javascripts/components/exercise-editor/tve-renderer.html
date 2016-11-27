@@ -92,49 +92,36 @@ Polymer({
     },
     _observeDocument: function(content) {
         var documentInsertion = this.$.documentInsertion;
-        var result = marked(content);
+        var result = content;
 
         var SEARCHING = 0,
-            HAS_OPEN_BRACKET_1 = 1,
-            HAS_OPEN_BRACKET_2 = 2,
-            HAS_CLOSING_BRACKET_1 = 3,
-            HAS_TYPE = 5;
+            HAS_OPEN_BRACKET = 1,
+            HAS_TYPE = 2;
 
         var state = 0;
         var start = -1;
         var type = "";
         var body = "";
         var output = [];
-        for (var i = 0; i < result.length; i++) {
+        for (var i = 0; i < result.length - 1; i++) {
             var token = result[i];
+            var lookahead = result[i + 1];
             switch (state) {
-                // TODO Handle something other than the "happy path"
                 case SEARCHING:
-                    if (token === "[") {
-                        state = HAS_OPEN_BRACKET_1;
+                    if (token === "[" && lookahead === "[") {
+                        state = HAS_OPEN_BRACKET;
                         start = i;
+                        i++;
                     }
                     break;
-                case HAS_OPEN_BRACKET_1:
-                    if (token === "[") {
-                        state = HAS_OPEN_BRACKET_2;
-                    } else {
-                        type = "";
-                        body = "";
-                        start = -1;
-                        state = SEARCHING;
-                    }
-                    break;
-                case HAS_OPEN_BRACKET_2:
+                case HAS_OPEN_BRACKET:
                     if (token === " ") state = HAS_TYPE;
                     else type += token;
                     break;
                 case HAS_TYPE:
-                    if (token === "]") state = HAS_CLOSING_BRACKET_1;
-                    else body += token;
-                    break;
-                case HAS_CLOSING_BRACKET_1:
-                    if (token === "]") {
+                    if (token === "]" && lookahead === "]") {
+                        i++; // Old code expected i to be at last bracket
+
                         var replacement = "<span id='insertion-" + output.length + "'></span>";
                         var before = result.substring(0, start);
                         var after = result.substring(i + 1, result.length);
@@ -145,16 +132,18 @@ Polymer({
                             type: type,
                             body: body
                         });
-                    } else {
-                        i--; // We need to re-examine this token
-                    }
-                    type = "";
-                    body = "";
-                    start = -1;
-                    state = SEARCHING;
+
+                        type = "";
+                        body = "";
+                        start = -1;
+                        state = SEARCHING;
+                    } else  {
+                        body += token;
+                    } 
                     break;
             }
         }
+        result = marked(result);
         documentInsertion.innerHTML = result;
         for (var i = 0; i < output.length; i++) {
             var insertionPoint = documentInsertion.querySelector("#insertion-" + i);

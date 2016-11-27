@@ -1,7 +1,8 @@
 <link rel="import" href="../../bower_components/polymer/polymer.html">
 <link rel="import" href="../../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
 
-<link rel="import" href="mathjax-include.html">
+<!--<link rel="import" href="mathjax-include.html">-->
+<link rel="import" href="math-tex.html">
 
 <dom-module id="tve-inline-equation">
 
@@ -14,8 +15,7 @@
 }
 </style>
 
-<span id="insertionPoint">
-</span>
+<math-tex display="inline" content="{{content}}"></math-tex>
 
 </template>
 
@@ -27,10 +27,6 @@ Polymer({
         	type: String,
         	value: ""
         }
-    },
-    observers: ["_observeContent(content)"],
-    _observeContent: function(content) {
-        this.$.insertionPoint.innerHTML = "<math-tex display='inline'>" + content + "</math-tex>";
     }
 });
 </script>

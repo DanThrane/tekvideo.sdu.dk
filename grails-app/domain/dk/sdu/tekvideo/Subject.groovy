@@ -16,16 +16,103 @@ class Subject implements Node {
         description type: "text"
     }
 
-    List<Exercise> getActiveVideos() {
-        videos.findAll { it != null && it.localStatus != NodeStatus.TRASH }
+    // TODO Some refactoring would be nice instead of copy & pasting
+
+    List<Exercise> getAllExercises() {
+        def subject = this
+        Collections.unmodifiableList(
+                SubjectExercise.withCriteria() {
+                    eq("subject", subject)
+                    order("weight", "desc")
+                    exercise {}
+                }.exercise
+        )
     }
 
-    List<Exercise> getVisibleVideos() {
-        videos.findAll { it != null && it.localStatus == NodeStatus.VISIBLE }
+    List<Video> getActiveVideos() {
+        def subject = this
+        Collections.unmodifiableList(
+                SubjectExercise.withCriteria() {
+                    eq("subject", subject)
+                    order("weight", "desc")
+                    exercise {
+                        eq("class", Video)
+                        not {
+                            eq("localStatus", NodeStatus.TRASH)
+                        }
+                    }
+                }.exercise
+        ) as List<Video>
     }
 
-    List<Exercise> getVideos() {
-        Collections.unmodifiableList(SubjectExercise.findAllBySubject(this, [sort: 'weight']).exercise)
+    List<Video> getVisibleVideos() {
+        def subject = this
+        Collections.unmodifiableList(
+                SubjectExercise.withCriteria() {
+                    eq("subject", subject)
+                    order("weight", "desc")
+                    exercise {
+                        eq("class", Video)
+                        eq("localStatus", NodeStatus.VISIBLE)
+                    }
+                }.exercise
+        ) as List<Video>
+    }
+
+    List<Video> getVideos() {
+        def subject = this
+        Collections.unmodifiableList(
+                SubjectExercise.withCriteria() {
+                    eq("subject", subject)
+                    order("weight", "desc")
+                    exercise {
+                        eq("class", Video)
+                    }
+                }.exercise
+        ) as List<Video>
+    }
+
+    List<WrittenExercise> getWrittenExercises() {
+        def subject = this
+        Collections.unmodifiableList(
+                SubjectExercise.withCriteria() {
+                    eq("subject", subject)
+                    order("weight", "desc")
+                    exercise {
+                        eq("class", WrittenExercise)
+                    }
+                }.exercise
+        ) as List<WrittenExercise>
+    }
+
+    List<WrittenExercise> getVisibleWrittenExercises() {
+        def subject = this
+        Collections.unmodifiableList(
+                SubjectExercise.withCriteria() {
+                    eq("subject", subject)
+                    order("weight", "desc")
+                    exercise {
+                        eq("class", WrittenExercise)
+                        eq("localStatus", NodeStatus.VISIBLE)
+                    }
+                }.exercise
+        ) as List<WrittenExercise>
+    }
+
+    List<WrittenExercise> getActiveWrittenExercises() {
+        def subject = this
+        Collections.unmodifiableList(
+                SubjectExercise.withCriteria() {
+                    eq("subject", subject)
+                    order("weight", "desc")
+                    exercise {
+                        eq("class", WrittenExercise)
+                        not {
+                            eq("localStatus", NodeStatus.TRASH)
+                        }
+                    }
+                }.exercise
+        ) as List<WrittenExercise>
     }
 
     Course getCourse() {

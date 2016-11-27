@@ -1,6 +1,6 @@
 package dk.sdu.tekvideo
 
-class PerseusExercise extends Exercise {
+class WrittenExercise extends Exercise {
     @Override
     Node getParent() {
         SubjectExercise.findByExercise(this)?.subject

@@ -76,6 +76,11 @@ paper-tabs {
         <div class="layout horizontal">
             <paper-dropdown-menu label="Widget" always-float-label class="flex">
                 <paper-listbox class="dropdown-content" id="widgetDropdown">
+                    <template is="dom-repeat" items="{{_widgets}}">
+                        <paper-item short-name="{{item.shortName}}">
+                            {{item.title}}
+                        </paper-item>
+                    </template>
                 </paper-listbox>
             </paper-dropdown-menu>
             <paper-button id="addWidget" on-click="_addWidget">
@@ -151,6 +156,10 @@ Polymer({
         _counter: {
             type: Number,
             value: 0
+        },
+        _widgets: {
+            type: Array,
+            value: []
         }
     },
     observers: ["_observeSelectedPage(selectedPage)"],
@@ -161,22 +170,25 @@ Polymer({
             self.$.inputJsonField.value = JSON.stringify(data, null, 2);
             self._sync();
         });
-
-        this.$.templateSelector.insertTemplate("Opgaver");
     },
     attached: function() {
+        var items = [];
         for (name in TekVideo.WidgetConfiguration) {
             var config = TekVideo.WidgetConfiguration[name];
 
-            var item = document.createElement("paper-item");
-            item.textContent = config.name;
+            var title = config.name;
             if (config.properties.length === 1 && 
                     config.properties[0] === "content") {
-                item.textContent += " [" + config.shortName + "]";
+                title += " [" + config.shortName + "]";
             }
-            item.dataset.shortName = config.shortName;
-            this.$.widgetDropdown.appendChild(item);
+
+            var item = {
+                title: title,
+                shortName: config.shortName
+            };
+            items.push(item);
         }
+        this._widgets = items;
         this.$.widgetDropdown.selected = 0;
     },
     addWidget: function(widget, name) {
@@ -187,7 +199,7 @@ Polymer({
             var editor = document.createElement(widgetConfig.editor);
 
             var wrapper = document.createElement("tv-exercise-editor-wrapper");
-            wrapper.appendChild(editor);
+            wrapper.setEditor(editor); // Cross-platform hack
             if (!name) {
                 wrapper.name = "ny-" + widget.type + self._counter;
                 self._counter++;
@@ -229,7 +241,7 @@ Polymer({
         });
     },
     _addWidget: function() {
-        var type = this.$.widgetDropdown.selectedItem.dataset.shortName;
+        var type = this.$.widgetDropdown.selectedItem.shortName;
         this.addWidget({
             "type": type,
             "properties": { }
@@ -250,6 +262,7 @@ Polymer({
         for (a in value.widgets) {
             this.addWidget(value.widgets[a], value.widgets[a].name);
         }
+        this.name = value.name;
         // TODO Hack
         this._observeSelectedPage(PAGE_JSON);
     },

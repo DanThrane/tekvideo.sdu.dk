@@ -20,7 +20,12 @@ input {
     padding: 3px;
 }
 
-.faded, input:placeholder-shown {
+.faded {
+    color: white;
+    background-color: #AAA;
+}
+
+input:placeholder-shown {
     color: white;
     background-color: #AAA;
 }
@@ -61,6 +66,16 @@ Polymer({
             value: [],
             notify: true
         }
+    },
+    ready: function() {
+        var self = this;
+        this.$.matrixRepeat.addEventListener("dom-change", function() {
+            setTimeout(function() {
+                try {
+                    self._updateMatrix();
+                } catch (ignored) {}
+            }, 100);
+        });
     },
     _generateRange: function(value) {
         var res = [];
