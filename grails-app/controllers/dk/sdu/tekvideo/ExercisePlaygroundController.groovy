@@ -13,7 +13,7 @@ class ExercisePlaygroundController {
 
     @Secured("permitAll")
     def demo() {
-        def all = TemporaryExercise.findAll()
+        def all = TemporaryExercise.where{true}.list(sort: 'name')
         [all: all]
     }
 
