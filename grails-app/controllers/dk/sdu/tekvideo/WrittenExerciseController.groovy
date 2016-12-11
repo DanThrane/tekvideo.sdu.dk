@@ -6,9 +6,9 @@ class WrittenExerciseController {
     def exerciseService
 
     @Secured("permitAll")
-    def view(WrittenExercise exercise) {
+    def view(WrittenExerciseGroup exercise) {
         if (exerciseService.canAccess(exercise)) {
-            render view: "view", model: [exercise: exercise]
+            render view: "view", model: [exercise: exercise, subExercises: exercise.exercises]
         } else {
             render status: 404, text: "Unable to find exercise!"
         }

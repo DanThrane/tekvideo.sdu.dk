@@ -1,0 +1,233 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
+<link rel="import" href="../../bower_components/paper-input/paper-input.html">
+<link rel="import" href="../../bower_components/paper-input/paper-textarea.html">
+<link rel="import" href="../../bower_components/iron-pages/iron-pages.html">
+<link rel="import" href="../../bower_components/app-route/app-route.html">
+<link rel="import" href="../../bower_components/app-route/app-location.html">
+<link rel="import" href="../../bower_components/paper-card/paper-card.html">
+<link rel="import" href="../../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../../bower_components/paper-toast/paper-toast.html">
+<link rel="import" href="../../bower_components/paper-fab/paper-fab.html">
+<link rel="import" href="../../bower_components/paper-item/paper-item.html">
+<link rel="import" href="../../bower_components/paper-item/paper-item-body.html">
+<link rel="import" href="../../bower_components/paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../../bower_components/paper-listbox/paper-listbox.html">
+<link rel="import" href="../../bower_components/paper-dialog/paper-dialog.html">
+<link rel="import" href="../../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../../bower_components/paper-toolbar/paper-toolbar.html">
+<link rel="import" href="tv-exercise-editor.html">
+
+<dom-module id="tve-group-editor">
+
+<template>
+<style include="iron-flex"></style>
+
+<style>
+:host {
+    display: block;
+}
+
+paper-fab {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+}
+
+.paper-item-link {
+    color: inherit;
+    text-decoration: none;
+}
+
+.fake-link {
+    cursor: pointer;
+}
+
+.content {
+    margin: 16px;
+}
+</style>
+
+<app-location route="{{_route}}" use-hash-as-path></app-location>
+
+<app-route
+    route="{{_route}}"
+    pattern="/:page"
+    data="{{_pageData}}"
+    tail="{{_pageTail}}">
+</app-route>
+
+<app-route
+    route="{{_pageTail}}"
+    pattern="/:id"
+    data="{{_pageId}}">
+</app-route>
+
+<paper-toolbar>
+    <template is="dom-if" if="{{_showBackButton(_pageData)}}">
+        <paper-icon-button icon="chevron-left" on-click="_goBack"></paper-icon-button>
+    </template>
+    <span class="title">{{title}}</span>
+    <paper-icon-button icon="save" on-click="save"></paper-icon-button>
+</paper-toolbar>
+<iron-pages selected="[[_pageData.page]]" attr-for-selected="id">
+    <div id="home" class="content">
+        <paper-input 
+            label="Navn" 
+            value="{{name}}">
+        </paper-input>
+        <paper-textarea 
+            rows="10"
+            label="Beskrivelse" 
+            value="{{description}}">
+        </paper-textarea>
+
+        <div role="listbox">
+            <template is="dom-repeat" items="{{exercises}}">
+                <paper-item on-focus="selectItem" class="fake-link">
+                    <paper-item-body two-line>
+                        <div>[[item.name]]</div>
+                        <div secondary>[[_computeShortDocument(item)]]</div>
+                    </paper-item-body>
+                    <paper-icon-button icon="content-copy" alt="Lav kopi" on-click="_makeCopy"></paper-icon-button>
+                    <paper-icon-button icon="delete" alt="Slet" on-click="_deleteExercise"></paper-icon-button>
+                </paper-item>
+            </template>
+        </div>
+    </div>
+    <div id="edit">
+        <tv-exercise-editor 
+            id="editor"
+            identifier="{{currentExercise.identifier}}"
+            name="{{currentExercise.name}}"
+            document-content="{{currentExercise.document}}"
+            widgets="{{currentExercise.widgets}}"
+            hide-save>
+        </tv-exercise-editor>
+    </div>
+</iron-pages>
+
+<paper-toast id="toast">
+</paper-toast>
+
+<paper-dialog id="deleteModal">
+  <h2>Slet opgave</h2>
+  <p>Er du sikker på du vil slette opgaven "{{exerciseName}}"?</p>
+  <div class="buttons">
+    <paper-button dialog-dismiss>Annuller</paper-button>
+    <paper-button dialog-confirm autofocus on-click="_confirmDelete">Ja, slet opgaven</paper-button>
+  </div>
+</paper-dialog>
+
+
+<paper-fab icon="add" on-click="_addExercise"></paper-fab>
+
+</template>
+
+<script>
+Polymer({
+    is: 'tve-group-editor',
+    properties: {
+        name: {
+            type: String,
+            value: ""
+        },
+        description: {
+            type: String,
+            value: ""
+        },
+        exercises: {
+            type: Array,
+            value: [
+            ]
+        },
+        title: {
+            type: String,
+            value: "Ny opgave"
+        }
+    },
+    observers: ["_observePage(_pageData)", "_observePageData(_pageId)"],
+    _observePage: function(pageData) {
+        if (pageData.page !== "home" && pageData.page !== "edit") {
+            document.location = "#/home";
+        }
+        this.exercises = JSON.parse(JSON.stringify(this.exercises));
+    },
+    selectItem: function(e) {
+        document.location = this._computeEditLink(e.model.index);
+    },
+    _computeShortDocument: function(item) {
+        var text = item.document;
+        var length = text.length;
+        return text.substring(0, Math.min(length, 120));
+    },
+    _goBack: function() {
+        document.location = "#/home";
+    },
+    _makeCopy: function(e) {
+        var exercise = e.model.item;
+        var copy = JSON.parse(JSON.stringify(exercise));
+        copy.identifier = null;
+        copy.name += " (kopi)";
+        this.push("exercises", copy);
+    },
+    _observePageData: function(pageId) {
+        if (this._pageData.page !== "edit") return;
+
+        var id = pageId.id;
+        var editor = this.$.editor;
+
+        var exercise = this.exercises[id];
+        if (!exercise) {
+            this._displayToast("Kunne ikke finde opgave");
+            this._route.path = "home";
+            document.location = "#/home"
+        } else {
+            this.currentExercise = exercise;
+            editor.selectedPage = 0;
+            editor.update();
+        }
+    },
+    _showBackButton: function(_pageData) {
+        return _pageData.page !== "home";
+    },
+    _computeEditLink: function(item) {
+        return "#/edit/" + item;
+    },
+    _addExercise: function() {
+        this.push("exercises", {
+            identifier: null,
+            name: "Ny opgave",
+            document: "",
+            widgets: {}
+        });
+        document.location = "#/edit/" + (this.exercises.length - 1);
+    },
+    _deleteExercise: function(e) {
+        this.currentExerciseIndex = e.model.index;
+        this.exerciseName = this.exercises[this.currentExerciseIndex].name;
+        this.$.deleteModal.open();
+    },
+    _confirmDelete: function() {
+        this.splice("exercises", this.currentExerciseIndex, 1);
+    },
+    _displayToast: function(text) {
+        var toast = this.$.toast;
+        toast.text = text;
+        toast.opened = true;
+    },
+    save: function() {
+        this.fire("save");
+    },
+    displaySaveSuccess: function() {
+        this._displayToast("Opgaven er blevet gemt!");
+    },
+    displaySaveFailure: function() {
+        this._displayToast("Der skete en fejl da opgaven skulle gemes!");
+    },
+    displayValidationFailure: function() {
+        this._displayToast("Der skete en fejl under validering af input. Mangler du navn?");
+    }
+});
+</script>
+</dom-module>

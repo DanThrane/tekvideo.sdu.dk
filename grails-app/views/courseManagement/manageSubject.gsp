@@ -40,9 +40,16 @@
                             <twbs:row>
                                 <twbs:column cols="8">
                                     <div class="node-header">
-                                        <g:link action="editVideo" id="${exercise.id}">
-                                            ${exercise.name}
-                                        </g:link>
+                                        <g:if test="${exercise instanceof dk.sdu.tekvideo.Video}">
+                                            <g:link action="editVideo" id="${exercise.id}">
+                                                ${exercise.name}
+                                            </g:link>
+                                        </g:if>
+                                        <g:if test="${exercise instanceof dk.sdu.tekvideo.WrittenExerciseGroup}">
+                                            <g:link action="editWrittenExercise" id="${exercise.id}">
+                                                ${exercise.name}
+                                            </g:link>
+                                        </g:if>
                                     </div>
                                 </twbs:column>
                                 <twbs:column cols="4" class="align-right">
@@ -136,6 +143,10 @@
     <twbs:linkButton action="createVideo" id="${subject.course.id}" params="${[subject: subject.id]}"
                      style="${ButtonStyle.LINK}" block="true">
         <fa:icon icon="${FaIcon.PLUS}"/> Tilføj video
+    </twbs:linkButton>
+    <twbs:linkButton action="createWrittenExercise" id="${subject.id}"
+                     style="${ButtonStyle.LINK}" block="true">
+        <fa:icon icon="${FaIcon.PLUS}"/> Tilføj skriftlig opgave
     </twbs:linkButton>
     <hr>
     <sdu:ajaxSubmitButton style="${ButtonStyle.LINK}" id="save-video-order" block="true">

@@ -58,8 +58,7 @@ paper-tabs {
 }
 
 .content {
-    max-width: 960px;
-    margin: 40px auto;
+    margin: 16px;
 }
 </style>
 
@@ -91,7 +90,7 @@ paper-tabs {
         <p><b>Syntaks:</b> <code>[[ref WIDGET-NAVN]]</code> reference til widgets. Widgets med en forkortelse kan indsættes direkte. For eksempel: <code>[[eql 2^2 = 4]]</code></p>
         
         <tve-template-selector id="templateSelector"></tve-template-selector>
-        <paper-button on-click="_save">Gem</paper-button>
+        <paper-button on-click="_save" hidden$={{hideSave}}>Gem</paper-button>
         
         <paper-textarea value="{{documentContent}}" label="Dokument" rows="20"></paper-textarea>
         
@@ -134,7 +133,12 @@ Polymer({
     properties: {
         name: {
             type: String,
-            value: ""
+            value: "",
+            notify: true
+        },
+        identifier: {
+            type: Number,
+            value: null
         },
         widgets: {
             type: Object,
@@ -151,7 +155,8 @@ Polymer({
         },
         documentContent: {
             type: String,
-            value: ""
+            value: "",
+            notify: true
         },
         _counter: {
             type: Number,
@@ -160,6 +165,10 @@ Polymer({
         _widgets: {
             type: Array,
             value: []
+        },
+        hideSave: {
+            type: Boolean,
+            value: false
         }
     },
     observers: ["_observeSelectedPage(selectedPage)"],
@@ -280,6 +289,16 @@ Polymer({
     },
     _save: function() {
         this.fire("save");
+    },
+    update: function() {
+        // TODO Lazy hack
+        var obj = {
+            document: this.documentContent,
+            widgets: this.widgets,
+            name: this.name
+        };
+        this.$.inputJsonField.value = JSON.stringify(obj);
+        this._sync();
     }
 });
 })();

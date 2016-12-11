@@ -592,11 +592,8 @@ databaseChangeLog = {
 	include file: 'refactor-has-many-collections.groovy'
 	include file: 'remove-old-username-index.groovy'
 	include file: 'add-cas-support.groovy'
-
 	include file: 'add-exercise-super-type.groovy'
 	include file: 'add-similar-resources-to-exercises.groovy'
-
 	include file: 'add-temporary-exercise.groovy'
-
-	include file: 'update-written-exercise.groovy'
+	include file: 'add-written-exercises.groovy'
 }

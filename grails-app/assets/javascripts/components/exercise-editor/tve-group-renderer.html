@@ -1,0 +1,301 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
+<link rel="import" href="../../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../../bower_components/iron-icon/iron-icon.html">
+<link rel="import" href="../../bower_components/iron-icons/iron-icons.html">
+<link rel="import" href="../../bower_components/iron-icons/av-icons.html">
+<link rel="import" href="../../bower_components/paper-styles/color.html">
+<link rel="import" href="../../bower_components/iron-pages/iron-pages.html">
+<link rel="import" href="../../bower_components/paper-icon-button/paper-icon-button.html">
+
+<link rel="import" href="tve-renderer.html">
+
+<dom-module id="tve-group-renderer">
+
+<template>
+<style is="custom-style">
+.checkmark {
+    color: var(--paper-green-500);
+    height: 96px;
+    width: 96px;
+}
+.correct-text {
+    font-size: 30pt;
+}
+.subtitle {
+    font-size: 20pt;
+}
+
+.spacer {
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+
+.next-button {
+    background-color: var(--paper-green-500);
+    color: white;
+}
+
+.table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+table, th, td {
+    border: 1px solid black;
+}
+
+th, td {
+    padding: 10px;
+    text-align: left;
+}
+</style>
+<style include="iron-flex"></style>
+
+<paper-icon-button icon="toc" on-click="showExercises"></paper-icon-button>
+<iron-pages selected="{{_selectedPage}}">
+    <tve-renderer id="renderer"></tve-renderer>
+    <div>
+        <div class="layout vertical center spacer">
+            <iron-icon class="checkmark" icon="check"></iron-icon>
+            <span class="correct-text">Korrekt!</span>
+            <template is="dom-if" if="{{_hasCompletedAll(currentExercise)}}">
+                <span class="subtitle">
+                    Du har nu løst alle opgaverne der er under dette emne!
+                </span>
+            </template>
+            
+        </div>
+
+        <div class="layout horizontal center-justified">
+            <template is="dom-if" if="{{_hasCompletedAll(currentExercise)}}">
+                <paper-button on-click="backToMenu">
+                <iron-icon icon="toc"></iron-icon>
+                Til opgave oversigt
+                </paper-button>
+            </template>
+            <paper-button on-click="stopCountdown">
+                <iron-icon icon="av:stop"></iron-icon>
+                Til opgaven
+            </paper-button>
+
+            <paper-button raised class="next-button" on-click="displayNext">
+                <iron-icon icon="av:skip-next"></iron-icon>
+                Fortsætter om {{_countdown}} sek
+            </paper-button>
+        </div>
+    </div>
+    <div>
+        <h2>Delopgaver tilgængelige</h2>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Navn</th>
+                    <th>Status</th>
+                    <th>Muligheder</th>
+                </tr>
+            </thead>
+            <tbody>
+                <template is="dom-repeat" items="{{exercisePool}}">
+                    <tr>
+                        <td>{{item.name}}</td>
+                        <td><iron-icon icon="{{_computeCompletionIcon(item)}}"></iron-icon></td>
+                        <td><paper-icon-button icon="create"></paper-icon-button></td>
+                    </tr>
+                </template>
+            </tbody>
+        </table>
+            
+    </div>
+</iron-pages>
+
+</template>
+
+<script>
+(function() {
+    function storageAvailable(type) {
+        try {
+            var storage = window[type],
+                x = '__storage_test__';
+            storage.setItem(x, x);
+            storage.removeItem(x);
+            return true;
+        }
+        catch(e) {
+            return false;
+        }
+    }
+
+    /**
+     * Shuffles array in place.
+     * @param {Array} a items The array containing the items.
+     */
+    function shuffle(a) {
+        var j, x, i;
+        for (i = a.length; i; i--) {
+            j = Math.floor(Math.random() * i);
+            x = a[i - 1];
+            a[i - 1] = a[j];
+            a[j] = x;
+        }
+    }
+
+    var hasStorage = storageAvailable("localStorage");
+
+    Polymer({
+        is: 'tve-group-renderer',
+        observers: [],
+        properties: {
+            exercisePool: {
+                type: Array,
+                value: []
+            },
+            completed: {
+                type: Array,
+                value: []
+            },
+            name: {
+                type: String,
+                value: ""
+            },
+            identifier: {
+                type: Number,
+                value: 0
+            },
+            _countdown: {
+                type: Number,
+                value: 0
+            },
+            currentExercise: {
+                type: Number,
+                value: 0
+            },
+            _cachedLocalStatus: {
+                type: Object,
+                value: null
+            },
+            _assignmentOrder: {
+                type: Array,
+                value: null
+            }
+        },
+        observers: ["_observePool(exercisePool)", "_observeCompleted(completed)"],
+        ready: function() {
+            var self = this;
+            var renderer = this.$.renderer;
+
+            renderer.addEventListener("grade", function(e) {
+                var data = e.detail;
+
+                if (data.passes) {
+                    var exercise = self._assignmentOrder[self.currentExercise];
+                    self.markAsCorrect([exercise.identifier]);
+                    renderer.isInteractive = false;
+                    self._selectedPage = 1;
+                    self._countDownForNext(3);
+                }
+            });
+            this.displayNext();
+        },
+        _countDownForNext: function(time) {
+            var self = this;
+            self._countdown = time;
+            self._currentTimer = setTimeout(function() {
+                if (self._countdown > 1) {
+                    self._countDownForNext(time - 1);
+                } else {
+                    self.displayNext();
+                }
+            }, 1000);
+        },
+        stopCountdown: function() {
+            clearTimeout(this._currentTimer);
+            this._selectedPage = 0;
+            this.$.renderer.isInteractive = true;
+        },
+        displayNext: function() {
+            this.stopCountdown();
+            var next = (this.currentExercise + 1) % this.exercisePool.length;
+            this.display(next);
+        },
+        backToMenu: function() {
+            this.fire("backToMenu");
+        },
+        markAsCorrect: function(ids) {
+            var localStatus = this._getLocalStatus();
+            for (var i = 0; i < ids.length; i++) {
+                var id = ids[i];
+                localStatus[id] = true;
+            }
+            this._cachedLocalStatus = localStatus;
+            localStorage.completedExercises = JSON.stringify(localStatus);
+        },
+        _getLocalStatus: function() {
+            if (this._cachedLocalStatus != null) {
+                return this._cachedLocalStatus;
+            }
+
+            var result = {};
+            if (hasStorage) {
+                var localStatusString = localStorage.completedExercises || "{}";
+                result = JSON.parse(localStatusString);
+            }
+
+            this._cachedLocalStatus = result;
+            return result;
+        },
+        display: function(exerciseIdx) {
+            this.currentExercise = exerciseIdx;
+            this._selectedPage = 0;
+            this.$.renderer.isInteractive = true;
+
+            var exercise = this._assignmentOrder[exerciseIdx];
+            var renderer = this.$.renderer;
+            if (exercise) {
+                renderer.content = exercise.document;
+                renderer.widgets = exercise.widgets;
+                renderer.identifier = exercise.identifier;
+            }
+        },
+        showExercises: function() {
+            this._selectedPage = 2;
+        },
+        _computeCompletionIcon: function(item) {
+            var status = this._getLocalStatus();
+            return item.identifier in status ? "check" : "close";
+        },
+        _observePool: function() {
+            this._assignmentOrder = this._createAssignmentOrder(this.exercisePool);
+        },
+        _observeCompleted: function(completed) {
+            this.markAsCorrect(completed);
+        },
+        _createAssignmentOrder: function(pool) {
+            var status = this._getLocalStatus();
+            var complete = [];
+            var incomplete = [];
+            for (var i = 0; i < pool.length; i++) {
+                var item = pool[i];
+                if (item.identifier in status) {
+                    complete.push(item);
+                } else {
+                    incomplete.push(item);
+                }
+            }
+            shuffle(complete);
+            shuffle(incomplete);
+            this._incompleteIndex = incomplete.length;
+            return incomplete.concat(complete);
+        },
+        _hasCompletedAll: function() {
+            var result = this.currentExercise >= this._incompleteIndex || 
+                this.currentExercise == this.exercisePool.length - 1;
+            if (result) {
+                this._incompleteIndex = 0;
+            }
+            return result;
+        }
+    });
+})();
+</script>
+</dom-module>

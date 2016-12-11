@@ -74,6 +74,10 @@ Polymer({
     is: 'tve-renderer',
     observers: ["_observeDocument(content, widgets)"],
     properties: {
+        identifier: {
+            type: Number,
+            value: null
+        },
         content: {
             type: String,
         },
@@ -238,6 +242,7 @@ Polymer({
         else this.setStatus(3);
 
         this.fire("grade", {
+            identifier: this.identifier,
             passes: passes,
             widgetResults: widgetResults
         });

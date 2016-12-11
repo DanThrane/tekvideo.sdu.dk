@@ -8,7 +8,7 @@
 
     <g:render template="/polymer/includePolymer" />
 
-    <link rel="import" href="${createLink(absolute:true, uri:'/assets/')}/components/exercise-editor/tve-renderer.html">
+    <link rel="import" href="${createLink(absolute:true, uri:'/assets/')}/components/exercise-editor/tve-group-renderer.html">
     <style>
     .polymer {
         font-family: 'Roboto', 'Noto', sans-serif;
@@ -19,21 +19,32 @@
 
 <body class="polymer">
 
-<tve-renderer id="renderer" is-interactive></tve-renderer>
-
+<tve-group-renderer id="renderer"></tve-group-renderer>
 <script>
-    var exercise = ${raw(exercise.exercise)};
-
     var renderer = document.getElementById('renderer');
-    renderer.content = exercise.document;
-    renderer.widgets = exercise.widgets;
+    var exercisePoolObj = {
+        <g:each in="${subExercises}" var="item">
+        ${item.id}: ${raw(item.exercise)},
+        </g:each>
+    };
 
-    renderer.addEventListener("widget-action", function(e) {
-        console.log("Widget action: ", e);
-    });
+    %{-- Working around the fact that we don't store the assignments in a (server-side) structured format --}%
+    var exercisePool = [];
+    for (var key in exercisePoolObj) {
+        var obj = exercisePoolObj[key];
+        obj.identifier = key;
+        exercisePool.push(obj);
+    }
+
+    renderer.exercisePool = exercisePool;
+    renderer.display(0);
 
     renderer.addEventListener("grade", function(e) {
-        console.log("Grading: ", e);
+        console.log(e.detail);
+    });
+
+    renderer.addEventListener("backToMenu", function() {
+        document.location = "${sdu.createLinkToSubject(subject: exercise.subject)}";
     });
 </script>
 

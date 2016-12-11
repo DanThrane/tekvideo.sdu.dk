@@ -235,6 +235,67 @@ class CourseManagementService {
         }
     }
 
+    ServiceResult<WrittenExerciseGroup> createOrEditWrittenExercise(CreateExerciseCommand command) {
+        def teacher = userService.authenticatedTeacher
+
+        if (!command.validate()) {
+            return fail(message: "invalid request", suggestedHttpStatus: HttpStatus.SC_BAD_REQUEST)
+        } else if (!teacher || !canAccessNode(command.subject)) {
+            return fail(message: "not allowed", suggestedHttpStatus: HttpStatus.SC_UNAUTHORIZED)
+        }
+
+        def exercise = command.isEditing ? command.editing : new WrittenExerciseGroup()
+        if (!exercise) return fail(message: "invalid request", suggestedHttpStatus: HttpStatus.SC_BAD_REQUEST)
+        if (command.isEditing && !canAccessNode(exercise)) return fail(message: "not allowed",
+                suggestedHttpStatus: HttpStatus.SC_UNAUTHORIZED)
+
+        exercise.name = command.name
+        exercise.description = command.description
+
+        def preExistingExercises = new ArrayList<WrittenExercise>(exercise.exercises)
+        Set<Long> subExercisesToKeep = []
+        List<WrittenExercise> newExercises = []
+        List<WrittenExercise> updatedExercises = []
+
+        for (def subitem : command.exercises) {
+            def isEditing = subitem.identifier != null
+            def subExercise = isEditing ?
+                    preExistingExercises.find { it.id == subitem.identifier } :
+                    new WrittenExercise()
+            if (!subExercise) {
+                return fail(message: "invalid request", suggestedHttpStatus: HttpStatus.SC_BAD_REQUEST)
+            }
+
+            subExercise.exercise = subitem.exercise
+            if (isEditing) {
+                subExercisesToKeep.add(subExercise.id)
+                updatedExercises.add(subExercise)
+            } else {
+                newExercises.add(subExercise)
+            }
+        }
+
+        for (def subExercise : preExistingExercises) {
+            if (!subExercisesToKeep.contains(subExercise.id)) {
+                exercise.removeFromExercises(subExercise)
+            }
+        }
+
+        for (def subExercise : newExercises) {
+            exercise.addToExercises(subExercise)
+        }
+
+        for (def subExercise : updatedExercises) {
+            subExercise.save()
+        }
+
+        exercise.save(flush: true)
+        if (!command.isEditing) {
+            SubjectExercise.create(command.subject, exercise, [flush: true, save: true])
+        }
+        return ok(item: exercise)
+    }
+
     ServiceResult<SimilarResources> createSimilarResource(CreateSimilarResourceCommand command) {
         def user = userService.authenticatedTeacher
         if (!command.exercise) {
@@ -500,7 +561,7 @@ class CourseManagementService {
         subject.allVisibleExercises.forEach {
             if (it instanceof Video) {
                 copyVideoToSubject(it, newSubject)
-            } else if (it instanceof WrittenExercise) {
+            } else if (it instanceof WrittenExerciseGroup) {
                 copyWrittenExerciseToSubject(it, newSubject)
             }
         }
@@ -524,10 +585,10 @@ class CourseManagementService {
         SubjectExercise.create(subject, newVideo, [save: true])
     }
 
-    private void copyWrittenExerciseToSubject(WrittenExercise exercise, Subject subject) {
+    private void copyWrittenExerciseToSubject(WrittenExerciseGroup exercise, Subject subject) {
         if (exercise == null) return
 
-        def newExercise = new WrittenExercise([
+        def newExercise = new WrittenExerciseGroup([
                 name       : exercise.name,
                 description: exercise.description,
                 exercise   : exercise.exercise

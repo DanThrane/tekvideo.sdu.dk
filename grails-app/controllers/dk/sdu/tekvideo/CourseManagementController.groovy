@@ -13,6 +13,9 @@ class CourseManagementController {
     CourseManagementService courseManagementService
     VideoService videoService
 
+    static allowedMethods = [postCourse: "POST", postSimilarResource: "POST", postSubject: "POST",
+                             postVideo : "POST", postWrittenExercise: "POST"]
+
     def index() {
         String statusStr = params.status ?: "VISIBLE"
         def status = NodeStatus.fromValue(statusStr.toUpperCase()) ?: NodeStatus.VISIBLE
@@ -164,6 +167,33 @@ class CourseManagementController {
         }
     }
 
+    def createWrittenExercise(Subject subject) {
+        println subject
+        if (courseManagementService.canAccessNode(subject)) {
+            [isEditing: false, subject: subject]
+        } else {
+            notAllowedCourse()
+        }
+    }
+
+    def editWrittenExercise(WrittenExerciseGroup exercise) {
+        if (courseManagementService.canAccessNode(exercise)) {
+            render view: "createWrittenExercise", model: [
+                    isEditing: true,
+                    exercise : exercise,
+                    subject  : exercise.subject
+            ]
+        } else {
+            notAllowedCourse()
+        }
+    }
+
+    def postWrittenExercise(CreateExerciseCommand command) {
+        def result = courseManagementService.createOrEditWrittenExercise(command)
+        response.status = result.suggestedHttpStatus
+        render result as JSON
+    }
+
     def createPerseus(Course course) {
         def teacher = userService.authenticatedTeacher
         if (courseManagementService.canAccess(course)) {
@@ -174,7 +204,7 @@ class CourseManagementController {
     }
 
     def editVideo(Video video) {
-        if (userService.authenticatedTeacher) {
+        if (courseManagementService.canAccessNode(video)) {
             render view: "createVideo", model: [
                     isEditing: true,
                     video    : video,

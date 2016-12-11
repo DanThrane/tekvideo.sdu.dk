@@ -126,47 +126,47 @@ class Subject implements Node {
         ) as List<Video>
     }
 
-    List<WrittenExercise> getWrittenExercises() {
+    List<WrittenExerciseGroup> getWrittenExercises() {
         def subject = this
         Collections.unmodifiableList(
                 SubjectExercise.withCriteria() {
                     eq("subject", subject)
                     order("weight", "asc")
                     exercise {
-                        eq("class", WrittenExercise)
+                        eq("class", WrittenExerciseGroup)
                     }
                 }.exercise
-        ) as List<WrittenExercise>
+        ) as List<WrittenExerciseGroup>
     }
 
-    List<WrittenExercise> getVisibleWrittenExercises() {
+    List<WrittenExerciseGroup> getVisibleWrittenExercises() {
         def subject = this
         Collections.unmodifiableList(
                 SubjectExercise.withCriteria() {
                     eq("subject", subject)
                     order("weight", "asc")
                     exercise {
-                        eq("class", WrittenExercise)
+                        eq("class", WrittenExerciseGroup)
                         eq("localStatus", NodeStatus.VISIBLE)
                     }
                 }.exercise
-        ) as List<WrittenExercise>
+        ) as List<WrittenExerciseGroup>
     }
 
-    List<WrittenExercise> getActiveWrittenExercises() {
+    List<WrittenExerciseGroup> getActiveWrittenExercises() {
         def subject = this
         Collections.unmodifiableList(
                 SubjectExercise.withCriteria() {
                     eq("subject", subject)
                     order("weight", "asc")
                     exercise {
-                        eq("class", WrittenExercise)
+                        eq("class", WrittenExerciseGroup)
                         not {
                             eq("localStatus", NodeStatus.TRASH)
                         }
                     }
                 }.exercise
-        ) as List<WrittenExercise>
+        ) as List<WrittenExerciseGroup>
     }
 
     Course getCourse() {

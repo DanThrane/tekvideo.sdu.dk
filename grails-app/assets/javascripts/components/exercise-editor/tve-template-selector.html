@@ -47,9 +47,15 @@ paper-icon-button.template-icon {
 .template {
     margin: 16px 0 16px 0;
 }
+
+.templateButton {
+    width: 100%;
+    color: white;
+    background-color: var(--paper-pink-500);
+}
 </style>
 
-<paper-button on-click="toggle">Vis templates</paper-button>
+<paper-button on-click="toggle" class="templateButton" raised>Toggle templates</paper-button>
 
 <iron-collapse id="collapse">
   <div>

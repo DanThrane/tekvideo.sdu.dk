@@ -12,7 +12,7 @@ class ExerciseController {
         if (exerciseService.canAccess(exercise)) {
             if (exercise instanceof Video) {
                 forward controller: "video", action: "viewV", params: [id: exercise.id]
-            } else if (exercise instanceof WrittenExercise) {
+            } else if (exercise instanceof WrittenExerciseGroup) {
                 forward controller: "writtenExercise", action: "view", params: [id: exercise.id]
             } else {
                 render status: 500, text: "Unable to view exercise"
