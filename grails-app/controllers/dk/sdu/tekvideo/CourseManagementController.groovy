@@ -194,15 +194,6 @@ class CourseManagementController {
         render result as JSON
     }
 
-    def createPerseus(Course course) {
-        def teacher = userService.authenticatedTeacher
-        if (courseManagementService.canAccess(course)) {
-            render view: "createOrEditPerseus", model: [course: course, teacher: teacher, isEditing: false]
-        } else {
-            notAllowedCourse()
-        }
-    }
-
     def editVideo(Video video) {
         if (courseManagementService.canAccessNode(video)) {
             render view: "createVideo", model: [
