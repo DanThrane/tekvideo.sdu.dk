@@ -60,23 +60,9 @@
                             </twbs:dropdownMenu>
                         </twbs:dropdownToggle>
                     </twbs:buttonGroup>
-                    <twbs:buttonGroup>
-                        <twbs:dropdownToggle style="${ButtonStyle.SUCCESS}">
-                            <fa:icon icon="${FaIcon.PLUS_CIRCLE}"/> Tilføj
-
-                            <twbs:dropdownMenu>
-                                <twbs:dropdownItem action="createSubject" id="${course.id}">
-                                    <fa:icon icon="${FaIcon.USERS}"/> Emne
-                                </twbs:dropdownItem>
-                                <twbs:dropdownItem action="createVideo" id="${course.id}">
-                                    <fa:icon icon="${FaIcon.PLAY}"/> Video
-                                </twbs:dropdownItem>
-                                <twbs:dropdownItem action="createPerseus" id="${course.id}">
-                                    <fa:icon icon="${FaIcon.FILE_TEXT}"/> Perseus Opgave
-                                </twbs:dropdownItem>
-                            </twbs:dropdownMenu>
-                        </twbs:dropdownToggle>
-                    </twbs:buttonGroup>
+                    <twbs:linkButton action="createSubject" id="${course.id}" style="${ButtonStyle.SUCCESS}">
+                        <fa:icon icon="${FaIcon.USERS}"/> Tilføj Emne
+                    </twbs:linkButton>
                 </twbs:column>
             </twbs:row>
             <twbs:row>

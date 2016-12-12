@@ -50,9 +50,9 @@
                                                            id="${subject.course.id}" params="${[subject: subject.id]}">
                                             <fa:icon icon="${FaIcon.PLAY}"/> Video
                                         </twbs:dropdownItem>
-                                        <twbs:dropdownItem action="createPerseus" controller="courseManagement"
-                                                           id="${subject.course.id}" params="${[subject: subject.id]}">
-                                            <fa:icon icon="${FaIcon.FILE_TEXT}"/> Perseus Opgave
+                                        <twbs:dropdownItem action="createWrittenExercise" controller="courseManagement"
+                                                           id="${subject.id}">
+                                            <fa:icon icon="${FaIcon.FILE_TEXT}"/> Skriftlig Opgave
                                         </twbs:dropdownItem>
                                     </twbs:dropdownMenu>
                                 </twbs:dropdownToggle>
@@ -141,10 +141,6 @@
     <twbs:linkButton action="createSubject" id="${course.id}" style="${ButtonStyle.LINK}" block="true">
         <fa:icon icon="${FaIcon.PLUS_CIRCLE}"/>
         Opret nyt emne
-    </twbs:linkButton>
-    <twbs:linkButton action="createVideo" id="${course.id}" style="${ButtonStyle.LINK}" block="true">
-        <fa:icon icon="${FaIcon.PLAY}"/>
-        Opret ny video
     </twbs:linkButton>
     <twbs:button id="share-button" style="${ButtonStyle.LINK}" block="true">
         <fa:icon icon="${FaIcon.SHARE}"/>

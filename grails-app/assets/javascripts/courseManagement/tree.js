@@ -65,6 +65,13 @@ var ManagementTreeView = (function () {
         };
     };
 
+    ManagementTreeView.prototype.handleCreateWrittenExercise = function(node) {
+        var self = this;
+        return function(obj) {
+            document.location.href = self.baseUrl + "courseManagement/createWrittenExercise/" + node.id;
+        };
+    };
+
     ManagementTreeView.prototype._sendUpdatedOrder = function (data) {
         var parent = parseInt(data.parent);
         var orderStrings = data.new_instance._model.data[parent].children;
@@ -144,11 +151,21 @@ var ManagementTreeView = (function () {
             "contextmenu": {
                 "items": function (node) {
                     var options = {};
-                    if (node.type !== "video" && node.type !== "writtenexercise") {
+                    if (node.type === "course") {
                         options.create = {
                             "label": "Tilføj element",
                             "action": self.handleCreate(node)
                         };
+                    }
+                    if (node.type === "subject") {
+                        options.create_video = {
+                            label: "Tilføj video",
+                            action: self.handleCreate(node)
+                        };
+                        options.create_written_exercise = {
+                            label: "Tilføj skriftlig opgave",
+                            action: self.handleCreateWrittenExercise(node)
+                        }
                     }
                     options.edit = {
                         "label": "Rediger",
