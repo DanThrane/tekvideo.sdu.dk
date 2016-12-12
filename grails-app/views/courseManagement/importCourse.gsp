@@ -1,7 +1,7 @@
 <%@ page import="dk.danthrane.twbs.ButtonSize; dk.danthrane.twbs.ButtonStyle; dk.sdu.tekvideo.FaIcon" contentType="text/html;charset=UTF-8" %>
 <html>
 <head>
-    <title>Mine kurser</title>
+    <title>Kursusadministration</title>
     <meta name="layout" content="main_fluid"/>
 </head>
 

@@ -13,7 +13,7 @@
 <twbs:row>
     <twbs:column>
         <ol class="breadcrumb">
-            <li><g:link action="index" controller="courseManagement">Mine Kurser</g:link></li>
+            <li><g:link action="index" controller="courseManagement">Kursusadministration</g:link></li>
             <li class="active">${course.fullName} (${course.name})</li>
         </ol>
     </twbs:column>

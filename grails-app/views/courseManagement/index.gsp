@@ -1,19 +1,19 @@
 <%@ page import="dk.danthrane.twbs.NavStyle; dk.sdu.tekvideo.NodeStatus; dk.danthrane.twbs.ButtonSize; dk.danthrane.twbs.ButtonStyle; dk.sdu.tekvideo.FaIcon" contentType="text/html;charset=UTF-8" %>
 <html>
 <head>
-    <title>Mine kurser</title>
+    <title>Kursusadministration</title>
     <meta name="layout" content="main_fluid"/>
     <sdu:requireAjaxAssets/>
 </head>
 
 <body>
 
-<twbs:pageHeader><h3>Mine kurser</h3></twbs:pageHeader>
+<twbs:pageHeader><h3>Kursusadministration</h3></twbs:pageHeader>
 
 <twbs:row>
     <twbs:column>
         <ol class="breadcrumb">
-            <li class="active">Mine Kurser</li>
+            <li class="active">Kursusadministration</li>
         </ol>
     </twbs:column>
 </twbs:row>
