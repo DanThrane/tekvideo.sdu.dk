@@ -47,6 +47,8 @@ class SubjectService {
 
             if (it instanceof Video) {
                 result.thumbnail = videoService.getThumbnail(it)
+            } else if (it instanceof WrittenExerciseGroup) {
+                result.thumbnail = it.thumbnailUrl
             }
             return result
         }

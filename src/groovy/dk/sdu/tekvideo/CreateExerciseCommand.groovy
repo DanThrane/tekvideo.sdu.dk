@@ -6,6 +6,7 @@ import grails.validation.Validateable
 class CreateExerciseCommand {
     String name
     String description
+    String thumbnailUrl
     Subject subject
     List<CreateExerciseItemCommand> exercises
     Boolean isEditing
@@ -15,6 +16,7 @@ class CreateExerciseCommand {
         name nullable: false
         subject nullable: false
         isEditing nullable: false
+        thumbnailUrl nullable: true, blank: true
         editing nullable: true, validator: { val, obj ->
             if (obj.isEditing) {
                 return val != null

@@ -76,6 +76,10 @@ paper-fab {
             label="Navn" 
             value="{{name}}">
         </paper-input>
+        <paper-input 
+            label="Thumbnail URL" 
+            value="{{thumbnailUrl}}">
+        </paper-input>
         <paper-textarea 
             rows="10"
             label="Beskrivelse" 
@@ -133,6 +137,10 @@ Polymer({
             value: ""
         },
         description: {
+            type: String,
+            value: ""
+        },
+        thumbnailUrl: {
             type: String,
             value: ""
         },

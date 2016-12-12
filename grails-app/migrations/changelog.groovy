@@ -598,4 +598,6 @@ databaseChangeLog = {
 	include file: 'add-written-exercises.groovy'
 
 	include file: 'add-new-event-types-for-written-exercises.groovy'
+
+	include file: 'add-thumbnail-to-written-exercise.groovy'
 }

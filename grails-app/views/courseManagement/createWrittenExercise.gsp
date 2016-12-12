@@ -67,6 +67,9 @@
         }
         editor.exercises = exercisePool;
         editor.name = "${exercise.name}";
+        <g:if test="${exercise.thumbnailUrl != null}" >
+            editor.thumbnailUrl = "${exercise.thumbnailUrl}";
+        </g:if>
         editor.description = "${exercise.description}";
         editor.title = "Redigering af opgave ${exercise.name}";
     </g:if>
@@ -76,6 +79,7 @@
         // Prepare and validate data
         data.name = editor.name;
         data.description = editor.description;
+        data.thumbnailUrl = editor.thumbnailUrl;
         data.exercises = editor.exercises.map(function(e) {
             var identifier = e.identifier;
             delete e.identifier;
