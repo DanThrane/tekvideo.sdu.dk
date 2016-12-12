@@ -562,7 +562,7 @@ class CourseManagementService {
             if (it instanceof Video) {
                 copyVideoToSubject(it, newSubject)
             } else if (it instanceof WrittenExerciseGroup) {
-                copyWrittenExerciseToSubject(it, newSubject)
+                copyWrittenExerciseGroupToSubject(it, newSubject)
             }
         }
     }
@@ -585,15 +585,26 @@ class CourseManagementService {
         SubjectExercise.create(subject, newVideo, [save: true])
     }
 
-    private void copyWrittenExerciseToSubject(WrittenExerciseGroup exercise, Subject subject) {
+    private void copyWrittenExerciseGroupToSubject(WrittenExerciseGroup exercise, Subject subject) {
         if (exercise == null) return
 
         def newExercise = new WrittenExerciseGroup([
                 name       : exercise.name,
                 description: exercise.description,
-                exercise   : exercise.exercise
         ]).save(flush: true)
         SubjectExercise.create(subject, newExercise, [save: true])
+
+        exercise.exercises.each {
+            copyWrittenExerciseToGroup(it, newExercise)
+        }
+    }
+
+    private void copyWrittenExerciseToGroup(WrittenExercise exercise, WrittenExerciseGroup group) {
+        if (exercise == null) return
+
+        def newExercise = new WrittenExercise(exercise: exercise.exercise)
+        group.addToExercises(newExercise)
+        group.save(flush: true)
     }
 
     ServiceResult<Subject> moveSubject(MoveSubjectCommand command) {

@@ -88,7 +88,7 @@
         data.editing = ${exercise.id};
         </g:if>
 
-        if (data.name && data.description) {
+        if (data.name) {
             // Send data
             Util.postJson("${createLink(action: "postWrittenExercise")}", data, {
                 success: function () {
