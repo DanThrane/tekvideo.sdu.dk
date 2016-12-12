@@ -19,6 +19,31 @@
 
 <body class="polymer">
 
+<twbs:row>
+    <twbs:column>
+        <ol class="breadcrumb">
+            <li><g:link uri="/">Hjem</g:link></li>
+            <li>
+                <sdu:linkToTeacher teacher="${exercise.subject.course.teacher}">
+                    ${exercise.subject.course.teacher}
+                </sdu:linkToTeacher>
+            </li>
+            <li>
+                <sdu:linkToCourse course="${exercise.subject.course}">
+                    ${exercise.subject.course.fullName} (${exercise.subject.course.name})
+                </sdu:linkToCourse>
+            </li>
+            <li>
+                <sdu:linkToSubject subject="${exercise.subject}">
+                    ${exercise.subject.name}
+                </sdu:linkToSubject>
+            </li>
+            <li class="active">${exercise.name}</li>
+        </ol>
+    </twbs:column>
+</twbs:row>
+
+
 <tve-group-renderer id="renderer"></tve-group-renderer>
 <script>
     var renderer = document.getElementById('renderer');
