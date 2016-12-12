@@ -66,6 +66,7 @@
     }
 
     renderer.exercisePool = exercisePool;
+    renderer.completed = ${completed};
     renderer.display(0);
 
     renderer.addEventListener("grade", function(e) {
