@@ -19,6 +19,10 @@
 
 <body class="polymer">
 
+<twbs:pageHeader>
+    <h3>${exercise.name}</h3>
+</twbs:pageHeader>
+
 <twbs:row>
     <twbs:column>
         <ol class="breadcrumb">

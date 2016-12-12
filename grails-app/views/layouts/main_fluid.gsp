@@ -7,11 +7,11 @@
     <g:layoutHead/>
     <asset:stylesheet src="application.css"/>
     <asset:javascript src="application.js"/>
-    <fa:require />
-    <link rel="shortcut icon" href="${asset.assetPath(src: "favicon.ico")}" />
+    <fa:require/>
+    <link rel="shortcut icon" href="${asset.assetPath(src: "favicon.ico")}"/>
 
     <script>
-        $(function() {
+        $(function () {
             var start = Date.now();
             events.configure("${createLink(controller: "event", action: "register")}");
             events.start();
@@ -22,7 +22,7 @@
                 "ua": navigator.userAgent
             }, true);
 
-            window.onbeforeunload = function() {
+            window.onbeforeunload = function () {
                 events.emit({
                     "kind": "EXIT_SITE",
                     "url": document.location.href,
@@ -34,11 +34,12 @@
         });
     </script>
 </head>
+
 <body>
 
 <twbs:navbar>
     <g:content key="navbar-brand">
-        <asset:image src="sdu_branch.png" class="navbar-logo" />
+        <asset:image src="sdu_branch.png" class="navbar-logo"/>
         Video
     </g:content>
     <twbs:navbarLinks>
@@ -57,14 +58,15 @@
             </sec:ifNotLoggedIn>
             <sec:ifLoggedIn>
                 <twbs:navDropdownToggle>
-                    <sdu:username />
-                    <avatar:gravatar email="${sdu.userEmail()}" cssClass="img-rounded" defaultGravatarUrl="http://www.gravatar.com/avatar/?d=identicon" />
+                    <sdu:username/>
+                    <avatar:gravatar email="${sdu.userEmail()}" cssClass="img-rounded"
+                                     defaultGravatarUrl="http://www.gravatar.com/avatar/?d=identicon"/>
                     <twbs:dropdownMenu>
                         <twbs:dropdownItem controller="AccountManagement" action="index">
-                            <fa:icon icon="${FaIcon.WRENCH}" />
+                            <fa:icon icon="${FaIcon.WRENCH}"/>
                             Konto indstillinger
                         </twbs:dropdownItem>
-                        <twbs:dropdownDivider />
+                        <twbs:dropdownDivider/>
                         <twbs:dropdownItem method="POST" controller="logout" action="">Log ud</twbs:dropdownItem>
                     </twbs:dropdownMenu>
                 </twbs:navDropdownToggle>
@@ -91,53 +93,56 @@
             Klik <g:link controller="cas" action="index">her</g:link> for at logge ind via SDU SSO
         </twbs:alert>
     </sec:ifNotLoggedIn>
-    <twbs:row class="content">
-        <g:ifContentNotAvailable key="sidebar-right">
-            <twbs:column sm="10" push-sm="2">
-                <g:layoutBody/>
-            </twbs:column>
-            <twbs:column sm="2" pull-sm="10" class="sidebar sidebar-left">
-                <g:ifContentNotAvailable key="sidebar-left">
-                    <sdu:leftSidebar/>
-                </g:ifContentNotAvailable>
-                <g:ifContentAvailable key="sidebar-left">
-                    <g:selectContent key="sidebar-left" />
-                </g:ifContentAvailable>
-            </twbs:column>
-        </g:ifContentNotAvailable>
-        <g:ifContentAvailable key="sidebar-right">
-            <twbs:column sm="8" push-sm="2">
-                <g:layoutBody/>
-            </twbs:column>
-            <twbs:column sm="2" pull-sm="8" class="sidebar sidebar-left">
-                <sdu:leftSidebar/>
-                <g:selectContent key="sidebar-left" />
-            </twbs:column>
-            <twbs:column sm="2" class="sidebar sidebar-right">
-                <g:selectContent key="sidebar-right" />
-            </twbs:column>
-        </g:ifContentAvailable>
-    </twbs:row>
 </twbs:container>
 
+<div class="flex-grid">
+    <div class="maincontent flex-col">
+        <g:layoutBody/>
+    </div>
+
+    <g:ifContentAvailable key="sidebar-left">
+        <div class="flex-col left">
+            <g:selectContent key="sidebar-left"/>
+            <g:content key="sidebar-left"/>
+        </div>
+    </g:ifContentAvailable>
+
+    <g:ifContentAvailable key="sidebar-right">
+        <div class="flex-col right">
+            <g:selectContent key="sidebar-right"/>
+            <g:content key="sidebar-right"/>
+        </div>
+    </g:ifContentAvailable>
+</div>
+
 <g:ifContentAvailable key="content-below-the-fold">
-    <twbs:container fluid="true">
-        <twbs:row>
-            <twbs:column sm="8" push-sm="2">
-                <g:selectContent key="content-below-the-fold"/>
-            </twbs:column>
-            <twbs:column sm="2" pull-sm="8" class="sidebar sidebar-left">
-                <g:ifContentAvailable key="sidebar-left-below-the-fold">
-                    <g:selectContent key="sidebar-left-below-the-fold"/>
-                </g:ifContentAvailable>
-            </twbs:column>
-            <g:ifContentAvailable key="sidebar-right-below-the-fold">
-                <twbs:column sm="2" class="sidebar sidebar-right">
-                    <g:selectContent key="sidebar-right-below-the-fold"/>
-                </twbs:column>
-            </g:ifContentAvailable>
-        </twbs:row>
-    </twbs:container>
+    <div class="flex-grid">
+        <div class="maincontent flex-col">
+            <g:selectContent key="content-below-the-fold"/>
+        </div>
+
+        <g:ifContentAvailable key="sidebar-left">
+            <g:ifContentNotAvailable key="sidebar-left-below-the-fold">
+                <div class="left flex-col"></div>
+            </g:ifContentNotAvailable>
+        </g:ifContentAvailable>
+        <g:ifContentAvailable key="sidebar-left-below-the-fold">
+            <div class="left flex-col">
+                <g:selectContent key="sidebar-left-below-the-fold"/>
+            </div>
+        </g:ifContentAvailable>
+
+        <g:ifContentAvailable key="sidebar-right">
+            <g:ifContentNotAvailable key="sidebar-right-below-the-fold">
+                <div class="right flex-col"></div>
+            </g:ifContentNotAvailable>
+        </g:ifContentAvailable>
+        <g:ifContentAvailable key="sidebar-right-below-the-fold">
+            <div class="right flex-col">
+                <g:selectContent key="sidebar-right-below-the-fold"/>
+            </div>
+        </g:ifContentAvailable>
+    </div>
 </g:ifContentAvailable>
 
 <twbs:container id="footer">
@@ -162,14 +167,14 @@
         </twbs:column>
         <twbs:column cols="6">
             <div class="pull-right">
-                <asset:image src="sdu_logo.png" />
+                <asset:image src="sdu_logo.png"/>
             </div>
         </twbs:column>
     </twbs:row>
 </twbs:container>
 
 <g:ifContentAvailable key="layout-script">
-    <g:selectContent key="layout-script" />
+    <g:selectContent key="layout-script"/>
 </g:ifContentAvailable>
 </body>
 </html>

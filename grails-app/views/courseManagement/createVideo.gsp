@@ -253,7 +253,7 @@
 
 %{-- Sidebar --}%
 <g:content key="sidebar-right">
-    <div>
+    <div style="width: 300px">
         <div class="card-stack" id="sidebar-stack">
             <div class="card-item preview-card">
                 <twbs:pageHeader>

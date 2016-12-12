@@ -46,25 +46,25 @@
 
 
 <g:content key="sidebar-right">
-    <twbs:pageHeader>
-        <h3>Indhold</h3>
-    </twbs:pageHeader>
+    <div class="flex-container vertical" style="height: 100%">
+        <twbs:pageHeader>
+            <h3 style="margin-top: 0">Indhold</h3>
+        </twbs:pageHeader>
 
-    <ul id="videoNavigation" class="video-navigation">
-    </ul>
+        <ul id="videoNavigation" class="video-navigation">
+        </ul>
 
-    <div id="similar-resources">
-        <g:if test="${!video.similarResources.empty}">
-            <twbs:pageHeader><h4>Se også</h4></twbs:pageHeader>
-            <ul>
-                <g:each in="${video.similarResources}">
-                    <li><a href="${it.link}">${it.title}</a></li>
-                </g:each>
-            </ul>
-        </g:if>
-    </div>
+        <div id="similar-resources" class="grow">
+            <g:if test="${!video.similarResources.empty}">
+                <twbs:pageHeader><h4>Se også</h4></twbs:pageHeader>
+                <ul>
+                    <g:each in="${video.similarResources}">
+                        <li><a href="${it.link}">${it.title}</a></li>
+                    </g:each>
+                </ul>
+            </g:if>
+        </div>
 
-    <div class="sidebar-pull-bottom">
         <twbs:button style="${ButtonStyle.PRIMARY}" block="true" id="checkAnswers">
             <fa:icon icon="${FaIcon.CHECK}"/>
             Tjek svar
