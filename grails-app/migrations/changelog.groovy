@@ -596,4 +596,6 @@ databaseChangeLog = {
 	include file: 'add-similar-resources-to-exercises.groovy'
 	include file: 'add-temporary-exercise.groovy'
 	include file: 'add-written-exercises.groovy'
+
+	include file: 'add-new-event-types-for-written-exercises.groovy'
 }

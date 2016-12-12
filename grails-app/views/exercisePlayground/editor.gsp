@@ -28,7 +28,6 @@
         var documentContent = editor.documentContent;
         var widgets = editor.widgets;
 
-        console.log(name, documentContent, widgets);
         if (name && documentContent && widgets) {
             Util.postJson("${createLink(action: "createExercise")}", {
                 name: name,

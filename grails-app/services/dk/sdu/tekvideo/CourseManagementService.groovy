@@ -252,7 +252,7 @@ class CourseManagementService {
         exercise.name = command.name
         exercise.description = command.description
 
-        def preExistingExercises = new ArrayList<WrittenExercise>(exercise.exercises)
+        def preExistingExercises = new ArrayList<WrittenExercise>(exercise.exercises ?: [])
         Set<Long> subExercisesToKeep = []
         List<WrittenExercise> newExercises = []
         List<WrittenExercise> updatedExercises = []

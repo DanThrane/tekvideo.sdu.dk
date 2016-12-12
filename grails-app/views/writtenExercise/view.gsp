@@ -65,12 +65,23 @@
     renderer.display(0);
 
     renderer.addEventListener("grade", function(e) {
-        console.log(e.detail);
+        console.log(e.detail.passes);
+        if (e.detail.passes) {
+            events.emit({"kind": "COMPLETE_WRITTEN_EXERCISE", "exerciseId": e.detail.identifier }, true);
+        }
+    });
+
+    renderer.addEventListener("display", function(e) {
+        var identifier = e.detail.identifier;
+        events.emit({"kind": "VISIT_WRITTEN_EXERCISE", "exerciseId": identifier }, true);
     });
 
     renderer.addEventListener("backToMenu", function() {
         document.location = "${sdu.createLinkToSubject(subject: exercise.subject)}";
     });
+
+    events.setMetaData({ "groupId": ${exercise.id} });
+
 </script>
 
 </body>

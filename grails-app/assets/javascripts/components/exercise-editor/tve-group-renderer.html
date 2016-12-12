@@ -213,7 +213,7 @@ th, td {
             var idx = this._assignmentOrder.map(function(e) { 
                 return e.identifier; 
             }).indexOf(identifier);
-            
+
             if (idx !== -1) {
                 this.display(idx);
             }
@@ -262,6 +262,8 @@ th, td {
             var exercise = this._assignmentOrder[exerciseIdx];
             var renderer = this.$.renderer;
             if (exercise) {
+                console.log("Firing display event");
+                this.fire("display", { exercise: exercise });
                 renderer.content = exercise.document;
                 renderer.widgets = exercise.widgets;
                 renderer.identifier = exercise.identifier;

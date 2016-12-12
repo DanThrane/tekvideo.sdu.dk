@@ -8,12 +8,14 @@ class EventService {
     def springSecurityService
 
     final Map<String, Class<? extends Event>> KIND_TO_CLASS = [
-            ANSWER_QUESTION: AnswerQuestionEvent,
-            EXIT_SITE      : ExitSiteEvent,
-            PAUSE_VIDEO    : PauseVideoEvent,
-            SKIP_TO_CONTENT: SkipToContentEvent,
-            VISIT_SITE     : VisitSiteEvent,
-            VISIT_VIDEO    : VisitVideoEvent
+            ANSWER_QUESTION          : AnswerQuestionEvent,
+            EXIT_SITE                : ExitSiteEvent,
+            PAUSE_VIDEO              : PauseVideoEvent,
+            SKIP_TO_CONTENT          : SkipToContentEvent,
+            VISIT_SITE               : VisitSiteEvent,
+            VISIT_VIDEO              : VisitVideoEvent,
+            VISIT_WRITTEN_EXERCISE   : VisitWrittenExercise,
+            COMPLETE_WRITTEN_EXERCISE: CompletedWrittenExercise
     ]
 
     final Map<String, Closure> CUSTOM_MAPPER = [
