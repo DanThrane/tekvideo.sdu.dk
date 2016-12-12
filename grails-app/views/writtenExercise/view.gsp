@@ -4,7 +4,7 @@
 <html>
 <head>
     <meta name="layout" content="main_fluid"/>
-    <title>Hjem</title>
+    <title>${exercise.name}</title>
 
     <g:render template="/polymer/includePolymer" />
 
