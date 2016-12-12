@@ -45,6 +45,10 @@
 
 
 <tve-group-renderer id="renderer"></tve-group-renderer>
+
+<g:content key="content-below-the-fold">
+    <exercise:comments exercise="${exercise}" />
+</g:content>
 <script>
     var renderer = document.getElementById('renderer');
     var exercisePoolObj = {
