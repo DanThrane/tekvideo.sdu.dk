@@ -100,7 +100,7 @@ th, td {
                     <tr>
                         <td>{{item.name}}</td>
                         <td><iron-icon icon="{{_computeCompletionIcon(item)}}"></iron-icon></td>
-                        <td><paper-icon-button icon="create"></paper-icon-button></td>
+                        <td><paper-icon-button icon="create" on-click="_goToItem"></paper-icon-button></td>
                     </tr>
                 </template>
             </tbody>
@@ -207,6 +207,16 @@ th, td {
                     self.displayNext();
                 }
             }, 1000);
+        },
+        _goToItem: function(e) {
+            var identifier = e.model.item.identifier;
+            var idx = this._assignmentOrder.map(function(e) { 
+                return e.identifier; 
+            }).indexOf(identifier);
+            
+            if (idx !== -1) {
+                this.display(idx);
+            }
         },
         stopCountdown: function() {
             clearTimeout(this._currentTimer);
