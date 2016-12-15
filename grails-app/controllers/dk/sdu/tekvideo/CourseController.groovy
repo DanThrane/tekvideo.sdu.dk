@@ -18,10 +18,13 @@ class CourseController {
     @Secured("permitAll")
     def viewByTeacher(String teacherName, String courseName, Integer year, Boolean spring) {
         Course course = urlMappingService.getCourse(teacherName, courseName, year, spring)
+        Student student = studentService.authenticatedStudent
         if (courseService.canAccess(course)) {
             render(view: "view", model: [
-                    course   : course,
-                    data     : courseService.visibleSubjectsForBrowser(course)
+                    course    : course,
+                    data      : courseService.visibleSubjectsForBrowser(course),
+                    showSignup: student != null,
+                    inCourse  : studentService.isInCourse(student, course),
             ])
         } else {
             render status: "404", text: "Course not found!"
@@ -42,10 +45,10 @@ class CourseController {
         if (course) {
             def result = studentService.signupForCourse(studentService.authenticatedStudent, course)
             result.updateFlashMessage(flash)
-            redirect(action: "signup", id: course.id)
         } else {
-            render status: "404", text: "Course not found!"
+            flash.error = "Kunne ikke finde kursus!"
         }
+        redirect url: urlMappingService.generateLinkToCourse(course, [absolute: true])
     }
 
     @Secured(["ROLE_STUDENT"])
@@ -53,9 +56,9 @@ class CourseController {
         if (course) {
             def result = studentService.signoffForCourse(studentService.authenticatedStudent, course)
             result.updateFlashMessage(flash)
-            redirect(action: "signup", id: course.id)
         } else {
-            render status: "404", text: "Course not found!"
+            flash.error = "Kunne ikke finde kursus!"
         }
+        redirect url: urlMappingService.generateLinkToCourse(course, [absolute: true])
     }
 }

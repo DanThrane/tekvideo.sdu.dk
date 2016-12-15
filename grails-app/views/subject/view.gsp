@@ -11,7 +11,14 @@
 <body>
 
 <twbs:pageHeader>
-    <h3>Opgaver <small>${subject.name}</small></h3>
+    <h3>
+        Opgaver <small>${subject.name}</small>
+        <g:if test="${showSignup}">
+            <span style="float: right;">
+                <g:render template="/course/showsignup" model="${pageScope.variables}" />
+            </span>
+        </g:if>
+    </h3>
 </twbs:pageHeader>
 
 <twbs:row>
@@ -36,7 +43,7 @@
 <tv-browser items='${data as JSON}'></tv-browser>
 
 
-<g:render template="/course/sidebar" model="${[course: subject.course]}"/>
+%{--<g:render template="/course/sidebar" model="${[course: subject.course]}"/>--}%
 
 </body>
 </html>

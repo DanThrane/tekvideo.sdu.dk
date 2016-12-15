@@ -88,6 +88,12 @@
     -webkit-flex-direction: column;
 }
 
+.horizontal {
+    flex-direction: row;
+    -ms-flex-direction: row;
+    -webkit-flex-direction: row;
+}
+
 .grow {
     flex-grow: 3;
 }

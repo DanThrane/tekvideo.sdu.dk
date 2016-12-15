@@ -12,7 +12,14 @@
 <body>
 
 <twbs:pageHeader>
-    <h3>${course.fullName} (${course.name})</h3>
+    <h3>
+        ${course.fullName} (${course.name})
+        <g:if test="${showSignup}">
+            <span style="float: right;">
+                <g:render template="showsignup" model="${pageScope.variables}" />
+            </span>
+        </g:if>
+    </h3>
 </twbs:pageHeader>
 
 <twbs:row>
@@ -31,6 +38,6 @@
 
 <tv-browser items='${data as grails.converters.JSON}'></tv-browser>
 
-<g:render template="sidebar" model="${pageScope.variables}"/>
+%{--<g:render template="sidebar" model="${pageScope.variables}"/>--}%
 </body>
 </html>
