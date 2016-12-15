@@ -71,7 +71,9 @@ iron-icon.star:last-of-type { color: var(--paper-grey-500); }
 
 <paper-card>
     <div class="header-container" hidden$="[[!_hasThumbnail(thumbnail)]]">
-        <iron-image sizing="cover" src="[[thumbnail]]"></iron-image>
+        <a href$="[[url]]">
+            <iron-image sizing="cover" src="[[thumbnail]]"></iron-image>
+        </a>
     </div>
     <div class="card-content">
       <div class="header"><a href="[[url]]">[[title]]</a>
