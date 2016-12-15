@@ -1,0 +1,70 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
+<link rel="import" href="../../bower_components/paper-input/paper-input.html">
+<link rel="import" href="../../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../../bower_components/paper-checkbox/paper-checkbox.html">
+<link rel="import" href="../../bower_components/iron-icons/iron-icons.html">
+<link rel="import" href="../../bower_components/paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../../bower_components/paper-tooltip/paper-tooltip.html">
+
+<dom-module id="tve-sorter-editor">
+
+<template>
+<style include="iron-flex"></style>
+
+<style>
+:host {
+    display: block;
+}
+</style>
+
+<paper-input value="{{columnnamea}}" label="Navn A"></paper-input>
+<paper-input value="{{columnnameb}}" label="Navn B"></paper-input>
+
+<template is="dom-repeat" items="{{values}}">
+    <div class="layout horizontal">
+        <paper-input value="{{item.0.value}}" label="A" class="flex"></paper-input>
+        <paper-input value="{{item.1.value}}" label="B" class="flex"></paper-input>
+        <paper-icon-button icon="delete" on-click="delete"></paper-icon-button>
+    </div>
+</template>
+
+<div class="layout horizontal">
+    <paper-button on-click="_addItem" class="flex">Nyt element</paper-button>
+</div>
+
+</template>
+
+<script>
+Polymer({
+    is: 'tve-sorter-editor',
+    properties: {
+        columnnamea: {
+            type: String,
+            value: "",
+            notify: true
+        },
+        columnnameb: {
+            type: String,
+            value: "",
+            notify: true
+        },
+        values: {
+            type: Array,
+            value: [],
+            notify: true
+        },
+    },
+    _addItem: function() {
+        var copy = this.values.slice();
+        copy.push([{ value: "" }, { value: "" }]);
+        this.values = copy;
+    },
+    delete: function(e) {
+        var index = e.model.index;
+        this.values.splice(index, 1);
+        this.values = this.values.slice();
+    }
+});
+</script>
+</dom-module>

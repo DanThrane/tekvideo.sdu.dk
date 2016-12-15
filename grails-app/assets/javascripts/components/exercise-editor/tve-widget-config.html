@@ -4,6 +4,7 @@
 <link rel="import" href="tve-input-expression.html">
 <link rel="import" href="tve-matrix.html">
 <link rel="import" href="tve-inline-equation.html">
+<link rel="import" href="tve-sorter.html">
 
 <script>
     "use strict";
@@ -66,6 +67,14 @@
             "tve-matrix",
             "tve-matrix-editor",
             ["width", "height", "answer"]
+        );
+
+        registerWidgetType(
+            "Sorter",
+            "sorter",
+            "tve-sorter",
+            "tve-sorter-editor",
+            ["columnnamea", "columnnameb", "values"]
         );
     })();
 </script>

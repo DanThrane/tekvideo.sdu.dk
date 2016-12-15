@@ -20,6 +20,7 @@
 <link rel="import" href="tve-input-expression-editor.html">
 <link rel="import" href="tve-matrix-editor.html">
 <link rel="import" href="tve-markdown-editor.html">
+<link rel="import" href="tve-sorter-editor.html">
 
 <link rel="import" href="tv-exercise-editor-wrapper.html">
 <link rel="import" href="tve-renderer.html">
@@ -291,7 +292,7 @@ Polymer({
         this.fire("save");
     },
     update: function() {
-        // TODO Lazy hack
+        // TODO Hack
         var obj = {
             document: this.documentContent,
             widgets: this.widgets,
