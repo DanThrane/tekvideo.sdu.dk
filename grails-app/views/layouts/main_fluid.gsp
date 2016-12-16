@@ -89,7 +89,7 @@
         <twbs:alert type="info">${flash.message}</twbs:alert>
     </g:if>
     <sec:ifNotLoggedIn>
-        <g:link controller="cas" action="index">
+        <g:link controller="sso" action="index">
             <twbs:alert type="info" dismissible="false">
                 Klik her for at logge ind via SDU SSO.
             </twbs:alert>
