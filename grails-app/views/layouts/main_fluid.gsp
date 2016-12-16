@@ -90,7 +90,7 @@
     </g:if>
     <sec:ifNotLoggedIn>
         <twbs:alert type="info" dismissible="false">
-            Klik <g:link controller="cas" action="index">her</g:link> for at logge ind via SDU SSO
+            Klik <g:link controller="sso" action="index">her</g:link> for at logge ind via SDU SSO
         </twbs:alert>
     </sec:ifNotLoggedIn>
 </twbs:container>
