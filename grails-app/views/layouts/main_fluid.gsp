@@ -89,9 +89,11 @@
         <twbs:alert type="info">${flash.message}</twbs:alert>
     </g:if>
     <sec:ifNotLoggedIn>
-        <twbs:alert type="info" dismissible="false">
-            Klik <g:link controller="cas" action="index">her</g:link> for at logge ind via SDU SSO
-        </twbs:alert>
+        <g:link controller="cas" action="index">
+            <twbs:alert type="info" dismissible="false">
+                Klik her for at logge ind via SDU SSO.
+            </twbs:alert>
+        </g:link>
     </sec:ifNotLoggedIn>
 </twbs:container>
 
