@@ -455,7 +455,7 @@ class CourseManagementService {
                         teacher    : teacher,
                         localStatus: command.visible ? NodeStatus.VISIBLE : NodeStatus.INVISIBLE
                 ]).save(flush: true)
-                command.course.visibleSubjects.forEach { copySubjectToCourse(it, course) }
+                command.course.visibleSubjects.forEach { internalCopySubjectToCourse(it, course) }
 
                 ok course
             } else {
@@ -484,6 +484,40 @@ class CourseManagementService {
         }
     }
 
+    ServiceResult<Void> copySubjectToCourse(Subject subject, Course course) {
+        if (!subject || !course) {
+            return fail(message: "Kunne ikke finde efterspurgte emner", suggestedHttpStatus: 404)
+        }
+
+        if (!canAccessNode(subject) || !canAccessNode(course)) {
+            return fail(message: "Du har ikke rettigheder til at tilgå dette emne",
+                    suggestedHttpStatus: HttpStatus.SC_UNAUTHORIZED)
+        }
+
+        internalCopySubjectToCourse(subject, course)
+        return ok()
+    }
+
+    ServiceResult<Void> copyExerciseToSubject(Exercise exercise, Subject subject) {
+        if (!exercise || !subject) {
+            return fail(message: "Kunne ikke finde efterspurgte emner", suggestedHttpStatus: 404)
+        }
+
+        if (!canAccessNode(exercise) || !canAccessNode(subject)) {
+            return fail(message: "Du har ikke rettigheder til at tilgå dette emne",
+                    suggestedHttpStatus: HttpStatus.SC_UNAUTHORIZED)
+        }
+
+        if (exercise instanceof WrittenExerciseGroup) {
+            internalCopyWrittenExerciseGroupToSubject(exercise, subject)
+        } else if (exercise instanceof Video) {
+            internalCopyVideoToSubject(exercise, subject)
+        } else {
+            return fail(message: "Ukendt opgave type", suggestedHttpStatus: 500)
+        }
+        return ok()
+    }
+
     /**
      * Changes the status of a single course. This can only be done if the teacher owns the associated course.
      *
@@ -499,7 +533,7 @@ class CourseManagementService {
                 course.save()
                 ok()
             } else {
-                fail message: "Ugyldig forspørgsel", suggestedHttpStatus: HttpStatus.SC_BAD_REQUEST
+                fail message: "Ugyldig forespørgsel", suggestedHttpStatus: HttpStatus.SC_BAD_REQUEST
             }
         } else {
             fail message: "Ugyldigt kursus", suggestedHttpStatus: HttpStatus.SC_NOT_FOUND
@@ -554,7 +588,7 @@ class CourseManagementService {
      * @param subject The subject to copy
      * @param course The destination course
      */
-    private void copySubjectToCourse(Subject subject, Course course) {
+    private void internalCopySubjectToCourse(Subject subject, Course course) {
         if (subject == null) return
         def newSubject = new Subject([
                 name       : subject.name,
@@ -563,9 +597,9 @@ class CourseManagementService {
         CourseSubject.create(course, newSubject, [save: true])
         subject.allVisibleExercises.forEach {
             if (it instanceof Video) {
-                copyVideoToSubject(it, newSubject)
+                internalCopyVideoToSubject(it, newSubject)
             } else if (it instanceof WrittenExerciseGroup) {
-                copyWrittenExerciseGroupToSubject(it, newSubject)
+                internalCopyWrittenExerciseGroupToSubject(it, newSubject)
             }
         }
     }
@@ -576,7 +610,7 @@ class CourseManagementService {
      * @param video The video
      * @param subject The destination subject
      */
-    private void copyVideoToSubject(Video video, Subject subject) {
+    private void internalCopyVideoToSubject(Video video, Subject subject) {
         if (video == null) return
         def newVideo = new Video([
                 name        : video.name,
@@ -586,9 +620,14 @@ class CourseManagementService {
                 videoType   : video.videoType,
         ]).save(flush: true)
         SubjectExercise.create(subject, newVideo, [save: true])
+        video.similarResources.each {
+            def resource = new SimilarResources(title: it.title, link: it.link)
+            newVideo.addToSimilarResources(resource)
+        }
+        newVideo.save()
     }
 
-    private void copyWrittenExerciseGroupToSubject(WrittenExerciseGroup exercise, Subject subject) {
+    private void internalCopyWrittenExerciseGroupToSubject(WrittenExerciseGroup exercise, Subject subject) {
         if (exercise == null) return
 
         def newExercise = new WrittenExerciseGroup([
@@ -598,11 +637,16 @@ class CourseManagementService {
         SubjectExercise.create(subject, newExercise, [save: true])
 
         exercise.exercises.each {
-            copyWrittenExerciseToGroup(it, newExercise)
+            internalCopyWrittenExerciseToGroup(it, newExercise)
         }
+        exercise.similarResources.each {
+            def resource = new SimilarResources(title: it.title, link: it.link)
+            newExercise.addToSimilarResources(resource)
+        }
+        newExercise.save()
     }
 
-    private void copyWrittenExerciseToGroup(WrittenExercise exercise, WrittenExerciseGroup group) {
+    private void internalCopyWrittenExerciseToGroup(WrittenExercise exercise, WrittenExerciseGroup group) {
         if (exercise == null) return
 
         def newExercise = new WrittenExercise(exercise: exercise.exercise)

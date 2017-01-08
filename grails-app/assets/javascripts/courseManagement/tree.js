@@ -1,4 +1,26 @@
 var ManagementTreeView = (function () {
+    var TYPES = {
+        "#": {
+            "valid_children": ["course"]
+        },
+        "course": {
+            "icon": "fa fa-graduation-cap",
+            "valid_children": ["subject"]
+        },
+        "subject": {
+            "icon": "fa fa-users",
+            "valid_children": ["video", "writtenexercisegroup"]
+        },
+        "video": {
+            "icon": "fa fa-play",
+            "valid_children": []
+        },
+        "writtenexercisegroup": {
+            "icon": "fa fa-pencil-square",
+            "valid_children": []
+        }
+    };
+
     function ManagementTreeView(sel, base) {
         this.selector = sel;
         this.baseUrl = base;
@@ -18,11 +40,53 @@ var ManagementTreeView = (function () {
                 case "video":
                     location = self.baseUrl + "courseManagement/editVideo/" + node.id;
                     break;
+                case "writtenexercisegroup":
+                    location = self.baseUrl + "courseManagement/editWrittenExercise/" + node.id;
+                    break;
             }
             if (location !== null) {
                 document.location.href = location;
             }
         }
+    };
+    ManagementTreeView.prototype.handleCopy = function (node) {
+        var self = this;
+        return function (obj) {
+            self.copiedNode = node;
+            console.log("Copied " + node.id);
+        };
+    };
+
+    ManagementTreeView.prototype.handleInsert = function (node) {
+        var self = this;
+        return function (obj) {
+            var location = self.baseUrl + "courseManagement/";
+            console.log("Inserting ", self.copiedNode);
+            switch (node.type) {
+                case "subject":
+                    location += "copyExerciseToSubject";
+                    break;
+                case "course":
+                    location += "copySubjectToCourse";
+                    break;
+            }
+
+            Util.postJson(location, { destination: node.id, element: self.copiedNode.id }, {
+                success: function() {
+                    self.tree.refresh();
+                },
+                error: function() {
+                    console.log("ERROR!")
+                }
+            });
+        };
+    };
+
+    ManagementTreeView.prototype.canInsertTo = function (node) {
+        if (!this.copiedNode) return false;
+        var typeDef = TYPES[node.type];
+        if (!typeDef) return false;
+        return typeDef.valid_children.indexOf(this.copiedNode.type) !== -1;
     };
 
     ManagementTreeView.prototype.handleStatusChange = function (node, status) {
@@ -36,7 +100,7 @@ var ManagementTreeView = (function () {
                 case "subject":
                     location = self.baseUrl + "courseManagement/subjectStatus/" + node.id + "?status=" + status;
                     break;
-                case "writtenexercise":
+                case "writtenexercisegroup":
                 case "video":
                     location = self.baseUrl + "courseManagement/exerciseStatus/" + node.id + "?status=" + status;
                     break;
@@ -65,9 +129,9 @@ var ManagementTreeView = (function () {
         };
     };
 
-    ManagementTreeView.prototype.handleCreateWrittenExercise = function(node) {
+    ManagementTreeView.prototype.handleCreateWrittenExercise = function (node) {
         var self = this;
-        return function(obj) {
+        return function (obj) {
             document.location.href = self.baseUrl + "courseManagement/createWrittenExercise/" + node.id;
         };
     };
@@ -85,7 +149,7 @@ var ManagementTreeView = (function () {
                 };
                 Util.postJson(self.baseUrl + "courseManagement/updateSubjects", message, {});
                 break;
-            case "writtenexercise":
+            case "writtenexercisegroup":
             case "video":
                 var message = {
                     subject: parent,
@@ -126,27 +190,7 @@ var ManagementTreeView = (function () {
                     "contentType": "application/json"
                 }
             },
-            "types": {
-                "#": {
-                    "valid_children": ["course"]
-                },
-                "course": {
-                    "icon": "fa fa-graduation-cap",
-                    "valid_children": ["subject"]
-                },
-                "subject": {
-                    "icon": "fa fa-users",
-                    "valid_children": ["video", "writtenexercise"]
-                },
-                "video": {
-                    "icon": "fa fa-play",
-                    "valid_children": []
-                },
-                "writtenexercise": {
-                    "icon": "fa fa-pencil-square",
-                    "valid_children": []
-                }
-            },
+            "types": TYPES,
             "plugins": ["contextmenu", "dnd", "search", "state", "types", "wholerow"],
             "contextmenu": {
                 "items": function (node) {
@@ -171,13 +215,17 @@ var ManagementTreeView = (function () {
                         "label": "Rediger",
                         "action": self.handleEdit(node)
                     };
-                    options.move_to_visible = {
-                        "label": "Flyt til: Synlige",
-                        "separator_before": true,
-                        "_disabled": true,
-                        "action": self.handleStatusChange(node, "VISIBLE")
+                    options.copy = {
+                        "label": "Kopier",
+                        "action": self.handleCopy(node)
+                    };
+                    options.insert = {
+                        "label": "Indsæt",
+                        "_disabled": !self.canInsertTo(node),
+                        "action": self.handleInsert(node)
                     };
                     options.move_to_invisible = {
+                        "separator_before": true,
                         "label": "Flyt til: Usynlige",
                         "action": self.handleStatusChange(node, "INVISIBLE")
                     };
@@ -209,7 +257,7 @@ var ManagementTreeView = (function () {
                         };
                         Util.postJson(self.baseUrl + "courseManagement/moveSubject", message, {});
                         break;
-                    case "writtenexercise": // TODO @refactor needs to handle writtenexercises
+                    case "writtenexercisegroup": // TODO @refactor needs to handle writtenexercisegroups
                     case "video":
                         var message = {
                             exercise: data.node.id,
@@ -223,6 +271,19 @@ var ManagementTreeView = (function () {
                 self._sendUpdatedOrder(data);
             }
         });
+
+        $(this.selector).bind("contextmenu", function(e){
+            // Disable context menu within the tree element.
+
+            // Normally when we right click within the tree element it is to get the tree menu, and not the ordinary
+            // browser menu. Thus we disable it to give a more pleasant user experience.
+
+            // We need this because of the small amount of spacing we have between individual items. These spaces
+            // would trigger the normal browser menu.
+            return false;
+        });
+
+        this.tree = $(this.selector).jstree(true);
     };
 
     return ManagementTreeView;

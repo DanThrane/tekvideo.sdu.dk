@@ -13,8 +13,9 @@ class CourseManagementController {
     CourseManagementService courseManagementService
     VideoService videoService
 
-    static allowedMethods = [postCourse: "POST", postSimilarResource: "POST", postSubject: "POST",
-                             postVideo : "POST", postWrittenExercise: "POST"]
+    static allowedMethods = [postCourse         : "POST", postSimilarResource: "POST", postSubject: "POST",
+                             postVideo          : "POST", postWrittenExercise: "POST", copyExerciseToSubject: "POST",
+                             copySubjectToCourse: "POST"]
 
     def index() {
         String statusStr = params.status ?: "VISIBLE"
@@ -271,6 +272,22 @@ class CourseManagementController {
 
     def moveSubject(MoveSubjectCommand command) {
         def result = courseManagementService.moveSubject(command)
+        response.status = result.suggestedHttpStatus
+        render result as JSON
+    }
+
+    def copySubjectToCourse(CopyNodeCommand command) {
+        def subject = Subject.get(command.element)
+        def course = Course.get(command.destination)
+        def result = courseManagementService.copySubjectToCourse(subject, course)
+        response.status = result.suggestedHttpStatus
+        render result as JSON
+    }
+
+    def copyExerciseToSubject(CopyNodeCommand command) {
+        def exercise = Exercise.get(command.element)
+        def subject = Subject.get(command.destination)
+        def result = courseManagementService.copyExerciseToSubject(exercise, subject)
         response.status = result.suggestedHttpStatus
         render result as JSON
     }

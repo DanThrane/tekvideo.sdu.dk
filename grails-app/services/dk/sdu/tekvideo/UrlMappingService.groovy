@@ -150,10 +150,8 @@ class UrlMappingService {
     }
 
     private Map prepareExerciseAttributes(Exercise exercise, Map attrs) {
-        // TODO FIXME This is going to blow up at some point, since the video list is no longer guaranteed to be
-        // well-formed (not sure it even was before)
         def res = prepareSubjectAttributes(exercise.subject, attrs)
-        res.params.vidid = SubjectExercise.findByExercise(exercise).weight
+        res.params.vidid = exercise.subject.allVisibleExercises.collect { it.id }.indexOf(exercise.id)
         return res
     }
 

@@ -8,6 +8,7 @@ import com.google.api.client.json.JsonFactory
 import com.google.api.client.json.jackson2.JacksonFactory
 import com.google.api.services.youtube.YouTube
 import grails.converters.JSON
+import grails.util.Environment
 
 import javax.annotation.PostConstruct
 import java.time.Duration
@@ -60,28 +61,35 @@ class ExternalVideoHostService {
     }
 
     ServiceResult<Map> getYouTubeVideoInformation(String videoId) {
-        try {
-            List videos = youtube.videos().list("snippet,contentDetails")
-                    .setId(videoId)
-                    .setFields("items(id,snippet/title,snippet/description,contentDetails/duration)")
-                    .setKey(youtubeApiKey)
-                    .execute()
-                    .getItems()
+        if (Environment.current == Environment.DEVELOPMENT) {
+            ok item: [id         : "FakeVideoId",
+                      title      : "FakeVideoTitle",
+                      description: "FakeVideoDescription",
+                      duration   : "??:??:??"]
+        } else {
+            try {
+                List videos = youtube.videos().list("snippet,contentDetails")
+                        .setId(videoId)
+                        .setFields("items(id,snippet/title,snippet/description,contentDetails/duration)")
+                        .setKey(youtubeApiKey)
+                        .execute()
+                        .getItems()
 
-            if (videos.size() != 1) {
-                fail "Kunne ikke hente information om denne video!"
-            } else {
-                def video = videos[0]
-                def duration = Duration.parse(video.getContentDetails().getDuration())
+                if (videos.size() != 1) {
+                    fail "Kunne ikke hente information om denne video!"
+                } else {
+                    def video = videos[0]
+                    def duration = Duration.parse(video.getContentDetails().getDuration())
 
-                ok item: [id         : video.getId(),
-                          title      : video.getSnippet().getTitle(),
-                          description: video.getSnippet().getDescription(),
-                          duration   : getFormattedDurationString(duration.seconds)]
+                    ok item: [id         : video.getId(),
+                              title      : video.getSnippet().getTitle(),
+                              description: video.getSnippet().getDescription(),
+                              duration   : getFormattedDurationString(duration.seconds)]
+                }
+            } catch (Exception e) {
+                e.printStackTrace()
+                fail message: "Kunne ikke hente information om denne video!", exception: e
             }
-        } catch (Exception e) {
-            e.printStackTrace()
-            fail message: "Kunne ikke hente information om denne video!", exception: e
         }
     }
 
