@@ -214,6 +214,15 @@ class CourseManagementController {
         render result as JSON
     }
 
+    def editLinks(Long id) {
+        def exercise = Exercise.get(id)
+        if (exercise && courseManagementService.canAccessNode(exercise)) {
+            [exercise: exercise]
+        } else {
+            notAllowedCourse()
+        }
+    }
+
     def createCourse() {
         render view: "createOrEditCourse", model: [isEditing: false]
     }
@@ -293,19 +302,26 @@ class CourseManagementController {
     }
 
 
-    @Secured(["ROLE_STUDENT"])
     def postSimilarResource(CreateSimilarResourceCommand command) {
         def result = courseManagementService.createSimilarResource(command)
-        response.status = result.suggestedHttpStatus
-        render result as JSON
+        if (result.success) {
+            flash.success = "Link gemt"
+        } else {
+            flash.error = result.message
+        }
+        redirect action: "editLinks", id: command.id
     }
 
-    @Secured(["ROLE_TEACHER"])
-    def deleteSimilarResource(Exercise exercise, SimilarResources similarResources) { // TODO @refactor doesn't work
-        def result = courseManagementService.deleteSimilarResource(exercise, similarResources)
-        render result as JSON
+    def deleteSimilarResource(Long id, Long link) {
+        def resource = SimilarResources.get(link)
+        def result = courseManagementService.deleteSimilarResource(id, resource)
+        if (result.success) {
+            flash.success = "Link slettet"
+        } else {
+            flash.error = result.message
+        }
+        redirect action: "editLinks", id: id
     }
-
 
     private void notAllowedCourse() {
         flash.error = "Du har ikke tiladelse til at tilgå dette kursus"

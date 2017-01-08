@@ -298,19 +298,20 @@ class CourseManagementService {
     }
 
     ServiceResult<SimilarResources> createSimilarResource(CreateSimilarResourceCommand command) {
+        def exercise = Exercise.get(command.id)
         def user = userService.authenticatedTeacher
-        if (!command.exercise) {
+        if (!exercise) {
             fail "Ukendt opgave"
         } else if (!user) {
             fail "Ukendt bruger"
-        } else if (!canAccessNode(command.exercise)) {
+        } else if (!canAccessNode(exercise)) {
             fail "Ikke tilladt"
         } else {
             def comment = new SimilarResources(link: command.link, title: command.title)
             if (!comment.validate()) {
                 fail "Ikke gyldig"
             } else {
-                if (command.exercise.addToSimilarResources(comment)) {
+                if (exercise.addToSimilarResources(comment)) {
                     ok comment
                 } else {
                     fail "Kunne ikke gemme"
@@ -319,11 +320,12 @@ class CourseManagementService {
         }
     }
 
-    ServiceResult<Void> deleteSimilarResource(Exercise exercise, SimilarResources similarResources) {
+    ServiceResult<Void> deleteSimilarResource(Long exerciseId, SimilarResources similarResources) {
+        def exercise = Exercise.get(exerciseId)
         if (!exercise) {
-            fail "Ukendt video"
+            fail "Ukendt opgave"
         } else if (!similarResources) {
-            fail "Ukendt kommentar"
+            fail "Ukendt resource"
         } else if (!canAccessNode(exercise)) {
             fail "Ikke tilladt"
         } else {

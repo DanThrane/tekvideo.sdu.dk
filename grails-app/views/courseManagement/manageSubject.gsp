@@ -33,6 +33,7 @@
                 Ingen videoer her.
             </g:if>
             <g:else>
+
                 <div id="video-container">
                     <g:each in="${excises}" var="exercise" status="idx">
                         <div class="video">
@@ -53,6 +54,11 @@
                                     </div>
                                 </twbs:column>
                                 <twbs:column cols="4" class="align-right">
+                                    <twbs:linkButton action="editLinks" id="${exercise.id}" style="${ButtonStyle.INFO}">
+                                        <fa:icon icon="${FaIcon.LINK}" />
+                                        Rediger links
+                                    </twbs:linkButton>
+
                                     <twbs:buttonGroup>
                                         <twbs:dropdownToggle style="${ButtonStyle.WARNING}">
                                             <fa:icon icon="${FaIcon.ARROW_CIRCLE_RIGHT}"/> Flyt til

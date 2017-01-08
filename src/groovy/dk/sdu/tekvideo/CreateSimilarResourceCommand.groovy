@@ -4,7 +4,7 @@ import grails.validation.Validateable
 
 @Validateable
 class CreateSimilarResourceCommand {
-    Exercise exercise
+    Long id
     String title
     String link
 }
