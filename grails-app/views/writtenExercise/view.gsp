@@ -64,6 +64,7 @@
 
 <g:content key="content-below-the-fold">
     <exercise:comments exercise="${exercise}"/>
+    <g:render template="/exercises/reportError" model="${[baseUrl: createLink(absolute:true, uri: '/')]}" />
 </g:content>
 <script>
     var renderer = document.getElementById('renderer');

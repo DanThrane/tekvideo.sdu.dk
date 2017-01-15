@@ -42,6 +42,7 @@
 
 <g:content key="content-below-the-fold">
     <exercise:comments exercise="${video}" />
+    <g:render template="/exercises/reportError" model="${[baseUrl: createLink(absolute:true, uri: '/')]}" />
 </g:content>
 
 
@@ -54,7 +55,7 @@
         <ul id="videoNavigation" class="video-navigation">
         </ul>
 
-        <div id="similar-resources" class="grow">
+        <div class="grow">
             <g:if test="${!video.similarResources.empty}">
                 <twbs:pageHeader><h4>Se også</h4></twbs:pageHeader>
                 <ul>
