@@ -1,6 +1,7 @@
 package dk.sdu.tekvideo
 
 import org.apache.http.HttpStatus
+import org.springframework.validation.FieldError
 
 import static dk.sdu.tekvideo.ServiceResult.*
 
@@ -12,6 +13,7 @@ import static dk.sdu.tekvideo.ServiceResult.*
  */
 class CourseManagementService {
     def userService
+    def messageSource
 
     /**
      * Returns the courses owned by the current teacher in a format jsTree will understand.
@@ -189,6 +191,17 @@ class CourseManagementService {
         }.dispatch()
     }
 
+    private List<Map<String, ?>> getFieldsErrors(validatedWithErrors) {
+        List<FieldError> errors = validatedWithErrors.errors.fieldErrors
+        Locale locale = Locale.availableLocales.find { it.country == "DK" } ?: Locale.getDefault()
+        return errors.collect {
+            [
+                    field  : it.field,
+                    message: messageSource.getMessage(it, locale)
+            ]
+        }
+    }
+
     /**
      * Creates, or edits an existing, video. This is only possible to do if the authenticated user is a teacher of the
      * associated course, and if relevant the supplied video.
@@ -199,40 +212,45 @@ class CourseManagementService {
      * @return If successful the newly created/existing video
      */
     ServiceResult<Video> createOrEditVideo(CreateOrUpdateVideoCommand command) {
-        def teacher = userService.authenticatedTeacher
-        if (command.validate()) {
-            if (teacher) {
-                if (!canAccess(command.subject.course)) {
-                    fail "teacherservice.not_allowed"
-                } else {
-                    def video = (command.isEditing) ? command.editing : new Video()
-
-                    video.name = command.name
-                    video.youtubeId = command.youtubeId
-                    video.timelineJson = command.timelineJson
-                    video.description = command.description
-                    video.videoType = command.videoType
-                    video.localStatus = command.visible ? NodeStatus.VISIBLE : NodeStatus.INVISIBLE
-                    if (video.validate()) {
-                        video.save()
-
-                        if (!command.isEditing) {
-                            SubjectExercise.create(command.subject, video, [save: true])
-                        } else if (command.isEditing && video.subject != command.subject) {
-                            SubjectExercise.findByExercise(video).delete()
-                            SubjectExercise.create(command.subject, video, [save: true])
-                        }
-                        ok video
-                    } else {
-                        fail "teacherservice.field_errors"
-                    }
-                }
-            } else {
-                fail "teacherservice.not_allowed"
-            }
-        } else {
-            fail "invalid request"
+        if (!command.validate()) {
+            return fail([
+                    message            : "Ugyldig besked",
+                    suggestedHttpStatus: HttpStatus.SC_BAD_REQUEST,
+                    information        : [errors: getFieldsErrors(command)]
+            ])
         }
+
+        if (!canAccess(command.subject.course)) {
+            return fail([
+                    message            : "Ikke tilladt",
+                    suggestedHttpStatus: HttpStatus.SC_UNAUTHORIZED
+            ])
+        }
+
+        def video = (command.isEditing) ? command.editing : new Video()
+        video.name = command.name
+        video.youtubeId = command.youtubeId
+        video.timelineJson = command.timelineJson
+        video.description = command.description
+        video.videoType = command.videoType
+        video.localStatus = command.visible ? NodeStatus.VISIBLE : NodeStatus.INVISIBLE
+
+        if (!video.validate()) {
+            return fail([
+                    message            : "Ugyldig besked (Intern fejl)",
+                    suggestedHttpStatus: HttpStatus.SC_INTERNAL_SERVER_ERROR,
+                    information        : [errors: getFieldsErrors(video)]
+            ])
+        }
+
+        video.save()
+        if (!command.isEditing) {
+            SubjectExercise.create(command.subject, video, [save: true])
+        } else if (command.isEditing && video.subject != command.subject) {
+            SubjectExercise.findByExercise(video).delete()
+            SubjectExercise.create(command.subject, video, [save: true])
+        }
+        return ok(video)
     }
 
     ServiceResult<WrittenExerciseGroup> createOrEditWrittenExercise(CreateExerciseCommand command) {

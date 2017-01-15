@@ -55,10 +55,7 @@
             <twbs:column cols="10">
                 Der skete en fejl under udgivelse af videoen.
 
-                <blockquote>
-                    Dette skyldes sandsynligvis at et felt mangler at blive udfyldt, fx navnet på videoen.
-                    UI endnu ikke implementeret til at vise hvilke fejl der er.
-                </blockquote>
+                <div id="error-list"></div>
 
                 <twbs:button style="${ButtonStyle.PRIMARY}" id="publish-try-again">
                     <fa:icon icon="${FaIcon.REFRESH}"/> Prøv igen

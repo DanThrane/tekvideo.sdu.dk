@@ -5,6 +5,7 @@ import static dk.sdu.tekvideo.ServiceResult.ok
 /**
  * @author Dan Thrane
  */
+@Deprecated
 class DomainServiceUpdater<C extends CRUDCommand, D> {
     final C command
 

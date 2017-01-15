@@ -148,6 +148,19 @@ var Editor = {};
             },
             error: function (data) {
                 $("#publish-error").removeClass("hide");
+                var errorList = $("#error-list");
+                errorList.empty();
+                var domList = $("<ul></ul>");
+                var listOfErrors = data.responseJSON.error.errors;
+                for (var i = 0; i < listOfErrors.length; i++) {
+                    var error = listOfErrors[i];
+                    var html = "<li><b>{0}</b> &mdash; {1}</li>".format(error.field, error.message);
+                    console.log(html);
+                    var item = $(html);
+                    console.log(item);
+                    domList.append(item);
+                }
+                errorList.append(domList);
                 console.log("error!");
                 console.log(data);
             },
