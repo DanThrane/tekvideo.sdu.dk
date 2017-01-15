@@ -141,24 +141,27 @@ class CourseManagementService {
      * @return If successful the newly created/existing subject
      */
     ServiceResult<Subject> createOrEditSubject(Course course, SubjectCRUDCommand command) {
-        new DomainServiceUpdater<SubjectCRUDCommand, Subject>(command) {
-            ServiceResult init() {
-                def teacher = userService.authenticatedTeacher
-                if (teacher && canAccess(course)) {
-                    command.domain.localStatus = command.visible ? NodeStatus.VISIBLE : NodeStatus.INVISIBLE
-                    ok null
-                } else {
-                    fail "teacherservice.not_allowed"
-                }
-            }
+        if (!canAccess(course)) {
+            return fail([
+                    message            : "Ikke tilladt",
+                    suggestedHttpStatus: HttpStatus.SC_UNAUTHORIZED
+            ])
+        }
 
-            ServiceResult<Subject> postSave() {
-                if (!command.isEditing) {
-                    CourseSubject.create(course, command.domain, [save: true])
-                }
-                return ok(command.domain)
-            }
-        }.dispatch()
+        command.domain.localStatus = command.visible ? NodeStatus.VISIBLE : NodeStatus.INVISIBLE
+        if (!command.domain.validate()) {
+            return fail([
+                    message            : "Dårlig besked",
+                    suggestedHttpStatus: HttpStatus.SC_BAD_REQUEST,
+                    information        : [errors: getFieldsErrors(command.domain)]
+            ])
+        }
+
+        command.domain.save()
+        if (!command.isEditing) {
+            CourseSubject.create(course, command.domain, [save: true])
+        }
+        return ok(command.domain)
     }
 
     /**
@@ -169,26 +172,27 @@ class CourseManagementService {
      * @return If successful the newly created/existing course
      */
     ServiceResult<Course> createOrEditCourse(CourseCRUDCommand command) {
-        new DomainServiceUpdater<CourseCRUDCommand, Course>(command) {
-            ServiceResult<Void> init() {
-                def teacher = userService.authenticatedTeacher
-                if (teacher) {
-                    command.domain.teacher = teacher
-                    command.domain.localStatus = command.visible ? NodeStatus.VISIBLE : NodeStatus.INVISIBLE
-                    ok null
-                } else {
-                    fail "teacherservice.not_allowed"
-                }
-            }
+        def teacher = userService.authenticatedTeacher
+        if (!teacher || (command.isEditing && !canAccess(command.domain))) {
+            return fail([
+                    message            : "Ikke tilladt",
+                    suggestedHttpStatus: HttpStatus.SC_UNAUTHORIZED
+            ])
+        }
 
-            ServiceResult<Void> postValidation() {
-                if (command.isEditing && !canAccess(command.domain)) {
-                    fail "teacherservice.not_allowed"
-                } else {
-                    ok null
-                }
-            }
-        }.dispatch()
+        command.domain.teacher = teacher
+        command.domain.localStatus = command.visible ? NodeStatus.VISIBLE : NodeStatus.INVISIBLE
+
+        if (!command.domain.validate()) {
+            return fail([
+                    message            : "Dårlig besked",
+                    suggestedHttpStatus: HttpStatus.SC_BAD_REQUEST,
+                    information        : [errors: getFieldsErrors(command.domain)]
+            ])
+        }
+
+        command.domain.save()
+        return ok(command.domain)
     }
 
     private List<Map<String, ?>> getFieldsErrors(validatedWithErrors) {

@@ -6,7 +6,7 @@ import grails.validation.Validateable
  * @author Dan Thrane
  */
 @Validateable
-class CourseCRUDCommand implements CRUDCommand<Course> {
+class CourseCRUDCommand {
     Course domain
     Boolean isEditing
     Boolean visible
