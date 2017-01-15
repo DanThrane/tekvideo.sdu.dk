@@ -38,7 +38,6 @@ var events = {};
                 async: async,
                 data: JSON.stringify({ events: events }),
                 success: function(data) {
-                    console.log(data);
                 },
                 contentType: "application/json",
                 dataType: 'json'

@@ -143,8 +143,6 @@ var Editor = {};
         Util.postJson(publishEndpoint, data, {
             success: function (data) {
                 $("#publish-success").removeClass("hide");
-                console.log("success!");
-                console.log(data);
             },
             error: function (data) {
                 $("#publish-error").removeClass("hide");
@@ -155,14 +153,10 @@ var Editor = {};
                 for (var i = 0; i < listOfErrors.length; i++) {
                     var error = listOfErrors[i];
                     var html = "<li><b>{0}</b> &mdash; {1}</li>".format(error.field, error.message);
-                    console.log(html);
                     var item = $(html);
-                    console.log(item);
                     domList.append(item);
                 }
                 errorList.append(domList);
-                console.log("error!");
-                console.log(data);
             },
             complete: function () {
                 $("#publish-spinner").addClass("hide");
@@ -422,7 +416,6 @@ var Editor = {};
                         value: $("#textFieldExact").val(),
                         ignoreCase: $("#textFieldIgnoreCase").prop("checked")
                     };
-                    console.log(editingField);
                     break;
             }
 
@@ -644,7 +637,6 @@ var Editor = {};
         var mainStack, sidebarStack;
 
         function init() {
-            console.log("init");
             mainStack = new CardStack("#main-panel-stack");
             sidebarStack = new CardStack("#sidebar-stack");
         }
