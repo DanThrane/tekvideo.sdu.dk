@@ -1,4 +1,4 @@
-<%@ page import="dk.danthrane.twbs.ButtonStyle; dk.sdu.tekvideo.FaIcon" contentType="text/html;charset=UTF-8" %>
+<%@ page import="grails.plugin.springsecurity.SpringSecurityUtils; grails.util.Holders; dk.danthrane.twbs.ButtonStyle; dk.sdu.tekvideo.FaIcon" contentType="text/html;charset=UTF-8" %>
 <!DOCTYPE html>
 <html>
 <head>
@@ -54,7 +54,55 @@
     <twbs:navbarPullRight>
         <twbs:navbarLinks>
             <sec:ifNotLoggedIn>
-                <twbs:navbarLink method="POST" controller="login" action="">Log ind</twbs:navbarLink>
+                <twbs:navDropdownToggle>
+                    Log ind
+
+                    <twbs:dropdownMenu>
+                        <li class="inline-login">
+                            <twbs:row>
+                                <twbs:column>
+                                    <i>Ved hjælp af:</i> <br/>
+                                    <twbs:linkButton controller="sso" action="index" style="${ButtonStyle.DEFAULT}"
+                                                     block="true">
+                                        <asset:image src="sdu_branch.png" class="sdu-logo-button"/> SDU SSO
+                                    </twbs:linkButton>
+                                </twbs:column>
+                            </twbs:row>
+                            <twbs:row>
+                                <twbs:column>
+                                    <i>Eller med en TekVideo bruger</i>
+                                    %{--
+                                        Is it pretty to lookup configuration in a view? Definitely not.
+                                        Is it better than the alternative? Yes.
+                                    --}%
+                                    <twbs:form action="${createLink(uri: SpringSecurityUtils.securityConfig.apf.filterProcessesUrl)}"
+                                               method="POST" id="loginForm" name="loginForm" autocomplete="off">
+                                        <twbs:input name="j_username" labelText="Brugernavn" />
+                                        <twbs:input name="j_password" type="password" labelText="Kodeord" />
+                                        <twbs:checkbox name="rememberMeParameter" id="remember_me" labelText="Forbliv logget ind" />
+
+                                        <twbs:button type="submit" style="${ButtonStyle.PRIMARY}" block="true">
+                                            Log ind
+                                        </twbs:button>
+
+                                        <twbs:row>
+                                            <twbs:column md="6">
+                                                <twbs:linkButton controller="register" action="forgotPassword" style="${ButtonStyle.LINK}" block="true">
+                                                    Glemt kodeord?
+                                                </twbs:linkButton>
+                                            </twbs:column>
+                                            <twbs:column md="6">
+                                                <twbs:linkButton elementId="register" controller="register" style="${ButtonStyle.LINK}" block="true">
+                                                    Ny bruger?
+                                                </twbs:linkButton>
+                                            </twbs:column>
+                                        </twbs:row>
+                                    </twbs:form>
+                                </twbs:column>
+                            </twbs:row>
+                        </li>
+                    </twbs:dropdownMenu>
+                </twbs:navDropdownToggle>
             </sec:ifNotLoggedIn>
             <sec:ifLoggedIn>
                 <twbs:navDropdownToggle>
