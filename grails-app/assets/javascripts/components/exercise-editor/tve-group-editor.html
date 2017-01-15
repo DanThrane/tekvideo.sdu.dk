@@ -16,6 +16,7 @@
 <link rel="import" href="../../bower_components/paper-dialog/paper-dialog.html">
 <link rel="import" href="../../bower_components/paper-button/paper-button.html">
 <link rel="import" href="../../bower_components/paper-toolbar/paper-toolbar.html">
+<link rel="import" href="../../bower_components/iron-icons/communication-icons.html">
 <link rel="import" href="tv-exercise-editor.html">
 
 <dom-module id="tve-group-editor">
@@ -46,6 +47,11 @@ paper-fab {
 .content {
     margin: 16px;
 }
+
+a.no-decoration {
+    text-decoration: none;
+    color: white;
+}
 </style>
 
 <app-location route="{{_route}}" use-hash-as-path></app-location>
@@ -68,7 +74,11 @@ paper-fab {
         <paper-icon-button icon="chevron-left" on-click="_goBack"></paper-icon-button>
     </template>
     <span class="title">{{title}}</span>
+    <a href="#/import" class="no-decoration">
+        <paper-icon-button icon="communication:import-export"></paper-icon-button>
+    </a>
     <paper-icon-button icon="save" on-click="save"></paper-icon-button>
+
 </paper-toolbar>
 <iron-pages selected="[[_pageData.page]]" attr-for-selected="id">
     <div id="home" class="content">
@@ -108,6 +118,14 @@ paper-fab {
             widgets="{{currentExercise.widgets}}"
             hide-save>
         </tv-exercise-editor>
+    </div>
+    <div id="import" class="content">
+        <paper-textarea
+            id="inputJsonField"
+            label="Importer JSON"
+            rows="10">
+        </paper-textarea>
+        <paper-button on-click="_import">Importer</paper-button>
     </div>
 </iron-pages>
 
@@ -156,13 +174,22 @@ Polymer({
     },
     observers: ["_observePage(_pageData)", "_observePageData(_pageId)"],
     _observePage: function(pageData) {
-        if (pageData.page !== "home" && pageData.page !== "edit") {
+        if (pageData.page !== "home" && pageData.page !== "edit" && 
+                pageData.page !== "import") {
             document.location = "#/home";
         }
         this.exercises = JSON.parse(JSON.stringify(this.exercises));
     },
     selectItem: function(e) {
         document.location = this._computeEditLink(e.model.index);
+    },
+    _import: function() {
+        var values = JSON.parse(this.$.inputJsonField.value);
+        for (var i = 0; i < values.length; i++) {
+            this.push("exercises", values[i]);
+        }
+        this.$.inputJsonField.value = "";
+        this._goBack();
     },
     _computeShortDocument: function(item) {
         var text = item.document;
