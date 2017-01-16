@@ -8,6 +8,7 @@ import static dk.sdu.tekvideo.ServiceResult.*
 class ErrorReportingService {
     def mailService
     def springSecurityService
+    def grailsApplication
 
     ServiceResult<Void> report(ErrorReportCommand command) {
         if (!command.validate()) {
