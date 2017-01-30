@@ -5,18 +5,11 @@ import grails.plugin.springsecurity.SpringSecurityUtils
 import static dk.sdu.tekvideo.ServiceResult.fail
 import static dk.sdu.tekvideo.ServiceResult.ok
 
-class ExerciseService {
-    def userService
+class ExerciseService implements NodeInformation<Exercise> {
+    def urlMappingService
     def springSecurityService
-
-    boolean canAccess(Exercise video) {
-        def status = video?.status
-
-        video != null &&
-                (status == NodeStatus.VISIBLE ||
-                        (status == NodeStatus.INVISIBLE &&
-                                userService.authenticatedTeacher == video.subject.course.teacher))
-    }
+    def videoService
+    def subjectService
 
     ServiceResult<Comment> createComment(CreateCommentCommand command) {
         User user = springSecurityService.currentUser as User
@@ -56,5 +49,45 @@ class ExerciseService {
         }
     }
 
+    @Override
+    String getThumbnail(Exercise exercise) {
+        // Should delegate to service if we have a lot more exercise types
+        if (exercise instanceof Video) return videoService.getThumbnail(exercise)
+        if (exercise instanceof WrittenExerciseGroup) return exercise.thumbnailUrl
+        throw new IllegalArgumentException("Unknown exercise type: ${exercise.class.name}")
+    }
 
+    @Override
+    List<NodeBrowserCrumbs> getBreadcrumbs(Exercise exercise) {
+        def subject = exercise.subject
+        def course = subject.course
+        def teacher = course.teacher
+
+        return [
+                new NodeBrowserCrumbs(
+                        teacher.toString(),
+                        urlMappingService.generateLinkToTeacher(teacher)
+                ),
+                new NodeBrowserCrumbs(
+                        course.name,
+                        urlMappingService.generateLinkToCourse(course)
+                ),
+                new NodeBrowserCrumbs(
+                        subject.name,
+                        urlMappingService.generateLinkToSubject(subject)
+                )
+        ]
+    }
+
+    @Override
+    NodeBrowserInformation getInformationForBrowser(Exercise exercise, boolean addBreadcrumbs) {
+        def breadcrumbs = addBreadcrumbs ? subjectService.getBreadcrumbs(exercise.subject) : []
+        return new NodeBrowserInformation(
+                exercise.name,
+                exercise.description,
+                getThumbnail(exercise),
+                urlMappingService.generateLinkToExercise(exercise),
+                breadcrumbs
+        )
+    }
 }

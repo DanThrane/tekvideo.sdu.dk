@@ -86,6 +86,12 @@ class ServiceResult<E> {
         }
     }
 
+    def <T> ServiceResult<T> convertFailure() {
+        // We may freely cast between different types assuming we weren't successful
+        assert !success
+        return this as ServiceResult<T>
+    }
+
     @Override
     String toString() {
         if (success) {
@@ -94,5 +100,4 @@ class ServiceResult<E> {
             return "fail($message, $error)"
         }
     }
-
 }

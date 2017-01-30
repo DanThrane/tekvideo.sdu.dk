@@ -48,7 +48,7 @@
         <sec:ifAllGranted roles="ROLE_TEACHER">
             <twbs:navbarLink controller="courseManagement">Kursusadministration</twbs:navbarLink>
             <twbs:navbarLink controller="accountManagement" action="manage">Kontoadministration</twbs:navbarLink>
-            <twbs:navbarLink controller="dashboard">Video Statistikker</twbs:navbarLink>
+            <twbs:navbarLink controller="stats">Statistikker</twbs:navbarLink>
         </sec:ifAllGranted>
     </twbs:navbarLinks>
     <twbs:navbarPullRight>

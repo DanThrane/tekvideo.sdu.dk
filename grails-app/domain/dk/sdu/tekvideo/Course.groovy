@@ -1,6 +1,8 @@
 package dk.sdu.tekvideo
 
-class Course implements Node {
+import java.time.LocalDateTime
+
+class Course implements Node, Comparable<Course> {
     String name
     String fullName
     String description
@@ -47,6 +49,37 @@ class Course implements Node {
         CourseStudent.withNewSession {
             def join = CourseStudent.findAllByCourse(this)
             join.each { it.delete(flush: true) }
+        }
+    }
+
+    @Override
+    int compareTo(Course other) {
+        def whenThis = whenIsCourseActiveToWeight()
+        def whenOther = other.whenIsCourseActiveToWeight()
+
+        def whenCompare = whenThis <=> whenOther
+        if (whenCompare != 0) return whenCompare
+
+        return fullName <=> other.fullName
+    }
+
+    int whenIsCourseActive() {
+        def now = LocalDateTime.now()
+        def currentlySpring = now.monthValue >= 1 && now.monthValue <= 6
+
+        if (year > now.year) return 1
+        if (year < now.year) return -1
+        if (currentlySpring == spring) return 0
+        if (currentlySpring && !spring) return 1
+        return -1 // !currentlySpring && spring
+    }
+
+    private whenIsCourseActiveToWeight() {
+        switch (whenIsCourseActive()) {
+            case 0: return 1 // Present
+            case 1: return 2 // Future
+            case -1: return 3 // Past
+            default: throw new IllegalStateException("Bad whenIsCourseActive() return value")
         }
     }
 }

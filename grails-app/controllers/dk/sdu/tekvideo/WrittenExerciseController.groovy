@@ -4,12 +4,12 @@ import dk.sdu.tekvideo.events.CompletedWrittenExercise
 import org.springframework.security.access.annotation.Secured
 
 class WrittenExerciseController {
-    def exerciseService
     def springSecurityService
+    def nodeService
 
     @Secured("permitAll")
     def view(WrittenExerciseGroup exercise) {
-        if (exerciseService.canAccess(exercise)) {
+        if (nodeService.canView(exercise)) {
             def completed = []
             def user = springSecurityService.currentUser
             if (user != null) {

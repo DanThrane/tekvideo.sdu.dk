@@ -70,6 +70,21 @@ class Subject implements Node {
         )
     }
 
+    List<Exercise> getAllActiveExercises() {
+        def subject = this
+        Collections.unmodifiableList(
+                SubjectExercise.withCriteria() {
+                    eq("subject", subject)
+                    order("weight", "asc")
+                    exercise {
+                        not {
+                            eq("localStatus", NodeStatus.TRASH)
+                        }
+                    }
+                }.exercise
+        )
+    }
+
     List<Exercise> getAllExercisesByStatus(NodeStatus status) {
         def subject = this
         Collections.unmodifiableList(

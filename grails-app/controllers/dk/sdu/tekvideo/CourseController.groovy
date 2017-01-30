@@ -9,20 +9,21 @@ class CourseController {
     StudentService studentService
     CourseService courseService
     def springSecurityService
+    def nodeService
 
     @Secured("permitAll")
     def list() {
-        [data: courseService.visibleCoursesForBrowser()]
+        [data: courseService.listVisibleCourses().collect { courseService.getInformationForBrowser(it) }]
     }
 
     @Secured("permitAll")
     def viewByTeacher(String teacherName, String courseName, Integer year, Boolean spring) {
         Course course = urlMappingService.getCourse(teacherName, courseName, year, spring)
         Student student = studentService.authenticatedStudent
-        if (courseService.canAccess(course)) {
+        if (nodeService.canView(course)) {
             render(view: "view", model: [
                     course    : course,
-                    data      : courseService.visibleSubjectsForBrowser(course),
+                    data      : nodeService.listVisibleChildrenForBrowser(course),
                     showSignup: student != null,
                     inCourse  : studentService.isInCourse(student, course),
             ])
