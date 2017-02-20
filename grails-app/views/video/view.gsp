@@ -89,10 +89,10 @@
 
         %{-- Used by the event framework to determine the origin of the event --}%
         events.setMetaData({
-            "video": ${video.id}
+            "exercise": ${video.id}
         });
 
-        events.emit({"kind": "VISIT_VIDEO"}, true);
+        events.emit({"kind": "VISIT_EXERCISE"}, true);
     });
 </script>
 </body>

@@ -601,4 +601,6 @@ databaseChangeLog = {
 	include file: 'remove-raw-events.groovy'
 
 	include file: 'add-video-progress.groovy'
+
+	include file: 'video-progress-to-exercise.groovy'
 }

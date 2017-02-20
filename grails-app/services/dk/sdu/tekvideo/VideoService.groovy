@@ -15,9 +15,9 @@ class VideoService {
 
         def viewCountQuery = $/
             SELECT
-              exercise.id, COUNT(video_progress.id)
+              exercise.id, COUNT(exercise_progress.id)
             FROM
-              exercise LEFT OUTER JOIN video_progress ON exercise.id = video_progress.video_id
+              exercise LEFT OUTER JOIN exercise_progress ON exercise.id = exercise_progress.exercise_id
             WHERE
               exercise.class = 'dk.sdu.tekvideo.Video' AND
               exercise.id IN :videos

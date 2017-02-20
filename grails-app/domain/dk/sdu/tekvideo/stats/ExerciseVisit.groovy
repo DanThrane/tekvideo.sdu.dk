@@ -1,7 +1,7 @@
 package dk.sdu.tekvideo.stats
 
-class VideoVisit {
-    VideoProgress progress
+class ExerciseVisit {
+    ExerciseProgress progress
     Date timestamp
 
     static mapping = {

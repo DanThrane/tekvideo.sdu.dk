@@ -5,15 +5,15 @@ import dk.sdu.tekvideo.stats.AnswerVideoDetails
 import dk.sdu.tekvideo.stats.EventHandler
 import dk.sdu.tekvideo.stats.VideoAnswer
 import dk.sdu.tekvideo.stats.VideoAnswerDetails
-import dk.sdu.tekvideo.stats.VideoProgress
-import dk.sdu.tekvideo.stats.VideoVisit
+import dk.sdu.tekvideo.stats.ExerciseProgress
+import dk.sdu.tekvideo.stats.ExerciseVisit
 import org.apache.http.HttpStatus
 
 class StatsEventService implements EventHandler {
     static final String EVENT_ANSWER_QUESTION = "ANSWER_QUESTION"
-    static final String EVENT_VISIT_VIDEO = "VISIT_VIDEO"
+    static final String EVENT_VISIT_EXERCISE = "VISIT_EXERCISE"
     static final Set<String> KNOWN_EVENTS = Collections.unmodifiableSet([
-            EVENT_ANSWER_QUESTION, EVENT_VISIT_VIDEO
+            EVENT_ANSWER_QUESTION, EVENT_VISIT_EXERCISE
     ].toSet())
 
     @Override
@@ -26,7 +26,7 @@ class StatsEventService implements EventHandler {
         switch (event.kind) {
             case EVENT_ANSWER_QUESTION:
                 return handleAnswerQuestion(event)
-            case EVENT_VISIT_VIDEO:
+            case EVENT_VISIT_EXERCISE:
                 return handleVisitVideo(event)
             default:
                 return ServiceResult.fail(
@@ -39,7 +39,7 @@ class StatsEventService implements EventHandler {
     }
 
     private ServiceResult<Void> handleAnswerQuestion(Event event) {
-        def videoResult = eventProperty(event, "video", Integer)
+        def videoResult = eventProperty(event, "exercise", Integer)
         def subjectResult = eventProperty(event, "subject", Integer)
         def questionResult = eventProperty(event, "question", Integer)
         def correctResult = eventProperty(event, "correct", Boolean)
@@ -84,15 +84,15 @@ class StatsEventService implements EventHandler {
             )
         }
 
-        def progress = getVideoProgress(video, event.user, event.uuid)
+        def progress = getProgress(video, event.user, event.uuid)
         addAnswer(progress, command)
         return ServiceResult.ok()
     }
 
     private ServiceResult<Void> handleVisitVideo(Event event) {
-        def videoResult = eventProperty(event, "video", Integer)
-        if (!videoResult.success) return videoResult.convertFailure()
-        def video = Video.get(videoResult.result)
+        def exerciseResult = eventProperty(event, "exercise", Integer)
+        if (!exerciseResult.success) return exerciseResult.convertFailure()
+        def video = Video.get(exerciseResult.result)
 
         if (video == null) {
             return ServiceResult.fail(
@@ -101,29 +101,29 @@ class StatsEventService implements EventHandler {
             )
         }
 
-        def progress = getVideoProgress(video, event.user, event.uuid)
+        def progress = getProgress(video, event.user, event.uuid)
         addVisit(progress)
         return ServiceResult.ok()
     }
 
-    VideoProgress getVideoProgress(Video video, User user, String uuid = null) {
+    ExerciseProgress getProgress(Exercise exercise, User user, String uuid = null) {
         assert user != null || uuid != null
 
-        VideoProgress result
+        ExerciseProgress result
         if (user != null) {
-            result = VideoProgress.findByVideoAndUser(video, user)
+            result = ExerciseProgress.findByExerciseAndUser(exercise, user)
         } else {
-            result = VideoProgress.findByVideoAndUuid(video, uuid)
+            result = ExerciseProgress.findByExerciseAndUuid(exercise, uuid)
         }
 
         if (result == null) {
-            result = new VideoProgress(video: video, user: user, uuid: uuid).save(flush: true)
+            result = new ExerciseProgress(exercise: exercise, user: user, uuid: uuid).save(flush: true)
         }
         return result
     }
 
-    VideoVisit addVisit(VideoProgress progress, boolean save = true, boolean flush = true) {
-        def result = new VideoVisit(
+    ExerciseVisit addVisit(ExerciseProgress progress, boolean save = true, boolean flush = true) {
+        def result = new ExerciseVisit(
                 progress: progress,
                 timestamp: new Date(System.currentTimeMillis())
         )
@@ -133,7 +133,7 @@ class StatsEventService implements EventHandler {
         return result
     }
 
-    VideoAnswer addAnswer(VideoProgress progress, AnswerVideoCommand command) {
+    VideoAnswer addAnswer(ExerciseProgress progress, AnswerVideoCommand command) {
         def answer = new VideoAnswer(
                 progress: progress,
                 correct: command.correct,

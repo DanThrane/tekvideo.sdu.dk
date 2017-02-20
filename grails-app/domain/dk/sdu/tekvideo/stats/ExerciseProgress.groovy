@@ -1,10 +1,10 @@
 package dk.sdu.tekvideo.stats
 
+import dk.sdu.tekvideo.Exercise
 import dk.sdu.tekvideo.User
-import dk.sdu.tekvideo.Video
 
-class VideoProgress {
-    Video video
+class ExerciseProgress {
+    Exercise exercise
     User user
     String uuid
 

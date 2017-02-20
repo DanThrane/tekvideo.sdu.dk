@@ -1,7 +1,7 @@
 package dk.sdu.tekvideo.stats
 
 class VideoAnswer {
-    VideoProgress progress
+    ExerciseProgress progress
     Date dateCreated
     Boolean correct
     Integer subject
