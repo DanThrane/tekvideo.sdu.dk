@@ -7,8 +7,10 @@ import groovy.transform.ToString
 class Event {
     Long timestamp
     User user
+    String uuid
 
     static constraints = {
         user nullable: true
+        uuid nullable: true
     }
 }

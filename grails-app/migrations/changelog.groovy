@@ -600,4 +600,6 @@ databaseChangeLog = {
 	include file: 'add-new-event-types-for-written-exercises.groovy'
 
 	include file: 'add-thumbnail-to-written-exercise.groovy'
+
+	include file: 'add-uuid-to-events.groovy'
 }
