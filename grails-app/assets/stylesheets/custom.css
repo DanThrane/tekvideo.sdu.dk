@@ -260,39 +260,6 @@ body {
     max-width: 100%;
 }
 
-.stat-card.yellow {
-    color: black;
-}
-
-.stat-card.yellow .card {
-    background-color: #FFEB3B;
-}
-
-.stat-card.red {
-    color: white;
-}
-
-.stat-card.red .card {
-    background-color: #F44336;
-}
-
-.stat-card.green {
-    color: white;
-}
-
-.stat-card.green .card {
-    background-color: #43A047;
-}
-
-.stat-card .name {
-    font-size: 25pt;
-    margin-right: 15px;
-}
-
-.stat-card .stat {
-    font-size: 10pt;
-}
-
 .popular-video h3 {
     margin: 10px;
 }
@@ -587,4 +554,111 @@ label {
 
 .dashboard-content-no-margin {
     margin-top: -20px;
+}
+
+.layout.horizontal, .layout.vertical {
+    display: -ms-flexbox;
+    display: -webkit-flex;
+    display: flex;
+}
+
+.layout.inline {
+    display: -ms-inline-flexbox;
+    display: -webkit-inline-flex;
+    display: inline-flex;
+}
+
+.layout.horizontal {
+    -ms-flex-direction: row;
+    -webkit-flex-direction: row;
+    flex-direction: row;
+}
+
+.layout.vertical {
+    -ms-flex-direction: column;
+    -webkit-flex-direction: column;
+    flex-direction: column;
+}
+
+.layout.wrap {
+    -ms-flex-wrap: wrap;
+    -webkit-flex-wrap: wrap;
+    flex-wrap: wrap;
+}
+
+.layout.center, .layout.center-center {
+    -ms-flex-align: center;
+    -webkit-align-items: center;
+    align-items: center;
+}
+
+.layout.center-justified, .layout.center-center {
+    -ms-flex-pack: center;
+    -webkit-justify-content: center;
+    justify-content: center;
+}
+
+.flex {
+    -ms-flex: 1 1 0.000000001px;
+    -webkit-flex: 1;
+    flex: 1;
+    -webkit-flex-basis: 0.000000001px;
+    flex-basis: 0.000000001px;
+}
+
+.flex-auto {
+    -ms-flex: 1 1 auto;
+    -webkit-flex: 1 1 auto;
+    flex: 1 1 auto;
+}
+
+.flex-none {
+    -ms-flex: none;
+    -webkit-flex: none;
+    flex: none;
+}
+
+.stat-card-container > * {
+    margin: 16px;
+}
+
+.stat-card {
+    width: 30%;
+    max-width: 330px;
+    min-width: 250px;
+}
+
+.fixed-table .table {
+    width: auto;
+}
+.fixed-table .table tr td,
+.fixed-table .table tr th {
+    min-width: 100px;
+    width: 100px;
+    min-height: 20px;
+    height: 20px;
+    padding: 5px;
+}
+.fixed-table-header {
+    height: 30px;
+    width: 600px;
+    margin-left: 110px;
+    overflow: hidden;
+    border-bottom: 1px solid #CCC;
+    border-top: 0;
+    border-left: 0;
+    border-right: 0;
+}
+.fixed-table-sidebar {
+    width: 110px;
+    height: 700px;
+    float: left;
+    overflow: hidden;
+    border-right: 1px solid #CCC;
+}
+.fixed-table-body {
+    overflow: auto;
+    width: 600px;
+    height: 700px;
+    float: left;
 }

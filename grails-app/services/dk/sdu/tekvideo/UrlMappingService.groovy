@@ -89,7 +89,7 @@ class UrlMappingService {
      * @return The link
      */
     String generateLinkToTeacher(Teacher teacher, Map additionalAttrs = [:]) {
-        grailsLinkGenerator.link(prepareAttributes(teacher.toString(), additionalAttrs))
+        grailsLinkGenerator.link(prepareTeachingAttributes(teacher.toString(), additionalAttrs))
     }
 
     /**
@@ -125,7 +125,7 @@ class UrlMappingService {
         grailsLinkGenerator.link(prepareExerciseAttributes(exercise, additionalAttrs))
     }
 
-    private Map prepareAttributes(String teacher, Map attrs) {
+    private Map prepareTeachingAttributes(String teacher, Map attrs) {
         def base = [
                 mapping: "teaching",
                 params : [teacher: teacher]
@@ -136,7 +136,7 @@ class UrlMappingService {
     }
 
     private Map prepareCourseAttributes(Course course, Map attrs) {
-        def res = prepareAttributes(course.teacher.toString(), attrs)
+        def res = prepareTeachingAttributes(course.teacher.toString(), attrs)
         res.params.course = course.name
         res.params.year = course.year
         res.params.fall = course.spring ? "0" : "1"
