@@ -64,13 +64,6 @@ var InteractiveVideoPlayer = (function () {
         this.player.on("play", function () {
             self.removeAllQuestions()
         });
-        this.player.on("pause", function () {
-            events.emit({
-                kind: "PAUSE_VIDEO",
-                video: document.location.href,
-                timecode: self.player.currentTime()
-            }, true);
-        });
 
         $(window).resize(function () {
             self.initializeSize();
@@ -164,6 +157,16 @@ var InteractiveVideoPlayer = (function () {
             e.preventDefault();
             var questionID = self.getVisibleQuestionID();
             var question = self.getVisibleQuestion();
+
+            var allCorrect = true;
+            var allEmpty = true;
+            var answerEvent = {
+                kind: "ANSWER_QUESTION",
+                subject: questionID[0],
+                question: questionID[1],
+                details: []
+            };
+
             for (var i = 0; i < question.fields.length; i++) {
                 var field = question.fields[i];
                 var input = $("#" + field.name);
@@ -174,19 +177,24 @@ var InteractiveVideoPlayer = (function () {
                     input.addClass("correct");
                 } else {
                     input.addClass("error");
+                    allCorrect = false;
                 }
+
                 if (val.length > 0) {
-                    events.emit({
-                        kind: "ANSWER_QUESTION",
+                    allEmpty = false;
+                    answerEvent.details.push({
                         answer: val,
                         correct: correct,
-                        subject: questionID[0],
-                        question: questionID[1],
                         field: i
                     });
                 }
             }
-            events.flush();
+
+            if (!allEmpty) {
+                answerEvent.correct = allCorrect;
+                events.emit(answerEvent);
+                events.flush();
+            }
         });
     };
 
@@ -196,13 +204,6 @@ var InteractiveVideoPlayer = (function () {
             var skippedAt = self.player.currentTime();
             e.preventDefault();
             self.player.currentTime(item.timecode);
-            events.emit({
-                kind: "SKIP_TO_CONTENT",
-                video: document.location.href,
-                label: item.title,
-                videoTimeCode: self.player.currentTime(),
-                skippedAt: skippedAt
-            }, true);
         };
     };
 

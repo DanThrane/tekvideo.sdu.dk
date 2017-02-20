@@ -6,12 +6,16 @@ import dk.sdu.tekvideo.data.VideoData
 import grails.converters.JSON
 
 class BootStrap {
+    def eventService
+    def statsEventService
 
     def init = { servletContext ->
         JSON.registerObjectMarshaller(ServiceResult, ServiceResult.jsonMarshaller)
         JSON.registerObjectMarshaller(Video, Video.jsonMarshaller)
         JSON.registerObjectMarshaller(Student, Student.jsonMarshaller)
         JSON.registerObjectMarshaller(User, User.jsonMarshaller)
+
+        eventService.addHandler(statsEventService)
 
         environments {
             development {

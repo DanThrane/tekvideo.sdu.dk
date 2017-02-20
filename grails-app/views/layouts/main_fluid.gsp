@@ -205,29 +205,12 @@
 
 <script>
     $(function () {
-        var start = Date.now();
-        events.configure("${createLink(controller: "event", action: "register")}");
-        events.start();
-
-        events.emit({
-            "kind": "VISIT_SITE",
-            "url": document.location.href,
-            "ua": navigator.userAgent
-        }, true);
-
-        window.onbeforeunload = function () {
-            events.emit({
-                "kind": "EXIT_SITE",
-                "url": document.location.href,
-                "ua": navigator.userAgent,
-                "time": Date.now() - start
-            });
-            events.flush(false);
-        };
-
         if (!localStorage.getItem("uuid")) {
             localStorage.setItem("uuid", generateUUID());
         }
+
+        events.configure("${createLink(controller: "event", action: "register")}");
+        events.start();
 
         function generateUUID(){
             var d = new Date().getTime();

@@ -599,4 +599,6 @@ databaseChangeLog = {
 	include file: 'add-new-event-types-for-written-exercises.groovy'
 	include file: 'add-thumbnail-to-written-exercise.groovy'
 	include file: 'remove-raw-events.groovy'
+
+	include file: 'add-video-progress.groovy'
 }

@@ -9,8 +9,9 @@ class EventController {
     @Secured("permitAll")
     def register() {
         def json = request.JSON
-        eventService.processEvents(json.events)
-        render([message: "OK"] as JSON)
+        def events = eventService.processEvents(json.events)
+        response.status = events.suggestedHttpStatus
+        render events as JSON
     }
 
 }
