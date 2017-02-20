@@ -1,24 +1,58 @@
 package dk.sdu.tekvideo
 
 import grails.converters.JSON
-import grails.plugin.springsecurity.SpringSecurityUtils
+import org.hibernate.SessionFactory
 
-import static dk.sdu.tekvideo.ServiceResult.fail
 import static dk.sdu.tekvideo.ServiceResult.ok
 
 class VideoService {
     def springSecurityService
-    def videoStatisticsService
     def externalVideoHostService
+    SessionFactory sessionFactory
 
     ServiceResult<List<VideoBreakdown>> findVideoBreakdown(List<Video> videos) {
-        ok videos.collect {
-            new VideoBreakdown(
-                    video: it,
-                    commentCount: it.comments.size(),
-                    viewCount: videoStatisticsService.retrieveViewBreakdown(it).result?.visits
-            )
+        def videoIds = videos.collect { it.id }
+
+        def viewCountQuery = $/
+            SELECT
+              exercise.id, COUNT(video_progress.id)
+            FROM
+              exercise LEFT OUTER JOIN video_progress ON exercise.id = video_progress.video_id
+            WHERE
+              exercise.class = 'dk.sdu.tekvideo.Video' AND
+              exercise.id IN :videos
+            GROUP BY exercise.id;
+        /$
+
+        List<List> viewCounts = sessionFactory.currentSession
+                .createSQLQuery(viewCountQuery)
+                .setParameterList("videos", videoIds)
+                .list()
+
+        def commentCountQuery = $/
+            SELECT
+              exercise.id, COUNT(exercise_comment)
+            FROM
+              exercise LEFT OUTER JOIN exercise_comment ON exercise.id = exercise_comment.exercise_comments_id
+            WHERE
+              exercise.class = 'dk.sdu.tekvideo.Video' AND
+              exercise.id IN :videos
+            GROUP BY exercise.id;
+        /$
+
+        List<List> commentCounts = sessionFactory.currentSession
+                .createSQLQuery(commentCountQuery)
+                .setParameterList("videos", videoIds)
+                .list()
+
+        // Merge results
+        Map<Long, VideoBreakdown> breakdownsById = videos.collectEntries {
+            [(it.id): new VideoBreakdown(video: it, commentCount: 0, viewCount: 0)]
         }
+        viewCounts.each { breakdownsById[it[0] as Long]?.viewCount = it[1] as Integer }
+        commentCounts.each { breakdownsById[it[0] as Long]?.commentCount = it[1] as Integer }
+
+        ok breakdownsById.values().toList()
     }
 
     VideoMetaData getVideoMetaDataSafe(Video video) {

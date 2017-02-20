@@ -11,7 +11,10 @@ import org.apache.http.HttpStatus
 
 class StatsEventService implements EventHandler {
     static final String EVENT_ANSWER_QUESTION = "ANSWER_QUESTION"
-    static final Set<String> KNOWN_EVENTS = Collections.unmodifiableSet([EVENT_ANSWER_QUESTION].toSet())
+    static final String EVENT_VISIT_VIDEO = "VISIT_VIDEO"
+    static final Set<String> KNOWN_EVENTS = Collections.unmodifiableSet([
+            EVENT_ANSWER_QUESTION, EVENT_VISIT_VIDEO
+    ].toSet())
 
     @Override
     boolean canHandle(String eventKind) {
@@ -23,6 +26,8 @@ class StatsEventService implements EventHandler {
         switch (event.kind) {
             case EVENT_ANSWER_QUESTION:
                 return handleAnswerQuestion(event)
+            case EVENT_VISIT_VIDEO:
+                return handleVisitVideo(event)
             default:
                 return ServiceResult.fail(
                         message: "Internal error",
@@ -81,6 +86,23 @@ class StatsEventService implements EventHandler {
 
         def progress = getVideoProgress(video, event.user, event.uuid)
         addAnswer(progress, command)
+        return ServiceResult.ok()
+    }
+
+    private ServiceResult<Void> handleVisitVideo(Event event) {
+        def videoResult = eventProperty(event, "video", Integer)
+        if (!videoResult.success) return videoResult.convertFailure()
+        def video = Video.get(videoResult.result)
+
+        if (video == null) {
+            return ServiceResult.fail(
+                    message: "Not found",
+                    suggestedHttpStatus: HttpStatus.SC_NOT_FOUND
+            )
+        }
+
+        def progress = getVideoProgress(video, event.user, event.uuid)
+        addVisit(progress)
         return ServiceResult.ok()
     }
 
