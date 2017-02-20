@@ -1,17 +1,14 @@
 import dk.sdu.tekvideo.*
 import dk.sdu.tekvideo.data.CourseData
-import dk.sdu.tekvideo.data.EventData
+
 import dk.sdu.tekvideo.data.SubjectData
 import dk.sdu.tekvideo.data.VideoData
-import dk.sdu.tekvideo.events.*
-import dk.sdu.tekvideo.events.AnswerQuestionEvent
 import grails.converters.JSON
 
 class BootStrap {
 
     def init = { servletContext ->
         JSON.registerObjectMarshaller(ServiceResult, ServiceResult.jsonMarshaller)
-        JSON.registerObjectMarshaller(AnswerQuestionEvent, AnswerQuestionEvent.jsonMarshaller)
         JSON.registerObjectMarshaller(Video, Video.jsonMarshaller)
         JSON.registerObjectMarshaller(Student, Student.jsonMarshaller)
         JSON.registerObjectMarshaller(User, User.jsonMarshaller)
@@ -33,8 +30,6 @@ class BootStrap {
         Course.executeUpdate('delete from Course')
 
         CourseStudent.executeUpdate('delete from CourseStudent')
-        Event.executeUpdate('delete from Event')
-
         Student.executeUpdate('delete from Student')
         Teacher.executeUpdate('delete from Teacher')
 
@@ -62,8 +57,6 @@ class BootStrap {
                 def subject = SubjectData.buildTestSubject("Subject", course, true)
                 (1..3).each {
                     def video = VideoData.buildTestVideo("Video", subject, true)
-                    (1..10).each { EventData.buildVisitVideoEvent(video) }
-                    (1..10).each { EventData.buildAnswerEvent(video) }
                 }
             }
         }

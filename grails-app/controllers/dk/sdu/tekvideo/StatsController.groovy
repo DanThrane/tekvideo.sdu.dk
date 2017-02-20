@@ -36,7 +36,6 @@ class StatsController {
         def resolvedType = ResourceType.fromString(type)
 
         if (type == null) {
-            println("home")
             forward action: "home"
             return
         }
@@ -93,7 +92,6 @@ class StatsController {
             case "views":
                 switch (resolvedType) {
                     case ResourceType.COURSE:
-                        println(format)
                         if (format == null) {
                             forward action: "viewCourseViews", params: [id: id]
                         } else if (format.equalsIgnoreCase("json")) {

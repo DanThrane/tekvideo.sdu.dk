@@ -1,5 +1,6 @@
 package dk.sdu.tekvideo
 
+import grails.converters.JSON
 import org.springframework.security.access.annotation.Secured
 
 class EventController {
@@ -8,8 +9,8 @@ class EventController {
     @Secured("permitAll")
     def register() {
         def json = request.JSON
-        eventService.saveJSONEvents(json.events)
-        render json
+        eventService.processEvents(json.events)
+        render([message: "OK"] as JSON)
     }
 
 }
