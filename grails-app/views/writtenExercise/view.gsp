@@ -72,8 +72,7 @@
     <g:each in="${subExercises}" var="item">
     ${item.id}: ${raw(item.exercise)},
     </g:each>
-    }
-    ;
+    };
 
     %{-- Working around the fact that we don't store the assignments in a (server-side) structured format --}%
     var exercisePool = [];
@@ -85,26 +84,26 @@
 
     renderer.exercisePool = exercisePool;
     renderer.completed = ${completed};
-    renderer.display(0);
 
     renderer.addEventListener("grade", function (e) {
-        console.log(e.detail.passes);
-        if (e.detail.passes) {
-            events.emit({"kind": "COMPLETE_WRITTEN_EXERCISE", "exerciseId": e.detail.identifier}, true);
-        }
+        events.emit({
+            "kind": "ANSWER_WRITTEN_EXERCISE",
+            "subExercise": parseInt(e.detail.identifier),
+            "passes": e.detail.passes
+        }, true);
     });
 
     renderer.addEventListener("display", function (e) {
-        var identifier = e.detail.identifier;
-        events.emit({"kind": "VISIT_WRITTEN_EXERCISE", "exerciseId": identifier}, true);
+        var identifier = parseInt(e.detail.exercise.identifier);
+        events.emit({"kind": "VISIT_WRITTEN_EXERCISE", "subExercise": identifier}, true);
     });
 
     renderer.addEventListener("backToMenu", function () {
         document.location = "${sdu.createLinkToSubject(subject: exercise.subject)}";
     });
 
-    events.setMetaData({"groupId": ${exercise.id}});
-
+    events.setMetaData({"exercise": ${exercise.id}});
+    events.emit({"kind": "VISIT_EXERCISE"}, true);
 </script>
 
 </body>

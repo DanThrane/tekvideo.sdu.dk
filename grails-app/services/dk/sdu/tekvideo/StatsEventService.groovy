@@ -7,13 +7,18 @@ import dk.sdu.tekvideo.stats.VideoAnswer
 import dk.sdu.tekvideo.stats.VideoAnswerDetails
 import dk.sdu.tekvideo.stats.ExerciseProgress
 import dk.sdu.tekvideo.stats.ExerciseVisit
+import dk.sdu.tekvideo.stats.WrittenExerciseVisit
+import dk.sdu.tekvideo.stats.WrittenGroupAnswer
+import dk.sdu.tekvideo.stats.WrittenGroupStreak
 import org.apache.http.HttpStatus
 
 class StatsEventService implements EventHandler {
     static final String EVENT_ANSWER_QUESTION = "ANSWER_QUESTION"
     static final String EVENT_VISIT_EXERCISE = "VISIT_EXERCISE"
+    static final String EVENT_ANSWER_WRITTEN_EXERCISE = "ANSWER_WRITTEN_EXERCISE"
+    static final String EVENT_VISIT_WRITTEN_EXERCISE = "VISIT_WRITTEN_EXERCISE"
     static final Set<String> KNOWN_EVENTS = Collections.unmodifiableSet([
-            EVENT_ANSWER_QUESTION, EVENT_VISIT_EXERCISE
+            EVENT_ANSWER_QUESTION, EVENT_VISIT_EXERCISE, EVENT_ANSWER_WRITTEN_EXERCISE, EVENT_VISIT_WRITTEN_EXERCISE
     ].toSet())
 
     @Override
@@ -27,7 +32,11 @@ class StatsEventService implements EventHandler {
             case EVENT_ANSWER_QUESTION:
                 return handleAnswerQuestion(event)
             case EVENT_VISIT_EXERCISE:
-                return handleVisitVideo(event)
+                return handleVisitExercise(event)
+            case EVENT_ANSWER_WRITTEN_EXERCISE:
+                return handleAnswerWrittenExercise(event)
+            case EVENT_VISIT_WRITTEN_EXERCISE:
+                return handleVisitWrittenExercise(event)
             default:
                 return ServiceResult.fail(
                         message: "Internal error",
@@ -36,6 +45,48 @@ class StatsEventService implements EventHandler {
                         information: [why: "Unhandled event kind ${event.kind}"]
                 )
         }
+    }
+
+    ServiceResult<Void> handleVisitWrittenExercise(Event event) {
+        def exerciseResult = eventProperty(event, "exercise", Integer)
+        def subExerciseResult = eventProperty(event, "subExercise", Integer)
+
+        def errors = checkForErrors(exerciseResult, subExerciseResult)
+        if (errors) return errors
+
+        def exercise = WrittenExercise.get(subExerciseResult.result)
+        def group = WrittenExerciseGroup.get(exerciseResult.result)
+
+        if (exercise == null || group == null) {
+            return ServiceResult.fail(
+                    message: "Not found",
+                    suggestedHttpStatus: HttpStatus.SC_NOT_FOUND
+            )
+        }
+
+        addWrittenExerciseVisit(getProgress(group, event.user, event.uuid), exercise)
+        return ServiceResult.ok()
+    }
+
+    ServiceResult<Void> handleAnswerWrittenExercise(Event event) {
+        def passesResult = eventProperty(event, "passes", Boolean)
+        def exerciseResult = eventProperty(event, "exercise", Integer)
+        def subExerciseResult = eventProperty(event, "subExercise", Integer)
+
+        def errors = checkForErrors(passesResult, exerciseResult, subExerciseResult)
+        if (errors) return errors
+
+        def exercise = WrittenExercise.get(subExerciseResult.result)
+        def group = WrittenExerciseGroup.get(exerciseResult.result)
+        if (exercise == null || group == null) {
+            return ServiceResult.fail(
+                    message: "Not found",
+                    suggestedHttpStatus: HttpStatus.SC_NOT_FOUND
+            )
+        }
+
+        addWrittenAnswer(getProgress(group, event.user, event.uuid), exercise, passesResult.result)
+        return ServiceResult.ok()
     }
 
     private ServiceResult<Void> handleAnswerQuestion(Event event) {
@@ -85,14 +136,14 @@ class StatsEventService implements EventHandler {
         }
 
         def progress = getProgress(video, event.user, event.uuid)
-        addAnswer(progress, command)
+        addVideoAnswer(progress, command)
         return ServiceResult.ok()
     }
 
-    private ServiceResult<Void> handleVisitVideo(Event event) {
+    private ServiceResult<Void> handleVisitExercise(Event event) {
         def exerciseResult = eventProperty(event, "exercise", Integer)
         if (!exerciseResult.success) return exerciseResult.convertFailure()
-        def video = Video.get(exerciseResult.result)
+        def video = Exercise.get(exerciseResult.result)
 
         if (video == null) {
             return ServiceResult.fail(
@@ -122,18 +173,14 @@ class StatsEventService implements EventHandler {
         return result
     }
 
-    ExerciseVisit addVisit(ExerciseProgress progress, boolean save = true, boolean flush = true) {
-        def result = new ExerciseVisit(
+    void addVisit(ExerciseProgress progress) {
+        new ExerciseVisit(
                 progress: progress,
                 timestamp: new Date(System.currentTimeMillis())
-        )
-        if (save) {
-            result.save(flush: flush)
-        }
-        return result
+        ).save(flush: true)
     }
 
-    VideoAnswer addAnswer(ExerciseProgress progress, AnswerVideoCommand command) {
+    void addVideoAnswer(ExerciseProgress progress, AnswerVideoCommand command) {
         def answer = new VideoAnswer(
                 progress: progress,
                 correct: command.correct,
@@ -149,7 +196,31 @@ class StatsEventService implements EventHandler {
                     field: it.field
             )
         }.findAll { it != null }.each { it.save(flush: true) }
-        return answer
+    }
+
+    void addWrittenAnswer(ExerciseProgress progress, WrittenExercise exercise, Boolean passes) {
+        new WrittenGroupAnswer(progress: progress, exercise: exercise, passes: passes).save(flush: true)
+
+        def streak = WrittenGroupStreak.findByProgress(progress) ?:
+                new WrittenGroupStreak(progress: progress, currentStreak: 0, longestStreak: 0)
+
+        if (passes) {
+            streak.currentStreak++
+            if (streak.currentStreak > streak.longestStreak) {
+                streak.longestStreak = streak.currentStreak
+            }
+        } else {
+            streak.currentStreak = 0
+        }
+        streak.save(flush: true)
+    }
+
+    void addWrittenExerciseVisit(ExerciseProgress progress, WrittenExercise subExercise) {
+        new WrittenExerciseVisit(
+                progress: progress,
+                subExercise: subExercise,
+                timestamp: new Date(System.currentTimeMillis())
+        ).save(flush: true)
     }
 
     private <T> ServiceResult<T> dynamicProperty(obj, String key, Class<T> type) {

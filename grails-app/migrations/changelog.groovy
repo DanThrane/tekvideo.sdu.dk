@@ -603,4 +603,8 @@ databaseChangeLog = {
 	include file: 'add-video-progress.groovy'
 
 	include file: 'video-progress-to-exercise.groovy'
+
+	include file: 'add-written-exercise-stats.groovy'
+
+	include file: 'add-timestamp-to-group-answer.groovy'
 }
