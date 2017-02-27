@@ -1,6 +1,7 @@
 package dk.sdu.tekvideo.data
 
 import dk.sdu.tekvideo.Subject
+import dk.sdu.tekvideo.SubjectExercise
 import dk.sdu.tekvideo.WrittenExercise
 import dk.sdu.tekvideo.WrittenExerciseGroup
 
@@ -19,6 +20,8 @@ class WrittenExerciseData {
         def result = new WrittenExerciseGroup()
         result.name = name
         result.save(failOnError: true, flush: true)
+
+        SubjectExercise.create(subject, result, [save: true, failOnError: true])
 
         def exercise = new WrittenExercise()
         exercise.exercise = "foo"

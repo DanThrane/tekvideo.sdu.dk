@@ -1,5 +1,8 @@
 package dk.sdu.tekvideo
 
+import dk.sdu.tekvideo.stats.StandardViewingStatisticsConfiguration
+import dk.sdu.tekvideo.stats.ViewingStatisticsConfiguration
+import dk.sdu.tekvideo.stats.WeeklyViewingStatisticsConfiguration
 import grails.converters.JSON
 import org.apache.http.HttpStatus
 import org.springframework.security.access.annotation.Secured
@@ -98,6 +101,27 @@ class StatsController {
                             forward action: "jsonCourseViews", params: [id: id]
                         }
                         return
+                    case ResourceType.SUBJECT:
+                        if (format == null) {
+                            forward action: "viewSubjectViews", params: [id: id]
+                        } else if (format.equalsIgnoreCase("json")) {
+                            forward action: "jsonSubjectViews", params: [id: id]
+                        }
+                        return
+                    case ResourceType.VIDEO:
+                        if (format == null) {
+                            forward action: "viewVideoViews", params: [id: id]
+                        } else if (format.equalsIgnoreCase("json")) {
+                            forward action: "jsonVideoViews", params: [id: id]
+                        }
+                        return
+                    case ResourceType.WRITTEN:
+                        if (format == null) {
+                            forward action: "viewWrittenViews", params: [id: id]
+                        } else if (format.equalsIgnoreCase("json")) {
+                            forward action: "jsonWrittenViews", params: [id: id]
+                        }
+                        return
                     default:
                         render status: HttpStatus.SC_NOT_FOUND, message: "Not found"
                         return
@@ -188,14 +212,14 @@ class StatsController {
         def course = Course.get(id)
         if (renderStatus404IfNotFound(course)) return
 
-        def viewsResult = statsService.courseViews(course)
+        def viewsResult = statsService.courseViews(course, getViewsConfiguration())
         if (renderError(viewsResult)) return
 
         render view: "views", model: [
-                node: course,
-                views: viewsResult.result,
+                node       : course,
+                views      : viewsResult.result,
                 breadcrumbs: statsService.getBreadcrumbsToNode(course),
-                endpoint: statsService.generateLink("course", id, "views", "json")
+                endpoint   : statsService.generateLink("course", id, "views", "json")
         ]
     }
 
@@ -206,11 +230,108 @@ class StatsController {
             return
         }
 
-        def weekly = parseParamsBoolean("weekly", false)
-        def cumulative = parseParamsBoolean("cumulative", false)
-        def viewsResult = statsService.courseViews(course, weekly, cumulative)
+        def config = getViewsConfiguration()
+        def viewsResult = statsService.courseViews(course, config)
         if (renderJsonError(viewsResult)) return
         render viewsResult as JSON
+    }
+
+    def viewSubjectViews(Long id) {
+        def subject = Subject.get(id)
+        if (renderStatus404IfNotFound(subject)) return
+
+        def viewsResult = statsService.subjectViews(subject, getViewsConfiguration())
+        if (renderError(viewsResult)) return
+
+        render view: "views", model: [
+                node       : subject,
+                views      : viewsResult.result,
+                breadcrumbs: statsService.getBreadcrumbsToNode(subject),
+                endpoint   : statsService.generateLink("subject", id, "views", "json")
+        ]
+    }
+
+    def jsonSubjectViews(Long id) {
+        def subject = Subject.get(id)
+        if (subject == null) {
+            renderNotFoundJson()
+            return
+        }
+
+        def config = getViewsConfiguration()
+        def viewsResult = statsService.subjectViews(subject, config)
+        if (renderJsonError(viewsResult)) return
+        render viewsResult as JSON
+    }
+
+    def viewVideoViews(Long id) {
+        def exercise = Video.get(id)
+        if (renderStatus404IfNotFound(exercise)) return
+
+        def viewsResult = statsService.exerciseViews(exercise, getViewsConfiguration())
+        if (renderError(viewsResult)) return
+
+        render view: "views", model: [
+                node       : exercise,
+                views      : viewsResult.result,
+                breadcrumbs: statsService.getBreadcrumbsToNode(exercise),
+                endpoint   : statsService.generateLink("video", id, "views", "json")
+        ]
+    }
+
+    def jsonVideoViews(Long id) {
+        def video = Video.get(id)
+        if (video == null) {
+            renderNotFoundJson()
+            return
+        }
+
+        def config = getViewsConfiguration()
+        def viewsResult = statsService.exerciseViews(video, config)
+        if (renderJsonError(viewsResult)) return
+        render viewsResult as JSON
+    }
+
+    def viewWrittenViews(Long id) {
+        def group = Video.get(id)
+        if (renderStatus404IfNotFound(group)) return
+
+        def viewsResult = statsService.exerciseViews(group, getViewsConfiguration())
+        if (renderError(viewsResult)) return
+
+        render view: "views", model: [
+                node       : group,
+                views      : viewsResult.result,
+                breadcrumbs: statsService.getBreadcrumbsToNode(group),
+                endpoint   : statsService.generateLink("written", id, "views", "json")
+        ]
+    }
+
+    def jsonWrittenViews(Long id) {
+        def group = WrittenExerciseGroup.get(id)
+        if (group == null) {
+            renderNotFoundJson()
+            return
+        }
+
+        def config = getViewsConfiguration()
+        def viewsResult = statsService.exerciseViews(group, config)
+        if (renderJsonError(viewsResult)) return
+        render viewsResult as JSON
+    }
+
+    private ViewingStatisticsConfiguration getViewsConfiguration() {
+        def weekly = parseParamsBoolean("weekly", false)
+
+        if (weekly) {
+            return new WeeklyViewingStatisticsConfiguration()
+        } else {
+            def cumulative = parseParamsBoolean("cumulative", false)
+
+            def result = new StandardViewingStatisticsConfiguration()
+            result.cumulative = cumulative
+            return result
+        }
     }
 
     private boolean renderError(ServiceResult s) {

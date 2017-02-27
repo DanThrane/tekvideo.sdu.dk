@@ -1,13 +1,23 @@
 package dk.sdu.tekvideo
 
+import dk.sdu.tekvideo.stats.ExerciseProgress
+import dk.sdu.tekvideo.stats.ExerciseVisit
 import dk.sdu.tekvideo.stats.ProgressBodyCell
 import dk.sdu.tekvideo.stats.ProgressHeadCell
 import dk.sdu.tekvideo.stats.ProgressTable
 import dk.sdu.tekvideo.stats.ProgressionStatus
+import dk.sdu.tekvideo.stats.StandardViewingStatisticsConfiguration
 import dk.sdu.tekvideo.stats.StatsGuestUser
 import dk.sdu.tekvideo.stats.UserProgression
+import dk.sdu.tekvideo.stats.ViewingStatisticsConfiguration
+import dk.sdu.tekvideo.stats.WeeklyViewingStatisticsConfiguration
 import org.apache.http.HttpStatus
 import org.codehaus.groovy.grails.web.mapping.LinkGenerator
+
+import java.text.DateFormat
+import java.time.DayOfWeek
+import java.time.ZoneId
+import java.time.format.TextStyle
 
 import static dk.sdu.tekvideo.ServiceResult.*
 
@@ -151,7 +161,7 @@ class StatsService {
                 def bodyCell = new ProgressBodyCell()
                 bodyCell.status = ProgressionStatus.values()[
                         (userIdx * i + 317) % ProgressionStatus.values().size()]
-                bodyCell.score = (userIdx * i + 1337) %  table.head[i - 1].maxScore
+                bodyCell.score = (userIdx * i + 1337) % table.head[i - 1].maxScore
                 progression.cells.add(bodyCell)
             }
             table.body.add(progression)
@@ -159,19 +169,113 @@ class StatsService {
         return ok(table)
     }
 
-    ServiceResult<ViewingStatistics> courseViews(Course course, boolean weekly = false,
-                                                 boolean cumulative = false) {
+    private ViewingStatistics views(List<Exercise> leaves, ViewingStatisticsConfiguration config) {
+        def progress = ExerciseProgress.findAllByExerciseInList(leaves)
+        def views = ExerciseVisit.findAllByProgressInList(progress)
+
+        if (config instanceof WeeklyViewingStatisticsConfiguration) {
+            return weeklyViewsGraph(views)
+        } else if (config instanceof StandardViewingStatisticsConfiguration) {
+            def timestamps = views.collect { it.timestamp.time }
+            def start = timestamps.min()
+            def end = timestamps.max()
+            return standardViewsGraph(views, start, end, 30, config.cumulative)
+        } else {
+            throw new IllegalArgumentException("Unknown configuration type ${config}")
+        }
+    }
+
+    ServiceResult<ViewingStatistics> courseViews(Course course, ViewingStatisticsConfiguration config) {
         def accessCheck = checkAccess(course)
         if (!accessCheck.success) return accessCheck
 
-        def result = new ViewingStatistics()
-        result.data = []
-        result.labels = []
+        def leaves = Exercise.executeQuery("""
+            SELECT e
+            FROM 
+                CourseSubject cs INNER JOIN cs.subject s, 
+                SubjectExercise se INNER JOIN se.exercise e
+            WHERE 
+                cs.course = :course AND 
+                se.subject = s AND 
+                s.localStatus = :visibleStatus AND
+                e.localStatus = :visibleStatus 
+        """, [
+                course       : course,
+                visibleStatus: NodeStatus.VISIBLE
+        ])
 
-        for (i in 1..30) {
-            result.data.add(i)
-            result.labels.add("Label $i")
-        }
-        return ok(result)
+        return ok(views(leaves, config))
     }
+
+    ServiceResult<ViewingStatistics> subjectViews(Subject subject, ViewingStatisticsConfiguration config) {
+        def accessCheck = checkAccess(subject)
+        if (!accessCheck.success) return accessCheck
+
+        def leaves = Exercise.executeQuery("""
+            SELECT e
+            FROM 
+                SubjectExercise se INNER JOIN se.exercise e
+            WHERE 
+                se.subject = :subject AND 
+                e.localStatus = :visibleStatus 
+        """, [
+                subject      : subject,
+                visibleStatus: NodeStatus.VISIBLE
+        ])
+        return ok(views(leaves, config))
+    }
+
+    ServiceResult<ViewingStatistics> exerciseViews(Exercise exercise, ViewingStatisticsConfiguration config) {
+        def accessCheck = checkAccess(exercise)
+        if (!accessCheck.success) return accessCheck
+        return ok(views([exercise], config))
+    }
+
+    private ViewingStatistics standardViewsGraph(List<ExerciseVisit> visit, long start, long end,
+                                                 int numBuckets, boolean cumulative) {
+
+        def result = new ViewingStatistics()
+        def formatter = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT)
+        result.data = [0] * numBuckets
+        long diff = end - start
+
+        int timePerBucket = diff / numBuckets
+        if (timePerBucket == 0) timePerBucket = 1
+
+        result.labels = (1..numBuckets).collect {
+            formatter.format(new Date((long) start + timePerBucket * it))
+        }
+
+        visit.each {
+            int index = Math.min(
+                    (int) ((it.timestamp.time - start) / timePerBucket),
+                    (int) (numBuckets - 1)
+            )
+            assert (index >= 0 && index < numBuckets)
+            result.data[index]++
+        }
+
+        if (cumulative) {
+            for (int i in 1..<numBuckets) {
+                result.data[i] += result.data[i - 1]
+            }
+        }
+        return result
+    }
+
+    private ViewingStatistics weeklyViewsGraph(List<ExerciseVisit> visit) {
+        def result = new ViewingStatistics()
+        result.data = [0] * 7
+        result.labels = DayOfWeek.values().collect {
+            it.getDisplayName(TextStyle.FULL_STANDALONE, Locale.getDefault())
+        }
+
+        visit.each {
+            int day = it.timestamp.toInstant().atZone(ZoneId.systemDefault()).dayOfWeek.value - 1
+            assert (day >= 0 && day < 7)
+            result.data[day]++
+        }
+        return result
+    }
+
 }
