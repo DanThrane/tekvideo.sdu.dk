@@ -607,4 +607,6 @@ databaseChangeLog = {
 	include file: 'add-written-exercise-stats.groovy'
 
 	include file: 'add-timestamp-to-group-answer.groovy'
+
+	include file: 'add-streak-to-pass.groovy'
 }

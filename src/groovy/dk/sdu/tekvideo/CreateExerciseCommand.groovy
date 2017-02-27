@@ -5,6 +5,7 @@ import grails.validation.Validateable
 @Validateable
 class CreateExerciseCommand {
     String name
+    Integer streakToPass
     String description
     String thumbnailUrl
     Subject subject
@@ -16,6 +17,7 @@ class CreateExerciseCommand {
         name nullable: false
         subject nullable: false
         isEditing nullable: false
+        streakToPass nullable: false
         thumbnailUrl nullable: true, blank: true
         editing nullable: true, validator: { val, obj ->
             if (obj.isEditing) {

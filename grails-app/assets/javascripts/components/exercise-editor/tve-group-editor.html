@@ -82,17 +82,21 @@ a.no-decoration {
 </paper-toolbar>
 <iron-pages selected="[[_pageData.page]]" attr-for-selected="id">
     <div id="home" class="content">
-        <paper-input 
-            label="Navn" 
+        <paper-input
+            label="Navn"
             value="{{name}}">
         </paper-input>
-        <paper-input 
-            label="Thumbnail URL" 
+        <paper-input
+            label="Opgaver i træk for at bestå"
+            value="{{streakToPass}}">
+        </paper-input>
+        <paper-input
+            label="Thumbnail URL"
             value="{{thumbnailUrl}}">
         </paper-input>
-        <paper-textarea 
+        <paper-textarea
             rows="10"
-            label="Beskrivelse" 
+            label="Beskrivelse"
             value="{{description}}">
         </paper-textarea>
 
@@ -110,7 +114,7 @@ a.no-decoration {
         </div>
     </div>
     <div id="edit">
-        <tv-exercise-editor 
+        <tv-exercise-editor
             id="editor"
             identifier="{{currentExercise.identifier}}"
             name="{{currentExercise.name}}"
@@ -170,11 +174,15 @@ Polymer({
         title: {
             type: String,
             value: "Ny opgave"
+        },
+        streakToPass: {
+            type: Number,
+            value: 1
         }
     },
     observers: ["_observePage(_pageData)", "_observePageData(_pageId)"],
     _observePage: function(pageData) {
-        if (pageData.page !== "home" && pageData.page !== "edit" && 
+        if (pageData.page !== "home" && pageData.page !== "edit" &&
                 pageData.page !== "import") {
             document.location = "#/home";
         }

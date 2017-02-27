@@ -79,6 +79,7 @@
         // Prepare and validate data
         data.name = editor.name;
         data.description = editor.description;
+        data.streakToPass = editor.streakToPass;
         data.thumbnailUrl = editor.thumbnailUrl;
         data.exercises = editor.exercises.map(function(e) {
             var identifier = e.identifier;

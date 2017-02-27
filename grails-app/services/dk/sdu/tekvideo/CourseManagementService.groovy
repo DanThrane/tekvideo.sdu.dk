@@ -273,6 +273,7 @@ class CourseManagementService {
 
         exercise.name = command.name
         exercise.description = command.description
+        exercise.streakToPass = command.streakToPass
         exercise.thumbnailUrl = command.thumbnailUrl
 
         def preExistingExercises = new ArrayList<WrittenExercise>(exercise.exercises ?: [])
