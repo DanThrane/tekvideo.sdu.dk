@@ -248,6 +248,12 @@ class StatsEventService implements EventHandler {
     private <T> ServiceResult<T> eventProperty(Event event, String key, Class<T> type) {
         if (event.additionalData.containsKey(key)) {
             def property = event.additionalData.get(key)
+            if (type == Integer || type == Long) {
+                if (Integer.isInstance(property) || Long.isInstance(property)) {
+                    if (type == Integer) return ServiceResult.ok((Integer) property)
+                    if (type == Long) return ServiceResult.ok((Long) property)
+                }
+            }
             if (type.isInstance(property)) {
                 return ServiceResult.ok(type.cast(property))
             } else {
