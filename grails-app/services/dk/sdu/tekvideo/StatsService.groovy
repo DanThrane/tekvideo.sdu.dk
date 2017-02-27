@@ -7,10 +7,15 @@ import dk.sdu.tekvideo.stats.ProgressHeadCell
 import dk.sdu.tekvideo.stats.ProgressTable
 import dk.sdu.tekvideo.stats.ProgressionStatus
 import dk.sdu.tekvideo.stats.StandardViewingStatisticsConfiguration
+import dk.sdu.tekvideo.stats.StatsAuthenticatedUser
 import dk.sdu.tekvideo.stats.StatsGuestUser
+import dk.sdu.tekvideo.stats.StatsUser
 import dk.sdu.tekvideo.stats.UserProgression
+import dk.sdu.tekvideo.stats.VideoAnswer
 import dk.sdu.tekvideo.stats.ViewingStatisticsConfiguration
 import dk.sdu.tekvideo.stats.WeeklyViewingStatisticsConfiguration
+import dk.sdu.tekvideo.stats.WrittenGroupAnswer
+import dk.sdu.tekvideo.stats.WrittenGroupStreak
 import org.apache.http.HttpStatus
 import org.codehaus.groovy.grails.web.mapping.LinkGenerator
 
@@ -24,6 +29,8 @@ import static dk.sdu.tekvideo.ServiceResult.*
 class StatsService {
     def courseManagementService
     def nodeService
+    def urlMappingService
+
     LinkGenerator grailsLinkGenerator
 
     ServiceResult<List<NodeBrowserInformation>> coursesForBrowser() {
@@ -169,6 +176,120 @@ class StatsService {
         return ok(table)
     }
 
+    ServiceResult<ProgressTable> subjectProgress(Subject subject) {
+        def accessCheck = checkAccess(subject)
+        if (!accessCheck.success) return accessCheck
+
+        // Find relevant exercises
+        def leaves = subject.allActiveExercises
+
+        // Progress reports. Will be used to look for answers
+        def progressReports = ExerciseProgress.findAllByExerciseInList(leaves)
+        println(progressReports.collect { "" + it.user + "-" + it.uuid })
+        def reportsByUser = progressReports.groupBy { it.user }
+        def reportsByUuid = progressReports.groupBy { it.uuid }
+
+        // Find all relevant users
+        List<StatsUser> usersWithAnswers = progressReports.collect {
+            if (it.user != null) {
+                return new StatsAuthenticatedUser(user: it.user)
+            } else {
+                return new StatsGuestUser(token: it.uuid)
+            }
+        }
+        List<StatsUser> studentUsers = User.executeQuery("""
+            SELECT cs.student.user
+            FROM CourseStudent cs
+            WHERE cs.course = :course
+        """, [course: subject.course]).collect { new StatsAuthenticatedUser(user: it) }
+
+        List<StatsUser> allStatsUsers = usersWithAnswers + studentUsers
+
+        // Find relevant information from these reports. For example answers and visits
+        def writtenStreaks = WrittenGroupStreak.findAllByProgressInList(progressReports)
+                .groupBy { it.progress }
+        def videoAnswers = VideoAnswer.findAllByProgressInList(progressReports)
+                .groupBy { it.progress }
+       def visits = ExerciseVisit.findAllByProgressInList(progressReports).groupBy { it.progress }
+
+        // Create ProgressTable
+        def table = new ProgressTable()
+
+        // Figure out the maximum amount of points for each exercise
+        Map<Exercise, Integer> maxScores = leaves.collectEntries {
+            if (it instanceof WrittenExerciseGroup) {
+                return [(it): it.streakToPass]
+            } else if (it instanceof Video) {
+                [(it): 0]
+            } else {
+                log.warn("Unknown exercise type! ${it.class.simpleName}")
+                [(it): 0]
+            }
+        }
+
+        // Add header cells to table
+        table.head = leaves.collect {
+            new ProgressHeadCell(
+                    title: it.name,
+                    url: urlMappingService.generateLinkToExercise(it),
+                    node: it,
+                    maxScore: maxScores[it]
+            )
+        }
+
+        // Award points to every user
+        for (user in allStatsUsers) {
+            def row = new UserProgression()
+            row.user = user
+
+            def progressReport =
+                    user instanceof StatsGuestUser ? reportsByUuid[user.token]?.first() :
+                    user instanceof StatsAuthenticatedUser ? reportsByUser[user.user]?.first() :
+                    null
+
+            def visitEventsByExercise = (visits[progressReport] ?: []).groupBy { it.progress.exercise.id }
+
+            for (exercise in leaves) {
+                def cell = new ProgressBodyCell()
+                cell.score = 0
+                cell.status = ProgressionStatus.NOT_STARTED
+
+                def maxScore = maxScores[exercise]
+                if (progressReport != null) {
+                    // Calculate score
+                    if (exercise instanceof WrittenExerciseGroup) {
+                        def streak = writtenStreaks[progressReport]?.first()
+                        if (streak != null) {
+                            cell.score = streak.longestStreak
+                        }
+                    } else if (exercise instanceof Video) {
+                        // TODO NYI
+                    } else {
+                        log.warn("Unknown exercise type! ${exercise.class.simpleName}")
+                    }
+
+                    // Calculate status
+                    def amountOfVisits = visitEventsByExercise[exercise.id]?.size() ?: 0
+                    println("For user ${user}: got $amountOfVisits for $exercise")
+                    if (amountOfVisits > 0) {
+                        if (maxScore != 0 && cell.score / maxScore > 0.45) {
+                            cell.status = ProgressionStatus.WORKING_ON_IT
+                        } else if (cell.score >= maxScore) {
+                            cell.status = ProgressionStatus.PERFECT
+                        } else {
+                            cell.status = ProgressionStatus.STARTED_LITTLE_PROGRESS
+                        }
+                    }
+                }
+                row.cells.add(cell)
+            }
+
+            table.body.add(row)
+        }
+
+        return ok(table)
+    }
+
     private ViewingStatistics views(List<Exercise> leaves, ViewingStatisticsConfiguration config) {
         def progress = ExerciseProgress.findAllByExerciseInList(leaves)
         def views = ExerciseVisit.findAllByProgressInList(progress)
@@ -185,11 +306,8 @@ class StatsService {
         }
     }
 
-    ServiceResult<ViewingStatistics> courseViews(Course course, ViewingStatisticsConfiguration config) {
-        def accessCheck = checkAccess(course)
-        if (!accessCheck.success) return accessCheck
-
-        def leaves = Exercise.executeQuery("""
+    private List<Exercise> courseLeaves(Course course) {
+        Exercise.executeQuery("""
             SELECT e
             FROM 
                 CourseSubject cs INNER JOIN cs.subject s, 
@@ -203,7 +321,13 @@ class StatsService {
                 course       : course,
                 visibleStatus: NodeStatus.VISIBLE
         ])
+    }
 
+    ServiceResult<ViewingStatistics> courseViews(Course course, ViewingStatisticsConfiguration config) {
+        def accessCheck = checkAccess(course)
+        if (!accessCheck.success) return accessCheck
+
+        def leaves = courseLeaves(course)
         return ok(views(leaves, config))
     }
 

@@ -205,7 +205,14 @@ class StatsController {
         def subject = Subject.get(id)
         if (renderStatus404IfNotFound(subject)) return
 
-        throw new IllegalStateException("Not yet implemented") // TODO NYI
+        def progressResult = statsService.subjectProgress(subject)
+        if (renderError(progressResult)) return
+
+        render view: "node_progress", model: [
+                node       : subject,
+                breadcrumbs: statsService.getBreadcrumbsToNode(subject),
+                table      : progressResult.result
+        ]
     }
 
     def viewCourseViews(Long id) {

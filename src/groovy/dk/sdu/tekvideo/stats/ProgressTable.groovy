@@ -1,7 +1,7 @@
 package dk.sdu.tekvideo.stats
 
 import dk.sdu.tekvideo.User
-import grails.util.Pair
+import dk.sdu.tekvideo.Node
 
 class ProgressTable {
     List<ProgressHeadCell> head = []
@@ -27,11 +27,11 @@ class StatsGuestUser implements StatsUser {
 
     @Override
     String toString() {
-        return "Gæst#${token}"
+        return token
     }
 }
 
-class StatusAuthenticatedUser implements StatsUser {
+class StatsAuthenticatedUser implements StatsUser {
     User user
 
     @Override

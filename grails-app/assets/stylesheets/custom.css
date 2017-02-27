@@ -662,3 +662,19 @@ label {
     height: 700px;
     float: left;
 }
+
+.fixed-table-body .NOT_STARTED {
+    background-color: hsl(0, 90%, 60%);
+}
+
+.fixed-table-body .STARTED_LITTLE_PROGRESS {
+    background-color: hsl(30, 90%, 60%);
+}
+
+.fixed-table-body .WORKING_ON_IT {
+    background-color: hsl(60, 90%, 60%);
+}
+
+.fixed-table-body .PERFECT {
+    background-color: hsl(120, 90%, 60%);
+}
