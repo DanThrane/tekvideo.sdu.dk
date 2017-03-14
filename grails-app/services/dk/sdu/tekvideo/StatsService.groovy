@@ -14,7 +14,6 @@ import dk.sdu.tekvideo.stats.UserProgression
 import dk.sdu.tekvideo.stats.VideoAnswer
 import dk.sdu.tekvideo.stats.ViewingStatisticsConfiguration
 import dk.sdu.tekvideo.stats.WeeklyViewingStatisticsConfiguration
-import dk.sdu.tekvideo.stats.WrittenGroupAnswer
 import dk.sdu.tekvideo.stats.WrittenGroupStreak
 import org.apache.http.HttpStatus
 import org.codehaus.groovy.grails.web.mapping.LinkGenerator
