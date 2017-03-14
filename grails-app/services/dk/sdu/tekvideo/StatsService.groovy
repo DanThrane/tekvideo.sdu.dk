@@ -298,8 +298,8 @@ class StatsService {
             return weeklyViewsGraph(views)
         } else if (config instanceof StandardViewingStatisticsConfiguration) {
             def timestamps = views.collect { it.timestamp.time }
-            def start = timestamps.min()
-            def end = timestamps.max()
+            long start = timestamps.min() ?: 0
+            long end = timestamps.max() ?: 0
             return standardViewsGraph(views, start, end, 30, config.cumulative)
         } else {
             throw new IllegalArgumentException("Unknown configuration type ${config}")
