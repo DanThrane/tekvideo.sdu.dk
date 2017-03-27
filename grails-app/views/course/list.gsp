@@ -7,7 +7,7 @@
 
     <g:render template="/polymer/includePolymer" />
 
-    <link rel="import" href="${createLink(absolute:true, uri:'/assets/')}/components/tv-browser.html">
+    <link rel="import" href="${createLink(absolute:false, uri:'/static/')}/components/tv-browser.html">
 
 </head>
 

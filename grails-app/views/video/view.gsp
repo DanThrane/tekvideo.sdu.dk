@@ -42,7 +42,7 @@
 
 <g:content key="content-below-the-fold">
     <exercise:comments exercise="${video}" />
-    <g:render template="/exercises/reportError" model="${[baseUrl: createLink(absolute:true, uri: '/')]}" />
+    <g:render template="/exercises/reportError" model="${[baseUrl: createLink(absolute:false, uri: '/')]}" />
 </g:content>
 
 

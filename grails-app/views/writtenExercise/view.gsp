@@ -9,7 +9,7 @@
     <g:render template="/polymer/includePolymer"/>
 
     <link rel="import"
-          href="${createLink(absolute: true, uri: '/assets/')}/components/exercise-editor/tve-group-renderer.html">
+          href="${createLink(absolute: false, uri: '/static/')}/components/exercise-editor/tve-group-renderer.html">
     <style>
     .polymer {
         font-family: 'Roboto', 'Noto', sans-serif;
@@ -64,7 +64,7 @@
 
 <g:content key="content-below-the-fold">
     <exercise:comments exercise="${exercise}"/>
-    <g:render template="/exercises/reportError" model="${[baseUrl: createLink(absolute:true, uri: '/')]}" />
+    <g:render template="/exercises/reportError" model="${[baseUrl: createLink(absolute:false, uri: '/')]}" />
 </g:content>
 <script>
     var renderer = document.getElementById('renderer');

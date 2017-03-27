@@ -166,7 +166,7 @@
 </g:content>
 
 <script>
-    var baseUrl = "${createLink(absolute:true, uri:'/')}";
+    var baseUrl = "${createLink(absolute:false, uri:'/')}";
 
     $(function () {
         var list = new ListManipulator(".video", ".video-up", ".video-down");
@@ -180,7 +180,7 @@
             return {order: order, subject: ${subject.id}};
         });
 
-        var tree = new ManagementTreeView("#tree-container", "${createLink(absolute:true, uri:'/')}");
+        var tree = new ManagementTreeView("#tree-container", "${createLink(absolute:false, uri:'/')}");
         tree.init();
     });
 </script>

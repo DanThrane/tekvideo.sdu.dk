@@ -1,13 +1,13 @@
-//= require jquery
-//= require bootstrap
-//= require lib/popcorn
-//= require lib/underscore
-//= require lib/mathquill.min
-//= require lib/kas
-//= require lib/tex-wrangler
-//= require events
-//= require interactivevideos
-//= require cardstack
+// require jquery
+// require bootstrap
+// require lib/popcorn
+// require lib/underscore
+// require lib/mathquill.min
+// require lib/kas
+// require lib/tex-wrangler
+// require events
+// require interactivevideos
+// require cardstack
 
 var Util = {};
 Util.postJson = function(url, data, callbacks) {

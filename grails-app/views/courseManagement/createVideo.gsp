@@ -366,7 +366,7 @@
 <g:content key="layout-script">
     <asset:javascript src="video-creator.js"/>
     <script>
-        var baseUrl = "${createLink(absolute:true, uri:'/')}";
+        var baseUrl = "${createLink(absolute:false, uri:'/')}";
 
         $(document).ready(function () {
             Editor.init();
@@ -390,7 +390,7 @@
             </g:if>
             Editor.setVideoInfoEndpoint("<g:createLink controller="videoHost" action="info" />");
 
-            var tree = new ManagementTreeView("#tree-container", "${createLink(absolute:true, uri:'/')}");
+            var tree = new ManagementTreeView("#tree-container", "${createLink(absolute:false, uri:'/')}");
             tree.init();
 
             AjaxUtil.registerJSONForm(

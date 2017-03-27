@@ -7,7 +7,7 @@
 
     <g:render template="/polymer/includePolymer" />
 
-    <link rel="import" href="${createLink(absolute:true, uri:'/assets/')}/components/exercise-editor/tve-group-editor.html">
+    <link rel="import" href="${createLink(absolute:false, uri:'/static/')}/components/exercise-editor/tve-group-editor.html">
     <style>
     .polymer {
         font-family: 'Roboto', 'Noto', sans-serif;
