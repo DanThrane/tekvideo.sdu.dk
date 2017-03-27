@@ -37,12 +37,13 @@
 
 <div class="embed-responsive embed-responsive-16by9">
     <div class="wrapper" id="wrapper" style="z-index: 20"></div>
+
     <div id="player"></div>
 </div>
 
 <g:content key="content-below-the-fold">
-    <exercise:comments exercise="${video}" />
-    <g:render template="/exercises/reportError" model="${[baseUrl: createLink(absolute:false, uri: '/')]}" />
+    <exercise:comments exercise="${video}"/>
+    <g:render template="/exercises/reportError" model="${[baseUrl: createLink(absolute: false, uri: '/')]}"/>
 </g:content>
 
 
@@ -73,27 +74,30 @@
     </div>
 </g:content>
 
-<script type="text/javascript">
-    $(document).ready(function () {
-        var player = new InteractiveVideoPlayer();
-        player.playerElement = $("#player");
-        player.wrapperElement = $("#wrapper");
-        player.navigationElement = $("#videoNavigation");
-        player.checkButton = $("#checkAnswers");
+<g:content key="layout-script">
+    <asset:javascript src="interactive_app.js"/>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            var player = new InteractiveVideoPlayer();
+            player.playerElement = $("#player");
+            player.wrapperElement = $("#wrapper");
+            player.navigationElement = $("#videoNavigation");
+            player.checkButton = $("#checkAnswers");
 
-        player.startPlayer("${raw(video.youtubeId)}",
+            player.startPlayer("${raw(video.youtubeId)}",
                 ${video.videoType}
                 <g:if test="${video.timelineJson}">
                 , ${raw(video.timelineJson)}
                 </g:if>);
 
-        %{-- Used by the event framework to determine the origin of the event --}%
-        events.setMetaData({
-            "exercise": ${video.id}
-        });
+            %{-- Used by the event framework to determine the origin of the event --}%
+            events.setMetaData({
+                "exercise": ${video.id}
+            });
 
-        events.emit({"kind": "VISIT_EXERCISE"}, true);
-    });
-</script>
+            events.emit({"kind": "VISIT_EXERCISE"}, true);
+        });
+    </script>
+</g:content>
 </body>
 </html>

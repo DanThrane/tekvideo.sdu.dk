@@ -4,6 +4,7 @@
 <head>
     <meta name="layout" content="main_fluid">
     <title>Kontoadministration</title>
+    <asset:javascript src="cardstack.js" />
 </head>
 
 <body>

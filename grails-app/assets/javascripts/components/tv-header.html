@@ -1,0 +1,53 @@
+<link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="../bower_components/app-layout/app-header/app-header.html">
+<link rel="import" href="../../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
+<link rel="import" href="../bower_components/app-layout/app-toolbar/app-toolbar.html">
+<link rel="import" href="../bower_components/iron-icons/iron-icons.html">
+<link rel="import" href="../bower_components/iron-icons/social-icons.html">
+<link rel="import" href="../bower_components/paper-icon-button/paper-icon-button.html">
+
+<dom-module id="tv-header">
+
+<template>
+<style include="iron-flex"></style>
+
+<style>
+:host {
+    display: block;
+}
+
+app-toolbar {
+    background: white;
+    color: black;
+}
+</style>
+
+<app-header fixed shadow id="header">
+    <app-toolbar>
+        <div main-title>App name</div>
+        <div class="flex"></div>
+        <nav>
+            <a href="#">Kurser</a>
+            <a href="#">Test</a>
+            <a href="#">Test 2</a>
+            <a href="#">Test 3</a>
+        </nav>
+        <paper-icon-button icon="social:notifications"></paper-icon-button>
+        <paper-icon-button icon="social:person"></paper-icon-button>
+    </app-toolbar>
+</app-header>
+
+</template>
+
+<script>
+Polymer({
+    is: 'tv-header',
+    properties: {
+        
+    },
+    ready: function() {
+        this.$.header.scrollTarget = document;
+    }
+});
+</script>
+</dom-module>

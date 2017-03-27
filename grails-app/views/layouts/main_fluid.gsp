@@ -4,11 +4,11 @@
 <head>
     <meta charset="UTF-8">
     <title>TekVideo | <g:layoutTitle default="Title"/></title>
-    <g:layoutHead/>
     <asset:stylesheet src="application.css"/>
     <asset:javascript src="application.js"/>
     <fa:require/>
     <link rel="shortcut icon" href="${asset.assetPath(src: "favicon.ico")}"/>
+    <g:layoutHead/>
 </head>
 
 <body>

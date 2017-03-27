@@ -8,7 +8,7 @@
 
     <g:render template="/polymer/includePolymer" />
 
-    <link rel="import" href="${createLink(absolute:false, uri:'/static/')}/components/tekvideo-exercise-card.html">
+    <link rel="import" href="${createLink(absolute:false, uri:'/static')}/components/tekvideo-exercise-card.html">
     <style>
         .polymer {
             font-family: 'Roboto', 'Noto', sans-serif;

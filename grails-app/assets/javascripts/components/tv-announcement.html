@@ -1,0 +1,91 @@
+<link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="../bower_components/paper-card/paper-card.html">
+<link rel="import" href="../bower_components/iron-image/iron-image.html">
+
+<dom-module id="tv-announcement">
+
+<template>
+<style include="iron-flex"></style>
+
+<style>
+:host {
+    display: block;
+}
+
+paper-card {
+    width: 100%;
+}
+
+.card-actions > * {
+    float: right;
+
+}
+
+.action {
+    color: var(--google-blue-500); 
+}
+
+.figure {
+    width: 150px;
+    height: 200px;
+    padding-right: 20px;
+}
+
+a {
+    text-decoration: none;
+}
+
+.hide {
+    display: none;
+}
+</style>
+
+<div id="container">
+    <paper-card heading="{{title}}" alt="{{title}}">
+      <div class="card-content">
+        <div class="layout horizontal">
+            <iron-image src="{{figure}}" class="figure"></iron-image>
+            <div class="flex">
+                <content></content>
+            </div>
+        </div>
+        
+      </div>
+      <div class="card-actions">
+        <a href$="{{actionUrl}}">
+            <paper-button class="action">{{action}}</paper-button>
+        </a>
+        <paper-button on-transitionend="close">Luk</paper-button>
+      </div>
+    </paper-card>
+</div>
+
+</template>
+
+<script>
+Polymer({
+    is: 'tv-announcement',
+    properties: {
+        title: {
+            type: String,
+            value: "Titel"
+        },
+        action: {
+            type: String,
+            value: "Action"
+        },
+        actionUrl: {
+            type: String,
+            value: "http://google.dk"
+        },
+        figure: {
+            type: String,
+            value: "http://placekitten.com/150/200"
+        }
+    },
+    close: function(e) {
+        this.$.container.classList.add("hide");
+    }
+});
+</script>
+</dom-module>
