@@ -1,13 +1,8 @@
 package tekvideo
 
 import dk.sdu.tekvideo.Event
-import dk.sdu.tekvideo.Exercise
-import dk.sdu.tekvideo.StatsEventService
-import dk.sdu.tekvideo.User
-import dk.sdu.tekvideo.Video
-import dk.sdu.tekvideo.WrittenExercise
-import dk.sdu.tekvideo.WrittenExerciseGroup
 import dk.sdu.tekvideo.data.CourseData
+import dk.sdu.tekvideo.data.EventData
 import dk.sdu.tekvideo.data.SubjectData
 import dk.sdu.tekvideo.data.UserData
 import dk.sdu.tekvideo.data.VideoData
@@ -32,11 +27,11 @@ class StatsEventServiceIntegrationSpec extends Specification {
         def subExercise = group.exercises[0]
 
         and: "some valid events"
-        def event1 = answerQuestionEvent(video, true)
-        def event2 = visitExerciseEvent(video)
-        def event3 = visitExerciseEvent(group)
-        def event4 = answerWrittenExercise(group, subExercise, true)
-        def event5 = visitWrittenExercise(group, subExercise)
+        def event1 = EventData.answerQuestionEvent(video, true)
+        def event2 = EventData.visitExerciseEvent(video)
+        def event3 = EventData.visitExerciseEvent(group)
+        def event4 = EventData.answerWrittenExercise(group, subExercise, true)
+        def event5 = EventData.visitWrittenExercise(group, subExercise)
 
         and: "a bogus event"
         def bogusEvent = new Event()
@@ -82,8 +77,8 @@ class StatsEventServiceIntegrationSpec extends Specification {
         def subExercise = group.exercises[0]
 
         and: "a sample event"
-        def correctEvent = answerWrittenExercise(group, subExercise, true)
-        def incorrectEvent = answerWrittenExercise(group, subExercise, false)
+        def correctEvent = EventData.answerWrittenExercise(group, subExercise, true)
+        def incorrectEvent = EventData.answerWrittenExercise(group, subExercise, false)
         incorrectEvent.uuid = correctEvent.uuid
         incorrectEvent.user = correctEvent.user
 
@@ -132,7 +127,7 @@ class StatsEventServiceIntegrationSpec extends Specification {
         def video = VideoData.buildTestVideo()
 
         and: "a visit event"
-        def event = visitExerciseEvent(video)
+        def event = EventData.visitExerciseEvent(video)
 
         when: "we haven't done anything"
         then: "there is no exercise progress"
@@ -160,8 +155,8 @@ class StatsEventServiceIntegrationSpec extends Specification {
         def video = VideoData.buildTestVideo()
 
         and: "some events"
-        def correctAnswer = answerQuestionEvent(video, true)
-        def incorrectAnswer = answerQuestionEvent(video, false)
+        def correctAnswer = EventData.answerQuestionEvent(video, true)
+        def incorrectAnswer = EventData.answerQuestionEvent(video, false)
         incorrectAnswer.uuid = correctAnswer.uuid
         incorrectAnswer.user = correctAnswer.user
 
@@ -196,7 +191,7 @@ class StatsEventServiceIntegrationSpec extends Specification {
         def subExercise = group.exercises[0]
 
         and: "a visit event"
-        def event = visitWrittenExercise(group, subExercise)
+        def event = EventData.visitWrittenExercise(group, subExercise)
 
         when: "we haven't visited anything"
         then: "there is no progress"
@@ -218,62 +213,4 @@ class StatsEventServiceIntegrationSpec extends Specification {
         then: "we have more visits"
         WrittenExerciseVisit.countByProgressAndSubExercise(progress, subExercise) == (Integer) 31
     }
-
-    private Event answerQuestionEvent(Video video, boolean correct, User user = null) {
-        def event = new Event()
-        event.kind = StatsEventService.EVENT_ANSWER_QUESTION
-        event.timestamp = System.currentTimeMillis()
-        event.user = user
-        event.uuid = UUID.randomUUID().toString()
-        event.additionalData = [
-                exercise: video.id,
-                subject : 0,
-                question: 0,
-                correct : correct,
-                details : [[answer: "foo", correct: correct, field: 0]]
-        ]
-        return event
-    }
-
-    private Event visitExerciseEvent(Exercise exercise, User user = null) {
-        def event = new Event()
-        event.kind = StatsEventService.EVENT_VISIT_EXERCISE
-        event.timestamp = System.currentTimeMillis()
-        event.user = user
-        event.uuid = UUID.randomUUID().toString()
-        event.additionalData = [
-                exercise: exercise.id
-        ]
-        return event
-    }
-
-    private Event answerWrittenExercise(WrittenExerciseGroup group, WrittenExercise subExercise,
-                                        boolean correct, User user = null) {
-        def event = new Event()
-        event.kind = StatsEventService.EVENT_ANSWER_WRITTEN_EXERCISE
-        event.timestamp = System.currentTimeMillis()
-        event.user = user
-        event.uuid = UUID.randomUUID().toString()
-        event.additionalData = [
-                passes: correct,
-                exercise: group.id,
-                subExercise: subExercise.id
-        ]
-        return event
-    }
-
-    private Event visitWrittenExercise(WrittenExerciseGroup group, WrittenExercise subExercise,
-                                       User user = null) {
-        def event = new Event()
-        event.kind = StatsEventService.EVENT_VISIT_WRITTEN_EXERCISE
-        event.timestamp = System.currentTimeMillis()
-        event.user = user
-        event.uuid = UUID.randomUUID().toString()
-        event.additionalData = [
-                exercise: group.id,
-                subExercise: subExercise.id
-        ]
-        return event
-    }
-
 }

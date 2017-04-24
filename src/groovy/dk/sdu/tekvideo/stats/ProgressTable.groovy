@@ -13,6 +13,11 @@ class ProgressHeadCell {
     String url
     Node node
     Long maxScore
+
+    @Override
+    String toString() {
+        return "$title [Node=$node, url=$url, maxScore=$maxScore]"
+    }
 }
 
 class UserProgression {
@@ -25,6 +30,21 @@ interface StatsUser {}
 class StatsGuestUser implements StatsUser {
     String token
 
+    boolean equals(o) {
+        if (this.is(o)) return true
+        if (getClass() != o.class) return false
+
+        StatsGuestUser that = (StatsGuestUser) o
+
+        if (token != that.token) return false
+
+        return true
+    }
+
+    int hashCode() {
+        return token.hashCode()
+    }
+
     @Override
     String toString() {
         return token
@@ -33,6 +53,21 @@ class StatsGuestUser implements StatsUser {
 
 class StatsAuthenticatedUser implements StatsUser {
     User user
+
+    boolean equals(o) {
+        if (this.is(o)) return true
+        if (getClass() != o.class) return false
+
+        StatsAuthenticatedUser that = (StatsAuthenticatedUser) o
+
+        if (user != that.user) return false
+
+        return true
+    }
+
+    int hashCode() {
+        return user.hashCode()
+    }
 
     @Override
     String toString() {
@@ -43,6 +78,11 @@ class StatsAuthenticatedUser implements StatsUser {
 class ProgressBodyCell {
     Long score
     ProgressionStatus status
+
+    @Override
+    String toString() {
+        return "$score [$status]"
+    }
 }
 
 enum ProgressionStatus {

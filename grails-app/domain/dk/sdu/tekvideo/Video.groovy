@@ -39,4 +39,8 @@ class Video extends Exercise {
         SubjectExercise.findByExercise(this).subject
     }
 
+    @Override
+    int getScoreToPass() {
+        return 1
+    }
 }

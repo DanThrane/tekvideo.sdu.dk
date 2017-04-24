@@ -17,4 +17,9 @@ class WrittenExerciseGroup extends Exercise {
     Node getParent() {
         SubjectExercise.findByExercise(this)?.subject
     }
+
+    @Override
+    int getScoreToPass() {
+        return streakToPass
+    }
 }
