@@ -11,7 +11,6 @@ import dk.sdu.tekvideo.stats.StatsAuthenticatedUser
 import dk.sdu.tekvideo.stats.StatsGuestUser
 import dk.sdu.tekvideo.stats.StatsUser
 import dk.sdu.tekvideo.stats.UserProgression
-import dk.sdu.tekvideo.stats.VideoAnswer
 import dk.sdu.tekvideo.stats.ViewingStatisticsConfiguration
 import dk.sdu.tekvideo.stats.WeeklyViewingStatisticsConfiguration
 import dk.sdu.tekvideo.stats.WrittenGroupStreak
@@ -91,11 +90,11 @@ class StatsService {
         grailsLinkGenerator.link(attrs)
     }
 
-    String linkToNode(Node node) {
-        if (node instanceof Course) return linkToCourse(node)
-        if (node instanceof Subject) return linkToSubject(node)
-        if (node instanceof Video) return linkToVideo(node)
-        if (node instanceof WrittenExerciseGroup) return linkToWrittenExercise(node)
+    String linkToNode(Node node, String action = null, String format = null) {
+        if (node instanceof Course) return linkToCourse(node, action, format)
+        if (node instanceof Subject) return linkToSubject(node, action, format)
+        if (node instanceof Video) return linkToVideo(node, action, format)
+        if (node instanceof WrittenExerciseGroup) return linkToWrittenExercise(node, action, format)
         else throw new IllegalArgumentException("Unknown node type: ${node.class.name}")
     }
 
@@ -103,20 +102,20 @@ class StatsService {
         return generateLink(null, null)
     }
 
-    String linkToCourse(Course course) {
-        generateLink("course", course.id)
+    String linkToCourse(Course course, String action = null, String format = null) {
+        generateLink("course", course.id, action, format)
     }
 
-    String linkToSubject(Subject subject) {
-        generateLink("subject", subject.id)
+    String linkToSubject(Subject subject, String action = null, String format = null) {
+        generateLink("subject", subject.id, action, format)
     }
 
-    String linkToVideo(Video video) {
-        generateLink("video", video.id)
+    String linkToVideo(Video video, String action = null, String format = null) {
+        generateLink("video", video.id, action, format)
     }
 
-    String linkToWrittenExercise(WrittenExerciseGroup group) {
-        generateLink("written", group.id)
+    String linkToWrittenExercise(WrittenExerciseGroup group, String action = null, String format = null) {
+        generateLink("written", group.id, action, format)
     }
 
     List<SimpleCrumb> getBreadcrumbsToNode(Node node) {
@@ -283,8 +282,8 @@ class StatsService {
             return weeklyViewsGraph(views)
         } else if (config instanceof StandardViewingStatisticsConfiguration) {
             def timestamps = views.collect { it.timestamp.time }
-            long start = timestamps.min() ?: 0
-            long end = timestamps.max() ?: 0
+            long start = timestamps.min() ?: System.currentTimeMillis()
+            long end = timestamps.max() ?: start
             return standardViewsGraph(views, start, end, 30, config.cumulative)
         } else {
             throw new IllegalArgumentException("Unknown configuration type ${config}")
@@ -349,7 +348,7 @@ class StatsService {
         long diff = end - start
 
         int timePerBucket = diff / numBuckets
-        if (timePerBucket == 0) timePerBucket = 1
+        if (timePerBucket == 0) timePerBucket = 1000 * 60 * 60 * 24 // Ensure that labels are unique
 
         result.labels = (1..numBuckets).collect {
             formatter.format(new Date((long) start + timePerBucket * it))

@@ -13,14 +13,24 @@
 
     <body>
 
-    <twbs:row>
-        <twbs:column class="layout horizontal wrap stat-card-container">
-            <sdu:card class="stat-card">
-                <h3>Studerende</h3>
-                Lorem ipsum dolor sit amet, consectetur adipisicing elit. Assumenda cupiditate dolorum explicabo laudantium minus quam quasi quidem. Consequatur dicta dolorem ipsam porro quo recusandae, ut. Eaque itaque omnis rem repellat.
-            </sdu:card>
-        </twbs:column>
-    </twbs:row>
+    <g:if test="${node != null && stats?.size() > 0}">
+        <twbs:row>
+            <twbs:column>
+                <twbs:pageHeader><h4>Statistikker</h4></twbs:pageHeader>
+                <i>Vælg en statistik for mere information</i>
+            </twbs:column>
+        </twbs:row>
+
+        <twbs:row>
+            <twbs:column class="layout horizontal wrap stat-card-container">
+                <g:each in="${stats}" var="stat">
+                    <twbs:linkButton url="${stat.url}" style="${ButtonStyle.LINK}">
+                        <fa:icon icon="${stat.icon}" /> ${stat.name}
+                    </twbs:linkButton>
+                </g:each>
+            </twbs:column>
+        </twbs:row>
+    </g:if>
 
     <twbs:row>
         <twbs:column>

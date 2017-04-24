@@ -135,7 +135,8 @@ class StatsController {
 
         [
                 items      : browser.result,
-                breadcrumbs: statsService.getBreadcrumbsToNode(null)
+                breadcrumbs: statsService.getBreadcrumbsToNode(null),
+                stats      : []
         ]
     }
 
@@ -148,7 +149,12 @@ class StatsController {
         render view: "home", model: [
                 node       : course,
                 items      : browser.result,
-                breadcrumbs: statsService.getBreadcrumbsToNode(course)
+                breadcrumbs: statsService.getBreadcrumbsToNode(course),
+                stats      : [
+                        studentsButton(course),
+                        viewsButton(course),
+                        progressButton(course)
+                ]
         ]
     }
 
@@ -161,7 +167,11 @@ class StatsController {
         render view: "home", model: [
                 node       : subject,
                 items      : browser.result,
-                breadcrumbs: statsService.getBreadcrumbsToNode(subject)
+                breadcrumbs: statsService.getBreadcrumbsToNode(subject),
+                stats      : [
+                        viewsButton(subject),
+                        progressButton(subject)
+                ]
         ]
     }
 
@@ -387,5 +397,17 @@ class StatsController {
         } else {
             return Boolean.parseBoolean(params.get(key) as String) ?: defaultValue
         }
+    }
+
+    private def studentsButton(Node node) {
+        [name: "Studerende", icon: FaIcon.GRADUATION_CAP, url: statsService.linkToNode(node, "students")]
+    }
+
+    private def viewsButton(Node node) {
+        [name: "Visninger", icon: FaIcon.BAR_CHART, url: statsService.linkToNode(node, "views")]
+    }
+
+    private def progressButton(Node node) {
+        [name: "Fremskridt", icon: FaIcon.PENCIL, url: statsService.linkToNode(node, "progress")]
     }
 }
