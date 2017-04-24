@@ -195,7 +195,7 @@ class StatsService {
         """, [course: course]).collect { new StatsAuthenticatedUser(user: it) }
 
         // Use a set to ensure we get no duplicates from student users with answers
-        Set<StatsUser> allStatsUsers = new HashSet<>(usersWithAnswers)
+        Set<StatsUser> allStatsUsers = new TreeSet<>(usersWithAnswers)
         allStatsUsers.addAll(studentUsers)
 
         // Find relevant information from these reports. For example answers and visits

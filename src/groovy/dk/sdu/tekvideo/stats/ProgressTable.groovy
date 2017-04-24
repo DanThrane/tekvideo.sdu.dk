@@ -25,7 +25,7 @@ class UserProgression {
     List<ProgressBodyCell> cells = []
 }
 
-interface StatsUser {}
+interface StatsUser extends Comparable<StatsUser> {}
 
 class StatsGuestUser implements StatsUser {
     String token
@@ -48,6 +48,15 @@ class StatsGuestUser implements StatsUser {
     @Override
     String toString() {
         return token
+    }
+
+    @Override
+    int compareTo(StatsUser o) {
+        if (o == null) return -1
+        if (!(o instanceof StatsGuestUser)) {
+            return 1
+        }
+        return token.compareToIgnoreCase(o.token)
     }
 }
 
@@ -72,6 +81,15 @@ class StatsAuthenticatedUser implements StatsUser {
     @Override
     String toString() {
         return user.username
+    }
+
+    @Override
+    int compareTo(StatsUser o) {
+        if (o == null) return -1
+        if (!(o instanceof StatsAuthenticatedUser)) {
+            return -1
+        }
+        return user.username.compareToIgnoreCase(o.user.username)
     }
 }
 

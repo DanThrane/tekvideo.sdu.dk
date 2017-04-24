@@ -176,11 +176,31 @@ class StatsController {
     }
 
     def viewVideo(Long id) {
-        render text: "viewVideo(${id})"
+        def video = Video.get(id)
+        if (renderStatus404IfNotFound(video)) return
+
+        render view: "home", model: [
+                node       : video,
+                items      : null,
+                breadcrumbs: statsService.getBreadcrumbsToNode(video),
+                stats      : [
+                        viewsButton(video)
+                ]
+        ]
     }
 
     def viewWrittenExerciseGroup(Long id) {
-        render text: "viewWrittenExerciseGroup(${id})"
+        def written = WrittenExerciseGroup.get(id)
+        if (renderStatus404IfNotFound(written)) return
+
+        render view: "home", model: [
+                node       : written,
+                items      : null,
+                breadcrumbs: statsService.getBreadcrumbsToNode(written),
+                stats      : [
+                        viewsButton(written)
+                ]
+        ]
     }
 
     def viewCourseStudents(Long id) {
@@ -310,7 +330,7 @@ class StatsController {
     }
 
     def viewWrittenViews(Long id) {
-        def group = Video.get(id)
+        def group = WrittenExerciseGroup.get(id)
         if (renderStatus404IfNotFound(group)) return
 
         def viewsResult = statsService.exerciseViews(group, getViewsConfiguration())

@@ -32,11 +32,13 @@
         </twbs:row>
     </g:if>
 
-    <twbs:row>
-        <twbs:column>
-            <tv:browser items="${items}"/>
-        </twbs:column>
-    </twbs:row>
+    <g:if test="${items != null}">
+        <twbs:row>
+            <twbs:column>
+                <tv:browser items="${items}"/>
+            </twbs:column>
+        </twbs:row>
+    </g:if>
 
     </body>
     </html>
