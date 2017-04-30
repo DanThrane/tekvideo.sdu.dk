@@ -1,4 +1,4 @@
-import dk.sdu.tekvideo.events.AnswerQuestionEvent
+import dk.sdu.tekvideo.events.*
 
 databaseChangeLog = {
 

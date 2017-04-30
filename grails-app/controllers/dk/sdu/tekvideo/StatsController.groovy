@@ -18,7 +18,9 @@ class StatsController {
         COURSE("course"),
         SUBJECT("subject"),
         VIDEO("video"),
-        WRITTEN("written")
+        WRITTEN("written"),
+        STUDENT("student")
+
         private final String name
 
         ResourceType(String name) {
@@ -87,6 +89,9 @@ class StatsController {
                         return
                     case ResourceType.SUBJECT:
                         forward action: "viewSubjectProgress", params: [id: id]
+                        return
+                    case ResourceType.STUDENT:
+                        forward action: "viewStudentProgress", params: [id: id]
                         return
                     default:
                         render status: HttpStatus.SC_NOT_FOUND, message: "Not found"
@@ -242,6 +247,20 @@ class StatsController {
                 node       : subject,
                 breadcrumbs: statsService.getBreadcrumbsToNode(subject),
                 table      : progressResult.result
+        ]
+    }
+
+    def viewStudentProgress(Long id) {
+        def student = Student.get(id)
+        if (renderStatus404IfNotFound(student)) return
+
+        Node node = retrieveNodeFromStudentRequest()
+        if (renderStatus404IfNotFound(node)) return
+
+        render view: "student_progress", model: [
+                node       : node,
+                breadcrumbs: statsService.getBreadcrumbsToNode(node),
+                student    : student
         ]
     }
 
@@ -417,6 +436,22 @@ class StatsController {
         } else {
             return Boolean.parseBoolean(params.get(key) as String) ?: defaultValue
         }
+    }
+
+    private Node retrieveNodeFromStudentRequest() {
+        if (params.containsKey("course")) {
+            return Course.get(params.getLong("course"))
+        }
+
+        if (params.containsKey("subject")) {
+            return Subject.get(params.getLong("subject"))
+        }
+
+        if (params.containsKey("exercise")) {
+            return Exercise.get(params.getLong("exercise"))
+        }
+
+        return null
     }
 
     private def studentsButton(Node node) {
