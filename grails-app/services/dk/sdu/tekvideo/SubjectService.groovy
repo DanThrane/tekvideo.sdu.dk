@@ -1,56 +1,51 @@
 package dk.sdu.tekvideo
 
-class SubjectService {
-    def userService
+class SubjectService implements ContainerNodeInformation<Subject, Exercise> {
     def videoService
     def urlMappingService
+    def courseService
 
-    boolean canAccess(Subject subject) {
-        def status = subject?.status
-
-        subject != null &&
-                (status == NodeStatus.VISIBLE ||
-                    (status == NodeStatus.INVISIBLE && userService.authenticatedTeacher == subject.course.teacher))
-    }
-
+    @Override
     String getThumbnail(Subject subject) {
+        // TODO Only covers videos
         return videoService.getThumbnail((Video) subject.activeVideos?.find { it instanceof Video })
     }
 
-    List<Map> subjectForBrowser(Subject subject) {
-        def exercises = subject.allVisibleExercises
+    @Override
+    List<NodeBrowserCrumbs> getBreadcrumbs(Subject subject) {
+        def teacher = subject.course.teacher
+        [
+                new NodeBrowserCrumbs(
+                        teacher.toString(),
+                        urlMappingService.generateLinkToTeacher(teacher)
+                ),
+                new NodeBrowserCrumbs(
+                        subject.course.name,
+                        urlMappingService.generateLinkToCourse(subject.course)
+                )
+        ]
+    }
 
-        def breadcrumbs = []
-        def course = subject.course
-        def teacher = course.teacher
-        breadcrumbs.add([
-                title: teacher.toString(),
-                url: urlMappingService.generateLinkToTeacher(teacher)
-        ])
-        breadcrumbs.add([
-                title: course.name,
-                url: urlMappingService.generateLinkToCourse(course)
-        ])
-        breadcrumbs.add([
-                title: subject.name,
-                url: urlMappingService.generateLinkToSubject(subject)
-        ])
+    @Override
+    NodeBrowserInformation getInformationForBrowser(Subject it, boolean addBreadcrumbs) {
+        List<NodeBrowserCrumbs> breadcrumbs = addBreadcrumbs ? courseService.getBreadcrumbs(it.course) : []
 
-        return exercises.collect {
-            def result = [:]
-            result.title = it.name
-            result.description = it.description
-            result.stats = []
-            result.featuredChildren = []
-            result.breadcrumbs = breadcrumbs
-            result.url = urlMappingService.generateLinkToExercise(it)
+        return new NodeBrowserInformation(
+                it.name,
+                it.description,
+                getThumbnail(it),
+                urlMappingService.generateLinkToSubject(it),
+                breadcrumbs
+        )
+    }
 
-            if (it instanceof Video) {
-                result.thumbnail = videoService.getThumbnail(it)
-            } else if (it instanceof WrittenExerciseGroup) {
-                result.thumbnail = it.thumbnailUrl
-            }
-            return result
-        }
+    @Override
+    List<Exercise> listVisibleChildren(Subject subject) {
+        subject.allVisibleExercises
+    }
+
+    @Override
+    List<Exercise> listActiveChildren(Subject subject) {
+        subject.allActiveExercises
     }
 }

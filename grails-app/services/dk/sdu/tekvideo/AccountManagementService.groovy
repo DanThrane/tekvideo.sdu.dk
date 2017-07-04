@@ -1,6 +1,6 @@
 package dk.sdu.tekvideo
 
-import org.apache.http.HttpStatus
+import org.springframework.http.HttpStatus
 
 import static dk.sdu.tekvideo.ServiceResult.ok
 import static dk.sdu.tekvideo.ServiceResult.fail
@@ -75,7 +75,7 @@ class AccountManagementService {
         if (teacher) {
             return ok(User.list())
         } else {
-            return fail(message: "Not allowed", suggestedHttpStatus: HttpStatus.SC_FORBIDDEN)
+            return fail(message: "Not allowed", suggestedHttpStatus: HttpStatus.FORBIDDEN.value())
         }
     }
 
@@ -92,7 +92,7 @@ class AccountManagementService {
                 boolean hasBadRoles = mappedRoles.any { it == null }
                 if (hasBadRoles) {
                     return fail(message: "Bad request (Some roles does not exist)",
-                            suggestedHttpStatus: HttpStatus.SC_BAD_REQUEST)
+                            suggestedHttpStatus: HttpStatus.BAD_REQUEST.value())
                 } else {
                     Set<Role> existingRoles = UserRole.findAllByUser(user).role.toSet()
                     Set<Role> toBeRemoved = new HashSet(existingRoles)
@@ -118,10 +118,10 @@ class AccountManagementService {
                 return ok()
             } else {
                 println command.errors
-                return fail(message: "Bad request (Invalid)", suggestedHttpStatus: HttpStatus.SC_BAD_REQUEST)
+                return fail(message: "Bad request (Invalid)", suggestedHttpStatus: HttpStatus.BAD_REQUEST.value())
             }
         } else {
-            return fail(message: "Forbidden", suggestedHttpStatus: HttpStatus.SC_FORBIDDEN)
+            return fail(message: "Forbidden", suggestedHttpStatus: HttpStatus.FORBIDDEN.value())
         }
     }
 

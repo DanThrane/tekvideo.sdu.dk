@@ -72,10 +72,10 @@
 </g:content>
 
 <script>
-    var baseUrl = "${createLink(absolute:true, uri:'/')}";
+    var baseUrl = "${createLink(absolute:false, uri:'/')}";
 
     $(function () {
-        var tree = new ManagementTreeView("#tree-container", "${createLink(absolute:true, uri:'/')}");
+        var tree = new ManagementTreeView("#tree-container", "${createLink(absolute:false, uri:'/')}");
         tree.init();
     });
 </script>

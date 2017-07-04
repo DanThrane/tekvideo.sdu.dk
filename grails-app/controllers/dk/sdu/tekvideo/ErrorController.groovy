@@ -9,7 +9,6 @@ import java.time.LocalDateTime
 class ErrorController {
     def mailService
     def springSecurityService
-    def grailsApplication
 
     def index() {
         def exception = request.exception?.cause

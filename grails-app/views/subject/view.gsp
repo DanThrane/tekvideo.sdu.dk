@@ -5,7 +5,7 @@
     <title>Opgaver for ${subject.name}</title>
 
     <g:render template="/polymer/includePolymer" />
-    <link rel="import" href="${createLink(absolute:true, uri:'/assets/')}/components/tv-browser.html">
+    <sdu:appResourceImport href="components/tv-browser.html" />
 </head>
 
 <body>

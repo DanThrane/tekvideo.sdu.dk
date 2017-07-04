@@ -1,0 +1,9 @@
+{
+  "entrypoint": "index.html",
+  "shell": "src/tekvideo-dashboard.html",
+  "fragments": [
+    "src/tekvideo-aint-raw.html",
+    "src/tekvideo-s-views-graph.html",
+    "src/tekvideo-s-views-popular.html"
+  ]
+}

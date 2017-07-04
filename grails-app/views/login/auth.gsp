@@ -20,8 +20,8 @@
     <twbs:column md="4">
         <i>Med en TekVideo bruger:</i>
         <twbs:form action="${postUrl}" method="POST" id="loginForm" name="loginForm" autocomplete="off">
-            <twbs:input name="j_username" labelText="Brugernavn" />
-            <twbs:input name="j_password" type="password" labelText="Kodeord" />
+            <twbs:input name="username" labelText="Brugernavn" />
+            <twbs:input name="password" type="password" labelText="Kodeord" />
             <twbs:checkbox name="rememberMeParameter" id="remember_me" labelText="Forbliv logget ind" />
 
             <twbs:linkButton controller="register" action="forgotPassword" style="${ButtonStyle.LINK}" block="true">

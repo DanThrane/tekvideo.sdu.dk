@@ -191,7 +191,7 @@ var ManagementTreeView = (function () {
                 }
             },
             "types": TYPES,
-            "plugins": ["contextmenu", "dnd", "search", "state", "types", "wholerow"],
+            "plugins": ["contextmenu", "dnd", "search", "types", "wholerow"],
             "contextmenu": {
                 "items": function (node) {
                     var options = {};

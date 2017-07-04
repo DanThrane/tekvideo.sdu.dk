@@ -8,7 +8,7 @@
 
     <g:render template="/polymer/includePolymer" />
 
-    <link rel="import" href="${createLink(absolute:true, uri:'/assets/')}/components/tekvideo-exercise-card.html">
+    <sdu:appResourceImport href="components/tekvideo-exercise-card.html" />
     <style>
         .polymer {
             font-family: 'Roboto', 'Noto', sans-serif;
@@ -47,29 +47,6 @@
     </sdu:card>
 </g:if>
 
-<twbs:pageHeader>
-    <h3>Fremhævede videoer</h3>
-</twbs:pageHeader>
-
-<div style="display: flex; flex-wrap: wrap;">
-<g:each in="${featuredVideos}" var="breakdown" status="index">
-    %{-- TODO This needs to be fixed ASAP --}%
-    <tekvideo-exercise-card
-            url="${sdu.createLinkToVideo(video: breakdown.video)}"
-            title="${breakdown.video.name}"
-            stats="${[
-                    [icon: "communication:comment", content: breakdown.commentCount],
-                    [icon: "visibility", content: breakdown.viewCount]
-            ] as JSON}"
-            breadcrumbs="${[
-                    [title: breakdown.video.subject.course.teacher.toString(), url: sdu.createLinkToTeacher(teacher: breakdown.video.subject.course.teacher)],
-                    [title: breakdown.video.subject.course.name, url: sdu.createLinkToCourse(course: breakdown.video.subject.course)],
-                    [title: breakdown.video.subject.name, url: sdu.createLinkToSubject(subject: breakdown.video.subject)]
-            ] as JSON}"
-            description="${breakdown.video.description}"
-            thumbnail="${sdu.thumbnail(node: breakdown.video)}">
-    </tekvideo-exercise-card>
-</g:each>
-</div>
 </body>
 </html>
+

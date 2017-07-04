@@ -27,4 +27,6 @@ abstract class Exercise implements Node {
         return parent as Subject
     }
 
+    abstract int getScoreToPass()
+
 }

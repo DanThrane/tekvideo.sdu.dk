@@ -6,14 +6,14 @@
     <title>${course.name}</title>
     <g:render template="/polymer/includePolymer" />
 
-    <link rel="import" href="${createLink(absolute:true, uri:'/assets/')}/components/tv-browser.html">
+    <sdu:appResourceImport href="components/tv-browser.html" />
 </head>
 
 <body>
 
 <twbs:pageHeader>
     <h3>
-        ${course.fullName} (${course.name})
+        ${course.fullName} (${course.name}) <small>${course.shortWhen}</small>
         <g:if test="${showSignup}">
             <span style="float: right;">
                 <g:render template="showsignup" model="${pageScope.variables}" />
