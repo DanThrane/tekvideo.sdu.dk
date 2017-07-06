@@ -24,9 +24,12 @@ class CourseService implements ContainerNodeInformation<Course, Subject> {
     @Override
     String getThumbnail(Course course) {
         // TODO Performance. Also this doesn't cover all exercises
-        return videoService.getThumbnail((Video) course.activeSubjects.first()?.activeVideos?.find {
-            it instanceof Video
-        })
+        def subjects = course.activeSubjects
+        if (subjects.size() > 0) {
+            return videoService.getThumbnail((Video) subjects[0]?.activeVideos?.find { it instanceof Video })
+        } else {
+            return null
+        }
     }
 
     @Override

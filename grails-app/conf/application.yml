@@ -90,6 +90,8 @@ endpoints:
 
 ---
 hibernate:
+    flush:
+      mode: AUTO
     cache:
         queries: false
         use_second_level_cache: true
