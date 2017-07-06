@@ -40,8 +40,6 @@ class TagLibUtils {
         // auto-complete. Rather have a bit of extra typing in this tag-lib, than having to remember every attribute
         // for every tag. So we call this function so that it can see that they are in use, even though this function
         // doesn't care at all for them. All the work is really done by prepareCommonInputAttributes
-
-        // TODO Check if there are other ways of hinting these are needed
     }
 
 }

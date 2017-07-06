@@ -80,12 +80,15 @@ class ExerciseService implements NodeInformation<Exercise> {
     }
 
     @Override
-    NodeBrowserInformation getInformationForBrowser(Exercise exercise, boolean addBreadcrumbs) {
+    NodeBrowserInformation getInformationForBrowser(Exercise exercise, String thumbnail, boolean resolveThumbnail,
+                                                    boolean addBreadcrumbs) {
         def breadcrumbs = addBreadcrumbs ? subjectService.getBreadcrumbs(exercise.subject) : []
+
+        String actualThumbnail = !resolveThumbnail ? thumbnail : getThumbnail(exercise)
         return new NodeBrowserInformation(
                 exercise.name,
                 exercise.description,
-                getThumbnail(exercise),
+                actualThumbnail,
                 urlMappingService.generateLinkToExercise(exercise),
                 breadcrumbs
         )

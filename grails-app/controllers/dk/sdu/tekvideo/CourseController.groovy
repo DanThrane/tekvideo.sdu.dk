@@ -13,7 +13,10 @@ class CourseController {
 
     @Secured("permitAll")
     def list() {
-        [data: courseService.listVisibleCourses().collect { courseService.getInformationForBrowser(it) }]
+        def start = System.currentTimeMillis()
+        def collect = nodeService.listVisibleChildrenForBrowser(NodeService.ROOT)
+        println(System.currentTimeMillis() - start)
+        [data: collect]
     }
 
     @Secured("permitAll")
@@ -38,7 +41,7 @@ class CourseController {
         [course      : course,
          studentCount: courseService.getStudentCount(course),
          inCourse    : studentService.isInCourse(student, course),
-         student     : student] // TODO Check if inCourse loads in all students
+         student     : student]
     }
 
     @Secured(["ROLE_STUDENT"])

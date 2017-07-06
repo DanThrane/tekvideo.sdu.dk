@@ -5,6 +5,28 @@ class NodeService implements ContainerNodeInformation<Node, Node> {
     def courseService
     def subjectService
     def exerciseService
+    def rootService
+
+    static final ROOT = RootNode.INSTANCE
+
+    private static enum RootNode implements Node {
+        INSTANCE
+
+        @Override
+        Node getParent() {
+            return null
+        }
+
+        @Override
+        NodeStatus getLocalStatus() {
+            return NodeStatus.VISIBLE
+        }
+
+        @Override
+        String getName() {
+            return "root"
+        }
+    }
 
     boolean canView(Node node) {
         def status = node?.status
@@ -25,7 +47,10 @@ class NodeService implements ContainerNodeInformation<Node, Node> {
 
     @Override
     String getThumbnail(Node node) {
-        resolveImplementation(node).getThumbnail(node)
+        def start = System.currentTimeMillis()
+        def result = resolveImplementation(node).getThumbnail(node)
+        println(System.currentTimeMillis() - start)
+        return result
     }
 
     @Override
@@ -34,12 +59,23 @@ class NodeService implements ContainerNodeInformation<Node, Node> {
     }
 
     @Override
-    NodeBrowserInformation getInformationForBrowser(Node node, boolean addBreadcrumbs) {
-        resolveImplementation(node).getInformationForBrowser(node, addBreadcrumbs)
+    NodeBrowserInformation getInformationForBrowser(Node node, String thumbnail, boolean resolveThumbnail,
+                                                    boolean addBreadcrumbs) {
+        resolveImplementation(node).getInformationForBrowser(node, thumbnail, resolveThumbnail, addBreadcrumbs)
     }
 
     List<NodeBrowserInformation> listVisibleChildrenForBrowser(Node node) {
-        def info = listVisibleChildren(node).collect { getInformationForBrowser(it, false) }
+        def children = listVisibleChildren(node)
+        Map<Class<? extends Node>, List<Node>> groupedByType = children.groupBy { it.class }
+        Map<Node, String> thumbnails = [:]
+        for (def entry : groupedByType) {
+            def bulk = resolveImplementation(entry.key).getThumbnailsBulk(entry.value)
+            thumbnails.putAll(bulk)
+        }
+
+        def info = children.collect {
+            getInformationForBrowser(it, thumbnails.get(it), false,false)
+        }
         def breadcrumbs = getBreadcrumbs(node)
         info.each { it.breadcrumbs = breadcrumbs }
         return info
@@ -56,12 +92,18 @@ class NodeService implements ContainerNodeInformation<Node, Node> {
     }
 
     @SuppressWarnings("GroovyAssignabilityCheck")
-    private <N extends Node> NodeInformation<N> resolveImplementation(N node) {
-        if (node instanceof Course) return courseService
-        if (node instanceof Subject) return subjectService
-        if (node instanceof Exercise) return exerciseService
+    private <N extends Node> NodeInformation<N> resolveImplementation(Class<N> type) {
+        if (type == Course) return courseService
+        if (type == Subject) return subjectService
+        if (type == Exercise ) return exerciseService
         else throw new IllegalArgumentException("Cannot find service implementation for node of type " +
-                "${node.class.name}")
+                "${type.name}")
+    }
+
+    @SuppressWarnings("GroovyAssignabilityCheck")
+    private <N extends Node> NodeInformation<N> resolveImplementation(N node) {
+        if (node == ROOT) return rootService
+        return resolveImplementation(node.class)
     }
 
     private ContainerNodeInformation resolveContainerImplementation(Node node) {

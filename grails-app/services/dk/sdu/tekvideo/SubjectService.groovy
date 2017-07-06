@@ -27,13 +27,15 @@ class SubjectService implements ContainerNodeInformation<Subject, Exercise> {
     }
 
     @Override
-    NodeBrowserInformation getInformationForBrowser(Subject it, boolean addBreadcrumbs) {
+    NodeBrowserInformation getInformationForBrowser(Subject it, String thumbnail, boolean resolveThumbnail,
+                                                    boolean addBreadcrumbs) {
         List<NodeBrowserCrumbs> breadcrumbs = addBreadcrumbs ? courseService.getBreadcrumbs(it.course) : []
 
+        String actualThumbnail = !resolveThumbnail ? thumbnail : getThumbnail(it)
         return new NodeBrowserInformation(
                 it.name,
                 it.description,
-                getThumbnail(it),
+                actualThumbnail,
                 urlMappingService.generateLinkToSubject(it),
                 breadcrumbs
         )
