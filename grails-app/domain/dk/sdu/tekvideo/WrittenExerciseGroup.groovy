@@ -14,7 +14,7 @@ class WrittenExerciseGroup extends Exercise {
     }
 
     @Override
-    Node getParent() {
+    Node loadParent() {
         SubjectExercise.findByExercise(this)?.subject
     }
 

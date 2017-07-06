@@ -6,6 +6,7 @@ class Subject implements Node {
     String name
     String description = DEFAULT_DESCRIPTION
     NodeStatus localStatus = NodeStatus.VISIBLE
+    static transients = ['eagerlyLoadedParent']
 
     static constraints = {
         name nullable: false, blank: false
@@ -199,7 +200,7 @@ class Subject implements Node {
     }
 
     @Override
-    Node getParent() {
+    Node loadParent() {
         CourseSubject.findBySubject(this).course
     }
 }

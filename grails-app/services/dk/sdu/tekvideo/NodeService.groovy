@@ -13,7 +13,7 @@ class NodeService implements ContainerNodeInformation<Node, Node> {
         INSTANCE
 
         @Override
-        Node getParent() {
+        Node loadParent() {
             return null
         }
 
@@ -95,7 +95,7 @@ class NodeService implements ContainerNodeInformation<Node, Node> {
     private <N extends Node> NodeInformation<N> resolveImplementation(Class<N> type) {
         if (type == Course) return courseService
         if (type == Subject) return subjectService
-        if (type == Exercise ) return exerciseService
+        if (type == Video || type == WrittenExerciseGroup) return exerciseService
         else throw new IllegalArgumentException("Cannot find service implementation for node of type " +
                 "${type.name}")
     }

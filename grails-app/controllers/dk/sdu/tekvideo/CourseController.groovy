@@ -13,9 +13,7 @@ class CourseController {
 
     @Secured("permitAll")
     def list() {
-        def start = System.currentTimeMillis()
         def collect = nodeService.listVisibleChildrenForBrowser(NodeService.ROOT)
-        println(System.currentTimeMillis() - start)
         [data: collect]
     }
 

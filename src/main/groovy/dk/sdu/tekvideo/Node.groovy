@@ -1,7 +1,14 @@
 package dk.sdu.tekvideo
 
 trait Node {
-    abstract Node getParent()
+    Node eagerlyLoadedParent = null
+    Node getParent() {
+        if (eagerlyLoadedParent != null) return eagerlyLoadedParent
+        eagerlyLoadedParent = loadParent()
+        return eagerlyLoadedParent
+    }
+
+    abstract Node loadParent()
     abstract NodeStatus getLocalStatus()
     abstract String getName()
 

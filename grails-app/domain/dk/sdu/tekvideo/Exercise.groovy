@@ -12,6 +12,7 @@ abstract class Exercise implements Node {
     }
 
     static hasMany = [comments: Comment, similarResources: SimilarResources]
+    static transients = ['eagerlyLoadedParent']
 
     static constraints = {
         name            nullable: false, blank: false, maxSize: 255

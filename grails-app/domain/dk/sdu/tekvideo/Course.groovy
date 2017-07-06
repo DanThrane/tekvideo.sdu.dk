@@ -12,6 +12,7 @@ class Course implements Node, Comparable<Course> {
     NodeStatus localStatus = NodeStatus.VISIBLE
 
     static belongsTo = [teacher: Teacher]
+    static transients = ['eagerlyLoadedParent']
 
     static constraints = {
         name nullable: false, blank: false, unique: ["teacher", "spring", "year"]
@@ -24,15 +25,36 @@ class Course implements Node, Comparable<Course> {
     }
 
     List<Subject> getActiveSubjects() {
-        subjects.findAll { it != null && it.localStatus != NodeStatus.TRASH }
+        List<Subject> result = Subject.executeQuery("""
+            SELECT cs.subject
+            FROM CourseSubject cs
+            WHERE cs.course = :course AND cs.subject.localStatus != 'TRASH'
+            ORDER BY cs.weight
+        """, [course: this])
+        result.each { it.eagerlyLoadedParent = this }
+        return result
     }
 
     List<Subject> getVisibleSubjects() {
-        subjects.findAll { it != null && it.localStatus == NodeStatus.VISIBLE }
+        List<Subject> result = Subject.executeQuery("""
+            SELECT cs.subject
+            FROM CourseSubject cs
+            WHERE cs.course = :course AND cs.subject.localStatus = 'VISIBLE'
+            ORDER BY cs.weight
+        """, [course: this])
+        result.each { it.eagerlyLoadedParent = this }
+        return result
     }
 
     List<Subject> getSubjects() {
-        Collections.unmodifiableList(CourseSubject.findAllByCourse(this, [sort: 'weight']).subject)
+        List<Subject> result = Subject.executeQuery("""
+            SELECT cs.subject
+            FROM CourseSubject cs
+            WHERE cs.course = :course
+            ORDER BY cs.weight
+        """, [course: this])
+        result.each { it.eagerlyLoadedParent = this }
+        return result
     }
 
     @Override
@@ -41,8 +63,8 @@ class Course implements Node, Comparable<Course> {
     }
 
     @Override
-    Node getParent() {
-        null
+    Node loadParent() {
+        return null
     }
 
     def beforeDelete() {
