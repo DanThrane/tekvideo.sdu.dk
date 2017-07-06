@@ -5,6 +5,7 @@ import org.grails.web.converters.exceptions.ConverterException
 import org.grails.web.json.JSONArray
 import org.grails.web.json.JSONException
 import org.grails.web.json.JSONObject
+import org.hibernate.SessionFactory
 import org.springframework.http.HttpStatus
 import org.springframework.validation.FieldError
 
@@ -19,39 +20,93 @@ import static dk.sdu.tekvideo.ServiceResult.*
 class CourseManagementService {
     def userService
     def messageSource
+    SessionFactory sessionFactory
+
+    ServiceResult<List<CourseSummary>> getCompleteCourseSummary() {
+        def teacher = userService.authenticatedTeacher
+        if (!teacher) return fail(message: "Not allowed", suggestedHttpStatus: HttpStatus.UNAUTHORIZED.value())
+
+        def query = $/
+            SELECT c.id, c.full_name, c.name, c.description, c.year, c.spring, COUNT(cs.subject_id)
+            FROM
+              course c LEFT OUTER JOIN course_subject cs ON c.id = cs.course_id,
+              subject s
+            WHERE
+              c.teacher_id = :teacher AND
+              (s.id = cs.subject_id OR cs.subject_id IS NULL) AND
+              (s.local_status != 'TRASH' OR s.local_status IS NULL)
+            GROUP BY
+              c.id, c.full_name, c.name, c.description, c.year, c.spring;
+        /$
+        List<List> results = sessionFactory.currentSession
+                .createSQLQuery(query)
+                .setParameter("teacher", teacher.id)
+                .list()
+
+        return ok(results.collect {
+            new CourseSummary(
+                    courseId: it[0],
+                    fullName: it[1],
+                    name: it[2],
+                    description: it[3],
+                    year: it[4],
+                    spring: it[5],
+                    activeSubjectCount: it[6]
+            )
+        })
+    }
 
     /**
      * Returns the courses owned by the current teacher in a format jsTree will understand.
      */
     List<Map> getJsTreeCourses() {
-        def courses = getCourses(NodeStatus.VISIBLE)
-        if (courses.success) {
-            return courses.result.collect {
-                [
-                        id      : it.id,
-                        text    : it.fullName,
-                        children: it.activeSubjects.size() > 0, // TODO Not efficient
-                        type    : "course"
-                ]
-            }
-        } else {
-            return Collections.emptyList()
+        def summary = getCompleteCourseSummary()
+        if (!summary.success) return Collections.emptyList()
+        def results = summary.result
+
+        return results.collect {
+            [
+                    id      : it.courseId,
+                    text    : it.fullName,
+                    children: it.activeSubjectCount > 0,
+                    type    : "course"
+            ]
         }
     }
 
     List<Map> getJsTreeSubjects(Course course) {
-        def subjects = getSubjects(NodeStatus.VISIBLE, course)
-        if (subjects.success) {
-            return subjects.result.collect {
-                [
-                        id      : it.id,
-                        text    : it.name,
-                        children: it.activeExerciseCount > 0, // TODO Not efficient
-                        type    : "subject"
-                ]
-            }
-        } else {
-            return Collections.emptyList()
+        def teacher = userService.authenticatedTeacher
+        if (!teacher) return Collections.emptyList()
+
+        def query = $/
+            SELECT cs.subject_id, s.name, COUNT(se.exercise_id)
+            FROM
+              course_subject cs LEFT OUTER JOIN subject_exercise se ON (cs.subject_id = se.subject_id),
+              subject s, course c, exercise e
+            WHERE cs.course_id = :course AND
+              cs.subject_id = s.id AND
+              cs.course_id = c.id AND
+              c.teacher_id = :teacher AND
+                  (se.exercise_id = e.id OR se.exercise_id IS NULL) AND
+                  (e.local_status = 'VISIBLE' OR e.local_status IS NULL)
+
+            GROUP BY cs.subject_id, s.name, cs.weight
+            ORDER BY cs.weight;
+        /$
+
+        List<List> results = sessionFactory.currentSession
+                .createSQLQuery(query)
+                .setParameter("course", course.id)
+                .setParameter("teacher", teacher.id)
+                .list()
+
+        return results.collect {
+            [
+                    id      : it[0],
+                    text    : it[1],
+                    children: it[2] > 0,
+                    type    : "subject"
+            ]
         }
     }
 

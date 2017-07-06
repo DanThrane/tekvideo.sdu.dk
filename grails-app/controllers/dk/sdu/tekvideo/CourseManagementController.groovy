@@ -20,7 +20,7 @@ class CourseManagementController {
     def index() {
         String statusStr = params.status ?: "VISIBLE"
         def status = NodeStatus.fromValue(statusStr.toUpperCase()) ?: NodeStatus.VISIBLE
-        def courses = courseManagementService.getCourses(status)
+        def courses = courseManagementService.getCompleteCourseSummary()
 
         if (courses.success) {
             [activeCourses: courses.result, status: status]
