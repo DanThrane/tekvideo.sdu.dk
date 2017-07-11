@@ -1,5 +1,6 @@
 package dk.sdu.tekvideo
 
+import org.hibernate.SessionFactory
 import org.springframework.http.HttpStatus
 
 import static dk.sdu.tekvideo.ServiceResult.ok
@@ -11,6 +12,7 @@ import static dk.sdu.tekvideo.ServiceResult.fail
 class AccountManagementService {
     def springSecurityService
     def userService
+    SessionFactory sessionFactory
 
     /**
      * Updates the user's e-learn ID.
@@ -70,10 +72,36 @@ class AccountManagementService {
         springSecurityService.passwordEncoder.isPasswordValid(current, newPassword, null)
     }
 
-    ServiceResult<List<User>> retrieveUserData() {
+    ServiceResult<Collection<Map>> retrieveUserData() {
         def teacher = userService.authenticatedTeacher
+        def query = """
+            SELECT u.id, u.username, u.email, u.is_cas, u.elearn_id, u.real_name, r.authority
+            FROM myusers u, user_role ur, role r
+            WHERE
+                u.id = ur.user_id AND
+                ur.role_id = r.id
+        """
+        List<List> result = sessionFactory.currentSession.createSQLQuery(query).list()
+        Map<Long, Map> collected = [:]
+        result.each {
+            Map entry = collected[it[0]]
+            if (entry == null) {
+                entry = [
+                        username: it[1],
+                        email: it[2],
+                        isCas: it[3],
+                        elearnId: it[4],
+                        realName: it[5],
+                        roles: []
+                ]
+            }
+
+            entry.roles.add(it[6])
+            collected[it[0]] = entry
+        }
+
         if (teacher) {
-            return ok(User.list())
+            return ok(collected.values())
         } else {
             return fail(message: "Not allowed", suggestedHttpStatus: HttpStatus.FORBIDDEN.value())
         }

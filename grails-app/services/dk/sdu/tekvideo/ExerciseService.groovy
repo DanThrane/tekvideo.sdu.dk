@@ -11,7 +11,6 @@ class ExerciseService implements NodeInformation<Exercise> {
     def springSecurityService
     def videoService
     def subjectService
-    SessionFactory sessionFactory
 
     ServiceResult<Comment> createComment(CreateCommentCommand command) {
         User user = springSecurityService.currentUser as User
