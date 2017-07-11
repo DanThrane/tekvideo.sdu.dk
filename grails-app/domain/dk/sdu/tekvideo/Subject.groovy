@@ -49,140 +49,66 @@ class Subject implements Node {
 
     List<Exercise> getAllExercises() {
         def subject = this
-        Collections.unmodifiableList(
-                SubjectExercise.withCriteria() {
-                    eq("subject", subject)
-                    order("weight", "asc")
-                    exercise {}
-                }.exercise
-        )
+        List<Exercise> exercises = SubjectExercise.withCriteria() {
+            eq("subject", subject)
+            order("weight", "asc")
+            exercise {}
+        }.exercise
+        exercises.eachWithIndex { it, idx ->
+            it.eagerlyLoadedParent = this
+            it.eagerIndex = idx
+        }
+        Collections.unmodifiableList(exercises)
     }
 
     List<Exercise> getAllVisibleExercises() {
         def subject = this
-        Collections.unmodifiableList(
-                SubjectExercise.withCriteria() {
-                    eq("subject", subject)
-                    order("weight", "asc")
-                    exercise {
-                        eq("localStatus", NodeStatus.VISIBLE)
-                    }
-                }.exercise
-        )
+        List<Exercise> exercises = SubjectExercise.withCriteria() {
+            eq("subject", subject)
+            order("weight", "asc")
+            exercise {
+                eq("localStatus", NodeStatus.VISIBLE)
+            }
+        }.exercise
+        exercises.eachWithIndex { it, idx ->
+            it.eagerlyLoadedParent = this
+            it.eagerIndex = idx
+        }
+        Collections.unmodifiableList(exercises)
     }
 
     List<Exercise> getAllActiveExercises() {
         def subject = this
-        Collections.unmodifiableList(
-                SubjectExercise.withCriteria() {
-                    eq("subject", subject)
-                    order("weight", "asc")
-                    exercise {
-                        not {
-                            eq("localStatus", NodeStatus.TRASH)
-                        }
-                    }
-                }.exercise
-        )
+        List<Exercise> exercises = SubjectExercise.withCriteria() {
+            eq("subject", subject)
+            order("weight", "asc")
+            exercise {
+                not {
+                    eq("localStatus", NodeStatus.TRASH)
+                }
+            }
+        }.exercise
+        exercises.eachWithIndex { it, idx ->
+            it.eagerlyLoadedParent = this
+            it.eagerIndex = idx
+        }
+        Collections.unmodifiableList(exercises)
     }
 
     List<Exercise> getAllExercisesByStatus(NodeStatus status) {
         def subject = this
-        Collections.unmodifiableList(
-                SubjectExercise.withCriteria() {
-                    eq("subject", subject)
-                    order("weight", "asc")
-                    exercise {
-                        eq("localStatus", status)
-                    }
-                }.exercise
-        )
-    }
-
-    List<Video> getActiveVideos() {
-        def subject = this
-        Collections.unmodifiableList(
-                SubjectExercise.withCriteria() {
-                    eq("subject", subject)
-                    order("weight", "asc")
-                    exercise {
-                        eq("class", Video)
-                        not {
-                            eq("localStatus", NodeStatus.TRASH)
-                        }
-                    }
-                }.exercise
-        ) as List<Video>
-    }
-
-    List<Video> getVisibleVideos() {
-        def subject = this
-        Collections.unmodifiableList(
-                SubjectExercise.withCriteria() {
-                    eq("subject", subject)
-                    order("weight", "asc")
-                    exercise {
-                        eq("class", Video)
-                        eq("localStatus", NodeStatus.VISIBLE)
-                    }
-                }.exercise
-        ) as List<Video>
-    }
-
-    List<Video> getVideos() {
-        def subject = this
-        Collections.unmodifiableList(
-                SubjectExercise.withCriteria() {
-                    eq("subject", subject)
-                    order("weight", "asc")
-                    exercise {
-                        eq("class", Video)
-                    }
-                }.exercise
-        ) as List<Video>
-    }
-
-    List<WrittenExerciseGroup> getWrittenExercises() {
-        def subject = this
-        Collections.unmodifiableList(
-                SubjectExercise.withCriteria() {
-                    eq("subject", subject)
-                    order("weight", "asc")
-                    exercise {
-                        eq("class", WrittenExerciseGroup)
-                    }
-                }.exercise
-        ) as List<WrittenExerciseGroup>
-    }
-
-    List<WrittenExerciseGroup> getVisibleWrittenExercises() {
-        def subject = this
-        Collections.unmodifiableList(
-                SubjectExercise.withCriteria() {
-                    eq("subject", subject)
-                    order("weight", "asc")
-                    exercise {
-                        eq("class", WrittenExerciseGroup)
-                        eq("localStatus", NodeStatus.VISIBLE)
-                    }
-                }.exercise
-        ) as List<WrittenExerciseGroup>
-    }
-
-    List<WrittenExerciseGroup> getActiveWrittenExercises() {
-        def subject = this
-        Collections.unmodifiableList(
-                SubjectExercise.withCriteria() {
-                    eq("subject", subject)
-                    order("weight", "asc")
-                    exercise {
-                        eq("class", WrittenExerciseGroup)
-                        not {
-                            eq("localStatus", NodeStatus.TRASH)
-                        }
-                    }
-                }.exercise
-        ) as List<WrittenExerciseGroup>
+        List<Exercise> exercises = SubjectExercise.withCriteria() {
+            eq("subject", subject)
+            order("weight", "asc")
+            exercise {
+                eq("localStatus", status)
+            }
+        }.exercise
+        exercises.eachWithIndex { it, idx ->
+            it.eagerlyLoadedParent = this
+            it.eagerIndex = idx
+        }
+        Collections.unmodifiableList(exercises)
     }
 
     Course getCourse() {

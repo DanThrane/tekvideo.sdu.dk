@@ -5,6 +5,7 @@ abstract class Exercise implements Node {
     String description = "Ingen beskrivelse"
     Date dateCreated
     NodeStatus localStatus = NodeStatus.VISIBLE
+    int eagerIndex = -1
 
     static mapping = {
         description type: "text"
@@ -12,7 +13,7 @@ abstract class Exercise implements Node {
     }
 
     static hasMany = [comments: Comment, similarResources: SimilarResources]
-    static transients = ['eagerlyLoadedParent']
+    static transients = ['eagerlyLoadedParent', 'eagerIndex']
 
     static constraints = {
         name            nullable: false, blank: false, maxSize: 255
@@ -26,6 +27,13 @@ abstract class Exercise implements Node {
 
     Subject getSubject() {
         return parent as Subject
+    }
+
+    int getExerciseIndex() {
+        if (eagerIndex == -1) {
+            subject.allVisibleExercises.collect { it.id }.indexOf(id)
+        }
+        return eagerIndex
     }
 
     abstract int getScoreToPass()

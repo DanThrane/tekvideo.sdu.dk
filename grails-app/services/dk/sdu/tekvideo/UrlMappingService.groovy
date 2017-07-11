@@ -151,7 +151,7 @@ class UrlMappingService {
 
     private Map prepareExerciseAttributes(Exercise exercise, Map attrs) {
         def res = prepareSubjectAttributes(exercise.subject, attrs)
-        res.params.vidid = exercise.subject.allVisibleExercises.collect { it.id }.indexOf(exercise.id)
+        res.params.vidid = exercise.exerciseIndex
         return res
     }
 

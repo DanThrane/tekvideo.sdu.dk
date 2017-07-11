@@ -1,6 +1,7 @@
 package dk.sdu.tekvideo
 
 import grails.plugin.springsecurity.SpringSecurityUtils
+import org.hibernate.SessionFactory
 
 import static dk.sdu.tekvideo.ServiceResult.fail
 import static dk.sdu.tekvideo.ServiceResult.ok
@@ -10,6 +11,7 @@ class ExerciseService implements NodeInformation<Exercise> {
     def springSecurityService
     def videoService
     def subjectService
+    SessionFactory sessionFactory
 
     ServiceResult<Comment> createComment(CreateCommentCommand command) {
         User user = springSecurityService.currentUser as User
