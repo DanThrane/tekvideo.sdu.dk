@@ -8,10 +8,6 @@
 
 <body>
 
-<g:content key="sidebar-left">
-    Sidebar goes here.
-</g:content>
-
 <twbs:pageHeader>
     <h3>Stats <small><g:layoutTitle /></small></h3>
 </twbs:pageHeader>

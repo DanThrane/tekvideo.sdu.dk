@@ -66,6 +66,10 @@ class NodeService implements ContainerNodeInformation<Node, Node> {
 
     List<NodeBrowserInformation> listVisibleChildrenForBrowser(Node node) {
         def children = listVisibleChildren(node)
+        return listChildrenForBrowser(node, children)
+    }
+
+    List<NodeBrowserInformation> listChildrenForBrowser(Node node, List<Node> children) {
         Map<Class<? extends Node>, List<Node>> groupedByType = children.groupBy { it.class }
         Map<Node, String> thumbnails = [:]
         for (def entry : groupedByType) {

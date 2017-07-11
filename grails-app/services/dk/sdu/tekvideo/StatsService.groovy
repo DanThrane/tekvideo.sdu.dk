@@ -34,21 +34,21 @@ class StatsService {
     ServiceResult<List<NodeBrowserInformation>> coursesForBrowser() {
         def coursesResult = courseManagementService.activeCourses
         if (!coursesResult.success) return coursesResult.convertFailure()
-        return ok(convertToBrowser(coursesResult.result))
+        return ok(convertToBrowser(NodeService.ROOT, coursesResult.result))
     }
 
     ServiceResult<List<NodeBrowserInformation>> subjectsForBrowser(Course course) {
         def accessCheck = checkAccess(course)
         if (!accessCheck.success) return accessCheck
 
-        return ok(convertToBrowser(course.activeSubjects))
+        return ok(convertToBrowser(course, course.activeSubjects))
     }
 
     ServiceResult<List<NodeBrowserInformation>> exercisesForBrowser(Subject subject) {
         def accessCheck = checkAccess(subject)
         if (!accessCheck.success) return accessCheck
 
-        return ok(convertToBrowser(subject.allActiveExercises))
+        return ok(convertToBrowser(subject, subject.allActiveExercises))
     }
 
     private ServiceResult checkAccess(Node node) {
@@ -58,11 +58,11 @@ class StatsService {
         return ok()
     }
 
-    private List<NodeBrowserInformation> convertToBrowser(List<Node> nodes) {
-        def browserInformation = nodes.collect { nodeService.getInformationForBrowser(it, false) }
+    private List<NodeBrowserInformation> convertToBrowser(Node node, List<Node> children) {
+        def browserInformation = nodeService.listChildrenForBrowser(node, children)
         // Fix up the links such that they point to the stats dashboard
-        for (int i in 0..<nodes.size()) {
-            browserInformation[i].url = linkToNode(nodes[i])
+        for (int i in 0..<children.size()) {
+            browserInformation[i].url = linkToNode(children[i])
         }
         return browserInformation
     }
