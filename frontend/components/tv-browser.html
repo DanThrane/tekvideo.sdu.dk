@@ -77,7 +77,8 @@
                                 featured-children="[[item.featuredChildren]]"
                                 url="[[item.url]]"
                                 max-description-length="[[_maxDescriptionLength]]"
-                                wide-format="[[_wideFormat]]">
+                                wide-format="[[_wideFormat]]"
+                                on-link="_onLink">
         </tekvideo-exercise-card>
     </template>
 </div>
@@ -101,6 +102,16 @@
 </template>
 
 <script>
+function getAncestor(node, tagName) {
+    tagName = tagName.toUpperCase();
+    while (node) {
+        if (node.nodeType == 1 && node.nodeName == tagName) {
+            return node;
+        }
+        node = node.parentNode;
+    }
+    return null;
+}
 Polymer({
     is: 'tv-browser',
     properties: {
@@ -240,6 +251,15 @@ Polymer({
             result.push(array.slice(i, i + chunkSize));
         }
         return result;
+    },
+    _onLink: function(e) {
+        e.stopPropagation();
+
+        var anchor = getAncestor(e.detail.target, "a");
+        this.fire("link", {
+            original: e.detail,
+            link: anchor.getAttribute("href")
+        });
     }
 });
 </script>

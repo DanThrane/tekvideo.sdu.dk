@@ -9,7 +9,7 @@ class UrlMappings {
             controller = "stats"
         }
 
-        name teaching: "/t/$teacher/$course?/$year?/$fall?/$subject?/$vidid?" {
+        name teaching: "/t/$teacher/$course?/$year?/$fall?/$subject?/$vidid?(.$format)?" {
             controller = "teaching"
         }
 

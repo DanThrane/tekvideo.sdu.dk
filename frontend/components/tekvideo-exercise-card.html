@@ -71,12 +71,12 @@ iron-icon.star:last-of-type { color: var(--paper-grey-500); }
 
 <paper-card>
     <div class="header-container" hidden$="[[!_hasThumbnail(thumbnail)]]">
-        <a href$="[[url]]">
+        <a on-click="onLink" href$="[[url]]">
             <iron-image sizing="cover" src="[[thumbnail]]"></iron-image>
         </a>
     </div>
     <div class="card-content">
-      <div class="header"><a href="[[url]]">[[title]]</a>
+      <div class="header"><a on-click="onLink" href="[[url]]">[[title]]</a>
         <div class="stats light">
             <template is="dom-repeat" items="[[stats]]">
                 <iron-icon icon="[[item.icon]]"></iron-icon>
@@ -86,7 +86,7 @@ iron-icon.star:last-of-type { color: var(--paper-grey-500); }
       </div>
       <p>
           <template is="dom-repeat" items="[[breadcrumbs]]">
-            <a href$="[[item.url]]">[[item.title]]</a>
+            <a on-click="onLink" href$="[[item.url]]">[[item.title]]</a>
             <span hidden$="[[_isLastBreadcrumb(index)]]">・</span>
           </template>
       </p>
@@ -96,7 +96,7 @@ iron-icon.star:last-of-type { color: var(--paper-grey-500); }
             <p>I dette emne:</p>
             <ul>
                 <template is="dom-repeat" items="[[featuredChildren]]">
-                    <li><a href$="[[item.url]]">[[item.title]]</a></li>
+                    <li><a on-click="onLink" href$="[[item.url]]">[[item.title]]</a></li>
                 </template>
             </ul>
         </div>
@@ -159,6 +159,9 @@ Polymer({
     },
     _hideFeatured: function(wideFormat, featuredChildren) {
         return !wideFormat || featuredChildren.length == 0;
+    },
+    onLink: function(e, i) {
+        this.fire("link", e);
     }
 });
 </script>
