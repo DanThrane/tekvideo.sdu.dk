@@ -41,7 +41,7 @@
             }
         ],
         "name": "Opgave 1",
-        "thumbnailUrl": "http://placehold.it/300x300"
+        "thumbnailUrl": "//placehold.it/300x300"
     },
     {
         "description": "Beskrivelse til opgave 2",

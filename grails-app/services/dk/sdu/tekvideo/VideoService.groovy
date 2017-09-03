@@ -47,7 +47,7 @@ class VideoService {
     }
 
     String getThumbnail(String youtubeId) {
-        return "http://img.youtube.com/vi/${youtubeId}/hqdefault.jpg"
+        return "//img.youtube.com/vi/${youtubeId}/hqdefault.jpg"
     }
 
     String getThumbnail(Video video) {
