@@ -1,4 +1,4 @@
-grails.config.locations = ["file:${userHome}/.grails/${appName}-config.properties"]
+grails.config.locations = ["file:${System.getProperty("user.home")}/.grails/tekvideo-config.properties"]
 
 grails {
     mail {
@@ -21,8 +21,6 @@ environments {
 			driverClassName = "org.postgresql.Driver"
 			dialect = "org.hibernate.dialect.PostgreSQLDialect"
 			url = "jdbc:postgresql://localhost:5432/tekvideo-dev"
-			username = "devuser"
-			password = "devpassword"
 		}
 	}
 	test {
@@ -32,8 +30,6 @@ environments {
 			driverClassName = "org.postgresql.Driver"
 			dialect = "org.hibernate.dialect.PostgreSQLDialect"
 			url = "jdbc:postgresql://localhost:5432/tekvideo-test"
-			username = "devuser"
-			password = "devpassword"
 		}
 	}
 	production {
