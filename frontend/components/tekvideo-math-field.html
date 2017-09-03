@@ -49,7 +49,7 @@ Polymer({
     },
     _mathField: null,
     attached: function() {
-        addExtSheet(this.shadowRoot, this.resolveUrl("mathquill.css"));
+        addExtSheet(this.shadowRoot, this.resolveUrl("/assets/vendor/mathquill.css"));
         var self = this;
         var editor = this.$.editor;
         editor.classList.add(this.is);
