@@ -41,7 +41,7 @@ environments {
 			logSql = false
 			driverClassName = "org.postgresql.Driver"
 			dialect = "org.hibernate.dialect.PostgreSQLDialect"
-			url = "jdbc:postgresql://localhost:5432/tekvideo"
+			url = "jdbc:postgresql://localhost:5432/tekvideo-3"
 		}
 	}
 }
