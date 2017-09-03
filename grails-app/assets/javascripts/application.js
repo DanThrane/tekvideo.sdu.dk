@@ -40,7 +40,7 @@ String.prototype.format = function() {
     var args = arguments;
     return this.replace(/{(\d+)}/g, function(match, number) {
         var arg = args[number];
-        if (typeof arg != 'undefined') {
+        if (typeof arg !== 'undefined') {
             if (typeof arg === "object") {
                 if (arg.hasOwnProperty("raw") && arg.raw === true &&
                     arg.hasOwnProperty("content")) {
