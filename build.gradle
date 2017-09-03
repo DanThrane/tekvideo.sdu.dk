@@ -61,6 +61,7 @@ dependencies {
     compile 'com.google.apis:google-api-services-youtube:v3-rev151-1.20.0'
     compile 'org.grails.plugins:grails-markdown:3.0.0'
     compile 'org.grails.plugins:spring-security-cas:3.0.0'
+    compile 'org.grails.plugins:external-config:1.1.2'
 }
 
 bootRun {
