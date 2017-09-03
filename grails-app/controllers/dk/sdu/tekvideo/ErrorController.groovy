@@ -32,12 +32,6 @@ Exception: ${sw.toString()}"""
         if (Environment.current == Environment.DEVELOPMENT) {
             return [subject: subjectText, body: bodyText]
         } else {
-            mailService.sendMail {
-                async true
-                to grailsApplication.config.maintainers.split(",")
-                subject subjectText
-                body bodyText
-            }
             return [:]
         }
     }
