@@ -8,6 +8,7 @@
         <title>Ny video til ${course.fullName} (${course.name})</title>
     </g:else>
     <meta name="layout" content="main_fluid"/>
+    <asset:javascript src="interactive_app.js"/>
     <asset:javascript src="interact.js"/>
     <asset:stylesheet src="create_video.css"/>
     <sdu:requireAjaxAssets />
@@ -294,22 +295,6 @@
                 <p class="help-block">
                     Dette vil gemme videoen og gøre den synlig for alle brugere
                 </p>
-                <g:if test="${isEditing}">
-                    <hr>
-                    <twbs:pageHeader><h4>Se også afsnit</h4></twbs:pageHeader>
-                    <ul id="similar-resources">
-                        <g:each in="${video.similarResources}">
-                            <div>
-                                <b>Title: ${it.title}</b> <br/>
-                                <b>Link: ${it.link}</b>
-                                <sdu:ajaxSubmitButton style="${ButtonStyle.DANGER}" class="similar-resource-delete" data-id="${it.id}">
-                                    <fa:icon icon="${FaIcon.TRASH}"/>
-                                    Slet
-                                </sdu:ajaxSubmitButton>
-                            </div>
-                        </g:each>
-                    </ul>
-                </g:if>
             </div>
         </div>
     </div>
@@ -366,7 +351,7 @@
 <g:content key="layout-script">
     <asset:javascript src="video-creator.js"/>
     <script>
-        var baseUrl = "${createLink(absolute:true, uri:'/')}";
+        var baseUrl = "${createLink(absolute:false, uri:'/')}";
 
         $(document).ready(function () {
             Editor.init();
@@ -390,7 +375,7 @@
             </g:if>
             Editor.setVideoInfoEndpoint("<g:createLink controller="videoHost" action="info" />");
 
-            var tree = new ManagementTreeView("#tree-container", "${createLink(absolute:true, uri:'/')}");
+            var tree = new ManagementTreeView("#tree-container", "${createLink(absolute:false, uri:'/')}");
             tree.init();
 
             AjaxUtil.registerJSONForm(

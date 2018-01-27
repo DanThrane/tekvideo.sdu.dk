@@ -4,13 +4,14 @@ import grails.converters.JSON
 import org.springframework.security.access.annotation.Secured
 
 class ExerciseController {
-    UrlMappingService urlMappingService
-    ExerciseService exerciseService
+    def urlMappingService
+    def exerciseService
+    def nodeService
 
     @Secured("permitAll")
     def view(String teacherName, String courseName, String subjectName, Integer videoId, Integer year, Boolean spring) {
         Exercise exercise = urlMappingService.getExercise(teacherName, courseName, subjectName, videoId, year, spring)
-        if (exerciseService.canAccess(exercise)) {
+        if (nodeService.canView(exercise)) {
             if (exercise instanceof Video) {
                 forward controller: "video", action: "viewV", params: [id: exercise.id]
             } else if (exercise instanceof WrittenExerciseGroup) {

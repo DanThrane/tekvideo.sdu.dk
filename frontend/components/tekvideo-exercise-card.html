@@ -1,0 +1,168 @@
+<link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="../bower_components/iron-ajax/iron-ajax.html">
+<link rel="import" href="../bower_components/iron-image/iron-image.html">
+<link rel="import" href="../bower_components/iron-icon/iron-icon.html">
+<link rel="import" href="../bower_components/iron-icons/iron-icons.html">
+<link rel="import" href="../bower_components/iron-icons/communication-icons.html">
+<link rel="import" href="../bower_components/paper-card/paper-card.html">
+<link rel="import" href="../bower_components/paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../bower_components/paper-styles/color.html">
+<link rel="import" href="../bower_components/paper-styles/typography.html">
+<link rel="import" href="../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
+
+<dom-module id="tekvideo-exercise-card">
+
+<template>
+<style include="iron-flex"></style>
+<style is="custom-style">
+:host {
+    display: block;
+    width: 300px;
+}
+iron-image {
+    width: 100%;
+    height: 169px;
+}
+paper-card {
+    width: 100%;
+    height: 100%;
+}
+
+.header { @apply(--paper-font-headline); }
+.light { color: var(--paper-grey-600); }
+.stats {
+    float: right;
+    font-size: 15px;
+    vertical-align: middle;
+}
+
+a {
+    color: var(--google-blue-500);
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+.reserve { color: var(--google-blue-500); }
+
+.header-container {
+    position: relative;
+}
+
+.time {
+    position: absolute;
+    bottom: 15px;
+    right: 15px;
+    color: white;
+    background-color: rgba(0, 0, 0, 0.5);
+    padding: 5px
+}
+
+iron-icon.star {
+    --iron-icon-width: 16px;
+    --iron-icon-height: 16px;
+    color: var(--paper-amber-500);
+}
+iron-icon.star:last-of-type { color: var(--paper-grey-500); }
+</style>
+
+<paper-card>
+    <div class="header-container" hidden$="[[!_hasThumbnail(thumbnail)]]">
+        <a on-click="onLink" href$="[[url]]">
+            <iron-image sizing="cover" src="[[thumbnail]]"></iron-image>
+        </a>
+    </div>
+    <div class="card-content">
+      <div class="header"><a on-click="onLink" href="[[url]]">[[title]]</a>
+        <div class="stats light">
+            <template is="dom-repeat" items="[[stats]]">
+                <iron-icon icon="[[item.icon]]"></iron-icon>
+                <span>[[item.content]]</span>
+            </template>
+        </div>
+      </div>
+      <p>
+          <template is="dom-repeat" items="[[breadcrumbs]]">
+            <a on-click="onLink" href$="[[item.url]]">[[item.title]]</a>
+            <span hidden$="[[_isLastBreadcrumb(index)]]">・</span>
+          </template>
+      </p>
+      <div class="layout horizontal">
+        <p class="light flex">[[shortDescription]]</p>
+        <div hidden$="{{_hideFeatured(wideFormat, featuredChildren)}}" class="light" style="margin-left: 30px; margin-right: 30px">
+            <p>I dette emne:</p>
+            <ul>
+                <template is="dom-repeat" items="[[featuredChildren]]">
+                    <li><a on-click="onLink" href$="[[item.url]]">[[item.title]]</a></li>
+                </template>
+            </ul>
+        </div>
+      </div>
+    </div>
+  </paper-card>
+</template>
+
+<script>
+Polymer({
+    is: 'tekvideo-exercise-card',
+    properties: {
+        title: {
+            type: String
+        },
+        description: {
+            type: String
+        },
+        shortDescription: {
+            type: String,
+            computed: "_computeShortDescription(description, maxDescriptionLength)"
+        },
+        breadcrumbs: {
+            type: Array,
+            value: []
+        },
+        stats: {
+            type: Array,
+            value: []
+        },
+        maxDescriptionLength: {
+            type: Number,
+            value: 200
+        },
+        wideFormat: {
+            type: Boolean,
+            value: false
+        },
+        featuredChildren: {
+            type: Array,
+            value: []
+        },
+        url: {
+            type: String,
+            value: "#"
+        }
+    },
+    _hasThumbnail: function(thumbnail) {
+        return thumbnail != null;
+    },
+    _computeShortDescription: function(description, maxDescriptionLength) {
+        if (description.length > maxDescriptionLength) {
+            return description.substring(0, maxDescriptionLength) + "...";
+        } else {
+            return description;
+        }
+    },
+    _isLastBreadcrumb: function(index) {
+        return index == this.breadcrumbs.length -1;
+    },
+    _hideFeatured: function(wideFormat, featuredChildren) {
+        return !wideFormat || featuredChildren.length == 0;
+    },
+    onLink: function(e, i) {
+        this.fire("link", e);
+    }
+});
+</script>
+</dom-module>

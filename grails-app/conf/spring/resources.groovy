@@ -1,4 +1,8 @@
+import dk.sdu.tekvideo.UserDetailsService
+import dk.sdu.tekvideo.UserPasswordEncoderListener
+
 // Place your Spring DSL code here
 beans = {
-    userDetailsService(dk.sdu.tekvideo.UserDetailsService)
+    userPasswordEncoderListener(UserPasswordEncoderListener, ref('hibernateDatastore'))
+    userDetailsService(UserDetailsService)
 }

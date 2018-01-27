@@ -34,3 +34,7 @@ log/
 target/
 videos_with_questions_web.iml
 videos_with_questions_web.ipr
+
+*.swp
+build
+classes

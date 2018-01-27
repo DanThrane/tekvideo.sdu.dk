@@ -4,35 +4,11 @@
 <head>
     <meta charset="UTF-8">
     <title>TekVideo | <g:layoutTitle default="Title"/></title>
-    <g:layoutHead/>
     <asset:stylesheet src="application.css"/>
     <asset:javascript src="application.js"/>
     <fa:require/>
     <link rel="shortcut icon" href="${asset.assetPath(src: "favicon.ico")}"/>
-
-    <script>
-        $(function () {
-            var start = Date.now();
-            events.configure("${createLink(controller: "event", action: "register")}");
-            events.start();
-
-            events.emit({
-                "kind": "VISIT_SITE",
-                "url": document.location.href,
-                "ua": navigator.userAgent
-            }, true);
-
-            window.onbeforeunload = function () {
-                events.emit({
-                    "kind": "EXIT_SITE",
-                    "url": document.location.href,
-                    "ua": navigator.userAgent,
-                    "time": Date.now() - start
-                });
-                events.flush(false);
-            };
-        });
-    </script>
+    <g:layoutHead/>
 </head>
 
 <body>
@@ -48,7 +24,7 @@
         <sec:ifAllGranted roles="ROLE_TEACHER">
             <twbs:navbarLink controller="courseManagement">Kursusadministration</twbs:navbarLink>
             <twbs:navbarLink controller="accountManagement" action="manage">Kontoadministration</twbs:navbarLink>
-            <twbs:navbarLink controller="dashboard">Video Statistikker</twbs:navbarLink>
+            <twbs:navbarLink controller="stats">Statistikker</twbs:navbarLink>
         </sec:ifAllGranted>
     </twbs:navbarLinks>
     <twbs:navbarPullRight>
@@ -77,8 +53,8 @@
                                     --}%
                                     <twbs:form action="${createLink(uri: SpringSecurityUtils.securityConfig.apf.filterProcessesUrl)}"
                                                method="POST" id="loginForm" name="loginForm" autocomplete="off">
-                                        <twbs:input name="j_username" labelText="Brugernavn" />
-                                        <twbs:input name="j_password" type="password" labelText="Kodeord" />
+                                        <twbs:input name="username" labelText="Brugernavn" />
+                                        <twbs:input name="password" type="password" labelText="Kodeord" />
                                         <twbs:checkbox name="rememberMeParameter" id="remember_me" labelText="Forbliv logget ind" />
 
                                         <twbs:button type="submit" style="${ButtonStyle.PRIMARY}" block="true">
@@ -107,8 +83,6 @@
             <sec:ifLoggedIn>
                 <twbs:navDropdownToggle>
                     <sdu:username/>
-                    <avatar:gravatar email="${sdu.userEmail()}" cssClass="img-rounded"
-                                     defaultGravatarUrl="http://www.gravatar.com/avatar/?d=identicon"/>
                     <twbs:dropdownMenu>
                         <twbs:dropdownItem controller="AccountManagement" action="index">
                             <fa:icon icon="${FaIcon.WRENCH}"/>
@@ -226,5 +200,35 @@
 <g:ifContentAvailable key="layout-script">
     <g:selectContent key="layout-script"/>
 </g:ifContentAvailable>
+
+<script>
+    $(function () {
+        if (!localStorage.getItem("id")) {
+            localStorage.setItem("id", generateId());
+        }
+
+        events.configure("${createLink(controller: "event", action: "register")}");
+        events.start();
+
+
+        function getRandomInt(min, max) {
+            min = Math.ceil(min);
+            max = Math.floor(max);
+            return Math.floor(Math.random() * (max - min)) + min;
+        }
+
+        function generateId(){
+            var adjectives = ["afraid","ancient","angry","average","bad","big","bitter","black","blue","brave","breezy","bright","brown","calm","chatty","chilly","clever","cold","cowardly","cuddly","curly","curvy","dangerous","dry","dull","empty","evil","fast","fat","fluffy","foolish","fresh","friendly","funny","fuzzy","gentle","giant","good","great","green","grumpy","happy","hard","heavy","helpless","honest","horrible","hot","hungry","itchy","jolly","kind","lazy","light","little","loud","lovely","lucky","massive","mean","mighty","modern","moody","nasty","neat","nervous","new","nice","odd","old","orange","ordinary","perfect","pink","plastic","polite","popular","pretty","proud","purple","quick","quiet","rare","red","rotten","rude","selfish","serious","shaggy","sharp","short","shy","silent","silly","slimy","slippery","smart","smooth","soft","sour","spicy","splendid","spotty","stale","strange","strong","stupid","sweet","swift","tall","tame","tasty","tender","terrible","thin","tidy","tiny","tough","tricky","ugly","unlucky","warm","weak","wet","white","wicked","wise","witty","wonderful","yellow","young"];
+            var animals = ["ape","baboon","badger","bat","bear","bird","bobcat","bulldog","bullfrog","cat","catfish","cheetah","chicken","chipmunk","cobra","cougar","cow","crab","deer","dingo","dodo","dog","dolphin","donkey","dragon","dragonfly","duck","eagle","earwig","eel","elephant","emu","falcon","fireant","firefox","fish","fly","fox","frog","gecko","goat","goose","grasshopper","horse","hound","husky","impala","insect","jellyfish","kangaroo","ladybug","liger","lion","lionfish","lizard","mayfly","mole","monkey","moose","moth","mouse","mule","newt","octopus","otter","owl","panda","panther","parrot","penguin","pig","puma","pug","quail","rabbit","rat","rattlesnake","robin","seahorse","sheep","shrimp","skunk","sloth","snail","snake","squid","starfish","stingray","swan","termite","tiger","treefrog","turkey","turtle","vampirebat","walrus","warthog","wasp","wolverine","wombat","yak","zebra"];
+
+            var adjective = adjectives[getRandomInt(0, adjectives.length)];
+            var animal = animals[getRandomInt(0, animals.length)];
+            var number = getRandomInt(0, 1000);
+
+            return adjective + "-" + animal + "-" + number;
+        }
+    });
+</script>
+
 </body>
 </html>

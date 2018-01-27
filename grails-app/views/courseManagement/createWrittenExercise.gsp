@@ -7,7 +7,7 @@
 
     <g:render template="/polymer/includePolymer" />
 
-    <link rel="import" href="${createLink(absolute:true, uri:'/assets/')}/components/exercise-editor/tve-group-editor.html">
+    <sdu:appResourceImport href="components/exercise-editor/tve-group-editor.html" />
     <style>
     .polymer {
         font-family: 'Roboto', 'Noto', sans-serif;
@@ -79,6 +79,7 @@
         // Prepare and validate data
         data.name = editor.name;
         data.description = editor.description;
+        data.streakToPass = editor.streakToPass;
         data.thumbnailUrl = editor.thumbnailUrl;
         data.exercises = editor.exercises.map(function(e) {
             var identifier = e.identifier;

@@ -39,7 +39,7 @@
                         <div class="video">
                             <div data-video-id="${exercise.id}" class="hide"></div>
                             <twbs:row>
-                                <twbs:column cols="8">
+                                <twbs:column cols="6">
                                     <div class="node-header">
                                         <g:if test="${exercise instanceof dk.sdu.tekvideo.Video}">
                                             <g:link action="editVideo" id="${exercise.id}">
@@ -53,7 +53,7 @@
                                         </g:if>
                                     </div>
                                 </twbs:column>
-                                <twbs:column cols="4" class="align-right">
+                                <twbs:column cols="6" class="align-right">
                                     <twbs:linkButton action="editLinks" id="${exercise.id}" style="${ButtonStyle.INFO}">
                                         <fa:icon icon="${FaIcon.LINK}" />
                                         Rediger links
@@ -154,6 +154,10 @@
                      style="${ButtonStyle.LINK}" block="true">
         <fa:icon icon="${FaIcon.PLUS}"/> Tilføj skriftlig opgave
     </twbs:linkButton>
+    <twbs:linkButton action="importWrittenExercises" id="${subject.id}"
+                     style="${ButtonStyle.LINK}" block="true">
+        <fa:icon icon="${FaIcon.UPLOAD}" /> Importer opgaver fra JSON
+    </twbs:linkButton>
     <hr>
     <sdu:ajaxSubmitButton style="${ButtonStyle.LINK}" id="save-video-order" block="true">
         <fa:icon icon="${FaIcon.EDIT}"/>
@@ -166,7 +170,7 @@
 </g:content>
 
 <script>
-    var baseUrl = "${createLink(absolute:true, uri:'/')}";
+    var baseUrl = "${createLink(absolute:false, uri:'/')}";
 
     $(function () {
         var list = new ListManipulator(".video", ".video-up", ".video-down");
@@ -180,7 +184,7 @@
             return {order: order, subject: ${subject.id}};
         });
 
-        var tree = new ManagementTreeView("#tree-container", "${createLink(absolute:true, uri:'/')}");
+        var tree = new ManagementTreeView("#tree-container", "${createLink(absolute:false, uri:'/')}");
         tree.init();
     });
 </script>

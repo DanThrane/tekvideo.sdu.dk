@@ -1,6 +1,7 @@
 package dk.sdu.tekvideo
 
-import org.apache.http.HttpStatus
+import org.hibernate.SessionFactory
+import org.springframework.http.HttpStatus
 
 import static dk.sdu.tekvideo.ServiceResult.ok
 import static dk.sdu.tekvideo.ServiceResult.fail
@@ -11,6 +12,7 @@ import static dk.sdu.tekvideo.ServiceResult.fail
 class AccountManagementService {
     def springSecurityService
     def userService
+    SessionFactory sessionFactory
 
     /**
      * Updates the user's e-learn ID.
@@ -70,13 +72,36 @@ class AccountManagementService {
         springSecurityService.passwordEncoder.isPasswordValid(current, newPassword, null)
     }
 
-    ServiceResult<List<User>> retrieveUserData() {
+    ServiceResult<Collection<Map>> retrieveUserData() {
         def teacher = userService.authenticatedTeacher
-        if (teacher) {
-            return ok(User.list())
-        } else {
-            return fail(message: "Not allowed", suggestedHttpStatus: HttpStatus.SC_FORBIDDEN)
+        if (!teacher) return fail(message: "Not allowed", suggestedHttpStatus: HttpStatus.FORBIDDEN.value())
+
+        def query = """
+            SELECT u.id, u.username, u.email, u.is_cas, u.elearn_id, u.real_name, r.authority
+            FROM myusers u, user_role ur, role r
+            WHERE
+                u.id = ur.user_id AND
+                ur.role_id = r.id
+        """
+        List<List> result = sessionFactory.currentSession.createSQLQuery(query).list()
+        Map<Long, Map> collected = [:]
+        result.each {
+            Map entry = collected[it[0]]
+            if (entry == null) {
+                entry = [
+                        username: it[1],
+                        email   : it[2],
+                        isCas   : it[3],
+                        elearnId: it[4],
+                        realName: it[5],
+                        roles   : []
+                ]
+            }
+
+            entry.roles.add(it[6])
+            collected[it[0]] = entry
         }
+        return ok(collected.values())
     }
 
     ServiceResult<Void> updateUser(UpdateUserCommand command) {
@@ -92,7 +117,7 @@ class AccountManagementService {
                 boolean hasBadRoles = mappedRoles.any { it == null }
                 if (hasBadRoles) {
                     return fail(message: "Bad request (Some roles does not exist)",
-                            suggestedHttpStatus: HttpStatus.SC_BAD_REQUEST)
+                            suggestedHttpStatus: HttpStatus.BAD_REQUEST.value())
                 } else {
                     Set<Role> existingRoles = UserRole.findAllByUser(user).role.toSet()
                     Set<Role> toBeRemoved = new HashSet(existingRoles)
@@ -118,10 +143,10 @@ class AccountManagementService {
                 return ok()
             } else {
                 println command.errors
-                return fail(message: "Bad request (Invalid)", suggestedHttpStatus: HttpStatus.SC_BAD_REQUEST)
+                return fail(message: "Bad request (Invalid)", suggestedHttpStatus: HttpStatus.BAD_REQUEST.value())
             }
         } else {
-            return fail(message: "Forbidden", suggestedHttpStatus: HttpStatus.SC_FORBIDDEN)
+            return fail(message: "Forbidden", suggestedHttpStatus: HttpStatus.FORBIDDEN.value())
         }
     }
 

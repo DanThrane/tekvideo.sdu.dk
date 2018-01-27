@@ -1,13 +1,6 @@
 //= require jquery
-//= require bootstrap
-//= require lib/popcorn
-//= require lib/underscore
-//= require lib/mathquill.min
-//= require lib/kas
-//= require lib/tex-wrangler
 //= require events
-//= require interactivevideos
-//= require cardstack
+//= require bootstrap
 
 var Util = {};
 Util.postJson = function(url, data, callbacks) {
@@ -47,7 +40,7 @@ String.prototype.format = function() {
     var args = arguments;
     return this.replace(/{(\d+)}/g, function(match, number) {
         var arg = args[number];
-        if (typeof arg != 'undefined') {
+        if (typeof arg !== 'undefined') {
             if (typeof arg === "object") {
                 if (arg.hasOwnProperty("raw") && arg.raw === true &&
                     arg.hasOwnProperty("content")) {

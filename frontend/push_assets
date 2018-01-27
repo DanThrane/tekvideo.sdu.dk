@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+
+rm -rf ../tekvideo.sdu.dk/grails-app/assets/javascripts/components
+cp -r src ../tekvideo.sdu.dk/grails-app/assets/javascripts/components
+cp -r bower_components ../tekvideo.sdu.dk/grails-app/assets/javascripts
+

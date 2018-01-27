@@ -18,9 +18,6 @@
 <g:each in="${exercise.comments}" var="comment">
     <div class="comment">
         <twbs:row>
-            <twbs:column sm="1">
-                <avatar:gravatar size="80" email="${comment.user.email ?: "no@mail.com"}"/>
-            </twbs:column>
             <twbs:column sm="9">
                 <h6>${comment.user.username} <small><date:utilDateFormatter time="${comment.dateCreated}"/></small>
                 </h6>

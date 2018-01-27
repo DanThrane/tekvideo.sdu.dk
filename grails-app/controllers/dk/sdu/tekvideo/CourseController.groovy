@@ -1,5 +1,6 @@
 package dk.sdu.tekvideo
 
+import grails.converters.JSON
 import org.springframework.security.access.annotation.Secured
 
 class CourseController {
@@ -9,25 +10,44 @@ class CourseController {
     StudentService studentService
     CourseService courseService
     def springSecurityService
+    def nodeService
 
     @Secured("permitAll")
     def list() {
-        [data: courseService.visibleCoursesForBrowser()]
+        def collect = nodeService.listVisibleChildrenForBrowser(NodeService.ROOT)
+        [data: collect]
     }
 
     @Secured("permitAll")
-    def viewByTeacher(String teacherName, String courseName, Integer year, Boolean spring) {
+    def viewByTeacher(String teacherName, String courseName, Integer year, Boolean spring, String format) {
         Course course = urlMappingService.getCourse(teacherName, courseName, year, spring)
         Student student = studentService.authenticatedStudent
-        if (courseService.canAccess(course)) {
-            render(view: "view", model: [
-                    course    : course,
-                    data      : courseService.visibleSubjectsForBrowser(course),
-                    showSignup: student != null,
-                    inCourse  : studentService.isInCourse(student, course),
-            ])
+        if (nodeService.canView(course)) {
+            // TODO This should obviously be refactored
+            def breadcrumbs = [
+                    [link: g.createLinkTo(uri: "/"), title: "Hjem"],
+                    [link: sdu.createLinkToTeacher(teacher: course.teacher), title: course.teacher.toString()],
+                    [title: course.fullName + "(" + course.name + ")"]
+            ]
+            def model = [
+                    node       : course,
+                    course     : course,
+                    title      : course.fullName + "(" + course.name + ")",
+                    subtitle   : course.shortWhen,
+                    breadcrumbs: breadcrumbs,
+                    data       : nodeService.listVisibleChildrenForBrowser(course),
+                    showSignup : student != null,
+                    inCourse   : studentService.isInCourse(student, course),
+            ]
+
+            if (format != null) {
+                if (format != "json") render404(format)
+                else render model as JSON
+            } else {
+                render(view: "view", model: model)
+            }
         } else {
-            render status: "404", text: "Course not found!"
+            render404(format)
         }
     }
 
@@ -37,7 +57,7 @@ class CourseController {
         [course      : course,
          studentCount: courseService.getStudentCount(course),
          inCourse    : studentService.isInCourse(student, course),
-         student     : student] // TODO Check if inCourse loads in all students
+         student     : student]
     }
 
     @Secured(["ROLE_STUDENT"])
@@ -60,5 +80,14 @@ class CourseController {
             flash.error = "Kunne ikke finde kursus!"
         }
         redirect url: urlMappingService.generateLinkToCourse(course, [absolute: true])
+    }
+
+    private render404(String format) {
+        if (format == "json") {
+            response.status = 404
+            render([message: "Not found"] as JSON)
+        } else {
+            render(status: 404, message: "Not found")
+        }
     }
 }

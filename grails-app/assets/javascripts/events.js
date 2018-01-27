@@ -20,6 +20,8 @@ var events = {};
 
     module.emit = function(event, flush) {
         var eventWithMetaData = mergeProperties(event, meta);
+        var uuid = localStorage.getItem("id");
+        if (uuid) eventWithMetaData.uuid = uuid;
         events.push(eventWithMetaData);
         if (flush) module.flush();
     };

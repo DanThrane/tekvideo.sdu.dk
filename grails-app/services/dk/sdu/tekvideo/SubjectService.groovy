@@ -1,56 +1,94 @@
 package dk.sdu.tekvideo
 
-class SubjectService {
-    def userService
+import org.hibernate.SessionFactory
+
+class SubjectService implements ContainerNodeInformation<Subject, Exercise> {
     def videoService
     def urlMappingService
+    def courseService
+    SessionFactory sessionFactory
 
-    boolean canAccess(Subject subject) {
-        def status = subject?.status
-
-        subject != null &&
-                (status == NodeStatus.VISIBLE ||
-                    (status == NodeStatus.INVISIBLE && userService.authenticatedTeacher == subject.course.teacher))
-    }
-
+    @Override
     String getThumbnail(Subject subject) {
-        return videoService.getThumbnail((Video) subject.activeVideos?.find { it instanceof Video })
+        return getThumbnailsBulk([subject]).get(subject)
     }
 
-    List<Map> subjectForBrowser(Subject subject) {
-        def exercises = subject.allVisibleExercises
+    @Override
+    Map<Subject, String> getThumbnailsBulk(List<Subject> nodes) {
+        def subjects = nodes.groupBy { it.id }
+        def query = $/
+            SELECT DISTINCT ON (s.id)
+              s.id,
+              e.youtube_id,
+              e.thumbnail_url
+            FROM
+              subject_exercise se, subject s, exercise e
+            WHERE
+              se.subject_id = s.id AND
+              se.exercise_id = e.id AND
+              s.id IN (:subjects) AND
+              e.local_status = 'VISIBLE' AND
+              (e.class = :videoClass OR (e.class = :exerciseClass AND e.thumbnail_url IS NOT NULL)) 
+        /$
 
-        def breadcrumbs = []
-        def course = subject.course
-        def teacher = course.teacher
-        breadcrumbs.add([
-                title: teacher.toString(),
-                url: urlMappingService.generateLinkToTeacher(teacher)
-        ])
-        breadcrumbs.add([
-                title: course.name,
-                url: urlMappingService.generateLinkToCourse(course)
-        ])
-        breadcrumbs.add([
-                title: subject.name,
-                url: urlMappingService.generateLinkToSubject(subject)
-        ])
+        def sqlResult = sessionFactory.currentSession
+                .createSQLQuery(query)
+                .setParameterList("subjects", nodes.collect { it.id })
+                .setParameter("videoClass", Video.name)
+                .setParameter("exerciseClass", WrittenExerciseGroup.name)
+                .list()
 
-        return exercises.collect {
-            def result = [:]
-            result.title = it.name
-            result.description = it.description
-            result.stats = []
-            result.featuredChildren = []
-            result.breadcrumbs = breadcrumbs
-            result.url = urlMappingService.generateLinkToExercise(it)
-
-            if (it instanceof Video) {
-                result.thumbnail = videoService.getThumbnail(it)
-            } else if (it instanceof WrittenExerciseGroup) {
-                result.thumbnail = it.thumbnailUrl
+        Map<Subject, String> result = [:]
+        nodes.each { result[it] = null }
+        for (def row : sqlResult) {
+            String thumbnail = null
+            if (row[1] != null) {
+                thumbnail = videoService.getThumbnail(row[1].toString())
+            } else if (row[2] != null) {
+                thumbnail = row[2]
             }
-            return result
+            result[subjects[row[0].toString().toLong()][0]] = thumbnail
         }
+        return result
+    }
+
+    @Override
+    List<NodeBrowserCrumbs> getBreadcrumbs(Subject subject) {
+        def teacher = subject.course.teacher
+        [
+                new NodeBrowserCrumbs(
+                        teacher.toString(),
+                        urlMappingService.generateLinkToTeacher(teacher)
+                ),
+                new NodeBrowserCrumbs(
+                        subject.course.name,
+                        urlMappingService.generateLinkToCourse(subject.course)
+                )
+        ]
+    }
+
+    @Override
+    NodeBrowserInformation getInformationForBrowser(Subject it, String thumbnail, boolean resolveThumbnail,
+                                                    boolean addBreadcrumbs) {
+        List<NodeBrowserCrumbs> breadcrumbs = addBreadcrumbs ? courseService.getBreadcrumbs(it.course) : []
+
+        String actualThumbnail = !resolveThumbnail ? thumbnail : getThumbnail(it)
+        return new NodeBrowserInformation(
+                it.name,
+                it.description,
+                actualThumbnail,
+                urlMappingService.generateLinkToSubject(it),
+                breadcrumbs
+        )
+    }
+
+    @Override
+    List<Exercise> listVisibleChildren(Subject subject) {
+        subject.allVisibleExercises
+    }
+
+    @Override
+    List<Exercise> listActiveChildren(Subject subject) {
+        subject.allActiveExercises
     }
 }

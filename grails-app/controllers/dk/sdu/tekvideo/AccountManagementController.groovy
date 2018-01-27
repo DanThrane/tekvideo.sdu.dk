@@ -21,7 +21,7 @@ class AccountManagementController {
 
     /**
      * Receives an update e-learn command. The user will be redirected back to the index page, and receive a
-     * notification indiciating if the operation was successful.
+     * notification indicating if the operation was successful.
      *
      * @param command    The update command
      */
@@ -39,7 +39,7 @@ class AccountManagementController {
 
     /**
      * Receives an update password command. The user will be redirected back to the index page, and receive a
-     * notification indiciating if the operation was successful.
+     * notification indicating if the operation was successful.
      *
      * @param command    The update command
      */
@@ -62,7 +62,7 @@ class AccountManagementController {
      */
     @Secured(["ROLE_TEACHER"])
     def manage() {
-        []
+        [:]
     }
 
     @Secured(["ROLE_TEACHER"])

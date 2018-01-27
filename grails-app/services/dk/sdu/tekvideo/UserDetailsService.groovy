@@ -4,16 +4,16 @@ import grails.plugin.springsecurity.SpringSecurityUtils
 import grails.plugin.springsecurity.userdetails.GormUserDetailsService
 import grails.plugin.springsecurity.userdetails.GrailsUser
 import grails.transaction.Transactional
-import org.codehaus.groovy.grails.web.util.WebUtils
+import org.grails.web.util.WebUtils
 import org.springframework.dao.DataAccessException
-import org.springframework.security.core.authority.GrantedAuthorityImpl
+import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.security.core.userdetails.UsernameNotFoundException
 
 class UserDetailsService extends GormUserDetailsService {
 
     static final List NO_ROLES =
-            [new GrantedAuthorityImpl(SpringSecurityUtils.NO_ROLE)]
+            [new SimpleGrantedAuthority(SpringSecurityUtils.NO_ROLE)]
 
 
     @Override
@@ -28,7 +28,7 @@ class UserDetailsService extends GormUserDetailsService {
     UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         // TODO I fear that it might be possible to fake this information, making it possible to bypass the entire
         // security check. Although this depends on whether or not the information is validated before or after this.
-        def isCas = WebUtils.retrieveGrailsWebRequest().request.servletPath == "/j_spring_cas_security_check"
+        def isCas = WebUtils.retrieveGrailsWebRequest().request.servletPath == "/login/cas"
 
         if (isCas && username == "_cas_stateful_") {
             // Username sometimes becomes "_cas_stateful_" not sure why. This is all done by the layers below.
@@ -52,8 +52,12 @@ class UserDetailsService extends GormUserDetailsService {
             UserRole.create(user, defaultRole, true)
         }
 
+        if (user == null) {
+            throw new UsernameNotFoundException("Not found")
+        }
+
         def authorities = user.authorities.collect {
-            new GrantedAuthorityImpl(it.authority)
+            new SimpleGrantedAuthority(it.authority)
         }
 
         return new GrailsUser(user.username, user.password,

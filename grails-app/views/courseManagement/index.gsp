@@ -1,4 +1,4 @@
-<%@ page import="dk.danthrane.twbs.NavStyle; dk.sdu.tekvideo.NodeStatus; dk.danthrane.twbs.ButtonSize; dk.danthrane.twbs.ButtonStyle; dk.sdu.tekvideo.FaIcon" contentType="text/html;charset=UTF-8" %>
+<%@ page import="dk.sdu.tekvideo.CourseSubject; dk.danthrane.twbs.NavStyle; dk.sdu.tekvideo.NodeStatus; dk.danthrane.twbs.ButtonSize; dk.danthrane.twbs.ButtonStyle; dk.sdu.tekvideo.FaIcon" contentType="text/html;charset=UTF-8" %>
 <html>
 <head>
     <title>Kursusadministration</title>
@@ -24,15 +24,15 @@
     </g:if>
     <g:else>
         <g:each in="${activeCourses}" var="course">
-            <div data-subject-id="${course.id}" class="hide"></div>
+            <div data-subject-id="${course.courseId}" class="hide"></div>
             <twbs:row>
                 <twbs:column cols="8">
                     <div class="node-header">
-                        <g:link action="manage" id="${course.id}">${course.fullName} (${course.name})</g:link>
+                        <g:link action="manage" id="${course.courseId}">${course.fullName} (${course.name})</g:link>
                         <ul class="list-inline course-list">
                             <!-- I definitely didn't implement the bullets like this because I'm too lazy ;-) -->
-                            <li>&raquo; <sdu:semesterString course="${course}"/></li>
-                            <li>&raquo; ${course.subjects.size()} emne(r)</li>
+                            <li>&raquo; <sdu:semesterString year="${course.year}" spring="${course.spring}"/></li>
+                            <li>&raquo; ${course.activeSubjectCount} emne(r)</li>
                         </ul>
                     </div>
                 </twbs:column>
@@ -43,24 +43,24 @@
 
                             <twbs:dropdownMenu>
                                 <twbs:dropdownItem disabled="${status == NodeStatus.VISIBLE}"
-                                                   action="courseStatus" id="${course.id}"
+                                                   action="courseStatus" id="${course.courseId}"
                                                    params="${[status: NodeStatus.VISIBLE]}">
                                     <fa:icon icon="${FaIcon.EYE}"/> Synlige
                                 </twbs:dropdownItem>
                                 <twbs:dropdownItem disabled="${status == NodeStatus.INVISIBLE}"
-                                                   action="courseStatus" id="${course.id}"
+                                                   action="courseStatus" id="${course.courseId}"
                                                    params="${[status: NodeStatus.INVISIBLE]}">
                                     <fa:icon icon="${FaIcon.EYE_SLASH}"/> Usynlige
                                 </twbs:dropdownItem>
                                 <twbs:dropdownItem disabled="${status == NodeStatus.TRASH}"
-                                                   action="courseStatus" id="${course.id}"
+                                                   action="courseStatus" id="${course.courseId}"
                                                    params="${[status: NodeStatus.TRASH]}">
                                     <fa:icon icon="${FaIcon.TRASH}"/> Papirkurv
                                 </twbs:dropdownItem>
                             </twbs:dropdownMenu>
                         </twbs:dropdownToggle>
                     </twbs:buttonGroup>
-                    <twbs:linkButton action="createSubject" id="${course.id}" style="${ButtonStyle.SUCCESS}">
+                    <twbs:linkButton action="createSubject" id="${course.courseId}" style="${ButtonStyle.SUCCESS}">
                         <fa:icon icon="${FaIcon.USERS}"/> Tilføj Emne
                     </twbs:linkButton>
                 </twbs:column>
@@ -122,7 +122,7 @@
 </g:content>
 
 <script>
-    var baseUrl = "${createLink(absolute:true, uri:'/')}";
+    var baseUrl = "${createLink(absolute:false, uri:'/')}";
 
     $(function () {
         var courseToDelete = null;
@@ -147,7 +147,7 @@
                 }
         );
 
-        var tree = new ManagementTreeView("#tree-container", "${createLink(absolute:true, uri:'/')}");
+        var tree = new ManagementTreeView("#tree-container", "${createLink(absolute:false, uri:'/')}");
         tree.init();
     });
 </script>

@@ -1,6 +1,12 @@
 package dk.sdu.tekvideo
 
-import org.apache.http.HttpStatus
+import grails.converters.JSON
+import org.grails.web.converters.exceptions.ConverterException
+import org.grails.web.json.JSONArray
+import org.grails.web.json.JSONException
+import org.grails.web.json.JSONObject
+import org.hibernate.SessionFactory
+import org.springframework.http.HttpStatus
 import org.springframework.validation.FieldError
 
 import static dk.sdu.tekvideo.ServiceResult.*
@@ -14,39 +20,93 @@ import static dk.sdu.tekvideo.ServiceResult.*
 class CourseManagementService {
     def userService
     def messageSource
+    SessionFactory sessionFactory
+
+    ServiceResult<List<CourseSummary>> getCompleteCourseSummary() {
+        def teacher = userService.authenticatedTeacher
+        if (!teacher) return fail(message: "Not allowed", suggestedHttpStatus: HttpStatus.UNAUTHORIZED.value())
+
+        def query = $/
+            SELECT c.id, c.full_name, c.name, c.description, c.year, c.spring, COUNT(cs.subject_id)
+            FROM
+              course c LEFT OUTER JOIN course_subject cs ON c.id = cs.course_id,
+              subject s
+            WHERE
+              c.teacher_id = :teacher AND
+              (s.id = cs.subject_id OR cs.subject_id IS NULL) AND
+              (s.local_status != 'TRASH' OR s.local_status IS NULL)
+            GROUP BY
+              c.id, c.full_name, c.name, c.description, c.year, c.spring;
+        /$
+        List<List> results = sessionFactory.currentSession
+                .createSQLQuery(query)
+                .setParameter("teacher", teacher.id)
+                .list()
+
+        return ok(results.collect {
+            new CourseSummary(
+                    courseId: it[0],
+                    fullName: it[1],
+                    name: it[2],
+                    description: it[3],
+                    year: it[4],
+                    spring: it[5],
+                    activeSubjectCount: it[6]
+            )
+        })
+    }
 
     /**
      * Returns the courses owned by the current teacher in a format jsTree will understand.
      */
     List<Map> getJsTreeCourses() {
-        def courses = getCourses(NodeStatus.VISIBLE)
-        if (courses.success) {
-            return courses.result.collect {
-                [
-                        id      : it.id,
-                        text    : it.fullName,
-                        children: it.activeSubjects.size() > 0, // TODO Not efficient
-                        type    : "course"
-                ]
-            }
-        } else {
-            return Collections.emptyList()
+        def summary = getCompleteCourseSummary()
+        if (!summary.success) return Collections.emptyList()
+        def results = summary.result
+
+        return results.collect {
+            [
+                    id      : it.courseId,
+                    text    : it.fullName,
+                    children: it.activeSubjectCount > 0,
+                    type    : "course"
+            ]
         }
     }
 
     List<Map> getJsTreeSubjects(Course course) {
-        def subjects = getSubjects(NodeStatus.VISIBLE, course)
-        if (subjects.success) {
-            return subjects.result.collect {
-                [
-                        id      : it.id,
-                        text    : it.name,
-                        children: it.activeExerciseCount > 0, // TODO Not efficient
-                        type    : "subject"
-                ]
-            }
-        } else {
-            return Collections.emptyList()
+        def teacher = userService.authenticatedTeacher
+        if (!teacher) return Collections.emptyList()
+
+        def query = $/
+            SELECT cs.subject_id, s.name, COUNT(se.exercise_id)
+            FROM
+              course_subject cs LEFT OUTER JOIN subject_exercise se ON (cs.subject_id = se.subject_id),
+              subject s, course c, exercise e
+            WHERE cs.course_id = :course AND
+              cs.subject_id = s.id AND
+              cs.course_id = c.id AND
+              c.teacher_id = :teacher AND
+                  (se.exercise_id = e.id OR se.exercise_id IS NULL) AND
+                  (e.local_status = 'VISIBLE' OR e.local_status IS NULL)
+
+            GROUP BY cs.subject_id, s.name, cs.weight
+            ORDER BY cs.weight;
+        /$
+
+        List<List> results = sessionFactory.currentSession
+                .createSQLQuery(query)
+                .setParameter("course", course.id)
+                .setParameter("teacher", teacher.id)
+                .list()
+
+        return results.collect {
+            [
+                    id      : it[0],
+                    text    : it[1],
+                    children: it[2] > 0,
+                    type    : "subject"
+            ]
         }
     }
 
@@ -144,7 +204,7 @@ class CourseManagementService {
         if (!canAccess(course)) {
             return fail([
                     message            : "Ikke tilladt",
-                    suggestedHttpStatus: HttpStatus.SC_UNAUTHORIZED
+                    suggestedHttpStatus: HttpStatus.UNAUTHORIZED.value()
             ])
         }
 
@@ -152,7 +212,7 @@ class CourseManagementService {
         if (!command.domain.validate()) {
             return fail([
                     message            : "Dårlig besked",
-                    suggestedHttpStatus: HttpStatus.SC_BAD_REQUEST,
+                    suggestedHttpStatus: HttpStatus.BAD_REQUEST.value(),
                     information        : [errors: getFieldsErrors(command.domain)]
             ])
         }
@@ -176,7 +236,7 @@ class CourseManagementService {
         if (!teacher || (command.isEditing && !canAccess(command.domain))) {
             return fail([
                     message            : "Ikke tilladt",
-                    suggestedHttpStatus: HttpStatus.SC_UNAUTHORIZED
+                    suggestedHttpStatus: HttpStatus.UNAUTHORIZED.value()
             ])
         }
 
@@ -186,7 +246,7 @@ class CourseManagementService {
         if (!command.domain.validate()) {
             return fail([
                     message            : "Dårlig besked",
-                    suggestedHttpStatus: HttpStatus.SC_BAD_REQUEST,
+                    suggestedHttpStatus: HttpStatus.BAD_REQUEST.value(),
                     information        : [errors: getFieldsErrors(command.domain)]
             ])
         }
@@ -219,7 +279,7 @@ class CourseManagementService {
         if (!command.validate()) {
             return fail([
                     message            : "Ugyldig besked",
-                    suggestedHttpStatus: HttpStatus.SC_BAD_REQUEST,
+                    suggestedHttpStatus: HttpStatus.BAD_REQUEST.value(),
                     information        : [errors: getFieldsErrors(command)]
             ])
         }
@@ -227,7 +287,7 @@ class CourseManagementService {
         if (!canAccess(command.subject.course)) {
             return fail([
                     message            : "Ikke tilladt",
-                    suggestedHttpStatus: HttpStatus.SC_UNAUTHORIZED
+                    suggestedHttpStatus: HttpStatus.UNAUTHORIZED.value()
             ])
         }
 
@@ -242,7 +302,7 @@ class CourseManagementService {
         if (!video.validate()) {
             return fail([
                     message            : "Ugyldig besked (Intern fejl)",
-                    suggestedHttpStatus: HttpStatus.SC_INTERNAL_SERVER_ERROR,
+                    suggestedHttpStatus: HttpStatus.INTERNAL_SERVER_ERROR.value(),
                     information        : [errors: getFieldsErrors(video)]
             ])
         }
@@ -257,22 +317,85 @@ class CourseManagementService {
         return ok(video)
     }
 
+    ServiceResult<Void> importWrittenExercisesFromJson(Subject subject, String json) {
+        if (!canAccessNode(subject)) {
+            return fail(message: "not allowed", suggestedHttpStatus: HttpStatus.UNAUTHORIZED.value())
+        }
+
+        try {
+            def parsed = JSON.parse(json)
+            if (!(parsed instanceof JSONArray)) return invalidRequest()
+
+            def listOfGroups = parsed as JSONArray
+            List<WrittenExerciseGroup> unsavedGroups = []
+            for (def group : listOfGroups) {
+                if (!(group instanceof JSONObject)) return invalidRequest()
+                def groupObject = group as JSONObject
+                String description = groupObject.getString("description")
+                String name = groupObject.getString("name")
+                String thumbnailUrl = groupObject.getString("thumbnailUrl")
+                int streakToPass = groupObject.optInt("streakToPass", 5)
+                JSONArray exercises = groupObject.getJSONArray("exercises")
+
+                def processedGroup = new WrittenExerciseGroup(
+                        name: name,
+                        thumbnailUrl: thumbnailUrl,
+                        description: description,
+                        streakToPass: streakToPass
+                )
+
+                for (def exercise : exercises) {
+                    if (!(exercise instanceof JSONObject)) return invalidRequest()
+                    def exerciseObject = exercise as JSONObject
+                    exerciseObject.remove("identifier")
+
+                    def exerciseString = exerciseObject.toString()
+                    if (exerciseString == null) return fail(
+                            message: "Internal server error",
+                            suggestedHttpStatus: HttpStatus.INTERNAL_SERVER_ERROR.value(),
+                            internal: true
+                    )
+
+                    def subExercise = new WrittenExercise(exercise: exerciseString)
+                    processedGroup.addToExercises(subExercise)
+                }
+
+                unsavedGroups.add(processedGroup)
+            }
+
+            // TODO Why on Earth does saveAll not save anything?
+            //WrittenExerciseGroup.saveAll(unsavedGroups)
+            //SubjectExercise.saveAll(unsavedGroups.collect { SubjectExercise.create(subject, it, [save: false]) })
+
+            unsavedGroups.each { it.save(flush: true) }
+            unsavedGroups.collect { SubjectExercise.create(subject, it, [save: true, flush: true]) }
+            return ok()
+        } catch (ConverterException | JSONException ignored) {
+            return invalidRequest()
+        }
+    }
+
+    private static <E> ServiceResult<E> invalidRequest() {
+        return fail(message: "Invalid request", suggestedHttpStatus: HttpStatus.BAD_REQUEST.value())
+    }
+
     ServiceResult<WrittenExerciseGroup> createOrEditWrittenExercise(CreateExerciseCommand command) {
         def teacher = userService.authenticatedTeacher
 
         if (!command.validate()) {
-            return fail(message: "invalid request", suggestedHttpStatus: HttpStatus.SC_BAD_REQUEST)
+            return fail(message: "invalid request", suggestedHttpStatus: HttpStatus.BAD_REQUEST.value())
         } else if (!teacher || !canAccessNode(command.subject)) {
-            return fail(message: "not allowed", suggestedHttpStatus: HttpStatus.SC_UNAUTHORIZED)
+            return fail(message: "not allowed", suggestedHttpStatus: HttpStatus.UNAUTHORIZED.value())
         }
 
         def exercise = command.isEditing ? command.editing : new WrittenExerciseGroup()
-        if (!exercise) return fail(message: "invalid request", suggestedHttpStatus: HttpStatus.SC_BAD_REQUEST)
+        if (!exercise) return fail(message: "invalid request", suggestedHttpStatus: HttpStatus.BAD_REQUEST.value())
         if (command.isEditing && !canAccessNode(exercise)) return fail(message: "not allowed",
-                suggestedHttpStatus: HttpStatus.SC_UNAUTHORIZED)
+                suggestedHttpStatus: HttpStatus.UNAUTHORIZED.value())
 
         exercise.name = command.name
         exercise.description = command.description
+        exercise.streakToPass = command.streakToPass
         exercise.thumbnailUrl = command.thumbnailUrl
 
         def preExistingExercises = new ArrayList<WrittenExercise>(exercise.exercises ?: [])
@@ -286,7 +409,7 @@ class CourseManagementService {
                     preExistingExercises.find { it.id == subitem.identifier } :
                     new WrittenExercise()
             if (!subExercise) {
-                return fail(message: "invalid request", suggestedHttpStatus: HttpStatus.SC_BAD_REQUEST)
+                return fail(message: "invalid request", suggestedHttpStatus: HttpStatus.BAD_REQUEST.value())
             }
 
             subExercise.exercise = subitem.exercise
@@ -513,7 +636,7 @@ class CourseManagementService {
 
         if (!canAccessNode(subject) || !canAccessNode(course)) {
             return fail(message: "Du har ikke rettigheder til at tilgå dette emne",
-                    suggestedHttpStatus: HttpStatus.SC_UNAUTHORIZED)
+                    suggestedHttpStatus: HttpStatus.UNAUTHORIZED.value())
         }
 
         internalCopySubjectToCourse(subject, course)
@@ -527,7 +650,7 @@ class CourseManagementService {
 
         if (!canAccessNode(exercise) || !canAccessNode(subject)) {
             return fail(message: "Du har ikke rettigheder til at tilgå dette emne",
-                    suggestedHttpStatus: HttpStatus.SC_UNAUTHORIZED)
+                    suggestedHttpStatus: HttpStatus.UNAUTHORIZED.value())
         }
 
         if (exercise instanceof WrittenExerciseGroup) {
@@ -555,10 +678,10 @@ class CourseManagementService {
                 course.save()
                 ok()
             } else {
-                fail message: "Ugyldig forespørgsel", suggestedHttpStatus: HttpStatus.SC_BAD_REQUEST
+                fail message: "Ugyldig forespørgsel", suggestedHttpStatus: HttpStatus.BAD_REQUEST.value()
             }
         } else {
-            fail message: "Ugyldigt kursus", suggestedHttpStatus: HttpStatus.SC_NOT_FOUND
+            fail message: "Ugyldigt kursus", suggestedHttpStatus: HttpStatus.NOT_FOUND.value()
         }
     }
 
@@ -576,10 +699,10 @@ class CourseManagementService {
                 subject.save()
                 ok()
             } else {
-                fail message: "Ugyldig forspørgsel", suggestedHttpStatus: HttpStatus.SC_BAD_REQUEST
+                fail message: "Ugyldig forspørgsel", suggestedHttpStatus: HttpStatus.BAD_REQUEST.value()
             }
         } else {
-            fail message: "Ugyldigt kursus", suggestedHttpStatus: HttpStatus.SC_NOT_FOUND
+            fail message: "Ugyldigt kursus", suggestedHttpStatus: HttpStatus.NOT_FOUND.value()
         }
     }
 
@@ -597,10 +720,10 @@ class CourseManagementService {
                 exercise.save()
                 ok()
             } else {
-                fail message: "Ugyldig forspørgsel", suggestedHttpStatus: HttpStatus.SC_BAD_REQUEST
+                fail message: "Ugyldig forspørgsel", suggestedHttpStatus: HttpStatus.BAD_REQUEST.value()
             }
         } else {
-            fail message: "Ugyldigt kursus", suggestedHttpStatus: HttpStatus.SC_NOT_FOUND
+            fail message: "Ugyldigt kursus", suggestedHttpStatus: HttpStatus.NOT_FOUND.value()
         }
     }
 

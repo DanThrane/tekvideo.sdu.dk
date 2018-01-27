@@ -70,7 +70,7 @@ class TeachingTagLib {
     def thumbnail = { attrs, body ->
         def node = attrs.remove("node") as Node
         if (node instanceof Course) {
-            out << (courseService.getThumbnailForCourse(node) ?: "")
+            out << (courseService.getThumbnail(node) ?: "")
         } else if (node instanceof Subject) {
             out << (subjectService.getThumbnail(node) ?: "")
         } else if (node instanceof Video) {

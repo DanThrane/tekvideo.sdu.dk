@@ -1,87 +1,117 @@
 package dk.sdu.tekvideo
 
-class CourseService {
-    def userService
+import org.hibernate.SessionFactory
+
+class CourseService implements ContainerNodeInformation<Course, Subject> {
     def urlMappingService
     def videoService
-    def subjectService
+    SessionFactory sessionFactory
 
-    boolean canAccess(Course course) {
-        def status = course?.status
-
-        course != null &&
-                (status == NodeStatus.VISIBLE ||
-                        (status == NodeStatus.INVISIBLE &&
-                                userService.authenticatedTeacher == course.teacher))
-    }
+    // Course specific operations
 
     int getStudentCount(Course course) {
         CourseStudent.countByCourse(course)
     }
 
     List<Course> listVisibleCourses() {
-        Course.findAllByLocalStatus(NodeStatus.VISIBLE)
+        def visible = Course.findAllByLocalStatus(NodeStatus.VISIBLE)
+        visible.sort()
     }
 
     List<Course> listActiveCourses() {
         Course.findAllByLocalStatusNotEqual(NodeStatus.TRASH)
     }
 
-    List<Course> listAllCoursesInTrash() {
-        Course.findAllByLocalStatus(NodeStatus.TRASH)
+    // General "node" operations
+
+    @Override
+    String getThumbnail(Course course) {
+        return getThumbnailsBulk([course]).get(course)
     }
 
-    List<Course> listAllInivisbleCourses() {
-        Course.findAllByLocalStatus(NodeStatus.INVISIBLE)
-    }
+    @Override
+    Map<Course, String> getThumbnailsBulk(List<Course> nodes) {
+        def courses = nodes.groupBy { it.id }
+        def query = $/
+            SELECT DISTINCT ON (cs.course_id)
+              cs.course_id,
+              e.youtube_id,
+              e.thumbnail_url
+            FROM course_subject cs, subject_exercise se, subject s, exercise e
+            WHERE
+              cs.course_id IN (:courses) AND
+              cs.subject_id = se.subject_id AND
+              cs.subject_id = s.id AND
+              se.subject_id = s.id AND
+              se.exercise_id = e.id AND
+              s.local_status = 'VISIBLE' AND
+              e.local_status = 'VISIBLE' AND
+              (e.class = :videoClass OR (e.class = :exerciseClass AND e.thumbnail_url IS NOT NULL)) 
+        /$
 
-    String getThumbnailForCourse(Course course) {
-        // TODO Performance
-        return videoService.getThumbnail((Video) course.activeSubjects.first()?.activeVideos?.find { it instanceof Video })
-    }
+        def sqlResult = sessionFactory.currentSession
+                .createSQLQuery(query)
+                .setParameterList("courses", nodes.collect { it.id })
+                .setParameter("videoClass", Video.name)
+                .setParameter("exerciseClass", WrittenExerciseGroup.name)
+                .list()
 
-    List<Map> visibleCoursesForBrowser() {
-        def courses = listVisibleCourses()
-
-        return courses.collect {
-            [
-                    title: "${it.name} (${it.fullName})",
-                    description: it.description,
-                    thumbnail: getThumbnailForCourse(it),
-                    url: urlMappingService.generateLinkToCourse(it),
-                    breadcrumbs: [
-                            [
-                                    title: it.teacher.toString(),
-                                    url: urlMappingService.generateLinkToTeacher(it.teacher)
-                            ]
-                    ],
-                    stats: [],
-                    featuredChildren: []
-            ]
+        Map<Course, String> result = [:]
+        nodes.each { result[it] = null }
+        for (def row : sqlResult) {
+            String thumbnail = null
+            if (row[1] != null) {
+                thumbnail = videoService.getThumbnail(row[1].toString())
+            } else if (row[2] != null) {
+                thumbnail = row[2]
+            }
+            result[courses[row[0].toString().toLong()][0]] = thumbnail
         }
+        return result
     }
 
-    List<Map> visibleSubjectsForBrowser(Course course) {
-        def breadcrumbs = []
-        breadcrumbs.add([
-                title: course.teacher.toString(),
-                url: urlMappingService.generateLinkToTeacher(course.teacher)
-        ])
-        breadcrumbs.add([
-                title: course.name,
-                url: urlMappingService.generateLinkToCourse(course)
-        ])
 
-        return course.activeSubjects.collect {
-            [
-                    title: it.name,
-                    thumbnail: subjectService.getThumbnail(it),
-                    description: it.description,
-                    url: urlMappingService.generateLinkToSubject(it),
-                    breadcrumbs: breadcrumbs,
-                    stats: [],
-                    featuredChildren: []
-            ]
-        }
+    @Override
+    List<NodeBrowserCrumbs> getBreadcrumbs(Course course) {
+        [
+                new NodeBrowserCrumbs(
+                        course.teacher.toString(),
+                        urlMappingService.generateLinkToTeacher(course.teacher)
+                ),
+                new NodeBrowserCrumbs(
+                        course.name,
+                        urlMappingService.generateLinkToCourse(course)
+                )
+        ]
+    }
+
+    @Override
+    NodeBrowserInformation getInformationForBrowser(Course course, String thumbnail, boolean resolveThumbnail,
+                                                    boolean addBreadcrumbs) {
+        List<NodeBrowserCrumbs> breadcrumbs = []
+        if (addBreadcrumbs) breadcrumbs += new NodeBrowserCrumbs(
+                course.teacher.toString(),
+                urlMappingService.generateLinkToTeacher(course.teacher)
+        )
+
+        String actualThumbnail = !resolveThumbnail ? thumbnail : getThumbnail(course)
+        return new NodeBrowserInformation(
+                "${course.name} (${course.fullName})",
+                course.description,
+                actualThumbnail,
+                urlMappingService.generateLinkToCourse(course),
+                breadcrumbs,
+                [new NodeBrowserStats(course.getShortWhen(), "watch-later")]
+        )
+    }
+
+    @Override
+    List<Subject> listVisibleChildren(Course course) {
+        return course.visibleSubjects
+    }
+
+    @Override
+    List<Subject> listActiveChildren(Course course) {
+        return course.activeSubjects
     }
 }

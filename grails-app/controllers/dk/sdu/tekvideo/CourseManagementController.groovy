@@ -15,12 +15,12 @@ class CourseManagementController {
 
     static allowedMethods = [postCourse         : "POST", postSimilarResource: "POST", postSubject: "POST",
                              postVideo          : "POST", postWrittenExercise: "POST", copyExerciseToSubject: "POST",
-                             copySubjectToCourse: "POST"]
+                             copySubjectToCourse: "POST", postImportedWrittenExercises: "POST"]
 
     def index() {
         String statusStr = params.status ?: "VISIBLE"
         def status = NodeStatus.fromValue(statusStr.toUpperCase()) ?: NodeStatus.VISIBLE
-        def courses = courseManagementService.getCourses(status)
+        def courses = courseManagementService.getCompleteCourseSummary()
 
         if (courses.success) {
             [activeCourses: courses.result, status: status]
@@ -169,7 +169,6 @@ class CourseManagementController {
     }
 
     def createWrittenExercise(Subject subject) {
-        println subject
         if (courseManagementService.canAccessNode(subject)) {
             [isEditing: false, subject: subject]
         } else {
@@ -193,6 +192,26 @@ class CourseManagementController {
         def result = courseManagementService.createOrEditWrittenExercise(command)
         response.status = result.suggestedHttpStatus
         render result as JSON
+    }
+
+    def importWrittenExercises(Subject subject) {
+        if (courseManagementService.canAccessNode(subject)) {
+            [subject: subject]
+        } else {
+            notAllowedCourse()
+        }
+    }
+
+    def postImportedWrittenExercises(Subject subject, String json) {
+        if (courseManagementService.canAccessNode(subject)) {
+            def result = courseManagementService.importWrittenExercisesFromJson(subject, json)
+            if (result.success) flash.success = result.message
+            else flash.error = result.message
+
+            redirect controller: "courseManagement", action: "manageSubject", id: subject.id
+        } else {
+            notAllowedCourse()
+        }
     }
 
     def editVideo(Video video) {

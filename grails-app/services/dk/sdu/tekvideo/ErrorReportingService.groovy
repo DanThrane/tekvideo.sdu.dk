@@ -1,27 +1,26 @@
 package dk.sdu.tekvideo
 
 import grails.util.Environment
-import org.apache.http.HttpStatus
+import org.springframework.http.HttpStatus
 
 import static dk.sdu.tekvideo.ServiceResult.*
 
 class ErrorReportingService {
     def mailService
     def springSecurityService
-    def grailsApplication
 
     ServiceResult<Void> report(ErrorReportCommand command) {
         if (!command.validate()) {
             return fail([
                     message            : "Dårlig besked",
-                    suggestedHttpStatus: HttpStatus.SC_BAD_REQUEST
+                    suggestedHttpStatus: HttpStatus.BAD_REQUEST.value()
             ])
         }
 
         if (!springSecurityService.currentUser == null) {
             return fail([
                     message            : "Ikke tilladt",
-                    suggestedHttpStatus: HttpStatus.SC_UNAUTHORIZED
+                    suggestedHttpStatus: HttpStatus.UNAUTHORIZED.value()
             ])
         }
 
